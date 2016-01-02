@@ -1,0 +1,10 @@
+include:
+  - codeception/common
+  - codeception/console
+  - codeception/api
+
+paths:
+  log: codeception/_output
+
+settings:
+  colors: true
