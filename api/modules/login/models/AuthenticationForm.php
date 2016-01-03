@@ -17,21 +17,15 @@ class AuthenticationForm extends Model {
         return [
             ['email', 'required', 'message' => 'error.email_required'],
             ['email', 'email', 'message' => 'error.email_invalid'],
-            ['email', 'validateEmail'],
+            ['email', 'exist', 'targetClass' => Account::class, 'skipOnError' => true, 'message' => 'error.email_not_exist'],
 
-            ['password', 'required', 'message' => 'error.password_required'],
+            ['password', 'required', 'when' => function(self $model) {
+                return !$model->hasErrors();
+            }, 'message' => 'error.password_required'],
             ['password', 'validatePassword'],
 
             ['rememberMe', 'boolean'],
         ];
-    }
-
-    public function validateEmail($attribute) {
-        if (!$this->hasErrors()) {
-            if ($this->getAccount() === NULL) {
-                $this->addError($attribute, 'error.email_not_exist');
-            }
-        }
     }
 
     public function validatePassword($attribute) {
