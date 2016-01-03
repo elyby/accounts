@@ -2,11 +2,11 @@
 
 namespace tests\codeception\common\unit\models;
 
-use Yii;
-use tests\codeception\common\unit\DbTestCase;
+use api\models\LoginForm;
 use Codeception\Specify;
-use common\models\LoginForm;
 use tests\codeception\common\fixtures\UserFixture;
+use tests\codeception\common\unit\DbTestCase;
+use Yii;
 
 /**
  * Login form test

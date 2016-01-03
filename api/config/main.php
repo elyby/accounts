@@ -13,7 +13,7 @@ return [
     'controllerNamespace' => 'api\controllers',
     'components' => [
         'user' => [
-            'identityClass' => 'common\models\User',
+            'identityClass' => 'common\models\Account',
             'enableAutoLogin' => true,
         ],
         'log' => [
@@ -28,6 +28,17 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
+        'request' => [
+            'baseUrl' => '/api',
+        ],
+        'urlManager' => [
+            'enablePrettyUrl' => true,
+            'showScriptName' => false,
+            'rules' => [],
+        ],
+    ],
+    'modules' => [
+        'login' => 'api\modules\login\Module',
     ],
     'params' => $params,
 ];

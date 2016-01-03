@@ -63,10 +63,10 @@ class FixtureHelper extends Module
     public function fixtures()
     {
         return [
-            'user' => [
-                'class' => UserFixture::className(),
-                'dataFile' => '@tests/codeception/common/fixtures/data/init_login.php',
-            ],
+            //'user' => [
+            //    'class' => UserFixture::className(),
+            //    'dataFile' => '@tests/codeception/common/fixtures/data/init_login.php',
+            //],
         ];
     }
 }

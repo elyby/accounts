@@ -13,5 +13,8 @@ return [
             'class' => 'yii\swiftmailer\Mailer',
             'viewPath' => '@common/mail',
         ],
+        'security' => [
+            'passwordHashStrategy' => 'password_hash',
+        ]
     ],
 ];

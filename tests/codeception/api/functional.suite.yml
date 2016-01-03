@@ -12,6 +12,7 @@ modules:
       - Filesystem
       - Yii2
       - tests\codeception\common\_support\FixtureHelper
+      - REST
     config:
         Yii2:
             configFile: '../config/api/functional.php'

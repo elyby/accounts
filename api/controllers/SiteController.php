@@ -1,17 +1,17 @@
 <?php
 namespace api\controllers;
 
-use Yii;
-use common\models\LoginForm;
+use api\models\ContactForm;
+use api\models\LoginForm;
 use api\models\PasswordResetRequestForm;
 use api\models\ResetPasswordForm;
 use api\models\SignupForm;
-use api\models\ContactForm;
+use Yii;
 use yii\base\InvalidParamException;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
-use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
 
 /**
  * Site controller

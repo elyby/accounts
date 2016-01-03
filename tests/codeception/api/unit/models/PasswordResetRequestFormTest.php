@@ -6,7 +6,7 @@ use Yii;
 use tests\codeception\api\unit\DbTestCase;
 use api\models\PasswordResetRequestForm;
 use tests\codeception\common\fixtures\UserFixture;
-use common\models\User;
+use common\models\Account;
 use Codeception\Specify;
 
 class PasswordResetRequestFormTest extends DbTestCase
@@ -54,7 +54,7 @@ class PasswordResetRequestFormTest extends DbTestCase
     {
         $model = new PasswordResetRequestForm();
         $model->email = $this->user[0]['email'];
-        $user = User::findOne(['password_reset_token' => $this->user[0]['password_reset_token']]);
+        $user = Account::findOne(['password_reset_token' => $this->user[0]['password_reset_token']]);
 
         expect('email sent', $model->sendEmail())->true();
         expect('user has valid token', $user->password_reset_token)->notNull();

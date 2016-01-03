@@ -1,7 +1,7 @@
 <?php
 namespace api\models;
 
-use common\models\User;
+use common\models\Account;
 use yii\base\Model;
 use Yii;
 
@@ -39,13 +39,12 @@ class SignupForm extends Model
     /**
      * Signs user up.
      *
-     * @return User|null the saved model or null if saving fails
+     * @return Account|null the saved model or null if saving fails
      */
     public function signup()
     {
         if ($this->validate()) {
-            $user = new User();
-            $user->username = $this->username;
+            $user = new Account();
             $user->email = $this->email;
             $user->setPassword($this->password);
             $user->generateAuthKey();

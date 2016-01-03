@@ -1,34 +1,26 @@
 <?php
 
-use yii\db\Schema;
-use yii\db\Migration;
+use console\db\Migration;
 
-class m130524_201442_init extends Migration
-{
-    public function up()
-    {
-        $tableOptions = null;
-        if ($this->db->driverName === 'mysql') {
-            // http://stackoverflow.com/questions/766809/whats-the-difference-between-utf8-general-ci-and-utf8-unicode-ci
-            $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
-        }
+class m130524_201442_init extends Migration {
 
-        $this->createTable('{{%user}}', [
+    public function up() {
+        $this->createTable('{{%accounts}}', [
             'id' => $this->primaryKey(),
-            'username' => $this->string()->notNull()->unique(),
-            'auth_key' => $this->string(32)->notNull(),
-            'password_hash' => $this->string()->notNull(),
-            'password_reset_token' => $this->string()->unique(),
+            'uuid' => $this->string(36)->notNull(),
             'email' => $this->string()->notNull()->unique(),
-
-            'status' => $this->smallInteger()->notNull()->defaultValue(10),
+            'password_hash' => $this->string()->notNull(),
+            'password_hash_strategy' => $this->smallInteger()->notNull(),
+            'password_reset_token' => $this->string()->unique(),
+            'status' => $this->smallInteger()->notNull()->defaultValue(0),
+            'auth_key' => $this->string(32)->notNull(),
             'created_at' => $this->integer()->notNull(),
             'updated_at' => $this->integer()->notNull(),
-        ], $tableOptions);
+        ], $this->tableOptions);
     }
 
-    public function down()
-    {
-        $this->dropTable('{{%user}}');
+    public function down() {
+        $this->dropTable('{{%accounts}}');
     }
+
 }
