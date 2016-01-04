@@ -7,17 +7,16 @@ use yii\base\Model;
 
 class AuthenticationForm extends Model {
 
-    public $email;
+    public $login;
     public $password;
     public $rememberMe = true;
 
-    private $_user;
+    private $_account;
 
     public function rules() {
         return [
-            ['email', 'required', 'message' => 'error.email_required'],
-            ['email', 'email', 'message' => 'error.email_invalid'],
-            ['email', 'exist', 'targetClass' => Account::class, 'skipOnError' => true, 'message' => 'error.email_not_exist'],
+            ['login', 'required', 'message' => 'error.login_required'],
+            ['login', 'validateLogin'],
 
             ['password', 'required', 'when' => function(self $model) {
                 return !$model->hasErrors();
@@ -28,11 +27,19 @@ class AuthenticationForm extends Model {
         ];
     }
 
+    public function validateLogin($attribute) {
+        if (!$this->hasErrors()) {
+            if (!$this->getAccount()) {
+                $this->addError($attribute, 'error.' . $attribute . '_not_exist');
+            }
+        }
+    }
+
     public function validatePassword($attribute) {
         if (!$this->hasErrors()) {
             $account = $this->getAccount();
             if (!$account || !$account->validatePassword($this->password)) {
-                $this->addError($attribute, 'error.password_incorrect');
+                $this->addError($attribute, 'error.' . $attribute . '_incorrect');
             }
         }
     }
@@ -54,11 +61,12 @@ class AuthenticationForm extends Model {
      * @return Account|null
      */
     protected function getAccount() {
-        if ($this->_user === NULL) {
-            $this->_user = Account::findByEmail($this->email);
+        if ($this->_account === NULL) {
+            $attribute = strpos($this->login, '@') ? 'email' : 'username';
+            $this->_account = Account::findOne([$attribute => $this->login]);
         }
 
-        return $this->_user;
+        return $this->_account;
     }
 
 }
