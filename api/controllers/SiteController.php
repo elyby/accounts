@@ -2,7 +2,6 @@
 namespace api\controllers;
 
 use api\models\ContactForm;
-use api\models\LoginForm;
 use api\models\PasswordResetRequestForm;
 use api\models\ResetPasswordForm;
 use api\models\SignupForm;
@@ -11,12 +10,11 @@ use yii\base\InvalidParamException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\BadRequestHttpException;
-use yii\web\Controller;
 
 /**
  * Site controller
  */
-class SiteController extends Controller
+class SiteController extends \yii\web\Controller
 {
     /**
      * @inheritdoc
@@ -73,27 +71,6 @@ class SiteController extends Controller
     public function actionIndex()
     {
         return $this->render('index');
-    }
-
-    /**
-     * Logs in a user.
-     *
-     * @return mixed
-     */
-    public function actionLogin()
-    {
-        if (!\Yii::$app->user->isGuest) {
-            return $this->goHome();
-        }
-
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        } else {
-            return $this->render('login', [
-                'model' => $model,
-            ]);
-        }
     }
 
     /**

@@ -14,7 +14,7 @@ require_once(YII_APP_BASE_PATH . '/api/config/bootstrap.php');
 
 // set correct script paths
 
-// the entry script file path for functional and acceptance tests
+// the entry script file path for functional tests
 $_SERVER['SCRIPT_FILENAME'] = API_ENTRY_FILE;
 $_SERVER['SCRIPT_NAME'] = API_ENTRY_URL;
 $_SERVER['SERVER_NAME'] =  parse_url(\Codeception\Configuration::config()['config']['test_entry_url'], PHP_URL_HOST);

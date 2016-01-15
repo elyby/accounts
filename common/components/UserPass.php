@@ -1,5 +1,5 @@
 <?php
-namespace api\components;
+namespace common\components;
 
 
 /**
@@ -8,7 +8,7 @@ namespace api\components;
  */
 class UserPass {
 
-    public static function make ($email, $pass) {
+    public static function make($email, $pass) {
         return md5($pass . md5(strtolower($email)));
     }
 

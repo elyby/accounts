@@ -4,16 +4,15 @@ namespace tests\codeception\api\_pages;
 use yii\codeception\BasePage;
 
 /**
- * Represents loging page
  * @property \tests\codeception\api\FunctionalTester $actor
  */
 class LoginRoute extends BasePage {
 
-    public $route = 'login/authentication/login-info';
+    public $route = ['authentication/login'];
 
-    public function login($email, $password) {
+    public function login($login = '', $password = '') {
         $this->actor->sendPOST($this->getUrl(), [
-            'email' => $email,
+            'login' => $login,
             'password' => $password,
         ]);
     }

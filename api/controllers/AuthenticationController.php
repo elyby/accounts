@@ -1,8 +1,7 @@
 <?php
-namespace api\modules\login\controllers;
+namespace api\controllers;
 
-use api\controllers\Controller;
-use api\modules\login\models\AuthenticationForm;
+use api\models\LoginForm;
 use Yii;
 use yii\filters\AccessControl;
 
@@ -12,10 +11,10 @@ class AuthenticationController extends Controller {
         return array_merge(parent::behaviors(), [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['login-info'],
+                'only' => ['login'],
                 'rules' => [
                     [
-                        'actions' => ['login-info'],
+                        'actions' => ['login', 'register'],
                         'allow' => true,
                         'roles' => ['?'],
                     ],
@@ -26,17 +25,18 @@ class AuthenticationController extends Controller {
 
     public function verbs() {
         return [
-            'loginInfo' => ['post'],
+            'login' => ['post'],
+            'register' => ['post'],
         ];
     }
 
-    public function actionLoginInfo() {
-        $model = new AuthenticationForm();
+    public function actionLogin() {
+        $model = new LoginForm();
         $model->load(Yii::$app->request->post());
         if (!$model->login()) {
             return [
                 'success' => false,
-                'errors' => $model->getErrors(),
+                'errors' => $this->normalizeModelErrors($model->getErrors()),
             ];
         }
 

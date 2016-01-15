@@ -2,19 +2,16 @@
 
 namespace tests\codeception\common\_support;
 
-use tests\codeception\common\fixtures\UserFixture;
 use Codeception\Module;
+use tests\codeception\common\fixtures\AccountFixture;
 use yii\test\FixtureTrait;
 use yii\test\InitDbFixture;
 
 /**
  * This helper is used to populate the database with needed fixtures before any tests are run.
- * In this example, the database is populated with the demo login user, which is used in acceptance
- * and functional tests.  All fixtures will be loaded before the suite is started and unloaded after it
- * completes.
+ * All fixtures will be loaded before the suite is started and unloaded after it completes.
  */
-class FixtureHelper extends Module
-{
+class FixtureHelper extends Module {
 
     /**
      * Redeclare visibility because codeception includes all public methods that do not start with "_"
@@ -31,27 +28,25 @@ class FixtureHelper extends Module
 
     /**
      * Method called before any suite tests run. Loads User fixture login user
-     * to use in acceptance and functional tests.
+     * to use in functional tests.
+     *
      * @param array $settings
      */
-    public function _beforeSuite($settings = [])
-    {
+    public function _beforeSuite($settings = []) {
         $this->loadFixtures();
     }
 
     /**
      * Method is called after all suite tests run
      */
-    public function _afterSuite()
-    {
+    public function _afterSuite() {
         $this->unloadFixtures();
     }
 
     /**
      * @inheritdoc
      */
-    public function globalFixtures()
-    {
+    public function globalFixtures() {
         return [
             InitDbFixture::className(),
         ];
@@ -60,13 +55,12 @@ class FixtureHelper extends Module
     /**
      * @inheritdoc
      */
-    public function fixtures()
-    {
+    public function fixtures() {
         return [
-            //'user' => [
-            //    'class' => UserFixture::className(),
-            //    'dataFile' => '@tests/codeception/common/fixtures/data/init_login.php',
-            //],
+            'accounts' => [
+                'class' => AccountFixture::class,
+                'dataFile' => '@tests/codeception/common/fixtures/data/accounts.php',
+            ],
         ];
     }
 }

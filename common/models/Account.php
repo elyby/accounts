@@ -1,7 +1,7 @@
 <?php
 namespace common\models;
 
-use api\components\UserPass;
+use common\components\UserPass;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\base\NotSupportedException;
@@ -25,6 +25,12 @@ use yii\web\IdentityInterface;
  *
  * Геттеры-сеттеры:
  * @property string  $password пароль пользователя (только для записи)
+ *
+ * Отношения:
+ * @property EmailActivation[] $emailActivations
+ *
+ * Поведения:
+ * @mixin TimestampBehavior
  */
 class Account extends ActiveRecord implements IdentityInterface {
 
@@ -204,6 +210,10 @@ class Account extends ActiveRecord implements IdentityInterface {
      */
     public function removePasswordResetToken() {
         $this->password_reset_token = null;
+    }
+
+    public function getEmailActivations() {
+        return $this->hasMany(EmailActivation::class, ['id' => 'account_id']);
     }
 
 }

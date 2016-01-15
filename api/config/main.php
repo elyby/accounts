@@ -36,9 +36,9 @@ return [
             'showScriptName' => false,
             'rules' => [],
         ],
-    ],
-    'modules' => [
-        'login' => 'api\modules\login\Module',
+        'reCaptcha' => [
+            'class' => 'api\components\ReCaptcha\Component',
+        ],
     ],
     'params' => $params,
 ];
