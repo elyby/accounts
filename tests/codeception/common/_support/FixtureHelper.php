@@ -1,9 +1,9 @@
 <?php
-
 namespace tests\codeception\common\_support;
 
 use Codeception\Module;
 use tests\codeception\common\fixtures\AccountFixture;
+use tests\codeception\common\fixtures\EmailActivationFixture;
 use yii\test\FixtureTrait;
 use yii\test\InitDbFixture;
 
@@ -60,6 +60,10 @@ class FixtureHelper extends Module {
             'accounts' => [
                 'class' => AccountFixture::class,
                 'dataFile' => '@tests/codeception/common/fixtures/data/accounts.php',
+            ],
+            'emailActivations' => [
+                'class' => EmailActivationFixture::class,
+                'dataFile' => '@tests/codeception/common/fixtures/data/email-activations.php',
             ],
         ];
     }

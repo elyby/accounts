@@ -1,5 +1,4 @@
 <?php
-
 namespace tests\codeception\common\fixtures;
 
 use common\models\Account;

@@ -5,14 +5,6 @@ use tests\codeception\api\_pages\LoginRoute;
 
 class LoginCest {
 
-    public function _before(FunctionalTester $I) {
-
-    }
-
-    public function _after(FunctionalTester $I) {
-
-    }
-
     public function testLoginEmailOrUsername(FunctionalTester $I) {
         $route = new LoginRoute($I);
 

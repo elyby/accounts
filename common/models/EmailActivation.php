@@ -6,9 +6,8 @@ use yii\behaviors\TimestampBehavior;
 
 /**
  * Поля модели:
- * @property integer  $id
- * @property integer  $account_id
  * @property string   $key
+ * @property integer  $account_id
  * @property integer  $type
  * @property integer  $created_at
  *
@@ -17,6 +16,10 @@ use yii\behaviors\TimestampBehavior;
  *
  * Поведения:
  * @mixin TimestampBehavior
+ *
+ * TODO: у модели могут быть проблемы с уникальностью, т.к. key является первичным и не автоинкрементом
+ * TODO: мб стоит ловить beforeCreate и именно там генерировать уникальный ключ для модели.
+ * Но опять же нужно продумать, а как пробросить формат и обеспечить преемлемую уникальность.
  */
 class EmailActivation extends \yii\db\ActiveRecord {
 

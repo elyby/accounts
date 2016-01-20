@@ -7,19 +7,14 @@ use common\models\Account;
 use common\models\EmailActivation;
 use Yii;
 use yii\base\ErrorException;
-use yii\base\Model;
 
-class RegistrationForm extends Model {
+class RegistrationForm extends BaseApiForm {
 
     public $username;
     public $email;
     public $password;
     public $rePassword;
     public $rulesAgreement;
-
-    public function formName() {
-        return '';
-    }
 
     public function rules() {
         return [

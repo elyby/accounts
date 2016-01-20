@@ -10,11 +10,10 @@ class AuthenticationController extends Controller {
     public function behaviors() {
         return array_merge(parent::behaviors(), [
             'access' => [
-                'class' => AccessControl::className(),
-                'only' => ['login'],
+                'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['login', 'register'],
+                        'actions' => ['login'],
                         'allow' => true,
                         'roles' => ['?'],
                     ],
@@ -25,8 +24,7 @@ class AuthenticationController extends Controller {
 
     public function verbs() {
         return [
-            'login' => ['post'],
-            'register' => ['post'],
+            'login' => ['POST'],
         ];
     }
 

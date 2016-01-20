@@ -7,6 +7,9 @@ use tests\codeception\api\unit\DbTestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use Yii;
 
+/**
+ * @property array $accounts
+ */
 class LoginFormTest extends DbTestCase {
     use Specify;
 
@@ -17,8 +20,8 @@ class LoginFormTest extends DbTestCase {
 
     public function fixtures() {
         return [
-            'account' => [
-                'class' => AccountFixture::className(),
+            'accounts' => [
+                'class' => AccountFixture::class,
                 'dataFile' => '@tests/codeception/common/fixtures/data/accounts.php',
             ],
         ];

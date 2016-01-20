@@ -34,10 +34,13 @@ return [
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'rules' => [],
+            'rules' => require __DIR__ . '/routes.php',
         ],
         'reCaptcha' => [
             'class' => 'api\components\ReCaptcha\Component',
+        ],
+        'response' => [
+            'format' => \yii\web\Response::FORMAT_JSON,
         ],
     ],
     'params' => $params,

@@ -3,19 +3,14 @@ namespace api\models;
 
 use common\models\Account;
 use Yii;
-use yii\base\Model;
 
-class LoginForm extends Model {
+class LoginForm extends BaseApiForm {
 
     public $login;
     public $password;
     public $rememberMe = true;
 
     private $_account;
-
-    public function formName() {
-        return '';
-    }
 
     public function rules() {
         return [
