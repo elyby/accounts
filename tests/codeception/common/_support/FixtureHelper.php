@@ -4,6 +4,9 @@ namespace tests\codeception\common\_support;
 use Codeception\Module;
 use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\EmailActivationFixture;
+use tests\codeception\common\fixtures\OauthClientFixture;
+use tests\codeception\common\fixtures\OauthScopeFixture;
+use tests\codeception\common\fixtures\OauthSessionFixture;
 use yii\test\FixtureTrait;
 use yii\test\InitDbFixture;
 
@@ -26,35 +29,20 @@ class FixtureHelper extends Module {
         getFixture as protected;
     }
 
-    /**
-     * Method called before any suite tests run. Loads User fixture login user
-     * to use in functional tests.
-     *
-     * @param array $settings
-     */
     public function _beforeSuite($settings = []) {
         $this->loadFixtures();
     }
 
-    /**
-     * Method is called after all suite tests run
-     */
     public function _afterSuite() {
         $this->unloadFixtures();
     }
 
-    /**
-     * @inheritdoc
-     */
     public function globalFixtures() {
         return [
             InitDbFixture::className(),
         ];
     }
 
-    /**
-     * @inheritdoc
-     */
     public function fixtures() {
         return [
             'accounts' => [
@@ -65,6 +53,19 @@ class FixtureHelper extends Module {
                 'class' => EmailActivationFixture::class,
                 'dataFile' => '@tests/codeception/common/fixtures/data/email-activations.php',
             ],
+            'oauthClients' => [
+                'class' => OauthClientFixture::class,
+                'dataFile' => '@tests/codeception/common/fixtures/data/oauth-clients.php',
+            ],
+            'oauthScopes' => [
+                'class' => OauthScopeFixture::class,
+                'dataFile' => '@tests/codeception/common/fixtures/data/oauth-scopes.php',
+            ],
+            'oauthSessions' => [
+                'class' => OauthSessionFixture::class,
+                'dataFile' => '@tests/codeception/common/fixtures/data/oauth-sessions.php',
+            ],
         ];
     }
+
 }

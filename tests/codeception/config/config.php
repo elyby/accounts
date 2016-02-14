@@ -22,5 +22,8 @@ return [
         'urlManager' => [
             'showScriptName' => true,
         ],
+        'redis' => [
+            'database' => 1,
+        ],
     ],
 ];

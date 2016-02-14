@@ -28,6 +28,7 @@ use yii\web\IdentityInterface;
  *
  * Отношения:
  * @property EmailActivation[] $emailActivations
+ * @property OauthSession[]    $sessions
  *
  * Поведения:
  * @mixin TimestampBehavior
@@ -214,6 +215,36 @@ class Account extends ActiveRecord implements IdentityInterface {
 
     public function getEmailActivations() {
         return $this->hasMany(EmailActivation::class, ['id' => 'account_id']);
+    }
+
+    public function getSessions() {
+        return $this->hasMany(OauthSession::class, ['owner_id' => 'id']);
+    }
+
+    /**
+     * Метод проверяет, может ли текщий пользователь быть автоматически авторизован
+     * для указанного клиента без запроса доступа к необходимому списку прав
+     *
+     * @param OauthClient $client
+     * @param \League\OAuth2\Server\Entity\ScopeEntity[] $scopes
+     *
+     * @return bool
+     */
+    public function canAutoApprove(OauthClient $client, array $scopes = []) {
+        if ($client->is_trusted) {
+            return true;
+        }
+
+        /** @var OauthSession|null $session */
+        $session = $this->getSessions()->andWhere(['client_id' => $client->id])->one();
+        if ($session !== null) {
+            $existScopes = $session->getScopes()->members();
+            if (empty(array_diff(array_keys($scopes), $existScopes))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }

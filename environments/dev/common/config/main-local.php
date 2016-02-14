@@ -12,5 +12,11 @@ return [
             // for the mailer to send real emails.
             'useFileTransport' => true,
         ],
+        'redis' => [
+            'hostname' => 'localhost',
+            'password' => null,
+            'port' => 6379,
+            'database' => 0,
+        ],
     ],
 ];

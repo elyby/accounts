@@ -15,6 +15,9 @@ return [
         ],
         'security' => [
             'passwordHashStrategy' => 'password_hash',
-        ]
+        ],
+        'redis' => [
+            'class' => 'yii\redis\Connection',
+        ],
     ],
 ];

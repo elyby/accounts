@@ -18,7 +18,7 @@ class RegistrationForm extends BaseApiForm {
 
     public function rules() {
         return [
-            ['rulesAgreement', 'boolean', 'message' => 'error.you_must_accept_rules'],
+            ['rulesAgreement', 'required', 'message' => 'error.you_must_accept_rules'],
             [[], ReCaptchaValidator::class, 'message' => 'error.captcha_invalid', 'when' => !YII_ENV_TEST],
 
             ['username', 'filter', 'filter' => 'trim'],

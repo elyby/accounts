@@ -13,6 +13,11 @@ modules:
       - Yii2
       - tests\codeception\common\_support\FixtureHelper
       - REST
+      - Redis
     config:
         Yii2:
             configFile: '../config/api/functional.php'
+        Redis:
+            host: localhost
+            port: 6379
+            database: 1

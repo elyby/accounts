@@ -13,8 +13,9 @@ return [
     'controllerNamespace' => 'api\controllers',
     'components' => [
         'user' => [
-            'identityClass' => 'common\models\Account',
+            'identityClass' => \common\models\Account::class,
             'enableAutoLogin' => true,
+            'loginUrl' => null,
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -41,6 +42,10 @@ return [
         ],
         'response' => [
             'format' => \yii\web\Response::FORMAT_JSON,
+        ],
+        'oauth' => [
+            'class' => \common\components\oauth\Component::class,
+            'grantTypes' => ['authorization_code'],
         ],
     ],
     'params' => $params,

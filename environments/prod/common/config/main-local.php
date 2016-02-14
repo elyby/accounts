@@ -6,5 +6,11 @@ return [
             'username' => 'root',
             'password' => '',
         ],
+        'redis' => [
+            'hostname' => 'localhost',
+            'password' => null,
+            'port' => 6379,
+            'database' => 0,
+        ],
     ],
 ];

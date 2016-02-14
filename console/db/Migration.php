@@ -11,11 +11,34 @@ class Migration extends YiiMigration {
     public function getTableOptions($engine = 'InnoDB') {
         $tableOptions = null;
         if ($this->db->driverName === 'mysql') {
-            // http://stackoverflow.com/questions/766809/whats-the-difference-between-utf8-general-ci-and-utf8-unicode-ci
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=' . $engine;
         }
 
         return $tableOptions;
+    }
+
+    protected function primary(...$columns) {
+        switch (count($columns)) {
+            case 0:
+                $key = '';
+                break;
+            case 1:
+                $key = $columns[0];
+                break;
+            default:
+                $key = $this->buildKey($columns);
+        }
+
+        return " PRIMARY KEY ($key) ";
+    }
+
+    private function buildKey(array $columns) {
+        $key = '';
+        foreach ($columns as $i => $column) {
+            $key .= $i == count($columns) ? $column : "$column,";
+        }
+
+        return $key;
     }
 
 }
