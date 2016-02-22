@@ -101,6 +101,7 @@ class LoginCest {
         $I->canSeeResponseContainsJson([
             'success' => true,
         ]);
+        $I->canSeeResponseJsonMatchesJsonPath('$.jwt');
         $I->cantSeeResponseJsonMatchesJsonPath('$.errors');
     }
 
@@ -123,6 +124,7 @@ class LoginCest {
         $I->canSeeResponseContainsJson([
             'success' => true,
         ]);
+        $I->canSeeResponseJsonMatchesJsonPath('$.jwt');
         $I->cantSeeResponseJsonMatchesJsonPath('$.errors');
     }
 

@@ -2,6 +2,7 @@
 namespace common\models;
 
 use common\components\UserPass;
+use damirka\JWT\UserTrait;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\base\NotSupportedException;
@@ -34,6 +35,7 @@ use yii\web\IdentityInterface;
  * @mixin TimestampBehavior
  */
 class Account extends ActiveRecord implements IdentityInterface {
+    use UserTrait;
 
     const STATUS_DELETED = -10;
     const STATUS_REGISTERED = 0;
@@ -62,13 +64,6 @@ class Account extends ActiveRecord implements IdentityInterface {
      */
     public static function findIdentity($id) {
         return static::findOne(['id' => $id]);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public static function findIdentityByAccessToken($token, $type = null) {
-        throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
     }
 
     /**
@@ -245,6 +240,24 @@ class Account extends ActiveRecord implements IdentityInterface {
         }
 
         return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected static function getSecretKey() {
+        return Yii::$app->params['jwtSecret'];
+    }
+
+    /**
+     * Getter for "header" array that's used for generation of JWT
+     * @return array JWT Header Token param, see http://jwt.io/ for details
+     */
+    protected static function getHeaderToken() {
+        return [
+            'iss' => Yii::$app->request->hostInfo,
+            'aud' => Yii::$app->request->hostInfo,
+        ];
     }
 
 }
