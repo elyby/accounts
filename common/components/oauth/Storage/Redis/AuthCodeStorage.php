@@ -32,7 +32,7 @@ class AuthCodeStorage extends AbstractStorage implements AuthCodeInterface {
             'id' => $result['id'],
             'redirectUri' => $result['client_redirect_uri'],
             'expireTime' => $result['expire_time'],
-            'sessionId' => $result['sessionId'],
+            'sessionId' => $result['session_id'],
         ]);
     }
 

@@ -20,7 +20,7 @@ class Key {
     }
 
     public function getValue() {
-        return $this->getRedis()->get(json_decode($this->key));
+        return json_decode($this->getRedis()->get($this->key), true);
     }
 
     public function setValue($value) {

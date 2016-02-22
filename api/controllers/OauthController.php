@@ -4,7 +4,9 @@ namespace api\controllers;
 use common\components\oauth\Exception\AcceptRequiredException;
 use common\components\oauth\Exception\AccessDeniedException;
 use common\models\OauthClient;
+use common\models\OauthScope;
 use League\OAuth2\Server\Exception\OAuthException;
+use League\OAuth2\Server\Grant\RefreshTokenGrant;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
@@ -17,7 +19,7 @@ class OauthController extends Controller {
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['validate'],
+                        'actions' => ['validate', 'issue-token'],
                         'allow' => true,
                     ],
                     [
@@ -32,8 +34,9 @@ class OauthController extends Controller {
 
     public function verbs() {
         return [
-            'validate' => ['GET'],
-            'complete' => ['POST'],
+            'validate'    => ['GET'],
+            'complete'    => ['POST'],
+            'issue-token' => ['POST'],
         ];
     }
 
@@ -141,20 +144,28 @@ class OauthController extends Controller {
     }
 
     /**
-     * Метод выполняется сервером приложения, которому был выдан auth_token.
+     * Метод выполняется сервером приложения, которому был выдан auth_token иди refresh_token.
      *
      * Входными данными является стандартный список GET параметров по стандарту oAuth:
      * $_GET = [
      *     client_id,
      *     client_secret,
      *     redirect_uri,
-     *     code|refresh_token,
+     *     code,
+     *     grant_type,
+     * ]
+     * для запроса grant_type = authentication_code.
+     * $_GET = [
+     *     client_id,
+     *     client_secret,
+     *     refresh_token,
      *     grant_type,
      * ]
      *
      * @return array
      */
     public function actionIssueToken() {
+        $this->attachRefreshTokenGrantIfNeedle();
         try {
             $response = $this->getServer()->issueAccessToken();
         } catch (OAuthException $e) {
@@ -166,6 +177,28 @@ class OauthController extends Controller {
         }
 
         return $response;
+    }
+
+    private function attachRefreshTokenGrantIfNeedle() {
+        $grantType = Yii::$app->request->post('grant_type');
+        if ($grantType === 'authorization_code' && Yii::$app->request->post('code')) {
+            $authCode = Yii::$app->request->post('code');
+            $codeModel = $this->getServer()->getAuthCodeStorage()->get($authCode);
+            if ($codeModel === null) {
+                return;
+            }
+
+            $scopes = $codeModel->getScopes();
+            if (array_search(OauthScope::OFFLINE_ACCESS, array_keys($scopes)) === false) {
+                return;
+            }
+        } elseif ($grantType === 'refresh_token') {
+            // Это валидный кейс
+        } else {
+            return;
+        }
+
+        $this->getServer()->addGrantType(new RefreshTokenGrant());
     }
 
     /**

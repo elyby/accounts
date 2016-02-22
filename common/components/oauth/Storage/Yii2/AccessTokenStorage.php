@@ -18,7 +18,7 @@ class AccessTokenStorage extends AbstractStorage implements AccessTokenInterface
      * @return OauthAccessToken|null
      */
     private function getTokenModel($token) {
-        if (isset($this->cache[$token])) {
+        if (!isset($this->cache[$token])) {
             $this->cache[$token] = OauthAccessToken::findOne($token);
         }
 

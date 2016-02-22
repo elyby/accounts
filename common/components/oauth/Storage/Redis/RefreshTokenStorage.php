@@ -1,5 +1,5 @@
 <?php
-namespace Fahmiardi\OAuth2\Server\Storage\Redis;
+namespace common\components\oauth\Storage\Redis;
 
 use common\components\redis\Key;
 use League\OAuth2\Server\Entity\RefreshTokenEntity;

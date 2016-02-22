@@ -3,8 +3,9 @@ namespace tests\codeception\api;
 
 use tests\codeception\api\_pages\OauthRoute;
 use tests\codeception\api\functional\_steps\AccountSteps;
+use Yii;
 
-class OauthCest {
+class OauthAuthCodeCest {
 
     /**
      * @var OauthRoute

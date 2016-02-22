@@ -25,7 +25,7 @@ class OauthSession extends ActiveRecord {
         return '{{%oauth_sessions}}';
     }
 
-    public function getOauthAccessTokens() {
+    public function getAccessTokens() {
         return $this->hasMany(OauthAccessToken::class, ['session_id' => 'id']);
     }
 

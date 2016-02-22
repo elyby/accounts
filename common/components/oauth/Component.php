@@ -2,6 +2,7 @@
 namespace common\components\oauth;
 
 use common\components\oauth\Storage\Redis\AuthCodeStorage;
+use common\components\oauth\Storage\Redis\RefreshTokenStorage;
 use common\components\oauth\Storage\Yii2\AccessTokenStorage;
 use common\components\oauth\Storage\Yii2\ClientStorage;
 use common\components\oauth\Storage\Yii2\ScopeStorage;
@@ -43,6 +44,7 @@ class Component extends \yii\base\Component {
                 ->setScopeStorage(new ScopeStorage())
                 ->setSessionStorage(new SessionStorage())
                 ->setAuthCodeStorage(new AuthCodeStorage())
+                ->setRefreshTokenStorage(new RefreshTokenStorage())
                 ->setScopeDelimiter(',');
 
             $this->_authServer = $authServer;

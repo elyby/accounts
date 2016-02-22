@@ -6,4 +6,7 @@ return [
     'change_skin' => [
         'id' => 'change_skin',
     ],
+    'offline_access' => [
+        'id' => 'offline_access',
+    ],
 ];

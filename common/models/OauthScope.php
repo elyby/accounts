@@ -10,6 +10,9 @@ use yii\db\ActiveRecord;
  */
 class OauthScope extends ActiveRecord {
 
+    const OFFLINE_ACCESS = 'offline_access';
+    const MINECRAFT_SERVER_SESSION = 'minecraft_server_session';
+
     public static function tableName() {
         return '{{%oauth_scopes}}';
     }

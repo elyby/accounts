@@ -18,4 +18,9 @@ class OauthRoute extends BasePage {
         $this->actor->sendPOST($this->getUrl($queryParams), $postParams);
     }
 
+    public function issueToken($postParams = []) {
+        $this->route = ['oauth/issue-token'];
+        $this->actor->sendPOST($this->getUrl(), $postParams);
+    }
+
 }
