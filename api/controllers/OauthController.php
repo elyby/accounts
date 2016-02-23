@@ -14,13 +14,17 @@ use yii\helpers\ArrayHelper;
 class OauthController extends Controller {
 
     public function behaviors() {
-        return array_merge(parent::behaviors(), [
+        return ArrayHelper::merge(parent::behaviors(), [
+            'authenticator' => [
+                'except' => ['validate', 'issue-token'],
+            ],
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
                     [
                         'actions' => ['validate', 'issue-token'],
                         'allow' => true,
+                        'roles' => ['?'],
                     ],
                     [
                         'actions' => ['complete'],

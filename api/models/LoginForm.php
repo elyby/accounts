@@ -44,16 +44,14 @@ class LoginForm extends BaseApiForm {
     }
 
     /**
-     * Logs in a user using the provided username and password.
-     *
-     * @return boolean whether the user is logged in successfully
+     * @return bool|string JWT с информацией об аккаунте
      */
     public function login() {
         if (!$this->validate()) {
             return false;
         }
 
-        return Yii::$app->user->login($this->getAccount(), $this->rememberMe ? 3600 * 24 * 30 : 0);
+        return $this->getAccount()->getJWT();
     }
 
     /**

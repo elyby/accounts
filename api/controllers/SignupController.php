@@ -5,11 +5,15 @@ use api\models\ConfirmEmailForm;
 use api\models\RegistrationForm;
 use Yii;
 use yii\filters\AccessControl;
+use yii\helpers\ArrayHelper;
 
 class SignupController extends Controller {
 
     public function behaviors() {
-        return array_merge(parent::behaviors(), [
+        return ArrayHelper::merge(parent::behaviors(), [
+            'authenticator' => [
+                'except' => ['register', 'confirm'],
+            ],
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [

@@ -39,25 +39,22 @@ class LoginFormTest extends DbTestCase {
         $this->specify('get errors and don\'t log in into account with wrong credentials', function () use ($model) {
             expect('model should not login user', $model->login())->false();
             expect('error messages should be set', $model->errors)->notEmpty();
-            expect('user should not be logged in', Yii::$app->user->isGuest)->true();
         });
     }
 
     public function testLoginByUsernameCorrect() {
         $model = $this->createModel('Admin', 'password_0');
         $this->specify('user should be able to login with correct username and password', function () use ($model) {
-            expect('model should login user', $model->login())->true();
+            expect('model should login user', $model->login())->notEquals(false);
             expect('error message should not be set', $model->errors)->isEmpty();
-            expect('user should be logged in', Yii::$app->user->isGuest)->false();
         });
     }
 
     public function testLoginByEmailCorrect() {
         $model = $this->createModel('admin@ely.by', 'password_0');
         $this->specify('user should be able to login with correct email and password', function () use ($model) {
-            expect('model should login user', $model->login())->true();
+            expect('model should login user', $model->login())->notEquals(false);
             expect('error message should not be set', $model->errors)->isEmpty();
-            expect('user should be logged in', Yii::$app->user->isGuest)->false();
         });
     }
 
