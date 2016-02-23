@@ -8,7 +8,7 @@ use yii\codeception\BasePage;
  */
 class RegisterRoute extends BasePage {
 
-    public $route = ['signup/register'];
+    public $route = ['signup/index'];
 
     public function send(array $registrationData) {
         $this->actor->sendPOST($this->getUrl(), $registrationData);

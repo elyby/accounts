@@ -12,13 +12,13 @@ class SignupController extends Controller {
     public function behaviors() {
         return ArrayHelper::merge(parent::behaviors(), [
             'authenticator' => [
-                'except' => ['register', 'confirm'],
+                'except' => ['index', 'confirm'],
             ],
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['register', 'confirm'],
+                        'actions' => ['index', 'confirm'],
                         'allow' => true,
                         'roles' => ['?'],
                     ],
@@ -34,7 +34,7 @@ class SignupController extends Controller {
         ];
     }
 
-    public function actionRegister() {
+    public function actionIndex() {
         $model = new RegistrationForm();
         $model->load(Yii::$app->request->post());
         if (!$model->signup()) {
