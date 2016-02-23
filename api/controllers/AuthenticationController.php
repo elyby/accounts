@@ -4,11 +4,15 @@ namespace api\controllers;
 use api\models\LoginForm;
 use Yii;
 use yii\filters\AccessControl;
+use yii\helpers\ArrayHelper;
 
 class AuthenticationController extends Controller {
 
     public function behaviors() {
-        return array_merge(parent::behaviors(), [
+        return ArrayHelper::merge(parent::behaviors(), [
+            'authenticator' => [
+                'except' => ['login'],
+            ],
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [

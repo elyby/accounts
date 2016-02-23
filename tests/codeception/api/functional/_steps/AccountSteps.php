@@ -11,6 +11,9 @@ class AccountSteps extends FunctionalTester {
         $route = new LoginRoute($I);
         $route->login('Admin', 'password_0');
         $I->canSeeResponseIsJson();
+        $I->canSeeResponseJsonMatchesJsonPath('$.jwt');
+        $jwt = $I->grabDataFromResponseByJsonPath('$.jwt')[0];
+        $I->amBearerAuthenticated($jwt);
     }
 
 }
