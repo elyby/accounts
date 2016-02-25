@@ -3,19 +3,19 @@ namespace tests\codeception\api\functional;
 
 use Codeception\Scenario;
 use Codeception\Specify;
-use tests\codeception\api\_pages\UsersRoute;
+use tests\codeception\api\_pages\AccountsRoute;
 use tests\codeception\api\functional\_steps\AccountSteps;
 use tests\codeception\api\FunctionalTester;
 
-class UsersCest {
+class AccountsCurrentCest {
 
     /**
-     * @var UsersRoute
+     * @var AccountsRoute
      */
     private $route;
 
     public function _before(FunctionalTester $I) {
-        $this->route = new UsersRoute($I);
+        $this->route = new AccountsRoute($I);
     }
 
     public function testCurrent(FunctionalTester $I, Scenario $scenario) {

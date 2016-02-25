@@ -6,7 +6,7 @@ use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 
-class UsersController extends Controller {
+class AccountsController extends Controller {
 
     public function behaviors() {
         return ArrayHelper::merge(parent::behaviors(), [

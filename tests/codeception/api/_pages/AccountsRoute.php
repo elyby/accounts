@@ -6,7 +6,7 @@ use yii\codeception\BasePage;
 /**
  * @property \tests\codeception\api\FunctionalTester $actor
  */
-class UsersRoute extends BasePage {
+class AccountsRoute extends BasePage {
 
     public function current() {
         $this->route = ['users/current'];
