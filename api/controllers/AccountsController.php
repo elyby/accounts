@@ -38,6 +38,7 @@ class AccountsController extends Controller {
             'username' => $account->username,
             'email' => $account->email,
             'shouldChangePassword' => $account->password_hash_strategy === Account::PASS_HASH_STRATEGY_OLD_ELY,
+            'isActive' => $account->status === Account::STATUS_ACTIVE,
         ];
     }
 
