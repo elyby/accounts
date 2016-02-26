@@ -67,14 +67,6 @@ class Account extends ActiveRecord implements IdentityInterface {
     }
 
     /**
-     * @param string $email
-     * @return static|null
-     */
-    public static function findByEmail($email) {
-        return static::findOne(['email' => $email]);
-    }
-
-    /**
      * Finds user by password reset token
      *
      * @param string $token password reset token
@@ -167,20 +159,8 @@ class Account extends ActiveRecord implements IdentityInterface {
      * @throws InvalidConfigException
      */
     public function setPassword($password) {
-        switch($this->password_hash_strategy) {
-            case self::PASS_HASH_STRATEGY_OLD_ELY:
-                $password = UserPass::make($this->email, $password);
-                break;
-
-            case self::PASS_HASH_STRATEGY_YII2:
-                $password = Yii::$app->security->generatePasswordHash($password);
-                break;
-
-            default:
-                throw new InvalidConfigException('You must specify password_hash_strategy before you can set password');
-        }
-
-        $this->password_hash = $password;
+        $this->password_hash_strategy = self::PASS_HASH_STRATEGY_YII2;
+        $this->password_hash = Yii::$app->security->generatePasswordHash($password);
     }
 
     /**

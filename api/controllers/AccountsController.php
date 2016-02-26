@@ -1,6 +1,7 @@
 <?php
 namespace api\controllers;
 
+use api\models\ChangePasswordForm;
 use common\models\Account;
 use Yii;
 use yii\filters\AccessControl;
@@ -14,7 +15,7 @@ class AccountsController extends Controller {
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['current'],
+                        'actions' => ['current', 'change-password'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -26,6 +27,7 @@ class AccountsController extends Controller {
     public function verbs() {
         return [
             'current' => ['GET'],
+            'change-password' => ['POST'],
         ];
     }
 
@@ -39,6 +41,23 @@ class AccountsController extends Controller {
             'email' => $account->email,
             'shouldChangePassword' => $account->password_hash_strategy === Account::PASS_HASH_STRATEGY_OLD_ELY,
             'isActive' => $account->status === Account::STATUS_ACTIVE,
+        ];
+    }
+
+    public function actionChangePassword() {
+        /** @var Account $account */
+        $account = Yii::$app->user->identity;
+        $model = new ChangePasswordForm($account);
+        $model->load(Yii::$app->request->post());
+        if (!$model->changePassword()) {
+            return [
+                'success' => false,
+                'errors' => $this->normalizeModelErrors($model->getErrors()),
+            ];
+        }
+
+        return [
+            'success' => true,
         ];
     }
 

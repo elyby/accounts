@@ -16,4 +16,8 @@ class AccountSteps extends FunctionalTester {
         $I->amBearerAuthenticated($jwt);
     }
 
+    public function notLoggedIn() {
+        $this->haveHttpHeader('Authorization', null);
+    }
+
 }
