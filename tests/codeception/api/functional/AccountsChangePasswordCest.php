@@ -3,12 +3,13 @@ namespace tests\codeception\api\functional;
 
 use Codeception\Scenario;
 use Codeception\Specify;
+use common\models\Account;
 use tests\codeception\api\_pages\AccountsRoute;
 use tests\codeception\api\_pages\LoginRoute;
 use tests\codeception\api\functional\_steps\AccountSteps;
 use tests\codeception\api\FunctionalTester;
 
-class AccountsCurrentCest {
+class AccountsChangePasswordCest {
 
     /**
      * @var AccountsRoute
@@ -17,6 +18,13 @@ class AccountsCurrentCest {
 
     public function _before(FunctionalTester $I) {
         $this->route = new AccountsRoute($I);
+    }
+
+    public function _after(FunctionalTester $I) {
+        /** @var Account $account */
+        $account = Account::findOne(1);
+        $account->setPassword('password_0');
+        $account->save();
     }
 
     public function testChangePassword(FunctionalTester $I, Scenario $scenario) {
