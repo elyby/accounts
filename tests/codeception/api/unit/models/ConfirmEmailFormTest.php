@@ -34,7 +34,7 @@ class ConfirmEmailFormTest extends DbTestCase {
         $fixture = $this->emailActivations[0];
         $model = $this->createModel($fixture['key']);
         $this->specify('expect true result', function() use ($model, $fixture) {
-            expect('model return successful result', $model->confirm())->true();
+            expect('model return successful result', $model->confirm())->notEquals(false);
             expect('email activation key is not exist', EmailActivation::find()->andWhere(['key' => $fixture['key']])->exists())->false();
             /** @var Account $user */
             $user = Account::findOne($fixture['account_id']);

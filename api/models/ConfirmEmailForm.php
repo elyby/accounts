@@ -35,10 +35,14 @@ class ConfirmEmailForm extends BaseKeyConfirmationForm {
             $transaction->commit();
         } catch (ErrorException $e) {
             $transaction->rollBack();
-            throw $e;
+            if (YII_DEBUG) {
+                throw $e;
+            } else {
+                return false;
+            }
         }
 
-        return true;
+        return $account->getJWT();
     }
 
 }
