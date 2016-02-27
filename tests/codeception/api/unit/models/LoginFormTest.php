@@ -40,10 +40,20 @@ class LoginFormTest extends DbTestCase {
             expect('model should not login user', $model->login())->false();
             expect('error messages should be set', $model->errors)->notEmpty();
         });
+
+        $model = $this->createModel($this->accounts['not-activated-account']['username'], 'password_0');
+        $this->specify('get error if account data valid, but account is not activated', function () use ($model) {
+            expect('model should not login user', $model->login())->false();
+            expect('error messages should be set', $model->errors)->equals([
+                'login' => [
+                    'error.account_not_activated',
+                ],
+            ]);
+        });
     }
 
     public function testLoginByUsernameCorrect() {
-        $model = $this->createModel('Admin', 'password_0');
+        $model = $this->createModel($this->accounts['admin']['username'], 'password_0');
         $this->specify('user should be able to login with correct username and password', function () use ($model) {
             expect('model should login user', $model->login())->notEquals(false);
             expect('error message should not be set', $model->errors)->isEmpty();
@@ -51,7 +61,7 @@ class LoginFormTest extends DbTestCase {
     }
 
     public function testLoginByEmailCorrect() {
-        $model = $this->createModel('admin@ely.by', 'password_0');
+        $model = $this->createModel($this->accounts['admin']['email'], 'password_0');
         $this->specify('user should be able to login with correct email and password', function () use ($model) {
             expect('model should login user', $model->login())->notEquals(false);
             expect('error message should not be set', $model->errors)->isEmpty();

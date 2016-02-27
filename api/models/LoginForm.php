@@ -22,6 +22,8 @@ class LoginForm extends BaseApiForm {
             }, 'message' => 'error.password_required'],
             ['password', 'validatePassword'],
 
+            ['login', 'validateActivity'],
+
             ['rememberMe', 'boolean'],
         ];
     }
@@ -39,6 +41,15 @@ class LoginForm extends BaseApiForm {
             $account = $this->getAccount();
             if (!$account || !$account->validatePassword($this->password)) {
                 $this->addError($attribute, 'error.' . $attribute . '_incorrect');
+            }
+        }
+    }
+
+    public function validateActivity($attribute) {
+        if (!$this->hasErrors()) {
+            $account = $this->getAccount();
+            if ($account->status !== Account::STATUS_ACTIVE) {
+                $this->addError($attribute, 'error.account_not_activated');
             }
         }
     }

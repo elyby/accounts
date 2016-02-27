@@ -35,6 +35,15 @@ class LoginCest {
             ],
         ]);
 
+        $I->wantTo('see error.account_not_activated expected if credentials are valid, but account is not activated');
+        $route->login('howe.garnett', 'password_0');
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+            'errors' => [
+                'login' => 'error.account_not_activated',
+            ],
+        ]);
+
         $I->wantTo('don\'t see errors on login field if username is correct and exists in database');
         $route->login('Admin');
         $I->canSeeResponseContainsJson([
