@@ -126,6 +126,7 @@ class OauthController extends Controller {
 
             if (!$account->canAutoApprove($clientModel, $authParams['scopes'])) {
                 $isAccept = Yii::$app->request->post('accept');
+                $isAccept = null;
                 if ($isAccept === null) {
                     throw new AcceptRequiredException();
                 }

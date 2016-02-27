@@ -206,9 +206,9 @@ class Account extends ActiveRecord implements IdentityInterface {
      * @return bool
      */
     public function canAutoApprove(OauthClient $client, array $scopes = []) {
-        if ($client->is_trusted) {
-            return true;
-        }
+        //if ($client->is_trusted) {
+        //    return true;
+        //}
 
         /** @var OauthSession|null $session */
         $session = $this->getSessions()->andWhere(['client_id' => $client->id])->one();
