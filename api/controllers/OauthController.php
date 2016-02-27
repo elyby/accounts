@@ -148,7 +148,7 @@ class OauthController extends Controller {
     }
 
     /**
-     * Метод выполняется сервером приложения, которому был выдан auth_token иди refresh_token.
+     * Метод выполняется сервером приложения, которому был выдан auth_token или refresh_token.
      *
      * Входными данными является стандартный список GET параметров по стандарту oAuth:
      * $_GET = [
