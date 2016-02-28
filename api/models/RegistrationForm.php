@@ -5,6 +5,7 @@ use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use common\components\UserFriendlyRandomKey;
 use common\models\Account;
 use common\models\EmailActivation;
+use Ramsey\Uuid\Uuid;
 use Yii;
 use yii\base\ErrorException;
 
@@ -62,6 +63,7 @@ class RegistrationForm extends BaseApiForm {
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $account = new Account();
+            $account->uuid = Uuid::uuid4();
             $account->email = $this->email;
             $account->username = $this->username;
             $account->password = $this->password;

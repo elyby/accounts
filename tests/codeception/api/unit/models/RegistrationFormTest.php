@@ -93,6 +93,7 @@ class RegistrationFormTest extends DbTestCase {
 
         expect('user should be valid', $user)->isInstanceOf(Account::class);
         expect('password should be correct', $user->validatePassword('some_password'))->true();
+        expect('uuid is set', $user->uuid)->notEmpty();
         expect('user model exists in database', Account::find()->andWhere([
             'username' => 'some_username',
             'email' => 'some_email@example.com',
