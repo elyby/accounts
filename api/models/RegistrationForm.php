@@ -85,12 +85,17 @@ class RegistrationForm extends BaseApiForm {
             /** @var \yii\swiftmailer\Mailer $mailer */
             $mailer = Yii::$app->mailer;
             /** @var \yii\swiftmailer\Message $message */
-            $message = $mailer->compose([
-                'html' => '@app/mails/registration-confirmation-html',
-                'text' => '@app/mails/registration-confirmation-text',
-            ], [
-                'key' => $emailActivation->key,
-            ])->setFrom(['account@ely.by' => 'Ely.by']);
+            $message = $mailer->compose(
+                [
+                    'html' => '@app/mails/registration-confirmation-html',
+                    'text' => '@app/mails/registration-confirmation-text',
+                ],
+                [
+                    'key' => $emailActivation->key,
+                ]
+            )
+                ->setFrom([Yii::$app->params['fromEmail'] => 'Ely.by Accounts'])
+                ->setSubject('Ely.by Account registration');
 
             if (!$message->send()) {
                 throw new ErrorException('Unable send email with activation code.');
