@@ -94,6 +94,7 @@ class RegistrationForm extends BaseApiForm {
                     'key' => $emailActivation->key,
                 ]
             )
+                ->setTo([$account->email => $account->username])
                 ->setFrom([Yii::$app->params['fromEmail'] => 'Ely.by Accounts'])
                 ->setSubject('Ely.by Account registration');
 
