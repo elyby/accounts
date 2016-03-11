@@ -19,10 +19,10 @@ use yii\web\IdentityInterface;
  * @property string  $password_hash
  * @property integer $password_hash_strategy
  * @property string  $password_reset_token
- * @property string  $auth_key
  * @property integer $status
  * @property integer $created_at
  * @property integer $updated_at
+ * @property integer $password_changed_at
  *
  * Геттеры-сеттеры:
  * @property string  $password пароль пользователя (только для записи)
@@ -117,7 +117,7 @@ class Account extends ActiveRecord implements IdentityInterface {
      * @inheritdoc
      */
     public function getAuthKey() {
-        return $this->auth_key;
+        throw new NotSupportedException('This method used for cookie auth, except we using JWT tokens');
     }
 
     /**
@@ -161,13 +161,7 @@ class Account extends ActiveRecord implements IdentityInterface {
     public function setPassword($password) {
         $this->password_hash_strategy = self::PASS_HASH_STRATEGY_YII2;
         $this->password_hash = Yii::$app->security->generatePasswordHash($password);
-    }
-
-    /**
-     * Generates "remember me" authentication key
-     */
-    public function generateAuthKey() {
-        $this->auth_key = Yii::$app->security->generateRandomString();
+        $this->password_changed_at = time();
     }
 
     /**

@@ -2,6 +2,7 @@
 namespace tests\codeception\common\_support;
 
 use Codeception\Module;
+use Codeception\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\EmailActivationFixture;
 use tests\codeception\common\fixtures\OauthClientFixture;
@@ -29,11 +30,11 @@ class FixtureHelper extends Module {
         getFixture as protected;
     }
 
-    public function _beforeSuite($settings = []) {
+    public function _before(TestCase $test) {
         $this->loadFixtures();
     }
 
-    public function _afterSuite() {
+    public function _after(TestCase $test) {
         $this->unloadFixtures();
     }
 
