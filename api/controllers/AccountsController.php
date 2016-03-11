@@ -42,7 +42,7 @@ class AccountsController extends Controller {
             'email' => $account->email,
             'shouldChangePassword' => $account->password_hash_strategy === Account::PASS_HASH_STRATEGY_OLD_ELY,
             'isActive' => $account->status === Account::STATUS_ACTIVE,
-            'password_changed_at' => $account->password_changed_at,
+            'passwordChangedAt' => $account->password_changed_at,
         ];
     }
 
