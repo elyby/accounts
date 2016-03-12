@@ -2,6 +2,7 @@
 namespace api\controllers;
 
 use api\models\ConfirmEmailForm;
+use api\models\NewAccountActivationForm;
 use api\models\RegistrationForm;
 use Yii;
 use yii\filters\AccessControl;
@@ -12,13 +13,13 @@ class SignupController extends Controller {
     public function behaviors() {
         return ArrayHelper::merge(parent::behaviors(), [
             'authenticator' => [
-                'except' => ['index', 'confirm'],
+                'except' => ['index', 'new-message', 'confirm'],
             ],
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['index', 'confirm'],
+                        'actions' => ['index', 'new-message', 'confirm'],
                         'allow' => true,
                         'roles' => ['?'],
                     ],
@@ -31,6 +32,7 @@ class SignupController extends Controller {
         return [
             'register' => ['POST'],
             'confirm' => ['POST'],
+            'new-message' => ['POST'],
         ];
     }
 
@@ -42,6 +44,31 @@ class SignupController extends Controller {
                 'success' => false,
                 'errors' => $this->normalizeModelErrors($model->getErrors()),
             ];
+        }
+
+        return [
+            'success' => true,
+        ];
+    }
+
+    public function actionNewMessage() {
+        $model = new NewAccountActivationForm();
+        $model->load(Yii::$app->request->post());
+        if (!$model->sendNewMessage()) {
+            $response = [
+                'success' => false,
+                'errors' => $this->normalizeModelErrors($model->getErrors()),
+            ];
+
+            if ($response['errors']['email'] === 'error.recently_sent_message') {
+                $activeActivation = $model->getActiveActivation();
+                $response['data'] = [
+                    'can_repeat_in' => $activeActivation->created_at - time() + NewAccountActivationForm::REPEAT_FREQUENCY,
+                    'repeat_frequency' => NewAccountActivationForm::REPEAT_FREQUENCY,
+                ];
+            }
+
+            return $response;
         }
 
         return [
