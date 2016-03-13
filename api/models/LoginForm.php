@@ -68,7 +68,7 @@ class LoginForm extends BaseApiForm {
     /**
      * @return Account|null
      */
-    protected function getAccount() {
+    public function getAccount() {
         if ($this->_account === NULL) {
             $attribute = strpos($this->login, '@') ? 'email' : 'username';
             $this->_account = Account::findOne([$attribute => $this->login]);

@@ -36,10 +36,16 @@ class AuthenticationController extends Controller {
         $model = new LoginForm();
         $model->load(Yii::$app->request->post());
         if (($jwt = $model->login()) === false) {
-            return [
+            $data = [
                 'success' => false,
                 'errors' => $this->normalizeModelErrors($model->getErrors()),
             ];
+
+            if (ArrayHelper::getValue($data['errors'], 'login') === 'error.account_not_activated') {
+                $data['data']['email'] = $model->getAccount()->email;
+            }
+
+            return $data;
         }
 
         return [
