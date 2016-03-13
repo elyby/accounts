@@ -13,8 +13,8 @@ class SignupRoute extends BasePage {
         $this->actor->sendPOST($this->getUrl(), $registrationData);
     }
 
-    public function sendNewMessage($email = '') {
-        $this->route = ['signup/new-message'];
+    public function sendRepeatMessage($email = '') {
+        $this->route = ['signup/repeat-message'];
         $this->actor->sendPOST($this->getUrl(), ['email' => $email]);
     }
 

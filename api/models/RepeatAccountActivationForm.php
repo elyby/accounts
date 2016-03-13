@@ -7,7 +7,7 @@ use common\models\EmailActivation;
 use Yii;
 use yii\base\ErrorException;
 
-class NewAccountActivationForm extends BaseApiForm {
+class RepeatAccountActivationForm extends BaseApiForm {
 
     // Частота повтора отправки нового письма
     const REPEAT_FREQUENCY = 5 * 60;
@@ -18,18 +18,21 @@ class NewAccountActivationForm extends BaseApiForm {
         return [
             ['email', 'filter', 'filter' => 'trim'],
             ['email', 'required', 'message' => 'error.email_required'],
-            ['email', 'validateAccountForEmail'],
+            ['email', 'validateEmailForAccount'],
             ['email', 'validateExistsActivation'],
         ];
     }
 
-    public function validateAccountForEmail($attribute) {
+    public function validateEmailForAccount($attribute) {
         if (!$this->hasErrors($attribute)) {
             $account = $this->getAccount();
-            if ($account && $account->status === Account::STATUS_ACTIVE) {
-                $this->addError($attribute, "error.account_already_activated");
-            } elseif (!$account) {
+            if ($account === null) {
                 $this->addError($attribute, "error.{$attribute}_not_found");
+            } elseif ($account->status === Account::STATUS_ACTIVE) {
+                $this->addError($attribute, "error.account_already_activated");
+            } elseif ($account->status !== Account::STATUS_REGISTERED) {
+                // TODO: такие аккаунты следует логировать за попытку к саботажу
+                $this->addError($attribute, "error.account_cannot_resend_message");
             }
         }
     }
@@ -42,7 +45,7 @@ class NewAccountActivationForm extends BaseApiForm {
         }
     }
 
-    public function sendNewMessage() {
+    public function sendRepeatMessage() {
         if (!$this->validate()) {
             return false;
         }
@@ -50,15 +53,10 @@ class NewAccountActivationForm extends BaseApiForm {
         $account = $this->getAccount();
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            // Удаляем все активации аккаунта для пользователя этого E-mail адреса
-            /** @var EmailActivation[] $activations */
-            $activations = $account->getEmailActivations()
-                ->andWhere(['type' => EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION])
-                ->all();
-
-            foreach ($activations as $activation) {
-                $activation->delete();
-            }
+            EmailActivation::deleteAll([
+                'account_id' => $account->id,
+                'type' => EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION,
+            ]);
 
             $activation = new EmailActivation();
             $activation->account_id = $account->id;

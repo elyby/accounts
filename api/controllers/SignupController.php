@@ -2,7 +2,7 @@
 namespace api\controllers;
 
 use api\models\ConfirmEmailForm;
-use api\models\NewAccountActivationForm;
+use api\models\RepeatAccountActivationForm;
 use api\models\RegistrationForm;
 use Yii;
 use yii\filters\AccessControl;
@@ -13,13 +13,13 @@ class SignupController extends Controller {
     public function behaviors() {
         return ArrayHelper::merge(parent::behaviors(), [
             'authenticator' => [
-                'except' => ['index', 'new-message', 'confirm'],
+                'except' => ['index', 'repeat-message', 'confirm'],
             ],
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['index', 'new-message', 'confirm'],
+                        'actions' => ['index', 'repeat-message', 'confirm'],
                         'allow' => true,
                         'roles' => ['?'],
                     ],
@@ -51,10 +51,10 @@ class SignupController extends Controller {
         ];
     }
 
-    public function actionNewMessage() {
-        $model = new NewAccountActivationForm();
+    public function actionRepeatMessage() {
+        $model = new RepeatAccountActivationForm();
         $model->load(Yii::$app->request->post());
-        if (!$model->sendNewMessage()) {
+        if (!$model->sendRepeatMessage()) {
             $response = [
                 'success' => false,
                 'errors' => $this->normalizeModelErrors($model->getErrors()),
@@ -63,8 +63,8 @@ class SignupController extends Controller {
             if ($response['errors']['email'] === 'error.recently_sent_message') {
                 $activeActivation = $model->getActiveActivation();
                 $response['data'] = [
-                    'can_repeat_in' => $activeActivation->created_at - time() + NewAccountActivationForm::REPEAT_FREQUENCY,
-                    'repeat_frequency' => NewAccountActivationForm::REPEAT_FREQUENCY,
+                    'canRepeatIn' => $activeActivation->created_at - time() + RepeatAccountActivationForm::REPEAT_FREQUENCY,
+                    'repeatFrequency' => RepeatAccountActivationForm::REPEAT_FREQUENCY,
                 ];
             }
 
