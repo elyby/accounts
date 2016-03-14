@@ -43,6 +43,7 @@ class LoginCest {
                 'login' => 'error.account_not_activated',
             ],
         ]);
+        $I->canSeeResponseJsonMatchesJsonPath('$.data.email');
 
         $I->wantTo('don\'t see errors on login field if username is correct and exists in database');
         $route->login('Admin');

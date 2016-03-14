@@ -1,12 +1,12 @@
 <?php
 namespace tests\codeception\api;
 
-use tests\codeception\api\_pages\EmailConfirmRoute;
+use tests\codeception\api\_pages\SignupRoute;
 
 class EmailConfirmationCest {
 
     public function testLoginEmailOrUsername(FunctionalTester $I) {
-        $route = new EmailConfirmRoute($I);
+        $route = new SignupRoute($I);
 
         $I->wantTo('see error.key_is_required expected if key is not set');
         $route->confirm();
@@ -28,7 +28,7 @@ class EmailConfirmationCest {
     }
 
     public function testLoginByEmailCorrect(FunctionalTester $I) {
-        $route = new EmailConfirmRoute($I);
+        $route = new SignupRoute($I);
 
         $I->wantTo('confirm my email using correct activation key');
         $route->confirm('HABGCABHJ1234HBHVD');
