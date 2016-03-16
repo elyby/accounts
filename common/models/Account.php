@@ -183,7 +183,7 @@ class Account extends ActiveRecord implements IdentityInterface {
     }
 
     public function getEmailActivations() {
-        return $this->hasMany(EmailActivation::class, ['id' => 'account_id']);
+        return $this->hasMany(EmailActivation::class, ['account_id' => 'id']);
     }
 
     public function getSessions() {
@@ -200,9 +200,9 @@ class Account extends ActiveRecord implements IdentityInterface {
      * @return bool
      */
     public function canAutoApprove(OauthClient $client, array $scopes = []) {
-        //if ($client->is_trusted) {
-        //    return true;
-        //}
+        if ($client->is_trusted) {
+            return true;
+        }
 
         /** @var OauthSession|null $session */
         $session = $this->getSessions()->andWhere(['client_id' => $client->id])->one();

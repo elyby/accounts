@@ -3,7 +3,7 @@ namespace tests\codeception\api\functional;
 
 use Codeception\Specify;
 use common\models\Account;
-use tests\codeception\api\_pages\RegisterRoute;
+use tests\codeception\api\_pages\SignupRoute;
 use tests\codeception\api\FunctionalTester;
 
 class RegisterCest {
@@ -16,10 +16,10 @@ class RegisterCest {
     }
 
     public function testIncorrectRegistration(FunctionalTester $I) {
-        $route = new RegisterRoute($I);
+        $route = new SignupRoute($I);
 
         $I->wantTo('get error.you_must_accept_rules if we don\'t accept rules');
-        $route->send([
+        $route->register([
             'username' => 'ErickSkrauch',
             'email' => 'erickskrauch@ely.by',
             'password' => 'some_password',
@@ -33,7 +33,7 @@ class RegisterCest {
         ]);
 
         $I->wantTo('don\'t see error.you_must_accept_rules if we accept rules');
-        $route->send([
+        $route->register([
             'rulesAgreement' => true,
         ]);
         $I->cantSeeResponseContainsJson([
@@ -43,7 +43,7 @@ class RegisterCest {
         ]);
 
         $I->wantTo('see error.username_required if username is not set');
-        $route->send([
+        $route->register([
             'username' => '',
             'email' => '',
             'password' => '',
@@ -58,7 +58,7 @@ class RegisterCest {
         ]);
 
         $I->wantTo('don\'t see error.username_required if username is not set');
-        $route->send([
+        $route->register([
             'username' => 'valid_nickname',
             'email' => '',
             'password' => '',
@@ -72,7 +72,7 @@ class RegisterCest {
         ]);
 
         $I->wantTo('see error.email_required if email is not set');
-        $route->send([
+        $route->register([
             'username' => 'valid_nickname',
             'email' => '',
             'password' => '',
@@ -87,7 +87,7 @@ class RegisterCest {
         ]);
 
         $I->wantTo('see error.email_invalid if email is set, but invalid');
-        $route->send([
+        $route->register([
             'username' => 'valid_nickname',
             'email' => 'invalid@email',
             'password' => '',
@@ -102,7 +102,7 @@ class RegisterCest {
         ]);
 
         $I->wantTo('see error.email_invalid if email is set, valid, but domain doesn\'t exist or don\'t have mx record');
-        $route->send([
+        $route->register([
             'username' => 'valid_nickname',
             'email' => 'invalid@govnomail.com',
             'password' => '',
@@ -117,7 +117,7 @@ class RegisterCest {
         ]);
 
         $I->wantTo('see error.email_not_available if email is set, fully valid, but not available for registration');
-        $route->send([
+        $route->register([
             'username' => 'valid_nickname',
             'email' => 'admin@ely.by',
             'password' => '',
@@ -132,7 +132,7 @@ class RegisterCest {
         ]);
 
         $I->wantTo('don\'t see errors on email if all valid');
-        $route->send([
+        $route->register([
             'username' => 'valid_nickname',
             'email' => 'erickskrauch@ely.by',
             'password' => '',
@@ -142,7 +142,7 @@ class RegisterCest {
         $I->cantSeeResponseJsonMatchesJsonPath('$.errors.email');
 
         $I->wantTo('see error.password_required if password is not set');
-        $route->send([
+        $route->register([
             'username' => 'valid_nickname',
             'email' => 'erickskrauch@ely.by',
             'password' => '',
@@ -157,7 +157,7 @@ class RegisterCest {
         ]);
 
         $I->wantTo('see error.password_too_short before it will be compared with rePassword');
-        $route->send([
+        $route->register([
             'username' => 'valid_nickname',
             'email' => 'correct-email@ely.by',
             'password' => 'short',
@@ -173,7 +173,7 @@ class RegisterCest {
         $I->cantSeeResponseJsonMatchesJsonPath('$.errors.rePassword');
 
         $I->wantTo('see error.rePassword_required if password valid and rePassword not set');
-        $route->send([
+        $route->register([
             'username' => 'valid_nickname',
             'email' => 'correct-email@ely.by',
             'password' => 'valid-password',
@@ -188,7 +188,7 @@ class RegisterCest {
         ]);
 
         $I->wantTo('see error.rePassword_does_not_match if password valid and rePassword donen\'t match it');
-        $route->send([
+        $route->register([
             'username' => 'valid_nickname',
             'email' => 'correct-email@ely.by',
             'password' => 'valid-password',
@@ -205,10 +205,10 @@ class RegisterCest {
     }
 
     public function testUserCorrectRegistration(FunctionalTester $I) {
-        $route = new RegisterRoute($I);
+        $route = new SignupRoute($I);
 
         $I->wantTo('ensure that signup works');
-        $route->send([
+        $route->register([
             'username' => 'some_username',
             'email' => 'some_email@example.com',
             'password' => 'some_password',
