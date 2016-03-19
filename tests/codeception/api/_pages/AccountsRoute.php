@@ -22,4 +22,12 @@ class AccountsRoute extends BasePage {
         ]);
     }
 
+    public function changeUsername($currentPassword = null, $newUsername = null) {
+        $this->route = ['accounts/change-username'];
+        $this->actor->sendPOST($this->getUrl(), [
+            'password' => $currentPassword,
+            'username' => $newUsername,
+        ]);
+    }
+
 }

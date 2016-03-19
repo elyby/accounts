@@ -19,29 +19,33 @@ class RegistrationForm extends BaseApiForm {
 
     public function rules() {
         return [
-            ['rulesAgreement', 'required', 'message' => 'error.you_must_accept_rules'],
             [[], ReCaptchaValidator::class, 'message' => 'error.captcha_invalid', 'when' => !YII_ENV_TEST],
+            ['rulesAgreement', 'required', 'message' => 'error.you_must_accept_rules'],
 
-            ['username', 'filter', 'filter' => 'trim'],
-            ['username', 'required', 'message' => 'error.username_required'],
-            ['username', 'string', 'min' => 3, 'max' => 21,
-                'tooShort' => 'error.username_too_short',
-                'tooLong' => 'error.username_too_long',
-            ],
-            ['username', 'match', 'pattern' => '/^[\p{L}\d-_\.!?#$%^&*()\[\]:;]+$/u'],
-            ['username', 'unique', 'targetClass' => Account::class, 'message' => 'error.username_not_available'],
-
-            ['email', 'filter', 'filter' => 'trim'],
-            ['email', 'required', 'message' => 'error.email_required'],
-            ['email', 'string', 'max' => 255, 'tooLong' => 'error.email_too_long'],
-            ['email', 'email', 'checkDNS' => true, 'enableIDN' => true, 'message' => 'error.email_invalid'],
-            ['email', 'unique', 'targetClass' => Account::class, 'message' => 'error.email_not_available'],
+            ['username', 'validateUsername', 'skipOnEmpty' => false],
+            ['email', 'validateEmail', 'skipOnEmpty' => false],
 
             ['password', 'required', 'message' => 'error.password_required'],
             ['rePassword', 'required', 'message' => 'error.rePassword_required'],
             ['password', 'string', 'min' => 8, 'tooShort' => 'error.password_too_short'],
             ['rePassword', 'validatePasswordAndRePasswordMatch'],
         ];
+    }
+
+    public function validateUsername() {
+        $account = new Account();
+        $account->username = $this->username;
+        if (!$account->validate(['username'])) {
+            $this->addErrors($account->getErrors());
+        }
+    }
+
+    public function validateEmail() {
+        $account = new Account();
+        $account->email = $this->email;
+        if (!$account->validate(['email'])) {
+            $this->addErrors($account->getErrors());
+        }
     }
 
     public function validatePasswordAndRePasswordMatch($attribute) {

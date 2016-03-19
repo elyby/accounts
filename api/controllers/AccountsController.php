@@ -2,6 +2,7 @@
 namespace api\controllers;
 
 use api\models\ChangePasswordForm;
+use api\models\ChangeUsernameForm;
 use common\models\Account;
 use Yii;
 use yii\filters\AccessControl;
@@ -15,7 +16,7 @@ class AccountsController extends Controller {
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['current', 'change-password'],
+                        'actions' => ['current', 'change-password', 'change-username'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -50,6 +51,21 @@ class AccountsController extends Controller {
         $model = new ChangePasswordForm($account);
         $model->load(Yii::$app->request->post());
         if (!$model->changePassword()) {
+            return [
+                'success' => false,
+                'errors' => $this->normalizeModelErrors($model->getErrors()),
+            ];
+        }
+
+        return [
+            'success' => true,
+        ];
+    }
+
+    public function actionChangeUsername() {
+        $model = new ChangeUsernameForm();
+        $model->load(Yii::$app->request->post());
+        if (!$model->change()) {
             return [
                 'success' => false,
                 'errors' => $this->normalizeModelErrors($model->getErrors()),

@@ -41,46 +41,27 @@ class RegistrationFormTest extends DbTestCase {
         ];
     }
 
-    public function testNotCorrectRegistration() {
-        $model = new RegistrationForm([
-            'username' => 'valid_nickname',
-            'email' => 'correct-email@ely.by',
-            'password' => 'enough-length',
-            'rePassword' => 'password',
-            'rulesAgreement' => true,
-        ]);
-        $this->specify('username and email in use, passwords not math - model is not created', function() use ($model) {
-            expect($model->signup())->null();
-            expect($model->getErrors())->notEmpty();
-            expect_file($this->getMessageFile())->notExists();
+    public function testValidatePasswordAndRePasswordMatch() {
+        $this->specify('error.rePassword_does_not_match if password and rePassword not match', function() {
+            $model = new RegistrationForm([
+                'password' => 'enough-length',
+                'rePassword' => 'password',
+            ]);
+            expect($model->validate(['rePassword']))->false();
+            expect($model->getErrors('rePassword'))->equals(['error.rePassword_does_not_match']);
+        });
+
+        $this->specify('no errors if password and rePassword match', function() {
+            $model = new RegistrationForm([
+                'password' => 'enough-length',
+                'rePassword' => 'enough-length',
+            ]);
+            expect($model->validate(['rePassword']))->true();
+            expect($model->getErrors('rePassword'))->isEmpty();
         });
     }
 
-    public function testUsernameValidators() {
-        $shouldBeValid = [
-            'русский_ник', 'русский_ник_на_грани!', 'numbers1132', '*__*-Stars-*__*', '1-_.!?#$%^&*()[]', '[ESP]Эрик',
-            'Свят_помидор;', 'зроблена_ў_беларусі:)',
-        ];
-        $shouldBeInvalid = [
-            'nick@name', 'spaced nick', '   ', 'sh', '  sh  ',
-        ];
-
-        foreach($shouldBeValid as $nickname) {
-            $model = new RegistrationForm([
-                'username' => $nickname,
-            ]);
-            expect($nickname . ' passed validation', $model->validate(['username']))->true();
-        }
-
-        foreach($shouldBeInvalid as $nickname) {
-            $model = new RegistrationForm([
-                'username' => $nickname,
-            ]);
-            expect($nickname . ' fail validation', $model->validate('username'))->false();
-        }
-    }
-
-    public function testCorrectSignup() {
+    public function testSignup() {
         $model = new RegistrationForm([
             'username' => 'some_username',
             'email' => 'some_email@example.com',
@@ -104,6 +85,8 @@ class RegistrationFormTest extends DbTestCase {
         ])->exists())->true();
         expect_file('message file exists', $this->getMessageFile())->exists();
     }
+
+    // TODO: там в самой форме есть метод sendMail(), который рано или поздно должен переехать. К нему нужны будут тоже тесты
 
     private function getMessageFile() {
         /** @var \yii\swiftmailer\Mailer $mailer */

@@ -56,6 +56,22 @@ class Account extends ActiveRecord implements IdentityInterface {
 
     public function rules() {
         return [
+            [['username'], 'filter', 'filter' => 'trim'],
+            [['username'], 'required', 'message' => 'error.username_required'],
+            [['username'], 'string', 'min' => 3, 'max' => 21,
+                'tooShort' => 'error.username_too_short',
+                'tooLong' => 'error.username_too_long',
+            ],
+            [['username'], 'match', 'pattern' => '/^[\p{L}\d-_\.!?#$%^&*()\[\]:;]+$/u',
+                'message' => 'error.username_invalid',
+            ],
+            [['username'], 'unique', 'message' => 'error.username_not_available'],
+
+            [['email'], 'filter', 'filter' => 'trim'],
+            [['email'], 'required', 'message' => 'error.email_required'],
+            [['email'], 'string', 'max' => 255, 'tooLong' => 'error.email_too_long'],
+            [['email'], 'email', 'checkDNS' => true, 'enableIDN' => true, 'message' => 'error.email_invalid'],
+            [['email'], 'unique', 'message' => 'error.email_not_available'],
         ];
     }
 

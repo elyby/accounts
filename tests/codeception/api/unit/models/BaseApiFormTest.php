@@ -9,7 +9,7 @@ class BaseApiFormTest extends TestCase {
     use Specify;
 
     public function testLoad() {
-        $model = new DummyTestModel();
+        $model = new DummyBaseApiForm();
         $this->specify('model should load data without ModelName array scope', function() use ($model) {
             expect('model successful load data without prefix', $model->load(['field' => 'test-data']))->true();
             expect('field is set as passed data', $model->field)->equals('test-data');
@@ -18,7 +18,7 @@ class BaseApiFormTest extends TestCase {
 
 }
 
-class DummyTestModel extends BaseApiForm {
+class DummyBaseApiForm extends BaseApiForm {
 
     public $field;
 
