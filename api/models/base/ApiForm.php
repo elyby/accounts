@@ -1,9 +1,9 @@
 <?php
-namespace api\models;
+namespace api\models\base;
 
 use yii\base\Model;
 
-class BaseApiForm extends Model {
+class ApiForm extends Model {
 
     public function formName() {
         return '';

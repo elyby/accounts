@@ -1,9 +1,9 @@
 <?php
-namespace api\models;
+namespace api\models\base;
 
 use Yii;
 
-class BasePasswordProtectedForm extends BaseApiForm {
+class PasswordProtectedForm extends ApiForm {
 
     public $password;
 

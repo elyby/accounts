@@ -1,7 +1,7 @@
 <?php
-namespace tests\codeception\api\models;
+namespace tests\codeception\api\models\base;
 
-use api\models\BaseKeyConfirmationForm;
+use api\models\base\KeyConfirmationForm;
 use Codeception\Specify;
 use tests\codeception\api\unit\DbTestCase;
 use tests\codeception\common\fixtures\EmailActivationFixture;
@@ -10,7 +10,7 @@ use Yii;
 /**
  * @property array $emailActivations
  */
-class BaseKeyConfirmationFormTest extends DbTestCase {
+class KeyConfirmationFormTest extends DbTestCase {
     use Specify;
 
     public function fixtures() {
@@ -23,7 +23,7 @@ class BaseKeyConfirmationFormTest extends DbTestCase {
     }
 
     protected function createModel($key = null) {
-        return new BaseKeyConfirmationForm([
+        return new KeyConfirmationForm([
             'key' => $key,
         ]);
     }

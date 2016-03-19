@@ -1,12 +1,12 @@
 <?php
-namespace tests\codeception\api\models;
+namespace tests\codeception\api\models\base;
 
-use api\models\BasePasswordProtectedForm;
+use api\models\base\PasswordProtectedForm;
 use Codeception\Specify;
 use common\models\Account;
 use tests\codeception\api\unit\TestCase;
 
-class BasePasswordProtectedFormTest extends TestCase {
+class PasswordProtectedFormTest extends TestCase {
     use Specify;
 
     public function testValidatePassword() {
@@ -27,7 +27,7 @@ class BasePasswordProtectedFormTest extends TestCase {
 
 }
 
-class DummyBasePasswordProtectedForm extends BasePasswordProtectedForm {
+class DummyBasePasswordProtectedForm extends PasswordProtectedForm {
 
     protected function getAccount() {
         return new Account([

@@ -1,10 +1,11 @@
 <?php
 namespace api\models;
 
+use api\models\base\ApiForm;
 use common\models\Account;
 use Yii;
 
-class LoginForm extends BaseApiForm {
+class LoginForm extends ApiForm {
 
     public $login;
     public $password;

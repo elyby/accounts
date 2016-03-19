@@ -1,9 +1,9 @@
 <?php
-namespace api\models;
+namespace api\models\base;
 
 use common\models\EmailActivation;
 
-class BaseKeyConfirmationForm extends BaseApiForm {
+class KeyConfirmationForm extends ApiForm {
 
     public $key;
 

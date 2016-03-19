@@ -1,12 +1,13 @@
 <?php
 namespace api\models;
 
+use api\models\base\KeyConfirmationForm;
 use common\models\Account;
 use common\models\EmailActivation;
 use Yii;
 use yii\base\ErrorException;
 
-class ConfirmEmailForm extends BaseKeyConfirmationForm {
+class ConfirmEmailForm extends KeyConfirmationForm {
 
     public function confirm() {
         if (!$this->validate()) {

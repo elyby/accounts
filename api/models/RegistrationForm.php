@@ -2,6 +2,7 @@
 namespace api\models;
 
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
+use api\models\base\ApiForm;
 use common\components\UserFriendlyRandomKey;
 use common\models\Account;
 use common\models\EmailActivation;
@@ -9,7 +10,7 @@ use Ramsey\Uuid\Uuid;
 use Yii;
 use yii\base\ErrorException;
 
-class RegistrationForm extends BaseApiForm {
+class RegistrationForm extends ApiForm {
 
     public $username;
     public $email;

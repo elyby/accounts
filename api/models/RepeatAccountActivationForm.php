@@ -1,13 +1,14 @@
 <?php
 namespace api\models;
 
+use api\models\base\ApiForm;
 use common\components\UserFriendlyRandomKey;
 use common\models\Account;
 use common\models\EmailActivation;
 use Yii;
 use yii\base\ErrorException;
 
-class RepeatAccountActivationForm extends BaseApiForm {
+class RepeatAccountActivationForm extends ApiForm {
 
     // Частота повтора отправки нового письма
     const REPEAT_FREQUENCY = 5 * 60;

@@ -1,11 +1,12 @@
 <?php
 namespace api\models;
 
+use api\models\base\PasswordProtectedForm;
 use common\models\Account;
 use Yii;
 use yii\helpers\ArrayHelper;
 
-class ChangeUsernameForm extends BasePasswordProtectedForm {
+class ChangeUsernameForm extends PasswordProtectedForm {
 
     public $username;
 
