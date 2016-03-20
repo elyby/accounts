@@ -2,12 +2,12 @@
 namespace api\models;
 
 use api\models\base\ApiForm;
+use api\models\base\PasswordProtectedForm;
 use common\models\Account;
 use Yii;
+use yii\helpers\ArrayHelper;
 
-class ChangePasswordForm extends ApiForm {
-
-    public $password;
+class ChangePasswordForm extends PasswordProtectedForm {
 
     public $newPassword;
 
@@ -19,32 +19,15 @@ class ChangePasswordForm extends ApiForm {
     private $_account;
 
     /**
-     * @param Account $account
-     * @param array  $config
-     */
-    public function __construct(Account $account, array $config = []) {
-        $this->_account = $account;
-        parent::__construct($config);
-    }
-
-    /**
      * @inheritdoc
      */
     public function rules() {
-        return [
-            ['password', 'required', 'message' => 'error.password_required'],
+        return ArrayHelper::merge(parent::rules(), [
             ['newPassword', 'required', 'message' => 'error.newPassword_required'],
             ['newRePassword', 'required', 'message' => 'error.newRePassword_required'],
-            ['password', 'validatePassword'],
             ['newPassword', 'string', 'min' => 8, 'tooShort' => 'error.password_too_short'],
             ['newRePassword', 'validatePasswordAndRePasswordMatch'],
-        ];
-    }
-
-    public function validatePassword($attribute) {
-        if (!$this->hasErrors() && !$this->_account->validatePassword($this->$attribute)) {
-            $this->addError($attribute, 'error.' . $attribute . '_incorrect');
-        }
+        ]);
     }
 
     public function validatePasswordAndRePasswordMatch($attribute) {
@@ -67,6 +50,19 @@ class ChangePasswordForm extends ApiForm {
         $account->setPassword($this->newPassword);
 
         return $account->save();
+    }
+
+    protected function getAccount() {
+        return $this->_account;
+    }
+
+    /**
+     * @param Account $account
+     * @param array  $config
+     */
+    public function __construct(Account $account, array $config = []) {
+        $this->_account = $account;
+        parent::__construct($config);
     }
 
 }
