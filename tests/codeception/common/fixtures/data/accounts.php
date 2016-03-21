@@ -8,10 +8,10 @@ return [
         'password_hash' => '$2y$13$CXT0Rkle1EMJ/c1l5bylL.EylfmQ39O5JlHJVFpNn618OUS1HwaIi', # password_0
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
         'password_reset_token' => null,
-        'auth_key' => 'iwTNae9t34OmnK6l4vT4IeaTk-YWI2Rv',
         'status' => \common\models\Account::STATUS_ACTIVE,
         'created_at' => 1451775316,
         'updated_at' => 1451775316,
+        'password_changed_at' => 1451775316,
     ],
     'user-with-old-password-type' => [
         'id' => 2,
@@ -21,10 +21,10 @@ return [
         'password_hash' => '133c00c463cbd3e491c28cb653ce4718', # 12345678
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_OLD_ELY,
         'password_reset_token' => null,
-        'auth_key' => 'ltTNae9t34OmnK6l4vT4IeaTk-YWI2Rv',
         'status' => \common\models\Account::STATUS_ACTIVE,
         'created_at' => 1385225069,
         'updated_at' => 1385225069,
+        'password_changed_at' => 1385225069,
     ],
     'not-activated-account' => [
         'id' => 3,
@@ -34,10 +34,10 @@ return [
         'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
         'password_reset_token' => null,
-        'auth_key' => '3AGc12Q7U8lU9umIyCWk5iCnpdPvZ8Up',
         'status' => \common\models\Account::STATUS_REGISTERED,
         'created_at' => 1453146616,
         'updated_at' => 1453146616,
+        'password_changed_at' => 1453146616,
     ],
     'not-activated-account-with-expired-message' => [
         'id' => 4,

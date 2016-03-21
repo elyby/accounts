@@ -38,10 +38,12 @@ class AccountsController extends Controller {
 
         return [
             'id' => $account->id,
+            'uuid' => $account->uuid,
             'username' => $account->username,
             'email' => $account->email,
             'shouldChangePassword' => $account->password_hash_strategy === Account::PASS_HASH_STRATEGY_OLD_ELY,
             'isActive' => $account->status === Account::STATUS_ACTIVE,
+            'passwordChangedAt' => $account->password_changed_at,
         ];
     }
 

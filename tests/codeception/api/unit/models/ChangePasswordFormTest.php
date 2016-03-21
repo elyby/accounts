@@ -60,6 +60,7 @@ class ChangePasswordFormTest extends DbTestCase {
         $this->specify('successfully change password with modern hash strategy', function() use ($model, $account) {
             expect('form should return true', $model->changePassword())->true();
             expect('new password should be successfully stored into account', $account->validatePassword('my-new-password'))->true();
+            expect('password change time updated', $account->password_changed_at)->greaterOrEquals(time());
         });
 
         /** @var Account $account */
@@ -72,6 +73,7 @@ class ChangePasswordFormTest extends DbTestCase {
         $this->specify('successfully change password with legacy hash strategy', function() use ($model, $account) {
             expect('form should return true', $model->changePassword())->true();
             expect('new password should be successfully stored into account', $account->validatePassword('my-new-password'))->true();
+            expect('password change time updated', $account->password_changed_at)->greaterOrEquals(time());
         });
     }
 

@@ -73,7 +73,6 @@ class RegistrationForm extends ApiForm {
             $account->username = $this->username;
             $account->password = $this->password;
             $account->status = Account::STATUS_REGISTERED;
-            $account->generateAuthKey();
             if (!$account->save()) {
                 throw new ErrorException('Account not created.');
             }
