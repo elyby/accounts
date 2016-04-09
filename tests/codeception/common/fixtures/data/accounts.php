@@ -47,7 +47,6 @@ return [
         'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
         'password_reset_token' => null,
-        'auth_key' => '45DsaEQ7U8lU9umIyCWk5iCnpdPvZ8Up',
         'status' => \common\models\Account::STATUS_REGISTERED,
         'created_at' => 1457890086,
         'updated_at' => 1457890086,
