@@ -19,5 +19,8 @@ return [
         'redis' => [
             'class' => 'yii\redis\Connection',
         ],
+        'amqp' => [
+            'class' => \common\components\RabbitMQ\Component::class,
+        ],
     ],
 ];
