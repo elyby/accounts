@@ -34,6 +34,12 @@
         "codeception/specify": "*",
         "codeception/verify": "*"
     },
+    "provide": {
+        "bower-asset/jquery": "*",
+        "bower-asset/jquery.inputmask": "*",
+        "bower-asset/punycode": "*",
+        "bower-asset/yii2-pjax": "*"
+    },
     "config": {
         "process-timeout": 1800
     },
