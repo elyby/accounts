@@ -28,7 +28,7 @@ class AccountsChangeUsernameCest {
     }
 
     public function testChangeUsername(FunctionalTester $I, Scenario $scenario) {
-        $I->wantTo('change my password');
+        $I->wantTo('change my nickname');
         $I = new AccountSteps($scenario);
         $I->loggedInAsActiveAccount();
 
@@ -37,6 +37,22 @@ class AccountsChangeUsernameCest {
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
             'success' => true,
+        ]);
+    }
+
+    public function testChangeUsernameNotAvailable(FunctionalTester $I, Scenario $scenario) {
+        $I->wantTo('see, that nickname "in use" is not available');
+        $I = new AccountSteps($scenario);
+        $I->loggedInAsActiveAccount();
+
+        $this->route->changeUsername('password_0', 'Jon');
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseIsJson();
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+            'errors' => [
+                'username' => 'error.username_not_available',
+            ],
         ]);
     }
 

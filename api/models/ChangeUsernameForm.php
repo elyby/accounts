@@ -21,7 +21,7 @@ class ChangeUsernameForm extends PasswordProtectedForm {
         $account = new Account();
         $account->username = $this->$attribute;
         if (!$account->validate(['username'])) {
-            $account->addErrors($account->getErrors('username'));
+            $this->addErrors($account->getErrors());
         }
     }
 
