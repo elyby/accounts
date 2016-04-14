@@ -12,5 +12,12 @@ return [
             'port' => 6379,
             'database' => 0,
         ],
+        'amqp' => [
+            'host' => 'localhost',
+            'port' => 5672,
+            'user' => 'root',
+            'password' => '',
+            'vhost' => '/',
+        ],
     ],
 ];
