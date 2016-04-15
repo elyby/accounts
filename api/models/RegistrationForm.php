@@ -9,6 +9,7 @@ use common\models\EmailActivation;
 use Ramsey\Uuid\Uuid;
 use Yii;
 use yii\base\ErrorException;
+use yii\base\InvalidConfigException;
 
 class RegistrationForm extends ApiForm {
 
@@ -101,6 +102,12 @@ class RegistrationForm extends ApiForm {
     public function sendMail(EmailActivation $emailActivation, Account $account) {
         /** @var \yii\swiftmailer\Mailer $mailer */
         $mailer = Yii::$app->mailer;
+        $fromEmail = Yii::$app->params['fromEmail'];
+
+        if (!$fromEmail) {
+            throw new InvalidConfigException('Please specify fromEmail app in app params');
+        }
+
         /** @var \yii\swiftmailer\Message $message */
         $message = $mailer->compose([
             'html' => '@app/mails/registration-confirmation-html',
@@ -109,7 +116,7 @@ class RegistrationForm extends ApiForm {
                 'key' => $emailActivation->key,
             ])
             ->setTo([$account->email => $account->username])
-            ->setFrom([Yii::$app->params['fromEmail'] => 'Ely.by Accounts'])
+            ->setFrom([$fromEmail => 'Ely.by Accounts'])
             ->setSubject('Ely.by Account registration');
 
         if (!$message->send()) {
