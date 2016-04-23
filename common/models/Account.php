@@ -15,21 +15,22 @@ use yii\web\IdentityInterface;
  * @property integer $id
  * @property string  $uuid
  * @property string  $username
- * @property string  $email
- * @property string  $password_hash
- * @property integer $password_hash_strategy
- * @property string  $password_reset_token
- * @property integer $status
- * @property integer $created_at
- * @property integer $updated_at
- * @property integer $password_changed_at
+ * @property string            $email
+ * @property string            $password_hash
+ * @property integer           $password_hash_strategy
+ * @property string            $password_reset_token
+ * @property integer           $status
+ * @property integer           $created_at
+ * @property integer           $updated_at
+ * @property integer           $password_changed_at
  *
  * Геттеры-сеттеры:
- * @property string  $password пароль пользователя (только для записи)
+ * @property string            $password пароль пользователя (только для записи)
  *
  * Отношения:
  * @property EmailActivation[] $emailActivations
  * @property OauthSession[]    $sessions
+ * @property UsernameHistory[] $usernameHistory
  *
  * Поведения:
  * @mixin TimestampBehavior
@@ -206,8 +207,12 @@ class Account extends ActiveRecord implements IdentityInterface {
         return $this->hasMany(OauthSession::class, ['owner_id' => 'id']);
     }
 
+    public function getUsernameHistory() {
+        return $this->hasMany(UsernameHistory::class, ['account_id' => 'id']);
+    }
+
     /**
-     * Метод проверяет, может ли текщий пользователь быть автоматически авторизован
+     * Метод проверяет, может ли текущий пользователь быть автоматически авторизован
      * для указанного клиента без запроса доступа к необходимому списку прав
      *
      * @param OauthClient $client
@@ -240,14 +245,23 @@ class Account extends ActiveRecord implements IdentityInterface {
     }
 
     /**
-     * Getter for "header" array that's used for generation of JWT
-     * @return array JWT Header Token param, see http://jwt.io/ for details
+     * @inheritdoc
      */
     protected static function getHeaderToken() {
         return [
             'iss' => Yii::$app->request->hostInfo,
             'aud' => Yii::$app->request->hostInfo,
         ];
+    }
+
+    /**
+     * Выполняет проверку, принадлежит ли этому нику аккаунт у Mojang
+     * @return bool
+     */
+    public function hasMojangUsernameCollision() {
+        return MojangUsername::find()
+            ->andWhere(['username' => $this->username])
+            ->exists();
     }
 
 }

@@ -2,6 +2,7 @@
 namespace common\components\RabbitMQ;
 
 use PhpAmqpLib\Message\AMQPMessage;
+use ReflectionMethod;
 use Yii;
 use yii\db\Exception;
 use yii\helpers\ArrayHelper;
@@ -95,7 +96,7 @@ abstract class Controller extends \yii\console\Controller {
 
     private function getResult($method, $body, $msg) {
         try {
-            $result = $this->$method($body, $msg);
+            $result = $this->$method($this->prepareArguments($method, $body), $msg);
         } catch(Exception $e) {
             if (strstr($e->getMessage(), '2006 MySQL server has gone away') !== false) {
                 Console::output(Console::ansiFormat('Server gone away, try to reconnect', [Console::FG_GREY]));
@@ -109,6 +110,35 @@ abstract class Controller extends \yii\console\Controller {
         }
 
         return $result;
+    }
+
+    private function prepareArguments($methodName, $body) {
+        $method = new ReflectionMethod($this, $methodName);
+        $parameters = $method->getParameters();
+        if (!isset($parameters[0])) {
+            return $body;
+        }
+
+        $bodyParam = $parameters[0];
+        if (PHP_MAJOR_VERSION === 7) {
+            // TODO: логика для php7 не тестировалась, так то не факт, что оно взлетит на php7
+            if (!$bodyParam->hasType() || $bodyParam->isArray()) {
+                return $body;
+            }
+
+            $type = (string)$bodyParam->getType();
+            $object = new $type;
+        } else {
+            $class = $bodyParam->getClass();
+            if ($class === null) {
+                return $body;
+            }
+
+            $type = $class->name;
+            $object = new $type;
+        }
+
+        return Yii::configure($object, $body);
     }
 
     /**

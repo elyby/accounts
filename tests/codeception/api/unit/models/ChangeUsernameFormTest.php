@@ -4,6 +4,7 @@ namespace tests\codeception\api\models;
 use api\models\ChangeUsernameForm;
 use Codeception\Specify;
 use common\models\Account;
+use common\models\UsernameHistory;
 use tests\codeception\api\unit\DbTestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use Yii;
@@ -31,7 +32,15 @@ class ChangeUsernameFormTest extends DbTestCase {
             ]);
             expect($model->change())->true();
             expect(Account::findOne(1)->username)->equals('my_new_nickname');
+            expect(UsernameHistory::findOne(['username' => 'my_new_nickname']))->isInstanceOf(UsernameHistory::class);
         });
+    }
+
+    public function testCreateTask() {
+        $model = new DummyChangeUsernameForm();
+        $model->createTask('1', 'test1', 'test');
+        // TODO: у меня пока нет идей о том, чтобы это как-то успешно протестировать, увы
+        // но по крайней мере можно убедиться, что оно не падает где-то на этом шаге
     }
 
 }

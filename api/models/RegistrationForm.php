@@ -95,6 +95,9 @@ class RegistrationForm extends ApiForm {
             throw $e;
         }
 
+        $changeUsernameForm = new ChangeUsernameForm();
+        $changeUsernameForm->createTask($account->id, $account->username, null);
+
         return $account;
     }
 

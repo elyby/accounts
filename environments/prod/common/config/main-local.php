@@ -15,9 +15,9 @@ return [
         'amqp' => [
             'host' => 'localhost',
             'port' => 5672,
-            'user' => 'root',
-            'password' => '',
-            'vhost' => '/',
+            'user' => 'ely-accounts-app',
+            'password' => 'app-password',
+            'vhost' => '/account.ely.by',
         ],
     ],
 ];

@@ -25,5 +25,10 @@ return [
         'redis' => [
             'database' => 1,
         ],
+        'amqp' => [
+            'user' => 'ely-accounts-tester',
+            'password' => 'tester-password',
+            'vhost' => '/account.ely.by/tests',
+        ],
     ],
 ];

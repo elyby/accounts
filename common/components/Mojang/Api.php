@@ -15,6 +15,7 @@ class Api {
      * @return UsernameToUUIDResponse
      * @throws MojangApiException
      * @throws NoContentException
+     * @url http://wiki.vg/Mojang_API#Username_-.3E_UUID_at_time
      */
     public function usernameToUUID($username, $atTime = null) {
         $client = $this->createClient();
@@ -28,7 +29,7 @@ class Api {
         $response = $client->send($request);
         if ($response->getStatusCode() === 204) {
             throw new NoContentException('Username not found');
-        } elseif ($response->getStatusCode()) {
+        } elseif ($response->getStatusCode() !== 200) {
             throw new MojangApiException('Unexpected request result');
         }
 

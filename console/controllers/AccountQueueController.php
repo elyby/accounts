@@ -1,8 +1,12 @@
 <?php
 namespace console\controllers;
 
-use common\components\RabbitMQ\Component as RabbitMQComponent;
+use common\components\Mojang\Api as MojangApi;
+use common\components\Mojang\exceptions\NoContentException;
+use common\models\amqp\UsernameChanged;
+use common\models\MojangUsername;
 use console\controllers\base\AmqpController;
+use Yii;
 
 class AccountQueueController extends AmqpController {
 
@@ -16,17 +20,38 @@ class AccountQueueController extends AmqpController {
 
     public function getExchangeDeclareArgs() {
         return array_replace(parent::getExchangeDeclareArgs(), [
-            1 => RabbitMQComponent::TYPE_DIRECT, // exchange-type -> direct
-            3 => false, // no-ack -> false
+            3 => true, // durable -> true
         ]);
     }
 
-    public function getQueueBindArgs($exchangeName, $queueName) {
-        return [$exchangeName, $queueName, '#']; // Мы хотим получать сюда все события по аккаунту
-    }
+    public function routeUsernameChanged(UsernameChanged $body) {
+        $mojangApi = new MojangApi();
+        try {
+            $response = $mojangApi->usernameToUUID($body->newUsername);
+        } catch (NoContentException $e) {
+            $response = false;
+        }
 
-    public function routeChangeUsername($body) {
-        // TODO: implement this
+        /** @var MojangUsername|null $mojangUsername */
+        $mojangUsername = MojangUsername::findOne($body->newUsername);
+        if ($response === false) {
+            if ($mojangUsername !== null) {
+                $mojangUsername->delete();
+            }
+        } else {
+            if ($mojangUsername === null) {
+                $mojangUsername = new MojangUsername();
+                $mojangUsername->username = $response->name;
+                $mojangUsername->uuid = $response->id;
+            } else {
+                $mojangUsername->uuid = $response->id;
+                $mojangUsername->touch('last_pulled_at');
+            }
+
+            $mojangUsername->save();
+        }
+
+        return true;
     }
 
 }

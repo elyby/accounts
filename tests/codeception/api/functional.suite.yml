@@ -1,11 +1,3 @@
-# Codeception Test Suite Configuration
-
-# suite for functional (integration) tests.
-# emulate web requests and make application process them.
-# (tip: better to use with frameworks).
-
-# RUN `build` COMMAND AFTER ADDING/REMOVING MODULES.
-#basic/web/index.php
 class_name: FunctionalTester
 modules:
     enabled:
@@ -14,6 +6,7 @@ modules:
       - tests\codeception\common\_support\FixtureHelper
       - REST
       - Redis
+      - AMQP
     config:
         Yii2:
             configFile: '../config/api/functional.php'
@@ -21,3 +14,10 @@ modules:
             host: localhost
             port: 6379
             database: 1
+        AMQP:
+            host: localhost
+            port: 5672
+            username: 'ely-accounts-tester'
+            password: 'tester-password'
+            vhost: '/account.ely.by/tests'
+            queues: ['account-operations']

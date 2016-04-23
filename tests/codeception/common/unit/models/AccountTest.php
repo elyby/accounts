@@ -5,11 +5,13 @@ use Codeception\Specify;
 use common\components\UserPass;
 use common\models\Account;
 use tests\codeception\common\fixtures\AccountFixture;
+use tests\codeception\common\fixtures\MojangUsernameFixture;
 use tests\codeception\common\unit\DbTestCase;
 use Yii;
 
 /**
  * @property array $accounts
+ * @property array $mojangAccounts
  */
 class AccountTest extends DbTestCase {
     use Specify;
@@ -19,6 +21,10 @@ class AccountTest extends DbTestCase {
             'accounts' => [
                 'class' => AccountFixture::class,
                 'dataFile' => '@tests/codeception/common/fixtures/data/accounts.php',
+            ],
+            'mojangAccounts' => [
+                'class' => MojangUsernameFixture::class,
+                'dataFile' => '@tests/codeception/common/fixtures/data/mojang-usernames.php',
             ],
         ];
     }
@@ -73,6 +79,7 @@ class AccountTest extends DbTestCase {
     }
 
     public function testValidateEmail() {
+        // TODO: пропускать этот тест, если падает ошибка с недостпуностью интернет соединения
         $this->specify('email required', function() {
             $model = new Account(['email' => null]);
             expect($model->validate(['email']))->false();
@@ -146,6 +153,20 @@ class AccountTest extends DbTestCase {
             ]);
             expect('valid password should pass', $model->validatePassword('12345678'))->true();
             expect('invalid password should fail', $model->validatePassword('87654321'))->false();
+        });
+    }
+
+    public function testHasMojangUsernameCollision() {
+        $this->specify('Expect true if collision with current username', function() {
+            $model = new Account();
+            $model->username = 'ErickSkrauch';
+            expect($model->hasMojangUsernameCollision())->true();
+        });
+
+        $this->specify('Expect false if some rare username without any collision on Mojang', function() {
+            $model = new Account();
+            $model->username = 'rare-username';
+            expect($model->hasMojangUsernameCollision())->false();
         });
     }
 

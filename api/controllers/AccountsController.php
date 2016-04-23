@@ -16,9 +16,19 @@ class AccountsController extends Controller {
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['current', 'change-password', 'change-username'],
+                        'actions' => ['current'],
                         'allow' => true,
                         'roles' => ['@'],
+                    ],
+                    [
+                        'actions' => ['change-password', 'change-username'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                        'matchCallback' => function() {
+                            /** @var Account $account */
+                            $account = Yii::$app->user->identity;
+                            return $account->status > Account::STATUS_REGISTERED;
+                        },
                     ],
                 ],
             ],
@@ -29,6 +39,7 @@ class AccountsController extends Controller {
         return [
             'current' => ['GET'],
             'change-password' => ['POST'],
+            'change-username' => ['POST'],
         ];
     }
 
@@ -44,6 +55,7 @@ class AccountsController extends Controller {
             'shouldChangePassword' => $account->password_hash_strategy === Account::PASS_HASH_STRATEGY_OLD_ELY,
             'isActive' => $account->status === Account::STATUS_ACTIVE,
             'passwordChangedAt' => $account->password_changed_at,
+            'hasMojangUsernameCollision' => $account->hasMojangUsernameCollision(),
         ];
     }
 
