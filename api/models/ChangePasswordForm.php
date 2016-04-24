@@ -13,6 +13,8 @@ class ChangePasswordForm extends PasswordProtectedForm {
 
     public $newRePassword;
 
+    public $logoutAll;
+
     /**
      * @var \common\models\Account
      */
@@ -27,6 +29,7 @@ class ChangePasswordForm extends PasswordProtectedForm {
             ['newRePassword', 'required', 'message' => 'error.newRePassword_required'],
             ['newPassword', 'string', 'min' => 8, 'tooShort' => 'error.password_too_short'],
             ['newRePassword', 'validatePasswordAndRePasswordMatch'],
+            ['logoutAll', 'boolean'],
         ]);
     }
 
@@ -48,6 +51,10 @@ class ChangePasswordForm extends PasswordProtectedForm {
 
         $account = $this->_account;
         $account->setPassword($this->newPassword);
+
+        if ($this->logoutAll) {
+            // TODO: реализовать процесс разлогинивания всех авторизованных устройств и дописать под это всё тесты
+        }
 
         return $account->save();
     }
