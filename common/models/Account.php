@@ -3,6 +3,7 @@ namespace common\models;
 
 use common\components\UserPass;
 use damirka\JWT\UserTrait;
+use Ely\Yii2\TempmailValidator;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\base\NotSupportedException;
@@ -72,6 +73,7 @@ class Account extends ActiveRecord implements IdentityInterface {
             [['email'], 'required', 'message' => 'error.email_required'],
             [['email'], 'string', 'max' => 255, 'tooLong' => 'error.email_too_long'],
             [['email'], 'email', 'checkDNS' => true, 'enableIDN' => true, 'message' => 'error.email_invalid'],
+            [['email'], TempmailValidator::class, 'message' => 'error.email_is_tempmail'],
             [['email'], 'unique', 'message' => 'error.email_not_available'],
         ];
     }

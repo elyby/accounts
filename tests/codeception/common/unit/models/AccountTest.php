@@ -103,6 +103,12 @@ class AccountTest extends DbTestCase {
             expect($model->getErrors('email'))->equals(['error.email_invalid']);
         });
 
+        $this->specify('email should be not tempmail', function() {
+            $model = new Account(['email' => 'c1414001@trbvn.com']);
+            expect($model->validate(['email']))->false();
+            expect($model->getErrors('email'))->equals(['error.email_is_tempmail']);
+        });
+
         $this->specify('email should be unique', function() {
             $model = new Account(['email' => $this->accounts['admin']['email']]);
             expect($model->validate('email'))->false();
