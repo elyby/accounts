@@ -36,6 +36,26 @@ class ChangeUsernameFormTest extends DbTestCase {
         });
     }
 
+    public function testUsernameUnavailable() {
+        $this->specify('error.username_not_available expected if username is already taken', function() {
+            $model = new DummyChangeUsernameForm([
+                'password' => 'password_0',
+                'username' => 'Jon',
+            ]);
+            $model->validate();
+            expect($model->getErrors('username'))->equals(['error.username_not_available']);
+        });
+
+        $this->specify('error.username_not_available is NOT expected if username is already taken by CURRENT user', function() {
+            $model = new DummyChangeUsernameForm([
+                'password' => 'password_0',
+                'username' => 'Admin',
+            ]);
+            $model->validate();
+            expect($model->getErrors('username'))->equals([]);
+        });
+    }
+
     public function testCreateTask() {
         $model = new DummyChangeUsernameForm();
         $model->createTask('1', 'test1', 'test');
