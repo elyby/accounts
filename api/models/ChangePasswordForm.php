@@ -34,7 +34,7 @@ class ChangePasswordForm extends PasswordProtectedForm {
     }
 
     public function validatePasswordAndRePasswordMatch($attribute) {
-        if (!$this->hasErrors()) {
+        if (!$this->hasErrors($attribute)) {
             if ($this->newPassword !== $this->newRePassword) {
                 $this->addError($attribute, 'error.newRePassword_does_not_match');
             }

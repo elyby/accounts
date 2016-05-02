@@ -47,6 +47,19 @@ class ChangePasswordFormTest extends DbTestCase {
             $model->validatePasswordAndRePasswordMatch('newRePassword');
             expect($model->getErrors('newRePassword'))->isEmpty();
         });
+
+        $this->specify('error.newRePassword_does_not_match expected even if there are errors on other attributes', function() {
+            // this is very important, because password change flow may be combined of two steps
+            // therefore we need to validate password sameness before we will validate current account password
+            $account = new Account();
+            $account->setPassword('12345678');
+            $model = new ChangePasswordForm($account, [
+                'newPassword' => 'my-new-password',
+                'newRePassword' => 'another-password',
+            ]);
+            $model->validate();
+            expect($model->getErrors('newRePassword'))->equals(['error.newRePassword_does_not_match']);
+        });
     }
 
     public function testChangePassword() {
