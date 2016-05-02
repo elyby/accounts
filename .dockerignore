@@ -1,0 +1,8 @@
+.git/*
+.env
+api/config/*-local.php
+common/config/*-local.php
+console/config/*-local.php
+api/runtime
+console/runtime
+api/web/assets

@@ -1,0 +1,36 @@
+app:
+    build: ./
+    expose:
+        - "9000"
+    volumes:
+        - ./:/var/www/html/
+    links:
+        - db
+    environment:
+        ENABLE_ENV_FILE: 1
+        ENABLE_LOCALCONF: 1
+        API_TOKEN: "78bb3e46d818793a299ccfcedee213d5ecad07f7"
+
+web:
+    build: ./nginx
+    ports:
+        - "8080:80"
+    links:
+        - app
+    volumes_from:
+        - app
+
+db:
+    image: mariadb:10.0
+    ports:
+        - "3306:3306"
+    expose:
+        - "3306"
+    environment:
+        MYSQL_ROOT_PASSWORD: secret-root
+        MYSQL_DATABASE: web
+        MYSQL_USER: web
+        MYSQL_PASSWORD: web
+
+    # Uncomment to autostart at boottime
+    #restart: always
