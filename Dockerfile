@@ -1,14 +1,12 @@
-#FROM codemix/yii2-base:2.0.8-apache
 FROM codemix/yii2-base:2.0.8-php-fpm
-#FROM codemix/yii2-base:2.0.8-hhvm
-
 
 # Composer packages are installed first. This will only add packages
 # that are not already in the yii2-base image.
 COPY composer.json /var/www/html/
 COPY composer.lock /var/www/html/
-RUN composer self-update --no-progress && \
-    composer install --no-progress --ignore-platform-reqs
+
+RUN composer self-update --no-progress \
+ && composer install --no-progress --ignore-platform-reqs
 
 # Copy the working dir to the image's web root
 COPY . /var/www/html
@@ -17,7 +15,7 @@ COPY . /var/www/html
 # with local logs and published assets from development. So we need to create
 # empty dirs and set right permissions inside the container.
 RUN mkdir api/runtime api/web/assets console/runtime \
-    && chown www-data:www-data api/runtime api/web/assets console/runtime
+ && chown www-data:www-data api/runtime api/web/assets console/runtime
 
 # Expose everything under /var/www (vendor + html)
 # This is only required for the nginx setup

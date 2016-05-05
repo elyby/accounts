@@ -1,36 +1,76 @@
-app:
-    build: ./
-    expose:
-        - "9000"
-    volumes:
-        - ./:/var/www/html/
-    links:
-        - db
-    environment:
-        ENABLE_ENV_FILE: 1
-        ENABLE_LOCALCONF: 1
-        API_TOKEN: "78bb3e46d818793a299ccfcedee213d5ecad07f7"
+version: '2'
+services:
+    web:
+        build: ./docker/nginx
+        ports:
+            - "80:80"
+        links:
+            - app
+        volumes_from:
+            - app
 
-web:
-    build: ./nginx
-    ports:
-        - "8080:80"
-    links:
-        - app
-    volumes_from:
-        - app
+    app:
+        build: .
+        expose:
+            - "9000"
+        volumes:
+            - ./:/var/www/html/
+        links:
+            - db
+            - redis
+            - rabbitmq
+        depends_on:
+            - node-dev-server
+            - app-console-account-queue
+        environment:
+            ENABLE_ENV_FILE: 1
+            ENABLE_LOCALCONF: 1
+            API_TOKEN: "78bb3e46d818793a299ccfcedee213d5ecad07f7"
 
-db:
-    image: mariadb:10.0
-    ports:
-        - "3306:3306"
-    expose:
-        - "3306"
-    environment:
-        MYSQL_ROOT_PASSWORD: secret-root
-        MYSQL_DATABASE: web
-        MYSQL_USER: web
-        MYSQL_PASSWORD: web
+    app-console-account-queue:
+        image: php:7.0-cli
+        volumes:
+            - ./:/var/www/html/
+        working_dir: /var/www/html/
+        command: ./wait-for-it.sh rabbitmq:5672 -- ./yii account-queue
+        links:
+            - db
+            - redis
+            - rabbitmq
 
-    # Uncomment to autostart at boottime
-    #restart: always
+    node-dev-server:
+        build: ./frontend
+        ports:
+            - "8080:8080"
+        volumes:
+            - ./frontend/:/usr/src/app/
+            - /usr/src/app/node_modules
+        environment:
+            DOCKERIZED: "true"
+
+    db:
+        image: mariadb:10.0
+        expose:
+            - "3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: secret-root
+            MYSQL_DATABASE: ely_accounts
+            MYSQL_USER: ely-accounts-user
+            MYSQL_PASSWORD: ely-accounts-password
+            TERM: dumb
+        # Uncomment to autostart at boottime
+        #restart: always
+
+    redis:
+        image: redis:3.0
+        expose:
+            - "6379"
+
+    rabbitmq:
+        image: rabbitmq:3.6
+        expose:
+            - "5672"
+        environment:
+            RABBITMQ_DEFAULT_USER: ely-accounts-app
+            RABBITMQ_DEFAULT_PASS: app-password
+            RABBITMQ_DEFAULT_VHOST: /account.ely.by
