@@ -1,54 +1,71 @@
-Yii 2 Advanced Project Template
-===============================
+# Account Ely.by
 
-Yii 2 Advanced Project Template is a skeleton [Yii 2](http://www.yiiframework.com/) application best for
-developing complex Web applications with multiple tiers.
+## Развёртывание dev
 
-The template includes three tiers: front end, back end, and console, each of which
-is a separate Yii application.
+Предварительно нужно установить [git](https://git-scm.com/downloads),
+[docker](https://docs.docker.com/engine/installation/) и его
+[docker-compose](https://docs.docker.com/compose/install/).
 
-The template is designed to work in a team development environment. It supports
-deploying the application in different environments.
+Сливаем репозиторий:
 
-Documentation is at [docs/guide/README.md](docs/guide/README.md).
+```sh
+git clone git@bitbucket.org:ErickSkrauch/ely.by-account.git account.ely.by.local
+cd account.ely.by.local
+```
 
-[![Latest Stable Version](https://poser.pugx.org/yiisoft/yii2-app-advanced/v/stable.png)](https://packagist.org/packages/yiisoft/yii2-app-advanced)
-[![Total Downloads](https://poser.pugx.org/yiisoft/yii2-app-advanced/downloads.png)](https://packagist.org/packages/yiisoft/yii2-app-advanced)
-[![Build Status](https://travis-ci.org/yiisoft/yii2-app-advanced.svg?branch=master)](https://travis-ci.org/yiisoft/yii2-app-advanced)
+Выполняем первый запуск контейнеров:
 
-DIRECTORY STRUCTURE
--------------------
+```sh
+docker-compose up -d
+```
+
+Далее нужно влезть в работающие контейнеры и сделать что-нибудь, что их настроит.
+
+### Как влезть в работающий контейнер
+
+Сперва, с помощью команды `docker ps` мы увидим все запущенные контейнеры. Нас интересуют значения из первой колонки
+CONTAINER ID. Узнать, чему они соответствуют можно прочитав название IMAGE из 2 колонки. Чтобы выполнить команду
+внутри работабщего контейнера, нужно выполнить:
 
 ```
-common
-    config/              contains shared configurations
-    mail/                contains view files for e-mails
-    models/              contains model classes used in both backend and frontend
-console
-    config/              contains console configurations
-    controllers/         contains console controllers (commands)
-    migrations/          contains database migrations
-    models/              contains console-specific model classes
-    runtime/             contains files generated during runtime
-backend
-    assets/              contains application assets such as JavaScript and CSS
-    config/              contains backend configurations
-    controllers/         contains Web controller classes
-    models/              contains backend-specific model classes
-    runtime/             contains files generated during runtime
-    views/               contains view files for the Web application
-    web/                 contains the entry script and Web resources
-frontend
-    assets/              contains application assets such as JavaScript and CSS
-    config/              contains frontend configurations
-    controllers/         contains Web controller classes
-    models/              contains frontend-specific model classes
-    runtime/             contains files generated during runtime
-    views/               contains view files for the Web application
-    web/                 contains the entry script and Web resources
-    widgets/             contains frontend widgets
-vendor/                  contains dependent 3rd-party packages
-environments/            contains environment-based overrides
-tests                    contains various tests for the advanced application
-    codeception/         contains tests developed with Codeception PHP Testing Framework
+docker exec -it a7c267b27f49 /bin/bash
+```
+
+Где `a7c267b27f49` - одно из значений из первой колонки. Для выхода из контейнера используем `exit`.
+
+-------------------------
+
+Так вот, нам нужно выполнить ряд команд. Здесь и далее я буду писать имена контейнеров в их соответствии с compose
+файлом, но в реалиях их нужно будет заменить на реальные значения:
+
+```sh
+# Настройка php контейнера
+docker exec -it app php init --env=Docker
+docker exec -it app php composer install
+docker exec -it app php ./yii migrate --interactive=0
+
+# Настройка node контейнера
+docker exec -it node-dev-server npm i
+docker exec -it node-dev-server npm --prefix ./webpack i ./webpack
+docker exec -it node-dev-server npm --prefix ./scripts i ./scripts
+
+# Настройка rabbitmq контейнера
+docker exec -it rabbitmq /init.sh
+```
+
+После этого перезапускаем все контейнеры командой:
+
+```sh
+docker-compose restart
+```
+
+## Тестирование php бэкэнда
+
+```sh
+# Прежде чем тестировать, необходимо накатить миграции
+docker exec -it db6366f120ee php tests/codeception/bin/yii migrate --interactive=0
+# Собрать все тестовые окружения
+docker exec -it db6366f120ee /bin/sh -c 'cd tests; ./../vendor/bin/codecept build'
+# И запустить собственно процесс тестирования
+docker exec -it db6366f120ee /bin/sh -c 'cd tests; ./../vendor/bin/codecept run'
 ```

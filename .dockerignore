@@ -1,0 +1,16 @@
+.git/*
+.env
+
+# vendor будет заполнен уже внутри контейнера
+vendor
+# frontend и его node_modules внутри контейнера не нужны
+frontend
+
+# Все -local файлы
+*/config/*-local.php
+
+# Все временные файлы
+runtime
+
+# Их по идее и не должно образовываться, но мало ли
+api/web/assets

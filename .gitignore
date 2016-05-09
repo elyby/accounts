@@ -32,3 +32,6 @@ phpunit.phar
 
 # npm debug
 npm-debug*
+
+# Docker override file
+docker-compose.override.yml

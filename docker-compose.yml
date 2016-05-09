@@ -1,0 +1,62 @@
+version: '2'
+services:
+    app:
+        links:
+            - db
+            - redis
+            - rabbitmq
+        depends_on:
+            - app-console-account-queue
+
+        environment:
+            ENABLE_ENV_FILE: 1
+            ENABLE_LOCALCONF: 1
+
+    web:
+        build: ./docker/nginx
+        ports:
+            - "80:80"
+        links:
+            - app
+        volumes_from:
+            - app
+
+    app:
+        build: .
+        expose:
+            - "9000"
+        volumes:
+            - ./:/var/www/html/
+        environment:
+            ENABLE_ENV_FILE: 1
+            ENABLE_LOCALCONF: 1
+
+    node-dev-server:
+        build: ./frontend
+        ports:
+            - "8080:8080"
+        volumes:
+            - ./frontend/:/usr/src/app/
+        environment:
+            DOCKERIZED: "true"
+
+    app-console-account-queue:
+        build: .
+        volumes:
+            - ./:/var/www/html/
+        command: ./docker/wait-for-it.sh rabbitmq:5672 -- ./yii account-queue
+        links:
+            - db
+            - redis
+            - rabbitmq
+
+    db:
+        build: ./docker/mariadb
+
+    redis:
+        image: redis:3.0
+
+    rabbitmq:
+        build: ./docker/rabbitmq
+        ports:
+            - "15672:15672"
