@@ -53,7 +53,7 @@ class KeyConfirmationFormTest extends DbTestCase {
     }
 
     public function testCorrectKey() {
-        $model = $this->createModel($this->emailActivations[0]['key']);
+        $model = $this->createModel($this->emailActivations['freshRegistrationConfirmation']['key']);
         $this->specify('no errors if key exists', function () use ($model) {
             expect('model should pass validation', $model->validate())->true();
         });

@@ -4,16 +4,16 @@ namespace api\models;
 use api\models\base\ApiForm;
 use common\components\UserFriendlyRandomKey;
 use common\models\Account;
+use common\models\confirmations\RegistrationConfirmation;
 use common\models\EmailActivation;
 use Yii;
 use yii\base\ErrorException;
 
 class RepeatAccountActivationForm extends ApiForm {
 
-    // Частота повтора отправки нового письма
-    const REPEAT_FREQUENCY = 5 * 60;
-
     public $email;
+
+    private $emailActivation;
 
     public function rules() {
         return [
@@ -40,7 +40,8 @@ class RepeatAccountActivationForm extends ApiForm {
 
     public function validateExistsActivation($attribute) {
         if (!$this->hasErrors($attribute)) {
-            if ($this->getActiveActivation() !== null) {
+            $activation = $this->getActivation();
+            if ($activation !== null && !$activation->canRepeat()) {
                 $this->addError($attribute, 'error.recently_sent_message');
             }
         }
@@ -59,9 +60,8 @@ class RepeatAccountActivationForm extends ApiForm {
                 'type' => EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION,
             ]);
 
-            $activation = new EmailActivation();
+            $activation = new RegistrationConfirmation();
             $activation->account_id = $account->id;
-            $activation->type = EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION;
             $activation->key = UserFriendlyRandomKey::make();
             if (!$activation->save()) {
                 throw new ErrorException('Unable save email-activation model.');
@@ -84,19 +84,22 @@ class RepeatAccountActivationForm extends ApiForm {
      */
     public function getAccount() {
         return Account::find()
-               ->andWhere(['email' => $this->email])
-               ->one();
+            ->andWhere(['email' => $this->email])
+            ->one();
     }
 
     /**
      * @return EmailActivation|null
      */
-    public function getActiveActivation() {
-        return $this->getAccount()
-            ->getEmailActivations()
-            ->andWhere(['type' => EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION])
-            ->andWhere(['>=', 'created_at', time() - self::REPEAT_FREQUENCY])
-            ->one();
+    public function getActivation() {
+        if ($this->emailActivation === null) {
+            $this->emailActivation = $this->getAccount()
+                ->getEmailActivations()
+                ->andWhere(['type' => EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION])
+                ->one();
+        }
+
+        return $this->emailActivation;
     }
 
 }

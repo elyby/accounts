@@ -61,10 +61,10 @@ class SignupController extends Controller {
             ];
 
             if ($response['errors']['email'] === 'error.recently_sent_message') {
-                $activeActivation = $model->getActiveActivation();
+                $activation = $model->getActivation();
                 $response['data'] = [
-                    'canRepeatIn' => $activeActivation->created_at - time() + RepeatAccountActivationForm::REPEAT_FREQUENCY,
-                    'repeatFrequency' => RepeatAccountActivationForm::REPEAT_FREQUENCY,
+                    'canRepeatIn' => $activation->canRepeatIn(),
+                    'repeatFrequency' => $activation->repeatTimeout,
                 ];
             }
 

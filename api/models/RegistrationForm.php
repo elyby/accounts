@@ -5,6 +5,7 @@ use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\base\ApiForm;
 use common\components\UserFriendlyRandomKey;
 use common\models\Account;
+use common\models\confirmations\RegistrationConfirmation;
 use common\models\EmailActivation;
 use Ramsey\Uuid\Uuid;
 use Yii;
@@ -78,9 +79,8 @@ class RegistrationForm extends ApiForm {
                 throw new ErrorException('Account not created.');
             }
 
-            $emailActivation = new EmailActivation();
+            $emailActivation = new RegistrationConfirmation();
             $emailActivation->account_id = $account->id;
-            $emailActivation->type = EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION;
             $emailActivation->key = UserFriendlyRandomKey::make();
 
             if (!$emailActivation->save()) {

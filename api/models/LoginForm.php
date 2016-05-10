@@ -2,16 +2,16 @@
 namespace api\models;
 
 use api\models\base\ApiForm;
+use api\traits\AccountFinder;
 use common\models\Account;
 use Yii;
 
 class LoginForm extends ApiForm {
+    use AccountFinder;
 
     public $login;
     public $password;
     public $rememberMe = true;
-
-    private $_account;
 
     public function rules() {
         return [
@@ -55,6 +55,10 @@ class LoginForm extends ApiForm {
         }
     }
 
+    public function getLogin() {
+        return $this->login;
+    }
+
     /**
      * @return bool|string JWT с информацией об аккаунте
      */
@@ -64,21 +68,6 @@ class LoginForm extends ApiForm {
         }
 
         return $this->getAccount()->getJWT();
-    }
-
-    /**
-     * @return Account|null
-     */
-    public function getAccount() {
-        if ($this->_account === NULL) {
-            $this->_account = Account::findOne([$this->getLoginAttribute() => $this->login]);
-        }
-
-        return $this->_account;
-    }
-
-    public function getLoginAttribute() {
-        return strpos($this->login, '@') ? 'email' : 'username';
     }
 
 }

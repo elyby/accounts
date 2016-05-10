@@ -3,6 +3,7 @@ namespace tests\codeception\api\models;
 
 use api\models\RepeatAccountActivationForm;
 use Codeception\Specify;
+use common\models\EmailActivation;
 use tests\codeception\api\unit\DbTestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\EmailActivationFixture;
@@ -67,14 +68,17 @@ class RepeatAccountActivationFormTest extends DbTestCase {
 
     public function testValidateExistsActivation() {
         $this->specify('error.recently_sent_message if passed email has recently sent message', function() {
-            $model = new RepeatAccountActivationForm(['email' => $this->accounts['not-activated-account']['email']]);
+            $model = new DummyRepeatAccountActivationForm([
+                'emailKey' => $this->activations['freshRegistrationConfirmation']['key'],
+            ]);
             $model->validateExistsActivation('email');
             expect($model->getErrors('email'))->equals(['error.recently_sent_message']);
         });
 
         $this->specify('no errors if passed email has expired activation message', function() {
-            $email = $this->accounts['not-activated-account-with-expired-message']['email'];
-            $model = new RepeatAccountActivationForm(['email' => $email]);
+            $model = new DummyRepeatAccountActivationForm([
+                'emailKey' => $this->activations['oldRegistrationConfirmation']['key'],
+            ]);
             $model->validateExistsActivation('email');
             expect($model->getErrors('email'))->isEmpty();
         });
@@ -91,7 +95,7 @@ class RepeatAccountActivationFormTest extends DbTestCase {
             $email = $this->accounts['not-activated-account-with-expired-message']['email'];
             $model = new RepeatAccountActivationForm(['email' => $email]);
             expect($model->sendRepeatMessage())->true();
-            expect($model->getActiveActivation())->notNull();
+            expect($model->getActivation())->notNull();
             expect_file($this->getMessageFile())->exists();
         });
     }
@@ -101,6 +105,16 @@ class RepeatAccountActivationFormTest extends DbTestCase {
         $mailer = Yii::$app->mailer;
 
         return Yii::getAlias($mailer->fileTransportPath) . '/testing_message.eml';
+    }
+
+}
+
+class DummyRepeatAccountActivationForm extends RepeatAccountActivationForm {
+
+    public $emailKey;
+
+    public function getActivation() {
+        return EmailActivation::findOne($this->emailKey);
     }
 
 }

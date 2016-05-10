@@ -51,4 +51,28 @@ return [
         'created_at' => 1457890086,
         'updated_at' => 1457890086,
     ],
+    'account-with-fresh-forgot-password-message' => [
+        'id' => 5,
+        'uuid' => '4aaf4f00-3b5b-4d36-9252-9e8ee0c86679',
+        'username' => 'Notch',
+        'email' => 'notch@mojang.com',
+        'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
+        'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
+        'password_reset_token' => null,
+        'status' => \common\models\Account::STATUS_ACTIVE,
+        'created_at' => 1462891432,
+        'updated_at' => 1462891432,
+    ],
+    'account-with-expired-forgot-password-message' => [
+        'id' => 6,
+        'uuid' => '26187ae7-bc96-421f-9766-6517f8ee52b7',
+        'username' => '23derevo',
+        'email' => '23derevo@gmail.com',
+        'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
+        'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
+        'password_reset_token' => null,
+        'status' => \common\models\Account::STATUS_ACTIVE,
+        'created_at' => 1462891612,
+        'updated_at' => 1462891612,
+    ],
 ];

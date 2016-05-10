@@ -84,18 +84,6 @@ class LoginFormTest extends DbTestCase {
         });
     }
 
-    public function testGetLoginAttribute() {
-        $this->specify('email if login look like email value', function() {
-            $model = new DummyLoginForm(['login' => 'erickskrauch@ely.by']);
-            expect($model->getLoginAttribute())->equals('email');
-        });
-
-        $this->specify('username in any other case', function() {
-            $model = new DummyLoginForm(['login' => 'erickskrauch']);
-            expect($model->getLoginAttribute())->equals('username');
-        });
-    }
-
 }
 
 class DummyLoginForm extends LoginForm {
