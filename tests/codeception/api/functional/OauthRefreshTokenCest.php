@@ -1,7 +1,6 @@
 <?php
 namespace tests\codeception\api;
 
-use Codeception\Scenario;
 use common\models\OauthScope;
 use tests\codeception\api\_pages\OauthRoute;
 use tests\codeception\api\functional\_steps\OauthSteps;
@@ -18,8 +17,7 @@ class OauthRefreshTokenCest {
         $this->route = new OauthRoute($I);
     }
 
-    public function testRefreshToken(FunctionalTester $I, Scenario $scenario) {
-        $I = new OauthSteps($scenario);
+    public function testRefreshToken(OauthSteps $I) {
         $refreshToken = $I->getRefreshToken();
         $this->route->issueToken($this->buildParams(
             $refreshToken,
@@ -36,8 +34,7 @@ class OauthRefreshTokenCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.expires_in');
     }
 
-    public function testRefreshTokenWithSameScopes(FunctionalTester $I, Scenario $scenario) {
-        $I = new OauthSteps($scenario);
+    public function testRefreshTokenWithSameScopes(OauthSteps $I) {
         $refreshToken = $I->getRefreshToken();
         $this->route->issueToken($this->buildParams(
             $refreshToken,
@@ -55,8 +52,7 @@ class OauthRefreshTokenCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.expires_in');
     }
 
-    public function testRefreshTokenWithNewScopes(FunctionalTester $I, Scenario $scenario) {
-        $I = new OauthSteps($scenario);
+    public function testRefreshTokenWithNewScopes(OauthSteps $I) {
         $refreshToken = $I->getRefreshToken();
         $this->route->issueToken($this->buildParams(
             $refreshToken,

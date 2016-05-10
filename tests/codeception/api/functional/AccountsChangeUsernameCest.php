@@ -1,11 +1,9 @@
 <?php
 namespace tests\codeception\api\functional;
 
-use Codeception\Scenario;
 use Codeception\Specify;
 use common\models\Account;
 use tests\codeception\api\_pages\AccountsRoute;
-use tests\codeception\api\functional\_steps\AccountSteps;
 use tests\codeception\api\FunctionalTester;
 
 class AccountsChangeUsernameCest {
@@ -19,16 +17,15 @@ class AccountsChangeUsernameCest {
         $this->route = new AccountsRoute($I);
     }
 
-    public function _after(FunctionalTester $I) {
+    public function _after() {
         /** @var Account $account */
         $account = Account::findOne(1);
         $account->username = 'Admin';
         $account->save();
     }
 
-    public function testChangeUsername(FunctionalTester $I, Scenario $scenario) {
+    public function testChangeUsername(FunctionalTester $I) {
         $I->wantTo('change my nickname');
-        $I = new AccountSteps($scenario);
         $I->loggedInAsActiveAccount();
 
         $this->route->changeUsername('password_0', 'bruce_wayne');
@@ -39,9 +36,8 @@ class AccountsChangeUsernameCest {
         ]);
     }
 
-    public function testChangeUsernameNotAvailable(FunctionalTester $I, Scenario $scenario) {
+    public function testChangeUsernameNotAvailable(FunctionalTester $I) {
         $I->wantTo('see, that nickname "in use" is not available');
-        $I = new AccountSteps($scenario);
         $I->loggedInAsActiveAccount();
 
         $this->route->changeUsername('password_0', 'Jon');

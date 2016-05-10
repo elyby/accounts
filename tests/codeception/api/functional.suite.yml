@@ -1,12 +1,13 @@
 class_name: FunctionalTester
 modules:
     enabled:
-      - Filesystem
-      - Yii2
-      - tests\codeception\common\_support\FixtureHelper
-      - REST
-      - Redis
-      - AMQP
+        - Filesystem
+        - Yii2
+        - tests\codeception\common\_support\FixtureHelper
+        - REST:
+            depends: Yii2
+        - Redis
+        - AMQP
     config:
         Yii2:
             configFile: '../config/api/functional.php'

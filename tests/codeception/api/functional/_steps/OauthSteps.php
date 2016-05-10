@@ -3,7 +3,7 @@ namespace tests\codeception\api\functional\_steps;
 
 use tests\codeception\api\_pages\OauthRoute;
 
-class OauthSteps extends AccountSteps {
+class OauthSteps extends \tests\codeception\api\FunctionalTester {
 
     public function getAuthCode($online = true) {
         // TODO: по идее можно напрямую сделать зпись в базу, что ускорит процесс тестирования

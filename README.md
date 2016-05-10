@@ -63,9 +63,9 @@ docker-compose restart
 
 ```sh
 # Прежде чем тестировать, необходимо накатить миграции
-docker exec -it db6366f120ee php tests/codeception/bin/yii migrate --interactive=0
+docker exec -it app php tests/codeception/bin/yii migrate --interactive=0
 # Собрать все тестовые окружения
-docker exec -it db6366f120ee /bin/sh -c 'cd tests; ./../vendor/bin/codecept build'
+docker exec -it app ./vendor/bin/codecept build -c tests
 # И запустить собственно процесс тестирования
-docker exec -it db6366f120ee /bin/sh -c 'cd tests; ./../vendor/bin/codecept run'
+docker exec -it app ./vendor/bin/codecept run -c tests
 ```

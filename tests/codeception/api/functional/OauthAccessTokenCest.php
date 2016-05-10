@@ -1,7 +1,6 @@
 <?php
 namespace tests\codeception\api;
 
-use Codeception\Scenario;
 use tests\codeception\api\_pages\OauthRoute;
 use tests\codeception\api\functional\_steps\OauthSteps;
 use Yii;
@@ -38,8 +37,7 @@ class OauthAccessTokenCest {
         ]);
     }
 
-    public function testIssueToken(FunctionalTester $I, Scenario $scenario) {
-        $I = new OauthSteps($scenario);
+    public function testIssueToken(OauthSteps $I) {
         $authCode = $I->getAuthCode();
         $this->route->issueToken($this->buildParams(
             $authCode,
@@ -56,8 +54,7 @@ class OauthAccessTokenCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.expires_in');
     }
 
-    public function testIssueTokenWithRefreshToken(FunctionalTester $I, Scenario $scenario) {
-        $I = new OauthSteps($scenario);
+    public function testIssueTokenWithRefreshToken(OauthSteps $I) {
         $authCode = $I->getAuthCode(false);
         $this->route->issueToken($this->buildParams(
             $authCode,

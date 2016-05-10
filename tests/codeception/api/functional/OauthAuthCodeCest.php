@@ -2,7 +2,6 @@
 namespace tests\codeception\api;
 
 use tests\codeception\api\_pages\OauthRoute;
-use tests\codeception\api\functional\_steps\AccountSteps;
 use Yii;
 
 class OauthAuthCodeCest {
@@ -54,6 +53,7 @@ class OauthAuthCodeCest {
     }
 
     public function testValidateWithDescriptionReplaceRequest(FunctionalTester $I) {
+        $I->loggedInAsActiveAccount();
         $I->wantTo('validate and get information with description replacement');
         $this->route->validate($this->buildQueryParams(
             'ely',
@@ -74,15 +74,13 @@ class OauthAuthCodeCest {
         ]);
     }
 
-    public function testCompleteValidationAction($I, $scenario) {
-        $I = new AccountSteps($scenario);
+    public function testCompleteValidationAction(FunctionalTester $I) {
         $I->loggedInAsActiveAccount();
         $I->wantTo('validate all oAuth params on complete request');
         $this->testOauthParamsValidation($I, 'complete');
     }
 
-    public function testCompleteActionOnWrongConditions($I, $scenario) {
-        $I = new AccountSteps($scenario);
+    public function testCompleteActionOnWrongConditions(FunctionalTester $I) {
         $I->loggedInAsActiveAccount();
 
         $I->wantTo('get accept_required if I dom\'t require any scope, but this is first time request');
@@ -116,10 +114,8 @@ class OauthAuthCodeCest {
         ]);
     }
 
-    public function testCompleteActionSuccess($I, $scenario) {
-        $I = new AccountSteps($scenario);
+    public function testCompleteActionSuccess(FunctionalTester $I) {
         $I->loggedInAsActiveAccount();
-
         $I->wantTo('get auth code if I require some scope and pass accept field');
         $this->route->complete($this->buildQueryParams(
             'ely',
@@ -161,8 +157,7 @@ class OauthAuthCodeCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
     }
 
-    public function testAcceptRequiredOnNewScope($I, $scenario) {
-        $I = new AccountSteps($scenario);
+    public function testAcceptRequiredOnNewScope(FunctionalTester $I) {
         $I->loggedInAsActiveAccount();
         $I->wantTo('get accept_required if I have previous successful request, but now require some new scope');
         $this->route->complete($this->buildQueryParams(
@@ -186,8 +181,7 @@ class OauthAuthCodeCest {
         ]);
     }
 
-    public function testCompleteActionWithDismissState($I, $scenario) {
-        $I = new AccountSteps($scenario);
+    public function testCompleteActionWithDismissState(FunctionalTester $I) {
         $I->loggedInAsActiveAccount();
         $I->wantTo('get access_denied error if I pass accept in false state');
         $this->route->complete($this->buildQueryParams(
