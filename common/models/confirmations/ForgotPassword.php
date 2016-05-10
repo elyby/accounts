@@ -4,7 +4,7 @@ namespace common\models\confirmations;
 use common\models\EmailActivation;
 use yii\helpers\ArrayHelper;
 
-class RecoverPassword extends EmailActivation {
+class ForgotPassword extends EmailActivation {
 
     public function behaviors() {
         return ArrayHelper::merge(parent::behaviors(), [

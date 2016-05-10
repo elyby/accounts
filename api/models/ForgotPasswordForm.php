@@ -5,7 +5,7 @@ use api\models\base\ApiForm;
 use api\traits\AccountFinder;
 use common\components\UserFriendlyRandomKey;
 use common\models\Account;
-use common\models\confirmations\RecoverPassword;
+use common\models\confirmations\ForgotPassword;
 use common\models\EmailActivation;
 use Yii;
 use yii\base\ErrorException;
@@ -59,7 +59,7 @@ class ForgotPasswordForm extends ApiForm {
         $account = $this->getAccount();
         $emailActivation = $this->getEmailActivation();
         if ($emailActivation === null) {
-            $emailActivation = new RecoverPassword();
+            $emailActivation = new ForgotPassword();
             $emailActivation->account_id = $account->id;
         } else {
             $emailActivation->created_at = time();

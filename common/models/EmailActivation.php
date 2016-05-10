@@ -73,7 +73,7 @@ class EmailActivation extends ActiveRecord {
     public static function getClassMap() {
         return [
             self::TYPE_REGISTRATION_EMAIL_CONFIRMATION => confirmations\RegistrationConfirmation::class,
-            self::TYPE_FORGOT_PASSWORD_KEY => confirmations\RecoverPassword::class,
+            self::TYPE_FORGOT_PASSWORD_KEY => confirmations\ForgotPassword::class,
         ];
     }
 

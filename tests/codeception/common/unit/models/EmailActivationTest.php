@@ -2,7 +2,7 @@
 namespace codeception\common\unit\models;
 
 use Codeception\Specify;
-use common\models\confirmations\RecoverPassword;
+use common\models\confirmations\ForgotPassword;
 use common\models\confirmations\RegistrationConfirmation;
 use common\models\EmailActivation;
 use tests\codeception\common\fixtures\EmailActivationFixture;
@@ -27,7 +27,7 @@ class EmailActivationTest extends DbTestCase {
             ]))->isInstanceOf(RegistrationConfirmation::class);
             expect(EmailActivation::findOne([
                 'type' => EmailActivation::TYPE_FORGOT_PASSWORD_KEY,
-            ]))->isInstanceOf(RecoverPassword::class);
+            ]))->isInstanceOf(ForgotPassword::class);
         });
     }
 

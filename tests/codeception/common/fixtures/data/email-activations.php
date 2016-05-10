@@ -22,6 +22,6 @@ return [
         'key' => 'H25HBDCHHAG2HGHGHS',
         'account_id' => 6,
         'type' => \common\models\EmailActivation::TYPE_FORGOT_PASSWORD_KEY,
-        'created_at' => time() - (new \common\models\confirmations\RecoverPassword())->repeatTimeout - 10,
+        'created_at' => time() - (new \common\models\confirmations\ForgotPassword())->repeatTimeout - 10,
     ],
 ];
