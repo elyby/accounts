@@ -1,12 +1,12 @@
 <?php
 namespace tests\codeception\api;
 
-use tests\codeception\api\_pages\LoginRoute;
+use tests\codeception\api\_pages\AuthenticationRoute;
 
 class LoginCest {
 
     public function testLoginEmailOrUsername(FunctionalTester $I) {
-        $route = new LoginRoute($I);
+        $route = new AuthenticationRoute($I);
 
         $I->wantTo('see error.login_required expected if login is not set');
         $route->login();
@@ -61,7 +61,7 @@ class LoginCest {
     }
 
     public function testLoginPassword(FunctionalTester $I) {
-        $route = new LoginRoute($I);
+        $route = new AuthenticationRoute($I);
 
         $I->wantTo('see password doesn\'t have errors if email or username not set');
         $route->login();
@@ -104,7 +104,7 @@ class LoginCest {
     }
 
     public function testLoginByUsernameCorrect(FunctionalTester $I) {
-        $route = new LoginRoute($I);
+        $route = new AuthenticationRoute($I);
 
         $I->wantTo('login into account using correct username and password');
         $route->login('Admin', 'password_0');
@@ -116,7 +116,7 @@ class LoginCest {
     }
 
     public function testLoginByEmailCorrect(FunctionalTester $I) {
-        $route = new LoginRoute($I);
+        $route = new AuthenticationRoute($I);
 
         $I->wantTo('login into account using correct email and password');
         $route->login('admin@ely.by', 'password_0');
@@ -127,7 +127,7 @@ class LoginCest {
     }
 
     public function testLoginInAccWithPasswordMethod(FunctionalTester $I) {
-        $route = new LoginRoute($I);
+        $route = new AuthenticationRoute($I);
 
         $I->wantTo('login into account with old password hash function using correct username and password');
         $route->login('AccWithOldPassword', '12345678');

@@ -1,7 +1,7 @@
 <?php
 namespace tests\codeception\api;
 
-use tests\codeception\api\_pages\LoginRoute;
+use tests\codeception\api\_pages\AuthenticationRoute;
 
 /**
  * Inherited Methods
@@ -23,7 +23,7 @@ class FunctionalTester extends \Codeception\Actor {
 
     public function loggedInAsActiveAccount() {
         $I = $this;
-        $route = new LoginRoute($I);
+        $route = new AuthenticationRoute($I);
         $route->login('Admin', 'password_0');
         $I->canSeeResponseIsJson();
         $I->canSeeResponseJsonMatchesJsonPath('$.jwt');

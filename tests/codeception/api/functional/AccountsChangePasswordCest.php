@@ -4,7 +4,7 @@ namespace tests\codeception\api\functional;
 use Codeception\Specify;
 use common\models\Account;
 use tests\codeception\api\_pages\AccountsRoute;
-use tests\codeception\api\_pages\LoginRoute;
+use tests\codeception\api\_pages\AuthenticationRoute;
 use tests\codeception\api\FunctionalTester;
 
 class AccountsChangePasswordCest {
@@ -38,7 +38,7 @@ class AccountsChangePasswordCest {
 
         $I->notLoggedIn();
 
-        $loginRoute = new LoginRoute($I);
+        $loginRoute = new AuthenticationRoute($I);
         $loginRoute->login('Admin', 'new-password');
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseContainsJson([
