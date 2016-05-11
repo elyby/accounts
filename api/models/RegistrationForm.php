@@ -7,6 +7,7 @@ use common\components\UserFriendlyRandomKey;
 use common\models\Account;
 use common\models\confirmations\RegistrationConfirmation;
 use common\models\EmailActivation;
+use common\validators\PasswordValidate;
 use Ramsey\Uuid\Uuid;
 use Yii;
 use yii\base\ErrorException;
@@ -30,7 +31,7 @@ class RegistrationForm extends ApiForm {
 
             ['password', 'required', 'message' => 'error.password_required'],
             ['rePassword', 'required', 'message' => 'error.rePassword_required'],
-            ['password', 'string', 'min' => 8, 'tooShort' => 'error.password_too_short'],
+            ['password', PasswordValidate::class],
             ['rePassword', 'validatePasswordAndRePasswordMatch'],
         ];
     }

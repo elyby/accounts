@@ -23,4 +23,13 @@ class AuthenticationRoute extends BasePage {
         ]);
     }
 
+    public function recoverPassword($key = null, $newPassword = null, $newRePassword = null) {
+        $this->route = ['authentication/recover-password'];
+        $this->actor->sendPOST($this->getUrl(), [
+            'key' => $key,
+            'newPassword' => $newPassword,
+            'newRePassword' => $newRePassword,
+        ]);
+    }
+
 }

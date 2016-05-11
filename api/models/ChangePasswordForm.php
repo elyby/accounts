@@ -1,9 +1,9 @@
 <?php
 namespace api\models;
 
-use api\models\base\ApiForm;
 use api\models\base\PasswordProtectedForm;
 use common\models\Account;
+use common\validators\PasswordValidate;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -25,9 +25,8 @@ class ChangePasswordForm extends PasswordProtectedForm {
      */
     public function rules() {
         return ArrayHelper::merge(parent::rules(), [
-            ['newPassword', 'required', 'message' => 'error.newPassword_required'],
-            ['newRePassword', 'required', 'message' => 'error.newRePassword_required'],
-            ['newPassword', 'string', 'min' => 8, 'tooShort' => 'error.password_too_short'],
+            [['newPassword', 'newRePassword'], 'required', 'message' => 'error.{attribute}_required'],
+            ['newPassword', PasswordValidate::class],
             ['newRePassword', 'validatePasswordAndRePasswordMatch'],
             ['logoutAll', 'boolean'],
         ]);

@@ -3,6 +3,7 @@ namespace api\controllers;
 
 use api\models\ForgotPasswordForm;
 use api\models\LoginForm;
+use api\models\RecoverPasswordForm;
 use common\helpers\StringHelper;
 use Yii;
 use yii\filters\AccessControl;
@@ -13,13 +14,13 @@ class AuthenticationController extends Controller {
     public function behaviors() {
         return ArrayHelper::merge(parent::behaviors(), [
             'authenticator' => [
-                'except' => ['login', 'forgot-password'],
+                'except' => ['login', 'forgot-password', 'recover-password'],
             ],
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['login', 'forgot-password'],
+                        'actions' => ['login', 'forgot-password', 'recover-password'],
                         'allow' => true,
                         'roles' => ['?'],
                     ],
@@ -32,6 +33,7 @@ class AuthenticationController extends Controller {
         return [
             'login' => ['POST'],
             'forgot-password' => ['POST'],
+            'recover-password' => ['POST'],
         ];
     }
 
@@ -91,6 +93,22 @@ class AuthenticationController extends Controller {
         }
 
         return $response;
+    }
+
+    public function actionRecoverPassword() {
+        $model = new RecoverPasswordForm();
+        $model->load(Yii::$app->request->post());
+        if (($jwt = $model->recoverPassword()) === false) {
+            return [
+                'success' => false,
+                'errors' => $this->normalizeModelErrors($model->getErrors()),
+            ];
+        }
+
+        return [
+            'success' => true,
+            'jwt' => $jwt,
+        ];
     }
 
 }
