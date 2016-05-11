@@ -14,6 +14,7 @@ class KeyConfirmationForm extends ApiForm {
             // TODO: нужно провалидировать количество попыток ввода кода для определённого IP адреса и в случае чего запросить капчу
             ['key', 'required', 'message' => 'error.key_is_required'],
             ['key', 'validateKey'],
+            ['key', 'validateKeyExpiration'],
         ];
     }
 
@@ -21,6 +22,14 @@ class KeyConfirmationForm extends ApiForm {
         if (!$this->hasErrors()) {
             if ($this->getActivationCodeModel() === null) {
                 $this->addError($attribute, "error.{$attribute}_not_exists");
+            }
+        }
+    }
+
+    public function validateKeyExpiration($attribute) {
+        if (!$this->hasErrors()) {
+            if ($this->getActivationCodeModel()->isExpired()) {
+                $this->addError($attribute, "error.{$attribute}_expire");
             }
         }
     }
