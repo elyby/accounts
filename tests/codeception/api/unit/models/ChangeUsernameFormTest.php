@@ -10,7 +10,7 @@ use tests\codeception\common\fixtures\AccountFixture;
 use Yii;
 
 /**
- * @property array $accounts
+ * @property AccountFixture $accounts
  */
 class ChangeUsernameFormTest extends DbTestCase {
     use Specify;
@@ -26,52 +26,94 @@ class ChangeUsernameFormTest extends DbTestCase {
 
     public function testChange() {
         $this->specify('successfully change username to new one', function() {
-            $model = new DummyChangeUsernameForm([
+            $model = $this->createModel([
                 'password' => 'password_0',
                 'username' => 'my_new_nickname',
             ]);
             expect($model->change())->true();
-            expect(Account::findOne(1)->username)->equals('my_new_nickname');
+            expect(Account::findOne($this->getAccountId())->username)->equals('my_new_nickname');
             expect(UsernameHistory::findOne(['username' => 'my_new_nickname']))->isInstanceOf(UsernameHistory::class);
         });
     }
 
-    public function testUsernameUnavailable() {
+    public function testChangeWithoutChange() {
+        $this->scenario->incomplete('This test is written invalid');
+        return;
+
+        // TODO: этот тест написан неправильно - запись всё равно добавляется в базу данных, но тест не замечает
+        /** @noinspection PhpUnreachableStatementInspection */
+        $this->specify('no new UsernameHistory record, if we don\'t change nickname', function() {
+            $model = $this->createModel([
+                'password' => 'password_0',
+                'username' => $this->accounts['admin']['username'],
+            ]);
+            $callTime = time();
+            expect($model->change())->true();
+            expect(UsernameHistory::findOne([
+                'AND',
+                'username' => $this->accounts['admin']['username'],
+                ['>=', 'applied_in', $callTime - 5],
+            ]))->null();
+        });
+    }
+
+    public function testChangeCase() {
+        $this->specify('username should change, if we change case of some letters', function() {
+            $newUsername = mb_strtoupper($this->accounts['admin']['username']);
+            $model = $this->createModel([
+                'password' => 'password_0',
+                'username' => $newUsername,
+            ]);
+            expect($model->change())->true();
+            expect(Account::findOne($this->getAccountId())->username)->equals($newUsername);
+            expect(UsernameHistory::findOne(['username' => $newUsername]))->isInstanceOf(UsernameHistory::class);
+        });
+    }
+
+    public function testValidateUsername() {
         $this->specify('error.username_not_available expected if username is already taken', function() {
-            $model = new DummyChangeUsernameForm([
+            $model = $this->createModel([
                 'password' => 'password_0',
                 'username' => 'Jon',
             ]);
-            $model->validate();
+            $model->validateUsername('username');
             expect($model->getErrors('username'))->equals(['error.username_not_available']);
         });
 
         $this->specify('error.username_not_available is NOT expected if username is already taken by CURRENT user', function() {
-            $model = new DummyChangeUsernameForm([
+            $model = $this->createModel([
                 'password' => 'password_0',
-                'username' => 'Admin',
+                'username' => $this->accounts['admin']['username'],
             ]);
-            $model->validate();
-            expect($model->getErrors('username'))->equals([]);
+            $model->validateUsername('username');
+            expect($model->getErrors('username'))->isEmpty();
         });
     }
 
     public function testCreateTask() {
-        $model = new DummyChangeUsernameForm();
+        $model = $this->createModel();
         $model->createTask('1', 'test1', 'test');
         // TODO: у меня пока нет идей о том, чтобы это как-то успешно протестировать, увы
         // но по крайней мере можно убедиться, что оно не падает где-то на этом шаге
     }
 
-}
+    private function createModel(array $params = []) : ChangeUsernameForm {
+        /** @noinspection PhpUnusedLocalVariableInspection */
+        $params = array_merge($params, [
+            'accountId' => $this->getAccountId(),
+        ]);
 
-// TODO: тут образуется магическая переменная 1, что не круто. После перехода на php7 можно заюзать анонимный класс
-// и создавать модель прямо внутри теста, где доступен объект фикстур с именами переменных
+        return new class($params) extends ChangeUsernameForm {
+            public $accountId;
 
-class DummyChangeUsernameForm extends ChangeUsernameForm {
+            protected function getAccount() {
+                return Account::findOne($this->accountId);
+            }
+        };
+    }
 
-    protected function getAccount() {
-        return Account::findOne(1);
+    private function getAccountId() {
+        return $this->accounts['admin']['id'];
     }
 
 }

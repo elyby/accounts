@@ -13,7 +13,7 @@ return [
     'controllerNamespace' => 'api\controllers',
     'components' => [
         'user' => [
-            'identityClass' => \common\models\Account::class,
+            'identityClass' => \api\models\AccountIdentity::class,
             'enableSession' => false,
             'loginUrl' => null,
         ],
@@ -21,7 +21,7 @@ return [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
                 [
-                    'class' => 'yii\log\FileTarget',
+                    'class' => \yii\log\FileTarget::class,
                     'levels' => ['error', 'warning'],
                 ],
             ],

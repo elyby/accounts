@@ -3,7 +3,6 @@ namespace api\models;
 
 use api\models\base\PasswordProtectedForm;
 use common\helpers\Amqp;
-use common\models\Account;
 use common\models\amqp\UsernameChanged;
 use common\models\UsernameHistory;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -23,7 +22,7 @@ class ChangeUsernameForm extends PasswordProtectedForm {
     }
 
     public function validateUsername($attribute) {
-        $account = new Account();
+        $account = $this->getAccount();
         $account->username = $this->$attribute;
         if (!$account->validate(['username'])) {
             $this->addErrors($account->getErrors());

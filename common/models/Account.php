@@ -2,28 +2,26 @@
 namespace common\models;
 
 use common\components\UserPass;
-use damirka\JWT\UserTrait;
+use damirka\JWT\UserTrait as UserJWTTrait;
 use Ely\Yii2\TempmailValidator;
 use Yii;
 use yii\base\InvalidConfigException;
-use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
-use yii\web\IdentityInterface;
 
 /**
  * Поля модели:
  * @property integer $id
  * @property string  $uuid
  * @property string  $username
- * @property string            $email
- * @property string            $password_hash
- * @property integer           $password_hash_strategy
- * @property string            $password_reset_token
- * @property integer           $status
- * @property integer           $created_at
- * @property integer           $updated_at
- * @property integer           $password_changed_at
+ * @property string  $email
+ * @property string  $password_hash
+ * @property integer $password_hash_strategy
+ * @property string  $password_reset_token
+ * @property integer $status
+ * @property integer $created_at
+ * @property integer $updated_at
+ * @property integer $password_changed_at
  *
  * Геттеры-сеттеры:
  * @property string            $password пароль пользователя (только для записи)
@@ -36,8 +34,8 @@ use yii\web\IdentityInterface;
  * Поведения:
  * @mixin TimestampBehavior
  */
-class Account extends ActiveRecord implements IdentityInterface {
-    use UserTrait;
+class Account extends ActiveRecord {
+    use UserJWTTrait;
 
     const STATUS_DELETED = -10;
     const STATUS_REGISTERED = 0;
@@ -52,7 +50,7 @@ class Account extends ActiveRecord implements IdentityInterface {
 
     public function behaviors() {
         return [
-            TimestampBehavior::className(),
+            TimestampBehavior::class,
         ];
     }
 
@@ -76,74 +74,6 @@ class Account extends ActiveRecord implements IdentityInterface {
             [['email'], TempmailValidator::class, 'message' => 'error.email_is_tempmail'],
             [['email'], 'unique', 'message' => 'error.email_not_available'],
         ];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public static function findIdentity($id) {
-        return static::findOne(['id' => $id]);
-    }
-
-    /**
-     * Finds user by password reset token
-     *
-     * @param string $token password reset token
-     *
-     * @return static|null
-     *
-     * TODO: этот метод нужно убрать из базовой модели
-     */
-    public static function findByPasswordResetToken($token) {
-        if (!static::isPasswordResetTokenValid($token)) {
-            return null;
-        }
-
-        return static::findOne([
-            'password_reset_token' => $token,
-            'status' => self::STATUS_ACTIVE,
-        ]);
-    }
-
-    /**
-     * Finds out if password reset token is valid
-     *
-     * @param string $token password reset token
-     *
-     * @return boolean
-     *
-     * TODO: этот метод нужно убрать из базовой модели
-     */
-    public static function isPasswordResetTokenValid($token) {
-        if (empty($token)) {
-            return false;
-        }
-
-        $timestamp = (int) substr($token, strrpos($token, '_') + 1);
-        $expire = Yii::$app->params['user.passwordResetTokenExpire'];
-
-        return $timestamp + $expire >= time();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getId() {
-        return $this->getPrimaryKey();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getAuthKey() {
-        throw new NotSupportedException('This method used for cookie auth, except we using JWT tokens');
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function validateAuthKey($authKey) {
-        return $this->getAuthKey() === $authKey;
     }
 
     /**
@@ -181,24 +111,6 @@ class Account extends ActiveRecord implements IdentityInterface {
         $this->password_hash_strategy = self::PASS_HASH_STRATEGY_YII2;
         $this->password_hash = Yii::$app->security->generatePasswordHash($password);
         $this->password_changed_at = time();
-    }
-
-    /**
-     * Generates new password reset token
-     *
-     * TODO: этот метод нужно отсюда убрать
-     */
-    public function generatePasswordResetToken() {
-        $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
-    }
-
-    /**
-     * Removes password reset token
-     *
-     * TODO: этот метод нужно отсюда убрать
-     */
-    public function removePasswordResetToken() {
-        $this->password_reset_token = null;
     }
 
     public function getEmailActivations() {
@@ -264,6 +176,15 @@ class Account extends ActiveRecord implements IdentityInterface {
         return MojangUsername::find()
             ->andWhere(['username' => $this->username])
             ->exists();
+    }
+
+    /**
+     * TODO: нужно создать PR в UserTrait репо, чтобы этот метод сделали абстрактным
+     *
+     * @return int
+     */
+    public function getId() {
+        return $this->getPrimaryKey();
     }
 
 }
