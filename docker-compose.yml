@@ -60,3 +60,15 @@ services:
         build: ./docker/rabbitmq
         ports:
             - "15672:15672"
+
+    phpmyadmin:
+        build: ./docker/phpmyadmin
+        environment:
+            - PMA_ARBITRARY=1
+            - PMA_USER=root
+            - PMA_PASSWORD=
+        restart: always
+        ports:
+            - "8181:80"
+        links:
+            - db
