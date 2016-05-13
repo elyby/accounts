@@ -7,7 +7,7 @@ return [
         'email' => 'admin@ely.by',
         'password_hash' => '$2y$13$CXT0Rkle1EMJ/c1l5bylL.EylfmQ39O5JlHJVFpNn618OUS1HwaIi', # password_0
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
-        'password_reset_token' => null,
+        'lang' => 'en',
         'status' => \common\models\Account::STATUS_ACTIVE,
         'created_at' => 1451775316,
         'updated_at' => 1451775316,
@@ -20,7 +20,7 @@ return [
         'email' => 'erickskrauch123@yandex.ru',
         'password_hash' => '133c00c463cbd3e491c28cb653ce4718', # 12345678
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_OLD_ELY,
-        'password_reset_token' => null,
+        'lang' => 'en',
         'status' => \common\models\Account::STATUS_ACTIVE,
         'created_at' => 1385225069,
         'updated_at' => 1385225069,
@@ -33,7 +33,7 @@ return [
         'email' => 'achristiansen@gmail.com',
         'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
-        'password_reset_token' => null,
+        'lang' => 'en',
         'status' => \common\models\Account::STATUS_REGISTERED,
         'created_at' => 1453146616,
         'updated_at' => 1453146616,
@@ -46,7 +46,7 @@ return [
         'email' => 'jon@ely.by',
         'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
-        'password_reset_token' => null,
+        'lang' => 'en',
         'status' => \common\models\Account::STATUS_REGISTERED,
         'created_at' => 1457890086,
         'updated_at' => 1457890086,
@@ -58,7 +58,7 @@ return [
         'email' => 'notch@mojang.com',
         'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
-        'password_reset_token' => null,
+        'lang' => 'en',
         'status' => \common\models\Account::STATUS_ACTIVE,
         'created_at' => 1462891432,
         'updated_at' => 1462891432,
@@ -70,7 +70,7 @@ return [
         'email' => '23derevo@gmail.com',
         'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
-        'password_reset_token' => null,
+        'lang' => 'en',
         'status' => \common\models\Account::STATUS_ACTIVE,
         'created_at' => 1462891612,
         'updated_at' => 1462891612,

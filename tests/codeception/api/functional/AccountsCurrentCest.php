@@ -26,8 +26,12 @@ class AccountsCurrentCest {
             'id' => 1,
             'username' => 'Admin',
             'email' => 'admin@ely.by',
+            'lang' => 'en',
             'shouldChangePassword' => false,
+            'isActive' => true,
+            'hasMojangUsernameCollision' => false,
         ]);
+        $I->canSeeResponseJsonMatchesJsonPath('$.passwordChangedAt');
     }
 
 }

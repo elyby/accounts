@@ -3,8 +3,8 @@
 
 # vendor будет заполнен уже внутри контейнера
 vendor
-# frontend и его node_modules внутри контейнера не нужны
-frontend
+# node_modules для этого контейнера не нужны
+node_modules
 
 # Все -local файлы
 */config/*-local.php

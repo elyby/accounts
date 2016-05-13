@@ -214,6 +214,7 @@ class RegisterCest {
             'password' => 'some_password',
             'rePassword' => 'some_password',
             'rulesAgreement' => true,
+            'lang' => 'ru',
         ]);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();

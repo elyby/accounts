@@ -2,6 +2,7 @@
 namespace common\models;
 
 use common\components\UserPass;
+use common\validators\LanguageValidator;
 use damirka\JWT\UserTrait as UserJWTTrait;
 use Ely\Yii2\TempmailValidator;
 use Yii;
@@ -17,7 +18,7 @@ use yii\db\ActiveRecord;
  * @property string  $email
  * @property string  $password_hash
  * @property integer $password_hash_strategy
- * @property string  $password_reset_token
+ * @property string  $lang
  * @property integer $status
  * @property integer $created_at
  * @property integer $updated_at
@@ -73,6 +74,9 @@ class Account extends ActiveRecord {
             [['email'], 'email', 'checkDNS' => true, 'enableIDN' => true, 'message' => 'error.email_invalid'],
             [['email'], TempmailValidator::class, 'message' => 'error.email_is_tempmail'],
             [['email'], 'unique', 'message' => 'error.email_not_available'],
+
+            [['lang'], LanguageValidator::class],
+            [['lang'], 'default', 'value' => 'en'],
         ];
     }
 

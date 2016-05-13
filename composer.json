@@ -15,7 +15,7 @@
     "minimum-stability": "stable",
     "require": {
         "php": "~7.0.6",
-        "yiisoft/yii2": "~2.0.6",
+        "yiisoft/yii2": "~2.0.8",
         "yiisoft/yii2-bootstrap": "*",
         "yiisoft/yii2-swiftmailer": "*",
         "ramsey/uuid": "~3.1",

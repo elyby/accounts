@@ -68,19 +68,43 @@ class RegistrationFormTest extends DbTestCase {
             'password' => 'some_password',
             'rePassword' => 'some_password',
             'rulesAgreement' => true,
+            'lang' => 'ru',
         ]);
 
-        $user = $model->signup();
+        $account = $model->signup();
 
-        expect('user should be valid', $user)->isInstanceOf(Account::class);
-        expect('password should be correct', $user->validatePassword('some_password'))->true();
-        expect('uuid is set', $user->uuid)->notEmpty();
+        $this->expectSuccessRegistration($account);
+        expect('lang is set', $account->lang)->equals('ru');
+    }
+
+    public function testSignupWithDefaultLanguage() {
+        $model = new RegistrationForm([
+            'username' => 'some_username',
+            'email' => 'some_email@example.com',
+            'password' => 'some_password',
+            'rePassword' => 'some_password',
+            'rulesAgreement' => true,
+        ]);
+
+        $account = $model->signup();
+
+        $this->expectSuccessRegistration($account);
+        expect('lang is set', $account->lang)->equals('en');
+    }
+
+    /**
+     * @param Account|null $account
+     */
+    private function expectSuccessRegistration($account) {
+        expect('user should be valid', $account)->isInstanceOf(Account::class);
+        expect('password should be correct', $account->validatePassword('some_password'))->true();
+        expect('uuid is set', $account->uuid)->notEmpty();
         expect('user model exists in database', Account::find()->andWhere([
             'username' => 'some_username',
             'email' => 'some_email@example.com',
         ])->exists())->true();
         expect('email activation code exists in database', EmailActivation::find()->andWhere([
-            'account_id' => $user->id,
+            'account_id' => $account->id,
             'type' => EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION,
         ])->exists())->true();
         expect_file('message file exists', $this->getMessageFile())->exists();

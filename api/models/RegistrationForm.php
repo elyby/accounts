@@ -7,6 +7,7 @@ use common\components\UserFriendlyRandomKey;
 use common\models\Account;
 use common\models\confirmations\RegistrationConfirmation;
 use common\models\EmailActivation;
+use common\validators\LanguageValidator;
 use common\validators\PasswordValidate;
 use Ramsey\Uuid\Uuid;
 use Yii;
@@ -20,6 +21,7 @@ class RegistrationForm extends ApiForm {
     public $password;
     public $rePassword;
     public $rulesAgreement;
+    public $lang;
 
     public function rules() {
         return [
@@ -33,6 +35,8 @@ class RegistrationForm extends ApiForm {
             ['rePassword', 'required', 'message' => 'error.rePassword_required'],
             ['password', PasswordValidate::class],
             ['rePassword', 'validatePasswordAndRePasswordMatch'],
+
+            ['lang', LanguageValidator::class],
         ];
     }
 
@@ -75,6 +79,7 @@ class RegistrationForm extends ApiForm {
             $account->email = $this->email;
             $account->username = $this->username;
             $account->password = $this->password;
+            $account->lang = $this->lang;
             $account->status = Account::STATUS_REGISTERED;
             if (!$account->save()) {
                 throw new ErrorException('Account not created.');
