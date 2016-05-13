@@ -1,7 +1,7 @@
 <?php
-namespace tests\codeception\api\models;
+namespace tests\codeception\api\models\authentication;
 
-use api\models\ConfirmEmailForm;
+use api\models\authentication\ConfirmEmailForm;
 use Codeception\Specify;
 use common\models\Account;
 use common\models\EmailActivation;
@@ -10,7 +10,7 @@ use tests\codeception\common\fixtures\EmailActivationFixture;
 use Yii;
 
 /**
- * @property array $emailActivations
+ * @property EmailActivationFixture $emailActivations
  */
 class ConfirmEmailFormTest extends DbTestCase {
     use Specify;

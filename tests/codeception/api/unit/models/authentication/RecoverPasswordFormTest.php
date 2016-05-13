@@ -1,7 +1,7 @@
 <?php
-namespace tests\codeception\api\models;
+namespace tests\codeception\api\models\authentication;
 
-use api\models\RecoverPasswordForm;
+use api\models\authentication\RecoverPasswordForm;
 use Codeception\Specify;
 use common\models\Account;
 use common\models\EmailActivation;
@@ -10,7 +10,7 @@ use tests\codeception\common\fixtures\EmailActivationFixture;
 use Yii;
 
 /**
- * @property array $emailActivations
+ * @property EmailActivationFixture $emailActivations
  */
 class RecoverPasswordFormTest extends DbTestCase {
     use Specify;

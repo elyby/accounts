@@ -1,7 +1,7 @@
 <?php
-namespace tests\codeception\api\models;
+namespace tests\codeception\api\models\authentication;
 
-use api\models\RegistrationForm;
+use api\models\authentication\RegistrationForm;
 use Codeception\Specify;
 use common\models\Account;
 use common\models\EmailActivation;

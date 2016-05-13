@@ -1,7 +1,7 @@
 <?php
-namespace tests\codeception\api\models;
+namespace tests\codeception\api\models\profile;
 
-use api\models\ChangePasswordForm;
+use api\models\profile\ChangePasswordForm;
 use Codeception\Specify;
 use common\models\Account;
 use tests\codeception\api\unit\DbTestCase;

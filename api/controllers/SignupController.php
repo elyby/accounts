@@ -1,9 +1,9 @@
 <?php
 namespace api\controllers;
 
-use api\models\ConfirmEmailForm;
-use api\models\RepeatAccountActivationForm;
-use api\models\RegistrationForm;
+use api\models\authentication\ConfirmEmailForm;
+use api\models\authentication\RepeatAccountActivationForm;
+use api\models\authentication\RegistrationForm;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;

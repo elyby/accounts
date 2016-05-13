@@ -1,7 +1,7 @@
 <?php
-namespace codeception\api\unit\models;
+namespace codeception\api\unit\models\authentication;
 
-use api\models\ForgotPasswordForm;
+use api\models\authentication\ForgotPasswordForm;
 use Codeception\Specify;
 use common\models\EmailActivation;
 use tests\codeception\api\unit\DbTestCase;
@@ -10,8 +10,8 @@ use tests\codeception\common\fixtures\EmailActivationFixture;
 use Yii;
 
 /**
- * @property array $accounts
- * @property array $emailActivations
+ * @property AccountFixture $accounts
+ * @property EmailActivationFixture $emailActivations
  */
 class ForgotPasswordFormTest extends DbTestCase {
     use Specify;
@@ -76,7 +76,7 @@ class ForgotPasswordFormTest extends DbTestCase {
 
     public function testValidateFrequency() {
         $this->specify('error.account_not_activated if recently was message', function() {
-            $model = new DummyForgotPasswordForm([
+            $model = $this->createModel([
                 'login' => $this->accounts['admin']['username'],
                 'key' => $this->emailActivations['freshPasswordRecovery']['key'],
             ]);
@@ -86,7 +86,7 @@ class ForgotPasswordFormTest extends DbTestCase {
         });
 
         $this->specify('empty errors if email was sent a long time ago', function() {
-            $model = new DummyForgotPasswordForm([
+            $model = $this->createModel([
                 'login' => $this->accounts['admin']['username'],
                 'key' => $this->emailActivations['oldPasswordRecovery']['key'],
             ]);
@@ -96,7 +96,7 @@ class ForgotPasswordFormTest extends DbTestCase {
         });
 
         $this->specify('empty errors if previous confirmation model not founded', function() {
-            $model = new DummyForgotPasswordForm([
+            $model = $this->createModel([
                 'login' => $this->accounts['admin']['username'],
                 'key' => 'invalid-key',
             ]);
@@ -136,14 +136,18 @@ class ForgotPasswordFormTest extends DbTestCase {
         return Yii::getAlias($mailer->fileTransportPath) . '/testing_message.eml';
     }
 
-}
+    /**
+     * @param array $params
+     * @return ForgotPasswordForm
+     */
+    private function createModel(array $params = []) {
+        return new class($params) extends ForgotPasswordForm {
+            public $key;
 
-class DummyForgotPasswordForm extends ForgotPasswordForm {
-
-    public $key;
-
-    public function getEmailActivation() {
-        return EmailActivation::findOne($this->key);
+            public function getEmailActivation() {
+                return EmailActivation::findOne($this->key);
+            }
+        };
     }
 
 }

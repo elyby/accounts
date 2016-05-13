@@ -1,7 +1,7 @@
 <?php
-namespace tests\codeception\api\models;
+namespace tests\codeception\api\models\profile;
 
-use api\models\ChangeUsernameForm;
+use api\models\profile\ChangeUsernameForm;
 use Codeception\Specify;
 use common\models\Account;
 use common\models\UsernameHistory;

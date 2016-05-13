@@ -1,8 +1,9 @@
 <?php
-namespace api\models;
+namespace api\models\authentication;
 
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\base\ApiForm;
+use api\models\profile\ChangeUsernameForm;
 use common\components\UserFriendlyRandomKey;
 use common\models\Account;
 use common\models\confirmations\RegistrationConfirmation;

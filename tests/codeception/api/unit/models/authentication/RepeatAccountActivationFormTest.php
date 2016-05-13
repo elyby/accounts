@@ -1,7 +1,7 @@
 <?php
-namespace tests\codeception\api\models;
+namespace tests\codeception\api\models\authentication;
 
-use api\models\RepeatAccountActivationForm;
+use api\models\authentication\RepeatAccountActivationForm;
 use Codeception\Specify;
 use common\models\EmailActivation;
 use tests\codeception\api\unit\DbTestCase;
@@ -68,7 +68,7 @@ class RepeatAccountActivationFormTest extends DbTestCase {
 
     public function testValidateExistsActivation() {
         $this->specify('error.recently_sent_message if passed email has recently sent message', function() {
-            $model = new DummyRepeatAccountActivationForm([
+            $model = $this->createModel([
                 'emailKey' => $this->activations['freshRegistrationConfirmation']['key'],
             ]);
             $model->validateExistsActivation('email');
@@ -76,7 +76,7 @@ class RepeatAccountActivationFormTest extends DbTestCase {
         });
 
         $this->specify('no errors if passed email has expired activation message', function() {
-            $model = new DummyRepeatAccountActivationForm([
+            $model = $this->createModel([
                 'emailKey' => $this->activations['oldRegistrationConfirmation']['key'],
             ]);
             $model->validateExistsActivation('email');
@@ -107,14 +107,18 @@ class RepeatAccountActivationFormTest extends DbTestCase {
         return Yii::getAlias($mailer->fileTransportPath) . '/testing_message.eml';
     }
 
-}
+    /**
+     * @param array $params
+     * @return RepeatAccountActivationForm
+     */
+    private function createModel(array $params = []) {
+        return new class($params) extends RepeatAccountActivationForm {
+            public $emailKey;
 
-class DummyRepeatAccountActivationForm extends RepeatAccountActivationForm {
-
-    public $emailKey;
-
-    public function getActivation() {
-        return EmailActivation::findOne($this->emailKey);
+            public function getActivation() {
+                return EmailActivation::findOne($this->emailKey);
+            }
+        };
     }
 
 }

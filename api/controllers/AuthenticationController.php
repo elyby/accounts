@@ -1,9 +1,9 @@
 <?php
 namespace api\controllers;
 
-use api\models\ForgotPasswordForm;
-use api\models\LoginForm;
-use api\models\RecoverPasswordForm;
+use api\models\authentication\ForgotPasswordForm;
+use api\models\authentication\LoginForm;
+use api\models\authentication\RecoverPasswordForm;
 use common\helpers\StringHelper;
 use Yii;
 use yii\filters\AccessControl;

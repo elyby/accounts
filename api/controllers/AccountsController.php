@@ -1,8 +1,8 @@
 <?php
 namespace api\controllers;
 
-use api\models\ChangePasswordForm;
-use api\models\ChangeUsernameForm;
+use api\models\profile\ChangePasswordForm;
+use api\models\profile\ChangeUsernameForm;
 use common\models\Account;
 use Yii;
 use yii\filters\AccessControl;

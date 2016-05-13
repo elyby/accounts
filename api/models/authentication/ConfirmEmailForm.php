@@ -1,5 +1,5 @@
 <?php
-namespace api\models;
+namespace api\models\authentication;
 
 use api\models\base\KeyConfirmationForm;
 use common\models\Account;

@@ -1,5 +1,5 @@
 <?php
-namespace api\models;
+namespace api\models\profile;
 
 use api\models\base\PasswordProtectedForm;
 use common\models\Account;
