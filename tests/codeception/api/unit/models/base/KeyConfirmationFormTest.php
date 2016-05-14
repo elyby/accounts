@@ -3,7 +3,6 @@ namespace tests\codeception\api\models\base;
 
 use api\models\base\KeyConfirmationForm;
 use Codeception\Specify;
-use common\models\confirmations\ForgotPassword;
 use common\models\EmailActivation;
 use tests\codeception\api\unit\DbTestCase;
 use tests\codeception\common\fixtures\EmailActivationFixture;
@@ -17,73 +16,8 @@ class KeyConfirmationFormTest extends DbTestCase {
 
     public function fixtures() {
         return [
-            'emailActivations' => [
-                'class' => EmailActivationFixture::class,
-                'dataFile' => '@tests/codeception/common/fixtures/data/email-activations.php',
-            ],
+            'emailActivations' => EmailActivationFixture::class,
         ];
-    }
-
-    public function testValidateKey() {
-        $this->specify('get error.key_not_exists with validation wrong key', function () {
-            /** @var KeyConfirmationForm $model */
-            $model = new class extends KeyConfirmationForm {
-                public function getActivationCodeModel() {
-                    return null;
-                }
-            };
-            $model->validateKey('key');
-            expect($model->errors)->equals([
-                'key' => [
-                    'error.key_not_exists',
-                ],
-            ]);
-        });
-
-        $this->specify('no errors, if model exists', function () {
-            /** @var KeyConfirmationForm $model */
-            $model = new class extends KeyConfirmationForm {
-                public function getActivationCodeModel() {
-                    return new EmailActivation();
-                }
-            };
-            $model->validateKey('key');
-            expect($model->errors)->isEmpty();
-        });
-    }
-
-    public function testValidateKeyExpiration() {
-        $this->specify('get error.key_expire if we use old key', function () {
-            /** @var KeyConfirmationForm $model */
-            $model = new class extends KeyConfirmationForm {
-                public function getActivationCodeModel() {
-                    $codeModel = new ForgotPassword();
-                    $codeModel->created_at = time() - $codeModel->expirationTimeout - 10;
-
-                    return $codeModel;
-                }
-            };
-            $model->validateKeyExpiration('key');
-            expect($model->errors)->equals([
-                'key' => [
-                    'error.key_expire',
-                ],
-            ]);
-        });
-
-        $this->specify('no errors if key is not yet expired', function () {
-            /** @var KeyConfirmationForm $model */
-            $model = new class extends KeyConfirmationForm {
-                public function getActivationCodeModel() {
-                    $codeModel = new ForgotPassword();
-                    $codeModel->created_at = time() - $codeModel->expirationTimeout + 10;
-
-                    return $codeModel;
-                }
-            };
-            $model->validateKeyExpiration('key');
-            expect($model->errors)->isEmpty();
-        });
     }
 
     public function testGetActivationCodeModel() {

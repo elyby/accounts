@@ -1,6 +1,7 @@
 <?php
 namespace api\models\base;
 
+use api\validators\EmailActivationKeyValidator;
 use common\models\EmailActivation;
 
 class KeyConfirmationForm extends ApiForm {
@@ -13,25 +14,8 @@ class KeyConfirmationForm extends ApiForm {
         return [
             // TODO: нужно провалидировать количество попыток ввода кода для определённого IP адреса и в случае чего запросить капчу
             ['key', 'required', 'message' => 'error.key_is_required'],
-            ['key', 'validateKey'],
-            ['key', 'validateKeyExpiration'],
+            ['key', EmailActivationKeyValidator::class],
         ];
-    }
-
-    public function validateKey($attribute) {
-        if (!$this->hasErrors()) {
-            if ($this->getActivationCodeModel() === null) {
-                $this->addError($attribute, "error.{$attribute}_not_exists");
-            }
-        }
-    }
-
-    public function validateKeyExpiration($attribute) {
-        if (!$this->hasErrors()) {
-            if ($this->getActivationCodeModel()->isExpired()) {
-                $this->addError($attribute, "error.{$attribute}_expire");
-            }
-        }
     }
 
     /**

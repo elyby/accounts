@@ -4,10 +4,10 @@ modules:
         - Filesystem
         - Yii2
         - tests\codeception\common\_support\FixtureHelper
-        - REST:
-            depends: Yii2
         - Redis
         - AMQP
+        - REST:
+            depends: Yii2
     config:
         Yii2:
             configFile: '../config/api/functional.php'
