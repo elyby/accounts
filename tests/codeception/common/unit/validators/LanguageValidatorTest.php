@@ -3,11 +3,12 @@ namespace codeception\common\unit\validators;
 
 use Codeception\Specify;
 use common\validators\LanguageValidator;
-use ReflectionClass;
+use tests\codeception\common\_support\ProtectedCaller;
 use tests\codeception\common\unit\TestCase;
 
 class LanguageValidatorTest extends TestCase {
     use Specify;
+    use ProtectedCaller;
 
     public function testGetFilesNames() {
         $this->specify('get list of 2 languages: ru and en', function() {
@@ -40,14 +41,6 @@ class LanguageValidatorTest extends TestCase {
                 return __DIR__ . '/../fixtures/data/i18n';
             }
         };
-    }
-
-    private function callProtected($object, string $function, ...$args) {
-        $class = new ReflectionClass($object);
-        $method = $class->getMethod($function);
-        $method->setAccessible(true);
-
-        return $method->invokeArgs($object, $args);
     }
 
 }

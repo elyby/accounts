@@ -9,7 +9,7 @@ use tests\codeception\common\fixtures\AccountFixture;
 use Yii;
 
 /**
- * @property array $accounts
+ * @property AccountFixture $accounts
  */
 class ChangePasswordFormTest extends DbTestCase {
     use Specify;

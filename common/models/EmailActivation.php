@@ -1,7 +1,9 @@
 <?php
 namespace common\models;
 
+use common\behaviors\DataBehavior;
 use common\behaviors\EmailActivationExpirationBehavior;
+use common\components\UserFriendlyRandomKey;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\behaviors\TimestampBehavior;
@@ -10,10 +12,11 @@ use yii\helpers\ArrayHelper;
 
 /**
  * Поля модели:
- * @property string   $key
- * @property integer  $account_id
- * @property integer  $type
- * @property integer  $created_at
+ * @property string  $key
+ * @property integer $account_id
+ * @property integer $type
+ * @property string  $_data
+ * @property integer $created_at
  *
  * Отношения:
  * @property Account $account
@@ -21,15 +24,14 @@ use yii\helpers\ArrayHelper;
  * Поведения:
  * @mixin TimestampBehavior
  * @mixin EmailActivationExpirationBehavior
- *
- * TODO: у модели могут быть проблемы с уникальностью, т.к. key является первичным и не автоинкрементом
- * TODO: мб стоит ловить beforeCreate и именно там генерировать уникальный ключ для модели.
- * Но опять же нужно продумать, а как пробросить формат и обеспечить преемлемую уникальность.
+ * @mixin DataBehavior
  */
 class EmailActivation extends ActiveRecord {
 
     const TYPE_REGISTRATION_EMAIL_CONFIRMATION = 0;
     const TYPE_FORGOT_PASSWORD_KEY = 1;
+    const TYPE_CURRENT_EMAIL_CONFIRMATION = 2;
+    const TYPE_NEW_EMAIL_CONFIRMATION = 3;
 
     public static function tableName() {
         return '{{%email_activations}}';
@@ -45,6 +47,10 @@ class EmailActivation extends ActiveRecord {
                 'class' => EmailActivationExpirationBehavior::class,
                 'repeatTimeout' => 5 * 60,
                 'expirationTimeout' => -1,
+            ],
+            'dataBehavior' => [
+                'class' => DataBehavior::class,
+                'attribute' => '_data',
             ],
         ];
     }
@@ -74,7 +80,23 @@ class EmailActivation extends ActiveRecord {
         return [
             self::TYPE_REGISTRATION_EMAIL_CONFIRMATION => confirmations\RegistrationConfirmation::class,
             self::TYPE_FORGOT_PASSWORD_KEY => confirmations\ForgotPassword::class,
+            self::TYPE_CURRENT_EMAIL_CONFIRMATION => confirmations\CurrentEmailConfirmation::class,
+            self::TYPE_NEW_EMAIL_CONFIRMATION => confirmations\NewEmailConfirmation::class,
         ];
+    }
+
+    public function beforeSave($insert) {
+        if (!parent::beforeSave($insert)) {
+            return false;
+        }
+
+        if ($this->key === null) {
+            do {
+                $this->key = UserFriendlyRandomKey::make();
+            } while (EmailActivation::find()->andWhere(['key' => $this->key])->exists());
+        }
+
+        return true;
     }
 
 }

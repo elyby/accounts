@@ -39,10 +39,7 @@ class RepeatAccountActivationFormTest extends DbTestCase {
                 'class' => AccountFixture::class,
                 'dataFile' => '@tests/codeception/common/fixtures/data/accounts.php',
             ],
-            'activations' => [
-                'class' => EmailActivationFixture::class,
-                'dataFile' => '@tests/codeception/common/fixtures/data/email-activations.php',
-            ],
+            'activations' => EmailActivationFixture::class,
         ];
     }
 

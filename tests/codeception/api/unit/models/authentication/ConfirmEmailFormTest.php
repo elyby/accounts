@@ -17,10 +17,7 @@ class ConfirmEmailFormTest extends DbTestCase {
 
     public function fixtures() {
         return [
-            'emailActivations' => [
-                'class' => EmailActivationFixture::class,
-                'dataFile' => '@tests/codeception/common/fixtures/data/email-activations.php',
-            ],
+            'emailActivations' => EmailActivationFixture::class,
         ];
     }
 

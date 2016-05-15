@@ -50,10 +50,7 @@ class FixtureHelper extends Module {
                 'class' => AccountFixture::class,
                 'dataFile' => '@tests/codeception/common/fixtures/data/accounts.php',
             ],
-            'emailActivations' => [
-                'class' => EmailActivationFixture::class,
-                'dataFile' => '@tests/codeception/common/fixtures/data/email-activations.php',
-            ],
+            'emailActivations' => EmailActivationFixture::class,
             'oauthClients' => [
                 'class' => OauthClientFixture::class,
                 'dataFile' => '@tests/codeception/common/fixtures/data/oauth-clients.php',
