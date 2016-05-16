@@ -35,4 +35,19 @@ class AccountsRoute extends BasePage {
         $this->actor->sendPOST($this->getUrl());
     }
 
+    public function changeEmailSubmitNewEmail($key = null, $email = null) {
+        $this->route = ['accounts/change-email-submit-new-email'];
+        $this->actor->sendPOST($this->getUrl(), [
+            'key' => $key,
+            'email' => $email,
+        ]);
+    }
+
+    public function changeEmailConfirmNewEmail($key = null) {
+        $this->route = ['accounts/change-email-confirm-new-email'];
+        $this->actor->sendPOST($this->getUrl(), [
+            'key' => $key,
+        ]);
+    }
+
 }

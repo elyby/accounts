@@ -30,9 +30,15 @@ return [
         'type' => \common\models\EmailActivation::TYPE_CURRENT_EMAIL_CONFIRMATION,
         'created_at' => time() - 10,
     ],
-    'newEmailConfirmation' => [
+    'currentChangeEmailConfirmation' => [
         'key' => 'H27HBDCHHAG2HGHGHS',
         'account_id' => 7,
+        'type' => \common\models\EmailActivation::TYPE_CURRENT_EMAIL_CONFIRMATION,
+        'created_at' => time() - 10,
+    ],
+    'newEmailConfirmation' => [
+        'key' => 'H28HBDCHHAG2HGHGHS',
+        'account_id' => 8,
         'type' => \common\models\EmailActivation::TYPE_NEW_EMAIL_CONFIRMATION,
         '_data' => serialize(['newEmail' => 'my-new-email@ely.by']),
         'created_at' => time() - 10,

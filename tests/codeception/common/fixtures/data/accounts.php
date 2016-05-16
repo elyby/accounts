@@ -75,8 +75,20 @@ return [
         'created_at' => 1462891612,
         'updated_at' => 1462891612,
     ],
-    'account-with-change-email-finish-state' => [
+    'account-with-change-email-init-state' => [
         'id' => 7,
+        'uuid' => '7d728533-847a-4661-9bc7-3df01b2282ef',
+        'username' => 'ILLIMUNATI',
+        'email' => 'illuminati@gmail.com',
+        'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
+        'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
+        'lang' => 'en',
+        'status' => \common\models\Account::STATUS_ACTIVE,
+        'created_at' => 1463427287,
+        'updated_at' => 1463427287,
+    ],
+    'account-with-change-email-finish-state' => [
+        'id' => 8,
         'uuid' => '4c34f2cc-4bd9-454b-9583-bb52f020ec16',
         'username' => 'CrafterGameplays',
         'email' => 'crafter@gmail.com',
