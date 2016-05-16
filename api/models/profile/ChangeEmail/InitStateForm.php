@@ -28,7 +28,7 @@ class InitStateForm extends ApiForm {
     public function rules() {
         // TODO: поверить наличие уже отправленных подтверждений смены E-mail
         return [
-            ['!email', 'validateAccountPasswordHashStrategy'],
+            ['!email', 'validateAccountPasswordHashStrategy', 'skipOnEmpty' => false],
         ];
     }
 

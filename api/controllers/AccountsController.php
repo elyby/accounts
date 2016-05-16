@@ -1,6 +1,9 @@
 <?php
 namespace api\controllers;
 
+use api\models\profile\ChangeEmail\ConfirmNewEmailForm;
+use api\models\profile\ChangeEmail\InitStateForm;
+use api\models\profile\ChangeEmail\NewEmailForm;
 use api\models\profile\ChangePasswordForm;
 use api\models\profile\ChangeUsernameForm;
 use common\models\Account;
@@ -21,7 +24,13 @@ class AccountsController extends Controller {
                         'roles' => ['@'],
                     ],
                     [
-                        'actions' => ['change-password', 'change-username'],
+                        'actions' => [
+                            'change-password',
+                            'change-username',
+                            'change-email-initialize',
+                            'change-email-submit-new-email',
+                            'change-email-confirm-new-email',
+                        ],
                         'allow' => true,
                         'roles' => ['@'],
                         'matchCallback' => function() {
@@ -40,6 +49,9 @@ class AccountsController extends Controller {
             'current' => ['GET'],
             'change-password' => ['POST'],
             'change-username' => ['POST'],
+            'change-email-initialize' => ['POST'],
+            'change-email-submit-new-email' => ['POST'],
+            'change-email-confirm-new-email' => ['POST'],
         ];
     }
 
@@ -89,6 +101,59 @@ class AccountsController extends Controller {
 
         return [
             'success' => true,
+        ];
+    }
+
+    public function actionChangeEmailInitialize() {
+        /** @var Account $account */
+        $account = Yii::$app->user->identity;
+        $model = new InitStateForm($account);
+        if (!$model->sendCurrentEmailConfirmation()) {
+            return [
+                'success' => false,
+                'errors' => $this->normalizeModelErrors($model->getErrors()),
+            ];
+        }
+
+        return [
+            'success' => true,
+        ];
+    }
+
+    public function actionChangeEmailSubmitNewEmail() {
+        /** @var Account $account */
+        $account = Yii::$app->user->identity;
+        $model = new NewEmailForm($account);
+        $model->load(Yii::$app->request->post());
+        if (!$model->sendNewEmailConfirmation()) {
+            return [
+                'success' => false,
+                'errors' => $this->normalizeModelErrors($model->getErrors()),
+            ];
+        }
+
+        return [
+            'success' => true,
+        ];
+    }
+
+    public function actionChangeEmailConfirmNewEmail() {
+        /** @var Account $account */
+        $account = Yii::$app->user->identity;
+        $model = new ConfirmNewEmailForm($account);
+        $model->load(Yii::$app->request->post());
+        if (!$model->changeEmail()) {
+            return [
+                'success' => false,
+                'errors' => $this->normalizeModelErrors($model->getErrors()),
+            ];
+        }
+
+        return [
+            'success' => true,
+            'data' => [
+                'email' => $account->email,
+            ],
         ];
     }
 

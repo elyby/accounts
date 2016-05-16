@@ -1,6 +1,8 @@
 <?php
 namespace tests\codeception\api;
 
+use Codeception\Actor;
+use InvalidArgumentException;
 use tests\codeception\api\_pages\AuthenticationRoute;
 
 /**
@@ -18,17 +20,23 @@ use tests\codeception\api\_pages\AuthenticationRoute;
  *
  * @SuppressWarnings(PHPMD)
 */
-class FunctionalTester extends \Codeception\Actor {
+class FunctionalTester extends Actor {
     use _generated\FunctionalTesterActions;
 
-    public function loggedInAsActiveAccount() {
-        $I = $this;
-        $route = new AuthenticationRoute($I);
-        $route->login('Admin', 'password_0');
-        $I->canSeeResponseIsJson();
-        $I->canSeeResponseJsonMatchesJsonPath('$.jwt');
-        $jwt = $I->grabDataFromResponseByJsonPath('$.jwt')[0];
-        $I->amBearerAuthenticated($jwt);
+    public function loggedInAsActiveAccount($login = null, $password = null) {
+        $route = new AuthenticationRoute($this);
+        if ($login === null) {
+            $route->login('Admin', 'password_0');
+        } elseif ($login !== null && $password !== null) {
+            $route->login($login, $password);
+        } else {
+            throw new InvalidArgumentException('login and password should be presented both.');
+        }
+
+        $this->canSeeResponseIsJson();
+        $this->canSeeResponseJsonMatchesJsonPath('$.jwt');
+        $jwt = $this->grabDataFromResponseByJsonPath('$.jwt')[0];
+        $this->amBearerAuthenticated($jwt);
     }
 
     public function notLoggedIn() {

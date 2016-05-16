@@ -30,4 +30,9 @@ class AccountsRoute extends BasePage {
         ]);
     }
 
+    public function changeEmailInitialize() {
+        $this->route = ['accounts/change-email-initialize'];
+        $this->actor->sendPOST($this->getUrl());
+    }
+
 }
