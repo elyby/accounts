@@ -32,7 +32,7 @@
         "yiisoft/yii2-gii": "*",
         "yiisoft/yii2-faker": "*",
         "flow/jsonpath": "^0.3.1",
-        "codeception/codeception": "dev-master#5584c75a85b8217bbf6b0a77f2349aef82e94a15",
+        "codeception/codeception": "2.1.x-dev",
         "codeception/specify": "*",
         "codeception/verify": "*"
     },
