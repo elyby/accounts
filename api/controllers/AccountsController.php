@@ -4,6 +4,7 @@ namespace api\controllers;
 use api\models\profile\ChangeEmail\ConfirmNewEmailForm;
 use api\models\profile\ChangeEmail\InitStateForm;
 use api\models\profile\ChangeEmail\NewEmailForm;
+use api\models\profile\ChangeLanguageForm;
 use api\models\profile\ChangePasswordForm;
 use api\models\profile\ChangeUsernameForm;
 use common\models\Account;
@@ -30,6 +31,7 @@ class AccountsController extends Controller {
                             'change-email-initialize',
                             'change-email-submit-new-email',
                             'change-email-confirm-new-email',
+                            'change-lang',
                         ],
                         'allow' => true,
                         'roles' => ['@'],
@@ -52,6 +54,7 @@ class AccountsController extends Controller {
             'change-email-initialize' => ['POST'],
             'change-email-submit-new-email' => ['POST'],
             'change-email-confirm-new-email' => ['POST'],
+            'change-lang' => ['POST'],
         ];
     }
 
@@ -154,6 +157,23 @@ class AccountsController extends Controller {
             'data' => [
                 'email' => $account->email,
             ],
+        ];
+    }
+
+    public function actionChangeLang() {
+        /** @var Account $account */
+        $account = Yii::$app->user->identity;
+        $model = new ChangeLanguageForm($account);
+        $model->load(Yii::$app->request->post());
+        if (!$model->applyLanguage()) {
+            return [
+                'success' => false,
+                'errors' => $this->normalizeModelErrors($model->getErrors()),
+            ];
+        }
+
+        return [
+            'success' => true,
         ];
     }
 

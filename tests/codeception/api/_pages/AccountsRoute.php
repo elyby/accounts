@@ -50,4 +50,11 @@ class AccountsRoute extends BasePage {
         ]);
     }
 
+    public function changeLang($lang = null) {
+        $this->route = ['accounts/change-lang'];
+        $this->actor->sendPOST($this->getUrl(), [
+            'lang' => $lang,
+        ]);
+    }
+
 }
