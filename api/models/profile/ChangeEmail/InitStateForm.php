@@ -1,7 +1,6 @@
 <?php
 namespace api\models\profile\ChangeEmail;
 
-use api\models\base\ApiForm;
 use common\models\Account;
 use common\models\confirmations\CurrentEmailConfirmation;
 use common\models\EmailActivation;
@@ -10,7 +9,7 @@ use yii\base\ErrorException;
 use yii\base\Exception;
 use yii\base\InvalidConfigException;
 
-class InitStateForm extends ApiForm {
+class InitStateForm extends \api\models\base\PasswordProtectedForm {
 
     public $email;
 
@@ -27,9 +26,9 @@ class InitStateForm extends ApiForm {
 
     public function rules() {
         // TODO: поверить наличие уже отправленных подтверждений смены E-mail
-        return [
+        return array_merge(parent::rules(), [
             ['!email', 'validateAccountPasswordHashStrategy', 'skipOnEmpty' => false],
-        ];
+        ]);
     }
 
     public function validateAccountPasswordHashStrategy($attribute) {

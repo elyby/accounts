@@ -9,7 +9,7 @@ class PasswordProtectedForm extends ApiForm {
 
     public function rules() {
         return [
-            [['password'], 'required', 'message' => 'error.{attribute}_required'],
+            [['password'], 'required', 'message' => 'error.password_required'],
             [['password'], 'validatePassword'],
         ];
     }
