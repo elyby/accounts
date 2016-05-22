@@ -111,6 +111,7 @@ class AccountsController extends Controller {
         /** @var Account $account */
         $account = Yii::$app->user->identity;
         $model = new InitStateForm($account);
+        $model->load(Yii::$app->request->post());
         if (!$model->sendCurrentEmailConfirmation()) {
             return [
                 'success' => false,
