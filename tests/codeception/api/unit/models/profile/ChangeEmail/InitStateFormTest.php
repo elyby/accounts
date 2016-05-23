@@ -45,24 +45,6 @@ class InitStateFormTest extends DbTestCase {
         ];
     }
 
-    public function testValidateAccountPasswordHashStrategy() {
-        $this->specify('we cannot change password on old password hash strategy', function() {
-            $account = new Account();
-            $account->password_hash_strategy = Account::PASS_HASH_STRATEGY_OLD_ELY;
-            $model = new InitStateForm($account);
-            $model->validateAccountPasswordHashStrategy('email');
-            expect($model->getErrors('email'))->equals(['error.old_hash_strategy']);
-        });
-
-        $this->specify('no errors on modern password hash strategy', function() {
-            $account = new Account();
-            $account->password_hash_strategy = Account::PASS_HASH_STRATEGY_YII2;
-            $model = new InitStateForm($account);
-            $model->validateAccountPasswordHashStrategy('email');
-            expect($model->getErrors('email'))->isEmpty();
-        });
-    }
-
     public function testCreateCode() {
         $this->specify('create valid code and store it to database', function() {
             /** @var Account $account */
