@@ -79,7 +79,9 @@ class InitStateFormTest extends DbTestCase {
         $this->specify('send email', function() {
             /** @var Account $account */
             $account = Account::findOne($this->accounts['admin']['id']);
-            $model = new InitStateForm($account);
+            $model = new InitStateForm($account, [
+                'password' => 'password_0',
+            ]);
             expect($model->sendCurrentEmailConfirmation())->true();
             expect(EmailActivation::find()->andWhere([
                 'account_id' => $account->id,

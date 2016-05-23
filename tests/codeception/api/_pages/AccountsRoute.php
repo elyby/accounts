@@ -30,9 +30,11 @@ class AccountsRoute extends BasePage {
         ]);
     }
 
-    public function changeEmailInitialize() {
+    public function changeEmailInitialize($password = '') {
         $this->route = ['accounts/change-email-initialize'];
-        $this->actor->sendPOST($this->getUrl());
+        $this->actor->sendPOST($this->getUrl(), [
+            'password' => $password,
+        ]);
     }
 
     public function changeEmailSubmitNewEmail($key = null, $email = null) {

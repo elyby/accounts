@@ -20,7 +20,7 @@ class AccountsChangeEmailInitializeCest {
         $I->wantTo('send current email confirmation');
         $I->loggedInAsActiveAccount();
 
-        $this->route->changeEmailInitialize();
+        $this->route->changeEmailInitialize('password_0');
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -32,7 +32,7 @@ class AccountsChangeEmailInitializeCest {
         $I->wantTo('see, that account use old account password hash strategy');
         $I->loggedInAsActiveAccount('AccWithOldPassword', '12345678');
 
-        $this->route->changeEmailInitialize();
+        $this->route->changeEmailInitialize('password_0');
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
