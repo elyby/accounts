@@ -67,7 +67,17 @@ class LoginForm extends ApiForm {
             return false;
         }
 
-        return $this->getAccount()->getJWT();
+        if ($this->rememberMe) {
+            // TODO: здесь нужно записать какую-то
+        }
+
+        $account = $this->getAccount();
+        if ($account->password_hash_strategy === Account::PASS_HASH_STRATEGY_OLD_ELY) {
+            $account->setPassword($this->password);
+            $account->save();
+        }
+
+        return $account->getJWT();
     }
 
 }

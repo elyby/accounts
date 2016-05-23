@@ -4,11 +4,24 @@ namespace tests\codeception\api\models\authentication;
 use api\models\authentication\LoginForm;
 use Codeception\Specify;
 use common\models\Account;
-use tests\codeception\api\unit\TestCase;
+use tests\codeception\api\unit\DbTestCase;
+use tests\codeception\common\fixtures\AccountFixture;
 use Yii;
 
-class LoginFormTest extends TestCase {
+/**
+ * @property AccountFixture $accounts
+ */
+class LoginFormTest extends DbTestCase {
     use Specify;
+
+    public function fixtures() {
+        return [
+            'accounts' => [
+                'class' => AccountFixture::class,
+                'dataFile' => '@tests/codeception/common/fixtures/data/accounts.php',
+            ],
+        ];
+    }
 
     public function testValidateLogin() {
         $this->specify('error.login_not_exist if login not exists', function () {
@@ -81,6 +94,18 @@ class LoginFormTest extends TestCase {
             ]);
             expect('model should login user', $model->login())->notEquals(false);
             expect('error message should not be set', $model->errors)->isEmpty();
+        });
+    }
+
+    public function testLoginWithRehashing() {
+        $this->specify('user, that login using account with old pass hash strategy should update it automatically', function () {
+            $model = new LoginForm([
+                'login' => $this->accounts['user-with-old-password-type']['username'],
+                'password' => '12345678',
+            ]);
+            expect($model->login())->notEquals(false);
+            expect($model->errors)->isEmpty();
+            expect($model->getAccount()->password_hash_strategy)->equals(Account::PASS_HASH_STRATEGY_YII2);
         });
     }
 

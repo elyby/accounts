@@ -28,19 +28,4 @@ class AccountsChangeEmailInitializeCest {
         ]);
     }
 
-    public function testChangeEmailWithOldPasswordStrategy(FunctionalTester $I) {
-        $I->wantTo('see, that account use old account password hash strategy');
-        $I->loggedInAsActiveAccount('AccWithOldPassword', '12345678');
-
-        $this->route->changeEmailInitialize('password_0');
-        $I->canSeeResponseCodeIs(200);
-        $I->canSeeResponseIsJson();
-        $I->canSeeResponseContainsJson([
-            'success' => false,
-            'errors' => [
-                'email' => 'error.old_hash_strategy',
-            ],
-        ]);
-    }
-
 }
