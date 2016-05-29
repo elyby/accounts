@@ -47,13 +47,16 @@ RUN chmod a+x /usr/local/bin/composer
 
 WORKDIR /var/www/html
 
+# Custorm php configuration
+COPY ./docker/php/php.ini /usr/local/etc/php/
+
 # Copy the working dir to the image's web root
 COPY . /var/www/html
 
 # The following directories are .dockerignored to not pollute the docker images
 # with local logs and published assets from development. So we need to create
 # empty dirs and set right permissions inside the container.
-RUN mkdir api/runtime api/web/assets console/runtime \
+RUN mkdir -p api/runtime api/web/assets console/runtime \
  && chown www-data:www-data api/runtime api/web/assets console/runtime
 
 # Expose everything under /var/www (vendor + html)
