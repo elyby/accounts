@@ -1,6 +1,7 @@
 <?php
 namespace api\models\authentication;
 
+use api\models\AccountIdentity;
 use api\models\base\KeyConfirmationForm;
 use common\models\EmailActivation;
 use common\validators\PasswordValidate;
@@ -63,9 +64,12 @@ class RecoverPasswordForm extends KeyConfirmationForm {
             }
         }
 
-        // TODO: ещё было бы неплохо уведомить пользователя о том, что его E-mail изменился
+        // TODO: ещё было бы неплохо уведомить пользователя о том, что его пароль изменился
 
-        return $account->getJWT();
+        /** @var \api\components\User\Component $component */
+        $component = Yii::$app->user;
+
+        return $component->login(new AccountIdentity($account->attributes), false);
     }
 
 }

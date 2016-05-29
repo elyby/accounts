@@ -111,8 +111,8 @@ class LoginCest {
         $I->canSeeResponseContainsJson([
             'success' => true,
         ]);
-        $I->canSeeResponseJsonMatchesJsonPath('$.jwt');
         $I->cantSeeResponseJsonMatchesJsonPath('$.errors');
+        $I->canSeeAuthCredentials(false);
     }
 
     public function testLoginByEmailCorrect(FunctionalTester $I) {
@@ -124,6 +124,7 @@ class LoginCest {
             'success' => true,
         ]);
         $I->cantSeeResponseJsonMatchesJsonPath('$.errors');
+        $I->canSeeAuthCredentials(false);
     }
 
     public function testLoginInAccWithPasswordMethod(FunctionalTester $I) {
@@ -134,8 +135,20 @@ class LoginCest {
         $I->canSeeResponseContainsJson([
             'success' => true,
         ]);
-        $I->canSeeResponseJsonMatchesJsonPath('$.jwt');
         $I->cantSeeResponseJsonMatchesJsonPath('$.errors');
+        $I->canSeeAuthCredentials(false);
+    }
+
+    public function testLoginByEmailWithRemember(FunctionalTester $I) {
+        $route = new AuthenticationRoute($I);
+
+        $I->wantTo('login into account using correct data and get refresh_token');
+        $route->login('admin@ely.by', 'password_0', true);
+        $I->canSeeResponseContainsJson([
+            'success' => true,
+        ]);
+        $I->cantSeeResponseJsonMatchesJsonPath('$.errors');
+        $I->canSeeAuthCredentials(true);
     }
 
 }

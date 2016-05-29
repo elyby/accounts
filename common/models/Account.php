@@ -3,7 +3,6 @@ namespace common\models;
 
 use common\components\UserPass;
 use common\validators\LanguageValidator;
-use damirka\JWT\UserTrait as UserJWTTrait;
 use Ely\Yii2\TempmailValidator;
 use Yii;
 use yii\base\InvalidConfigException;
@@ -29,15 +28,14 @@ use yii\db\ActiveRecord;
  *
  * Отношения:
  * @property EmailActivation[] $emailActivations
- * @property OauthSession[]    $sessions
+ * @property OauthSession[]    $oauthSessions
  * @property UsernameHistory[] $usernameHistory
+ * @property AccountSession[]  $sessions
  *
  * Поведения:
  * @mixin TimestampBehavior
  */
 class Account extends ActiveRecord {
-    use UserJWTTrait;
-
     const STATUS_DELETED = -10;
     const STATUS_REGISTERED = 0;
     const STATUS_ACTIVE = 10;
@@ -121,12 +119,16 @@ class Account extends ActiveRecord {
         return $this->hasMany(EmailActivation::class, ['account_id' => 'id']);
     }
 
-    public function getSessions() {
+    public function getOauthSessions() {
         return $this->hasMany(OauthSession::class, ['owner_id' => 'id']);
     }
 
     public function getUsernameHistory() {
         return $this->hasMany(UsernameHistory::class, ['account_id' => 'id']);
+    }
+
+    public function getSessions() {
+        return $this->hasMany(AccountSession::class, ['account_id' => 'id']);
     }
 
     /**
@@ -144,7 +146,7 @@ class Account extends ActiveRecord {
         }
 
         /** @var OauthSession|null $session */
-        $session = $this->getSessions()->andWhere(['client_id' => $client->id])->one();
+        $session = $this->getOauthSessions()->andWhere(['client_id' => $client->id])->one();
         if ($session !== null) {
             $existScopes = $session->getScopes()->members();
             if (empty(array_diff(array_keys($scopes), $existScopes))) {

@@ -1,6 +1,7 @@
 <?php
 namespace tests\codeception\api\traits;
 
+use api\models\AccountIdentity;
 use api\traits\AccountFinder;
 use Codeception\Specify;
 use common\models\Account;
@@ -29,6 +30,19 @@ class AccountFinderTest extends DbTestCase {
             $model->login = $this->accounts['admin']['email'];
             $account = $model->getAccount();
             expect($account)->isInstanceOf(Account::class);
+            expect($account->id)->equals($this->accounts['admin']['id']);
+        });
+
+        $this->specify('founded account for passed login data with changed account model class name', function() {
+            /** @var AccountFinderTestTestClass $model */
+            $model = new class extends AccountFinderTestTestClass {
+                protected function getAccountClassName() {
+                    return AccountIdentity::class;
+                }
+            };
+            $model->login = $this->accounts['admin']['email'];
+            $account = $model->getAccount();
+            expect($account)->isInstanceOf(AccountIdentity::class);
             expect($account->id)->equals($this->accounts['admin']['id']);
         });
 

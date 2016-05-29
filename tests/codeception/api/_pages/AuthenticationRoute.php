@@ -8,12 +8,18 @@ use yii\codeception\BasePage;
  */
 class AuthenticationRoute extends BasePage {
 
-    public function login($login = '', $password = '') {
+    public function login($login = '', $password = '', $rememberMe = false) {
         $this->route = ['authentication/login'];
-        $this->actor->sendPOST($this->getUrl(), [
+        $params = [
             'login' => $login,
             'password' => $password,
-        ]);
+        ];
+
+        if ($rememberMe) {
+            $params['rememberMe'] = 1;
+        }
+
+        $this->actor->sendPOST($this->getUrl(), $params);
     }
 
     public function forgotPassword($login = '') {

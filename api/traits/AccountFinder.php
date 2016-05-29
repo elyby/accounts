@@ -14,7 +14,8 @@ trait AccountFinder {
      */
     public function getAccount() {
         if ($this->account === null) {
-            $this->account = Account::findOne([$this->getLoginAttribute() => $this->getLogin()]);
+            $className = $this->getAccountClassName();
+            $this->account = $className::findOne([$this->getLoginAttribute() => $this->getLogin()]);
         }
 
         return $this->account;
@@ -22,6 +23,13 @@ trait AccountFinder {
 
     public function getLoginAttribute() {
         return strpos($this->getLogin(), '@') ? 'email' : 'username';
+    }
+
+    /**
+     * @return Account|string
+     */
+    protected function getAccountClassName() {
+        return Account::class;
     }
 
 }

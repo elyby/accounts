@@ -1,6 +1,7 @@
 <?php
 namespace tests\codeception\api\models\authentication;
 
+use api\components\User\LoginResult;
 use api\models\authentication\RecoverPasswordForm;
 use Codeception\Specify;
 use common\models\Account;
@@ -29,7 +30,9 @@ class RecoverPasswordFormTest extends DbTestCase {
                 'newPassword' => '12345678',
                 'newRePassword' => '12345678',
             ]);
-            expect($model->recoverPassword())->notEquals(false);
+            $result = $model->recoverPassword();
+            expect($result)->isInstanceOf(LoginResult::class);
+            expect('session was not generated', $result->getSession())->null();
             $activationExists = EmailActivation::find()->andWhere(['key' => $fixture['key']])->exists();
             expect($activationExists)->false();
             /** @var Account $account */

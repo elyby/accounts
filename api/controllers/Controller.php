@@ -15,7 +15,7 @@ class Controller extends \yii\rest\Controller {
         $parentBehaviors = parent::behaviors();
         // Добавляем авторизатор для входа по jwt токенам
         $parentBehaviors['authenticator'] = [
-            'class' => HttpBearerAuth::className(),
+            'class' => HttpBearerAuth::class,
         ];
 
         // xml нам не понадобится

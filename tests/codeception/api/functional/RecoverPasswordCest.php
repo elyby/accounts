@@ -15,10 +15,10 @@ class RecoverPasswordCest {
         $I->canSeeResponseContainsJson([
             'success' => true,
         ]);
-        $I->canSeeResponseJsonMatchesJsonPath('$.jwt');
+        $I->canSeeAuthCredentials(false);
 
         $I->wantTo('ensure, that jwt token is valid');
-        $jwt = $I->grabDataFromResponseByJsonPath('$.jwt')[0];
+        $jwt = $I->grabDataFromResponseByJsonPath('$.access_token')[0];
         $I->amBearerAuthenticated($jwt);
         $accountRoute = new AccountsRoute($I);
         $accountRoute->current();

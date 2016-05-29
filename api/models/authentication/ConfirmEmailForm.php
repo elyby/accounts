@@ -1,6 +1,7 @@
 <?php
 namespace api\models\authentication;
 
+use api\models\AccountIdentity;
 use api\models\base\KeyConfirmationForm;
 use common\models\Account;
 use common\models\EmailActivation;
@@ -43,7 +44,10 @@ class ConfirmEmailForm extends KeyConfirmationForm {
             }
         }
 
-        return $account->getJWT();
+        /** @var \api\components\User\Component $component */
+        $component = Yii::$app->user;
+
+        return $component->login(new AccountIdentity($account->attributes), true);
     }
 
 }

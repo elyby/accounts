@@ -40,7 +40,7 @@ class AuthenticationController extends Controller {
     public function actionLogin() {
         $model = new LoginForm();
         $model->load(Yii::$app->request->post());
-        if (($jwt = $model->login()) === false) {
+        if (($result = $model->login()) === false) {
             $data = [
                 'success' => false,
                 'errors' => $this->normalizeModelErrors($model->getErrors()),
@@ -53,10 +53,9 @@ class AuthenticationController extends Controller {
             return $data;
         }
 
-        return [
+        return array_merge([
             'success' => true,
-            'jwt' => $jwt,
-        ];
+        ], $result->getAsResponse());
     }
 
     public function actionForgotPassword() {
@@ -98,17 +97,16 @@ class AuthenticationController extends Controller {
     public function actionRecoverPassword() {
         $model = new RecoverPasswordForm();
         $model->load(Yii::$app->request->post());
-        if (($jwt = $model->recoverPassword()) === false) {
+        if (($result = $model->recoverPassword()) === false) {
             return [
                 'success' => false,
                 'errors' => $this->normalizeModelErrors($model->getErrors()),
             ];
         }
 
-        return [
+        return array_merge([
             'success' => true,
-            'jwt' => $jwt,
-        ];
+        ], $result->getAsResponse());
     }
 
 }
