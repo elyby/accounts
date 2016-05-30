@@ -1,6 +1,7 @@
 <?php
 namespace api\components\User;
 
+use api\models\AccountIdentity;
 use common\models\AccountSession;
 use Emarref\Jwt\Algorithm\Hs256;
 use Emarref\Jwt\Claim;
@@ -60,6 +61,30 @@ class Component extends YiiUserComponent {
 
         $result = new LoginResult($identity, $jwt, $session);
         $this->afterLogin($identity, false, $rememberMe);
+
+        return $result;
+    }
+
+    public function renew(AccountSession $session) {
+        $account = $session->account;
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $identity = new AccountIdentity($account->attributes);
+            $jwt = $this->getJWT($identity);
+
+            $result = new RenewResult($identity, $jwt);
+
+            $session->setIp(Yii::$app->request->userIP);
+            $session->last_refreshed_at = time();
+            if (!$session->save()) {
+                throw new ErrorException('Cannot update session info');
+            }
+
+            $transaction->commit();
+        } catch (ErrorException $e) {
+            $transaction->rollBack();
+            throw $e;
+        }
 
         return $result;
     }

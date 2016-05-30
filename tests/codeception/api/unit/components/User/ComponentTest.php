@@ -3,6 +3,7 @@ namespace codeception\api\unit\components\User;
 
 use api\components\User\Component;
 use api\components\User\LoginResult;
+use api\components\User\RenewResult;
 use api\models\AccountIdentity;
 use Codeception\Specify;
 use common\models\AccountSession;
@@ -72,6 +73,24 @@ class ComponentTest extends DbTestCase {
             expect(is_string($result->getJwt()))->true();
             expect($result->getIdentity())->equals($account);
             expect($result->getSession()->refresh())->true();
+        });
+    }
+
+    public function testRenew() {
+        $this->specify('success get RenewResult object', function() {
+            /** @var AccountSession $session */
+            $session = AccountSession::findOne($this->sessions['admin']['id']);
+            $callTime = time();
+            $usedRemoteAddr = $_SERVER['REMOTE_ADDR'] ?? null;
+            $_SERVER['REMOTE_ADDR'] = '192.168.0.1';
+            $result = $this->component->renew($session);
+            expect($result)->isInstanceOf(RenewResult::class);
+            expect(is_string($result->getJwt()))->true();
+            expect($result->getIdentity()->getId())->equals($session->account_id);
+            $session->refresh();
+            expect($session->last_refreshed_at)->greaterOrEquals($callTime);
+            expect($session->getReadableIp())->equals($_SERVER['REMOTE_ADDR']);
+            $_SERVER['REMOTE_ADDR'] = $usedRemoteAddr;
         });
     }
 

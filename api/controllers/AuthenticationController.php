@@ -4,6 +4,7 @@ namespace api\controllers;
 use api\models\authentication\ForgotPasswordForm;
 use api\models\authentication\LoginForm;
 use api\models\authentication\RecoverPasswordForm;
+use api\models\authentication\RefreshTokenForm;
 use common\helpers\StringHelper;
 use Yii;
 use yii\filters\AccessControl;
@@ -14,13 +15,13 @@ class AuthenticationController extends Controller {
     public function behaviors() {
         return ArrayHelper::merge(parent::behaviors(), [
             'authenticator' => [
-                'except' => ['login', 'forgot-password', 'recover-password'],
+                'except' => ['login', 'forgot-password', 'recover-password', 'refresh-token'],
             ],
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['login', 'forgot-password', 'recover-password'],
+                        'actions' => ['login', 'forgot-password', 'recover-password', 'refresh-token'],
                         'allow' => true,
                         'roles' => ['?'],
                     ],
@@ -34,6 +35,7 @@ class AuthenticationController extends Controller {
             'login' => ['POST'],
             'forgot-password' => ['POST'],
             'recover-password' => ['POST'],
+            'refresh-token' => ['POST'],
         ];
     }
 
@@ -98,6 +100,21 @@ class AuthenticationController extends Controller {
         $model = new RecoverPasswordForm();
         $model->load(Yii::$app->request->post());
         if (($result = $model->recoverPassword()) === false) {
+            return [
+                'success' => false,
+                'errors' => $this->normalizeModelErrors($model->getErrors()),
+            ];
+        }
+
+        return array_merge([
+            'success' => true,
+        ], $result->getAsResponse());
+    }
+
+    public function actionRefreshToken() {
+        $model = new RefreshTokenForm();
+        $model->load(Yii::$app->request->post());
+        if (($result = $model->renew()) === false) {
             return [
                 'success' => false,
                 'errors' => $this->normalizeModelErrors($model->getErrors()),

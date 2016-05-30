@@ -38,4 +38,11 @@ class AuthenticationRoute extends BasePage {
         ]);
     }
 
+    public function refreshToken($refreshToken = null) {
+        $this->route = ['authentication/refresh-token'];
+        $this->actor->sendPOST($this->getUrl(), [
+            'refresh_token' => $refreshToken,
+        ]);
+    }
+
 }

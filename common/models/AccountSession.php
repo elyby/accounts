@@ -12,7 +12,7 @@ use yii\db\ActiveRecord;
  * @property string  $refresh_token
  * @property integer $last_used_ip
  * @property integer $created_at
- * @property integer $last_refreshed
+ * @property integer $last_refreshed_at
  *
  * Отношения:
  * @property Account $account
