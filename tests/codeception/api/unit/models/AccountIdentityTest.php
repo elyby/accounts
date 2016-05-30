@@ -18,10 +18,7 @@ class AccountIdentityTest extends DbTestCase {
 
     public function fixtures() {
         return [
-            'accounts' => [
-                'class' => AccountFixture::class,
-                'dataFile' => '@tests/codeception/common/fixtures/data/accounts.php',
-            ],
+            'accounts' => AccountFixture::class,
         ];
     }
 
@@ -32,16 +29,13 @@ class AccountIdentityTest extends DbTestCase {
             expect($identity->getId())->equals($this->accounts['admin']['id']);
         });
 
-        // TODO: нормально оттестить исключение, если токен истёк
-        return;
+        $this->specify('get unauthorized exception with "Token expired" message if token valid, but expire', function() {
+            $expiredToken = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODA4MCIsImlzcyI6Imh0d' .
+                            'HA6XC9cL2xvY2FsaG9zdDo4MDgwIiwiaWF0IjoxNDY0NTkzMTkzLCJleHAiOjE0NjQ1OTY3OTN9.DV' .
+                            '8uwh0OQhBYXkrNvxwJeO-kEjb9MQeLr3-6GoHM7RY';
 
-        $this->specify('get unauthorized with "Token expired message if token valid, but expire"', function() {
-            $originalTimezone = date_default_timezone_get();
-            date_default_timezone_set('America/Los_Angeles');
             try {
-                $token = $this->generateToken();
-                date_default_timezone_set($originalTimezone);
-                AccountIdentity::findIdentityByAccessToken($token);
+                AccountIdentity::findIdentityByAccessToken($expiredToken);
             } catch (Exception $e) {
                 expect($e)->isInstanceOf(UnauthorizedHttpException::class);
                 expect($e->getMessage())->equals('Token expired');
