@@ -1,13 +1,18 @@
 version: '2'
 services:
     app:
+        build: .
+        expose:
+            - "9000"
         links:
             - db
             - redis
             - rabbitmq
         depends_on:
             - app-console-account-queue
-
+        volumes:
+            - ./:/var/www/html/
+        env_file: .env
         environment:
             ENABLE_ENV_FILE: 1
             ENABLE_LOCALCONF: 1
@@ -20,16 +25,6 @@ services:
             - app
         volumes_from:
             - app
-
-    app:
-        build: .
-        expose:
-            - "9000"
-        volumes:
-            - ./:/var/www/html/
-        environment:
-            ENABLE_ENV_FILE: 1
-            ENABLE_LOCALCONF: 1
 
     node-dev-server:
         build: ./frontend

@@ -10,7 +10,7 @@ node_modules
 */config/*-local.php
 
 # Все временные файлы
-runtime
+*/runtime
 
-# Их по идее и не должно образовываться, но мало ли
-api/web/assets
+# Их по идее их не должно образовываться, но мало ли
+*/web/assets
