@@ -11,6 +11,7 @@ return [
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'api\controllers',
+    'params' => $params,
     'components' => [
         'user' => [
             'class' => \api\components\User\Component::class,
@@ -28,9 +29,6 @@ return [
                 ],
             ],
         ],
-        'errorHandler' => [
-            'errorAction' => 'site/error',
-        ],
         'request' => [
             'baseUrl' => '/api',
         ],
@@ -40,7 +38,7 @@ return [
             'rules' => require __DIR__ . '/routes.php',
         ],
         'reCaptcha' => [
-            'class' => 'api\components\ReCaptcha\Component',
+            'class' => \api\components\ReCaptcha\Component::class,
         ],
         'response' => [
             'format' => \yii\web\Response::FORMAT_JSON,
@@ -50,5 +48,4 @@ return [
             'grantTypes' => ['authorization_code'],
         ],
     ],
-    'params' => $params,
 ];

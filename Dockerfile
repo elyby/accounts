@@ -33,14 +33,20 @@ RUN apt-get update \
 # Поставим xdebug отдельно, т.к. потом его потенциально придётся отсюда убирать
 RUN yes | pecl install xdebug \
  && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
- && echo "xdebug.remote_enable=on" >> /usr/local/etc/php/conf.d/xdebug.ini \
- && echo "xdebug.remote_autostart=off" >> /usr/local/etc/php/conf.d/xdebug.ini
+ && echo "xdebug.default_enable=1" >> /usr/local/etc/php/conf.d/xdebug.ini \
+ && echo "xdebug.remote_enable=1" >> /usr/local/etc/php/conf.d/xdebug.ini \
+ && echo "xdebug.remote_handler=dbgp" >> /usr/local/etc/php/conf.d/xdebug.ini \
+ && echo "xdebug.remote_mode=req" >> /usr/local/etc/php/conf.d/xdebug.ini \
+ && echo "xdebug.remote_autostart=1" >> /usr/local/etc/php/conf.d/xdebug.ini \
+ && echo "xdebug.remote_port=9000" >> /usr/local/etc/php/conf.d/xdebug.ini \
+ && echo "xdebug.remote_connect_back=1" >> /usr/local/etc/php/conf.d/xdebug.ini \
+ && echo "xdebug.cli_color=1" >> /usr/local/etc/php/conf.d/xdebug.ini \
+ && echo "xdebug.var_display_max_depth=10" >> /usr/local/etc/php/conf.d/xdebug.ini
 
 # Next composer and global composer package, as their versions may change from time to time
 RUN curl -sS https://getcomposer.org/installer | php \
  && mv composer.phar /usr/local/bin/composer.phar \
- && composer.phar global require --no-progress "fxp/composer-asset-plugin:~1.1.4" \
- && composer.phar global require --no-progress "hirak/prestissimo:~0.2.2"
+ && composer.phar global require --no-progress "fxp/composer-asset-plugin:~1.1.4" "hirak/prestissimo:~0.2.2"
 
 COPY ./docker/php/composer.sh /usr/local/bin/composer
 RUN chmod a+x /usr/local/bin/composer
@@ -60,5 +66,4 @@ RUN mkdir -p api/runtime api/web/assets console/runtime \
  && chown www-data:www-data api/runtime api/web/assets console/runtime
 
 # Expose everything under /var/www (vendor + html)
-# This is only required for the nginx setup
 VOLUME ["/var/www"]
