@@ -1,4 +1,4 @@
 <?php
 return [
-    'jwtSecret' => 'some-long-secret-key',
+    'userSecret' => 'some-long-secret-key',
 ];

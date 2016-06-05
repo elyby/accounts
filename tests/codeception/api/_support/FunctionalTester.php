@@ -34,13 +34,23 @@ class FunctionalTester extends Actor {
         }
 
         $this->canSeeResponseIsJson();
-        $this->canSeeResponseJsonMatchesJsonPath('$.jwt');
-        $jwt = $this->grabDataFromResponseByJsonPath('$.jwt')[0];
+        $this->canSeeAuthCredentials(false);
+        $jwt = $this->grabDataFromResponseByJsonPath('$.access_token')[0];
         $this->amBearerAuthenticated($jwt);
     }
 
     public function notLoggedIn() {
         $this->haveHttpHeader('Authorization', null);
+    }
+
+    public function canSeeAuthCredentials($expectRefresh = false) {
+        $this->canSeeResponseJsonMatchesJsonPath('$.access_token');
+        $this->canSeeResponseJsonMatchesJsonPath('$.expires_in');
+        if ($expectRefresh) {
+            $this->canSeeResponseJsonMatchesJsonPath('$.refresh_token');
+        } else {
+            $this->cantSeeResponseJsonMatchesJsonPath('$.refresh_token');
+        }
     }
 
 }

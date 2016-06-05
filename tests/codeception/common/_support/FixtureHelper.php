@@ -4,6 +4,7 @@ namespace tests\codeception\common\_support;
 use Codeception\Module;
 use Codeception\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
+use tests\codeception\common\fixtures\AccountSessionFixture;
 use tests\codeception\common\fixtures\EmailActivationFixture;
 use tests\codeception\common\fixtures\OauthClientFixture;
 use tests\codeception\common\fixtures\OauthScopeFixture;
@@ -46,10 +47,8 @@ class FixtureHelper extends Module {
 
     public function fixtures() {
         return [
-            'accounts' => [
-                'class' => AccountFixture::class,
-                'dataFile' => '@tests/codeception/common/fixtures/data/accounts.php',
-            ],
+            'accounts' => AccountFixture::class,
+            'accountSessions' => AccountSessionFixture::class,
             'emailActivations' => EmailActivationFixture::class,
             'oauthClients' => [
                 'class' => OauthClientFixture::class,

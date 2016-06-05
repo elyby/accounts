@@ -1,5 +1,8 @@
 <?php
-/**
- * Application configuration for all api test types
- */
-return [];
+return [
+    'components' => [
+        'user' => [
+            'secret' => 'tests-secret-key',
+        ],
+    ],
+];

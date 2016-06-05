@@ -53,6 +53,9 @@ RUN chmod a+x /usr/local/bin/composer
 
 WORKDIR /var/www/html
 
+# Custorm php configuration
+COPY ./docker/php/php.ini /usr/local/etc/php/
+
 # Copy the working dir to the image's web root
 COPY . /var/www/html
 

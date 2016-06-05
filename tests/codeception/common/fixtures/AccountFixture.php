@@ -8,4 +8,6 @@ class AccountFixture extends ActiveFixture {
 
     public $modelClass = Account::class;
 
+    public $dataFile = '@tests/codeception/common/fixtures/data/accounts.php';
+
 }

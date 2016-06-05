@@ -1,17 +1,21 @@
 <?php
 namespace api\models\authentication;
 
+use api\models\AccountIdentity;
 use api\models\base\ApiForm;
 use api\traits\AccountFinder;
 use common\models\Account;
 use Yii;
 
+/**
+ * @method AccountIdentity|null getAccount()
+ */
 class LoginForm extends ApiForm {
     use AccountFinder;
 
     public $login;
     public $password;
-    public $rememberMe = true;
+    public $rememberMe = false;
 
     public function rules() {
         return [
@@ -31,7 +35,7 @@ class LoginForm extends ApiForm {
 
     public function validateLogin($attribute) {
         if (!$this->hasErrors()) {
-            if (!$this->getAccount()) {
+            if ($this->getAccount() === null) {
                 $this->addError($attribute, 'error.' . $attribute . '_not_exist');
             }
         }
@@ -40,7 +44,7 @@ class LoginForm extends ApiForm {
     public function validatePassword($attribute) {
         if (!$this->hasErrors()) {
             $account = $this->getAccount();
-            if (!$account || !$account->validatePassword($this->password)) {
+            if ($account === null || !$account->validatePassword($this->password)) {
                 $this->addError($attribute, 'error.' . $attribute . '_incorrect');
             }
         }
@@ -60,15 +64,11 @@ class LoginForm extends ApiForm {
     }
 
     /**
-     * @return bool|string JWT с информацией об аккаунте
+     * @return \api\components\User\LoginResult|bool
      */
     public function login() {
         if (!$this->validate()) {
             return false;
-        }
-
-        if ($this->rememberMe) {
-            // TODO: здесь нужно записать какую-то
         }
 
         $account = $this->getAccount();
@@ -77,7 +77,14 @@ class LoginForm extends ApiForm {
             $account->save();
         }
 
-        return $account->getJWT();
+        /** @var \api\components\User\Component $component */
+        $component = Yii::$app->user;
+
+        return $component->login($account, $this->rememberMe);
+    }
+
+    protected function getAccountClassName() {
+        return AccountIdentity::class;
     }
 
 }

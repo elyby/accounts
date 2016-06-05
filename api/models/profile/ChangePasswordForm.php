@@ -5,6 +5,7 @@ use api\models\base\PasswordProtectedForm;
 use common\models\Account;
 use common\validators\PasswordValidate;
 use Yii;
+use yii\base\ErrorException;
 use yii\helpers\ArrayHelper;
 
 class ChangePasswordForm extends PasswordProtectedForm {
@@ -19,6 +20,11 @@ class ChangePasswordForm extends PasswordProtectedForm {
      * @var \common\models\Account
      */
     private $_account;
+
+    public function __construct(Account $account, array $config = []) {
+        $this->_account = $account;
+        parent::__construct($config);
+    }
 
     /**
      * @inheritdoc
@@ -41,34 +47,40 @@ class ChangePasswordForm extends PasswordProtectedForm {
     }
 
     /**
-     * @return boolean if password was changed.
+     * @return boolean
      */
     public function changePassword() {
         if (!$this->validate()) {
             return false;
         }
 
+        $transaction = Yii::$app->db->beginTransaction();
         $account = $this->_account;
         $account->setPassword($this->newPassword);
 
         if ($this->logoutAll) {
-            // TODO: реализовать процесс разлогинивания всех авторизованных устройств и дописать под это всё тесты
+            /** @var \api\components\User\Component $userComponent */
+            $userComponent = Yii::$app->user;
+            $sessions = $account->sessions;
+            $activeSession = $userComponent->getActiveSession();
+            foreach ($sessions as $session) {
+                if (!$activeSession || $activeSession->id !== $session->id) {
+                    $session->delete();
+                }
+            }
         }
 
-        return $account->save();
+        if (!$account->save()) {
+            throw new ErrorException('Cannot save user model');
+        }
+
+        $transaction->commit();
+
+        return true;
     }
 
     protected function getAccount() {
         return $this->_account;
-    }
-
-    /**
-     * @param Account $account
-     * @param array  $config
-     */
-    public function __construct(Account $account, array $config = []) {
-        $this->_account = $account;
-        parent::__construct($config);
     }
 
 }

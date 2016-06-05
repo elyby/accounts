@@ -79,17 +79,16 @@ class SignupController extends Controller {
     public function actionConfirm() {
         $model = new ConfirmEmailForm();
         $model->load(Yii::$app->request->post());
-        if (!($jwt = $model->confirm())) {
+        if (!($result = $model->confirm())) {
             return [
                 'success' => false,
                 'errors' => $this->normalizeModelErrors($model->getErrors()),
             ];
         }
 
-        return [
+        return array_merge([
             'success' => true,
-            'jwt' => $jwt,
-        ];
+        ], $result->getAsResponse());
     }
 
 }

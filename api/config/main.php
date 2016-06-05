@@ -14,9 +14,11 @@ return [
     'params' => $params,
     'components' => [
         'user' => [
+            'class' => \api\components\User\Component::class,
             'identityClass' => \api\models\AccountIdentity::class,
             'enableSession' => false,
             'loginUrl' => null,
+            'secret' => $params['userSecret'],
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,

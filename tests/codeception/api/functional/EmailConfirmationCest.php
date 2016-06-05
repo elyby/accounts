@@ -36,7 +36,7 @@ class EmailConfirmationCest {
             'success' => true,
         ]);
         $I->cantSeeResponseJsonMatchesJsonPath('$.errors');
-        $I->canSeeResponseJsonMatchesJsonPath('$.jwt');
+        $I->canSeeAuthCredentials(true);
     }
 
 }
