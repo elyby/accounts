@@ -5,6 +5,7 @@ use api\models\AccountIdentity;
 use Codeception\Specify;
 use Exception;
 use tests\codeception\api\unit\DbTestCase;
+use tests\codeception\common\_support\ProtectedCaller;
 use tests\codeception\common\fixtures\AccountFixture;
 use Yii;
 use yii\web\IdentityInterface;
@@ -15,6 +16,7 @@ use yii\web\UnauthorizedHttpException;
  */
 class AccountIdentityTest extends DbTestCase {
     use Specify;
+    use ProtectedCaller;
 
     public function fixtures() {
         return [
@@ -51,8 +53,9 @@ class AccountIdentityTest extends DbTestCase {
         $component = Yii::$app->user;
         /** @var AccountIdentity $account */
         $account = AccountIdentity::findOne($this->accounts['admin']['id']);
+        $token = $this->callProtected($component, 'createToken', $account);
 
-        return $component->getJWT($account);
+        return $this->callProtected($component, 'serializeToken', $token);
     }
 
 }

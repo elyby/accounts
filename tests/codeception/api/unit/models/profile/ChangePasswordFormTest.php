@@ -1,25 +1,28 @@
 <?php
 namespace tests\codeception\api\models\profile;
 
+use api\components\User\Component;
+use api\models\AccountIdentity;
 use api\models\profile\ChangePasswordForm;
 use Codeception\Specify;
 use common\models\Account;
+use common\models\AccountSession;
 use tests\codeception\api\unit\DbTestCase;
 use tests\codeception\common\fixtures\AccountFixture;
+use tests\codeception\common\fixtures\AccountSessionFixture;
 use Yii;
 
 /**
  * @property AccountFixture $accounts
+ * @property AccountSessionFixture $accountSessions
  */
 class ChangePasswordFormTest extends DbTestCase {
     use Specify;
 
     public function fixtures() {
         return [
-            'accounts' => [
-                'class' => AccountFixture::class,
-                'dataFile' => '@tests/codeception/common/fixtures/data/accounts.php',
-            ],
+            'accounts' => AccountFixture::class,
+            'accountSessions' => AccountSessionFixture::class,
         ];
     }
 
@@ -63,32 +66,73 @@ class ChangePasswordFormTest extends DbTestCase {
     }
 
     public function testChangePassword() {
-        /** @var Account $account */
-        $account = Account::findOne($this->accounts['admin']['id']);
-        $model = new ChangePasswordForm($account, [
-            'password' => 'password_0',
-            'newPassword' => 'my-new-password',
-            'newRePassword' => 'my-new-password',
-        ]);
-        $this->specify('successfully change password with modern hash strategy', function() use ($model, $account) {
+        $this->specify('successfully change password with modern hash strategy', function() {
+            /** @var Account $account */
+            $account = Account::findOne($this->accounts['admin']['id']);
+            $model = new ChangePasswordForm($account, [
+                'password' => 'password_0',
+                'newPassword' => 'my-new-password',
+                'newRePassword' => 'my-new-password',
+            ]);
+
             $callTime = time();
             expect('form should return true', $model->changePassword())->true();
             expect('new password should be successfully stored into account', $account->validatePassword('my-new-password'))->true();
             expect('password change time updated', $account->password_changed_at)->greaterOrEquals($callTime);
         });
 
-        /** @var Account $account */
-        $account = Account::findOne($this->accounts['user-with-old-password-type']['id']);
-        $model = new ChangePasswordForm($account, [
-            'password' => '12345678',
-            'newPassword' => 'my-new-password',
-            'newRePassword' => 'my-new-password',
-        ]);
-        $this->specify('successfully change password with legacy hash strategy', function() use ($model, $account) {
+        $this->specify('successfully change password with legacy hash strategy', function() {
+            /** @var Account $account */
+            $account = Account::findOne($this->accounts['user-with-old-password-type']['id']);
+            $model = new ChangePasswordForm($account, [
+                'password' => '12345678',
+                'newPassword' => 'my-new-password',
+                'newRePassword' => 'my-new-password',
+            ]);
+
             $callTime = time();
-            expect('form should return true', $model->changePassword())->true();
-            expect('new password should be successfully stored into account', $account->validatePassword('my-new-password'))->true();
-            expect('password change time updated', $account->password_changed_at)->greaterOrEquals($callTime);
+            expect($model->changePassword())->true();
+            expect($account->validatePassword('my-new-password'))->true();
+            expect($account->password_changed_at)->greaterOrEquals($callTime);
+            expect($account->password_hash_strategy)->equals(Account::PASS_HASH_STRATEGY_YII2);
+        });
+    }
+
+    public function testChangePasswordWithLogout() {
+        /** @var Component|\PHPUnit_Framework_MockObject_MockObject $component */
+        $component = $this->getMock(Component::class, ['getActiveSession'], [[
+            'identityClass' => AccountIdentity::class,
+            'enableSession' => false,
+            'loginUrl' => null,
+            'secret' => 'secret',
+        ]]);
+
+        /** @var AccountSession $session */
+        $session = AccountSession::findOne($this->accountSessions['admin2']['id']);
+
+        $component
+            ->expects($this->any())
+            ->method('getActiveSession')
+            ->will($this->returnValue($session));
+
+        Yii::$app->set('user', $component);
+
+        $this->specify('change password with removing all session, except current', function() use ($session) {
+            /** @var Account $account */
+            $account = Account::findOne($this->accounts['admin']['id']);
+
+            $model = new ChangePasswordForm($account, [
+                'password' => 'password_0',
+                'newPassword' => 'my-new-password',
+                'newRePassword' => 'my-new-password',
+                'logoutAll' => true,
+            ]);
+
+            expect($model->changePassword())->true();
+            /** @var AccountSession[] $sessions */
+            $sessions = $account->getSessions()->all();
+            expect(count($sessions))->equals(1);
+            expect($sessions[0]->id)->equals($session->id);
         });
     }
 

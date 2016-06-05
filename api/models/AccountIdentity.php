@@ -2,10 +2,9 @@
 namespace api\models;
 
 use common\models\Account;
-use Emarref\Jwt\Encryption\Factory;
+use Emarref\Jwt\Claim\JwtId;
 use Emarref\Jwt\Exception\VerificationException;
-use Emarref\Jwt\Jwt;
-use Emarref\Jwt\Verification\Context as VerificationContext;
+use Emarref\Jwt\Token;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\helpers\StringHelper;
@@ -13,22 +12,14 @@ use yii\web\IdentityInterface;
 use yii\web\UnauthorizedHttpException;
 
 class AccountIdentity extends Account implements IdentityInterface {
-
     /**
      * @inheritdoc
      */
     public static function findIdentityByAccessToken($token, $type = null) {
-        $jwt = new Jwt();
-        $token = $jwt->deserialize($token);
         /** @var \api\components\User\Component $component */
         $component = Yii::$app->user;
-
-        $hostInfo = Yii::$app->request->hostInfo;
-        $context = new VerificationContext(Factory::create($component->getAlgorithm()));
-        $context->setAudience($hostInfo);
-        $context->setIssuer($hostInfo);
         try {
-            $jwt->verify($token, $context);
+            $token = $component->parseToken($token);
         } catch (VerificationException $e) {
             if (StringHelper::startsWith($e->getMessage(), 'Token expired at')) {
                 $message = 'Token expired';
@@ -40,8 +31,8 @@ class AccountIdentity extends Account implements IdentityInterface {
         }
 
         // Если исключение выше не случилось, то значит всё оке
-        /** @var \Emarref\Jwt\Claim\JwtId $jti */
-        $jti = $token->getPayload()->findClaimByName('jti');
+        /** @var JwtId $jti */
+        $jti = $token->getPayload()->findClaimByName(JwtId::NAME);
         $account = static::findOne($jti->getValue());
         if ($account === null) {
             throw new UnauthorizedHttpException('Invalid token');
