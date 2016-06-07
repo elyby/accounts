@@ -100,12 +100,15 @@ class ChangePasswordFormTest extends DbTestCase {
 
     public function testChangePasswordWithLogout() {
         /** @var Component|\PHPUnit_Framework_MockObject_MockObject $component */
-        $component = $this->getMock(Component::class, ['getActiveSession'], [[
-            'identityClass' => AccountIdentity::class,
-            'enableSession' => false,
-            'loginUrl' => null,
-            'secret' => 'secret',
-        ]]);
+        $component = $this->getMockBuilder(Component::class)
+            ->setMethods(['getActiveSession'])
+            ->setConstructorArgs([[
+                'identityClass' => AccountIdentity::class,
+                'enableSession' => false,
+                'loginUrl' => null,
+                'secret' => 'secret',
+            ]])
+            ->getMock();
 
         /** @var AccountSession $session */
         $session = AccountSession::findOne($this->accountSessions['admin2']['id']);

@@ -37,7 +37,7 @@ class ChangeUsernameFormTest extends DbTestCase {
     }
 
     public function testChangeWithoutChange() {
-        $this->scenario->incomplete('This test is written invalid');
+        $this->markTestSkipped('This test is written invalid');
         return;
 
         // TODO: этот тест написан неправильно - запись всё равно добавляется в базу данных, но тест не замечает

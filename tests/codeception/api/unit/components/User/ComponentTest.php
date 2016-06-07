@@ -102,14 +102,21 @@ class ComponentTest extends DbTestCase {
             $this->component->logout();
 
             /** @var Component|\PHPUnit_Framework_MockObject_MockObject $component */
-            $component = $this->getMock(Component::class, ['getIsGuest'], [$this->getComponentArguments()]);
+            $component = $this->getMockBuilder(Component::class)
+                ->setMethods(['getIsGuest'])
+                ->setConstructorArgs([$this->getComponentArguments()])
+                ->getMock();
+
             $component
                 ->expects($this->any())
                 ->method('getIsGuest')
                 ->will($this->returnValue(false));
 
             /** @var HeaderCollection|\PHPUnit_Framework_MockObject_MockObject $headersCollection */
-            $headersCollection = $this->getMock(HeaderCollection::class, ['get']);
+            $headersCollection = $this->getMockBuilder(HeaderCollection::class)
+                ->setMethods(['get'])
+                ->getMock();
+
             $headersCollection
                 ->expects($this->any())
                 ->method('get')
@@ -117,7 +124,10 @@ class ComponentTest extends DbTestCase {
                 ->will($this->returnValue('Bearer ' . $result->getJwt()));
 
             /** @var Request|\PHPUnit_Framework_MockObject_MockObject $request */
-            $request = $this->getMock(Request::class, ['getHeaders']);
+            $request = $this->getMockBuilder(Request::class)
+                ->setMethods(['getHeaders'])
+                ->getMock();
+
             $request
                 ->expects($this->any())
                 ->method('getHeaders')
@@ -166,7 +176,10 @@ class ComponentTest extends DbTestCase {
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
     private function mockRequest($userIP = '127.0.0.1') {
-        $request = $this->getMock(Request::class, ['getHostInfo', 'getUserIP']);
+        $request = $this->getMockBuilder(Request::class)
+            ->setMethods(['getHostInfo', 'getUserIP'])
+            ->getMock();
+
         $request
             ->expects($this->any())
             ->method('getHostInfo')

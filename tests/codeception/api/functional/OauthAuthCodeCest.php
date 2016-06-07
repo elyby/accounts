@@ -84,7 +84,6 @@ class OauthAuthCodeCest {
         $I->loggedInAsActiveAccount();
 
         $I->wantTo('get accept_required if I dom\'t require any scope, but this is first time request');
-        $I->cleanupRedis();
         $this->route->complete($this->buildQueryParams(
             'ely',
             'http://ely.by',
