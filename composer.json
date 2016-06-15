@@ -34,7 +34,7 @@
         "codeception/codeception": "~2.1.10",
         "codeception/specify": "*",
         "codeception/verify": "*",
-        "phploc/phploc": "*"
+        "phploc/phploc": "^3.0.1"
     },
     "provide": {
         "bower-asset/jquery": "*",
