@@ -49,5 +49,10 @@
             "npm-asset-library": "vendor/npm",
             "bower-asset-library": "vendor/bower"
         }
+    },
+    "scripts": {
+        "build-tests" : "cd tests && codecept build",
+        "test" : "codecept run -c tests",
+        "test-api" : "codecept run -c tests/codeception/api"
     }
 }
