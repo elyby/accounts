@@ -36,6 +36,7 @@ use yii\db\ActiveRecord;
  * @mixin TimestampBehavior
  */
 class Account extends ActiveRecord {
+
     const STATUS_DELETED = -10;
     const STATUS_REGISTERED = 0;
     const STATUS_ACTIVE = 10;
