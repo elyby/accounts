@@ -46,7 +46,7 @@ class ForgotPasswordForm extends ApiForm {
         if (!$this->hasErrors()) {
             $emailConfirmation = $this->getEmailActivation();
             if ($emailConfirmation !== null && !$emailConfirmation->canRepeat()) {
-                $this->addError($attribute, 'error.email_frequency');
+                $this->addError($attribute, 'error.recently_sent_message');
             }
         }
     }

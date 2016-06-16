@@ -27,7 +27,7 @@ class RegistrationForm extends ApiForm {
     public function rules() {
         return [
             [[], ReCaptchaValidator::class, 'message' => 'error.captcha_invalid', 'when' => !YII_ENV_TEST],
-            ['rulesAgreement', 'required', 'message' => 'error.you_must_accept_rules'],
+            ['rulesAgreement', 'required', 'message' => 'error.rulesAgreement_required'],
 
             ['username', 'validateUsername', 'skipOnEmpty' => false],
             ['email', 'validateEmail', 'skipOnEmpty' => false],

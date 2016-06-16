@@ -39,7 +39,7 @@ class ForgotPasswordCest {
         $I->canSeeResponseContainsJson([
             'success' => false,
             'errors' => [
-                'login' => 'error.email_frequency',
+                'login' => 'error.recently_sent_message',
             ],
         ]);
         $I->canSeeResponseJsonMatchesJsonPath('$.data.canRepeatIn');

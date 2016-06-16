@@ -13,7 +13,7 @@ class EmailConfirmationCest {
         $I->canSeeResponseContainsJson([
             'success' => false,
             'errors' => [
-                'key' => 'error.key_is_required',
+                'key' => 'error.key_required',
             ],
         ]);
 

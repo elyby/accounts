@@ -79,7 +79,7 @@ class ForgotPasswordFormTest extends DbTestCase {
             ]);
 
             $model->validateFrequency('login');
-            expect($model->getErrors('login'))->equals(['error.email_frequency']);
+            expect($model->getErrors('login'))->equals(['error.recently_sent_message']);
         });
 
         $this->specify('empty errors if email was sent a long time ago', function() {

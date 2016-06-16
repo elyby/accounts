@@ -69,7 +69,7 @@ class AuthenticationController extends Controller {
                 'errors' => $this->normalizeModelErrors($model->getErrors()),
             ];
 
-            if (ArrayHelper::getValue($data['errors'], 'login') === 'error.email_frequency') {
+            if (ArrayHelper::getValue($data['errors'], 'login') === 'error.recently_sent_message') {
                 $emailActivation = $model->getEmailActivation();
                 $data['data'] = [
                     'canRepeatIn' => $emailActivation->canRepeatIn(),

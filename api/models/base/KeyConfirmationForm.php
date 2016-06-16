@@ -13,7 +13,7 @@ class KeyConfirmationForm extends ApiForm {
     public function rules() {
         return [
             // TODO: нужно провалидировать количество попыток ввода кода для определённого IP адреса и в случае чего запросить капчу
-            ['key', 'required', 'message' => 'error.key_is_required'],
+            ['key', 'required', 'message' => 'error.key_required'],
             ['key', EmailActivationKeyValidator::class],
         ];
     }
