@@ -1,6 +1,7 @@
 <?php
 namespace api\models\base;
 
+use common\helpers\Error as E;
 use api\validators\EmailActivationKeyValidator;
 use common\models\EmailActivation;
 
@@ -13,7 +14,7 @@ class KeyConfirmationForm extends ApiForm {
     public function rules() {
         return [
             // TODO: нужно провалидировать количество попыток ввода кода для определённого IP адреса и в случае чего запросить капчу
-            ['key', 'required', 'message' => 'error.key_required'],
+            ['key', 'required', 'message' => E::KEY_REQUIRED],
             ['key', EmailActivationKeyValidator::class],
         ];
     }

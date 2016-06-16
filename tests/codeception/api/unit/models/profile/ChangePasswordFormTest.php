@@ -27,7 +27,7 @@ class ChangePasswordFormTest extends DbTestCase {
     }
 
     public function testValidatePasswordAndRePasswordMatch() {
-        $this->specify('error.newRePassword_does_not_match expected if passwords not match', function() {
+        $this->specify('error.rePassword_does_not_match expected if passwords not match', function() {
             $account = new Account();
             $account->setPassword('12345678');
             $model = new ChangePasswordForm($account, [
@@ -36,7 +36,7 @@ class ChangePasswordFormTest extends DbTestCase {
                 'newRePassword' => 'another-password',
             ]);
             $model->validatePasswordAndRePasswordMatch('newRePassword');
-            expect($model->getErrors('newRePassword'))->equals(['error.newRePassword_does_not_match']);
+            expect($model->getErrors('newRePassword'))->equals(['error.rePassword_does_not_match']);
         });
 
         $this->specify('no errors expected if passwords are valid', function() {
@@ -51,7 +51,7 @@ class ChangePasswordFormTest extends DbTestCase {
             expect($model->getErrors('newRePassword'))->isEmpty();
         });
 
-        $this->specify('error.newRePassword_does_not_match expected even if there are errors on other attributes', function() {
+        $this->specify('error.rePassword_does_not_match expected even if there are errors on other attributes', function() {
             // this is very important, because password change flow may be combined of two steps
             // therefore we need to validate password sameness before we will validate current account password
             $account = new Account();
@@ -61,7 +61,7 @@ class ChangePasswordFormTest extends DbTestCase {
                 'newRePassword' => 'another-password',
             ]);
             $model->validate();
-            expect($model->getErrors('newRePassword'))->equals(['error.newRePassword_does_not_match']);
+            expect($model->getErrors('newRePassword'))->equals(['error.rePassword_does_not_match']);
         });
     }
 

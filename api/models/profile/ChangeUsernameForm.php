@@ -2,6 +2,7 @@
 namespace api\models\profile;
 
 use api\models\base\PasswordProtectedForm;
+use common\helpers\Error;
 use common\helpers\Amqp;
 use common\models\amqp\UsernameChanged;
 use common\models\UsernameHistory;
@@ -16,8 +17,8 @@ class ChangeUsernameForm extends PasswordProtectedForm {
 
     public function rules() {
         return ArrayHelper::merge(parent::rules(), [
-            [['username'], 'required', 'message' => 'error.{attribute}_required'],
-            [['username'], 'validateUsername'],
+            ['username', 'required', 'message' => Error::USERNAME_REQUIRED],
+            ['username', 'validateUsername'],
         ]);
     }
 

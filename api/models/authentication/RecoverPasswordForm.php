@@ -3,6 +3,7 @@ namespace api\models\authentication;
 
 use api\models\AccountIdentity;
 use api\models\base\KeyConfirmationForm;
+use common\helpers\Error as E;
 use common\models\EmailActivation;
 use common\validators\PasswordValidate;
 use Yii;
@@ -16,7 +17,8 @@ class RecoverPasswordForm extends KeyConfirmationForm {
 
     public function rules() {
         return array_merge(parent::rules(), [
-            [['newPassword', 'newRePassword'], 'required', 'message' => 'error.{attribute}_required'],
+            ['newPassword', 'required', 'message' => E::NEW_PASSWORD_REQUIRED],
+            ['newRePassword', 'required', 'message' => E::NEW_RE_PASSWORD_REQUIRED],
             ['newPassword', PasswordValidate::class],
             ['newRePassword', 'validatePasswordAndRePasswordMatch'],
         ]);
@@ -25,7 +27,7 @@ class RecoverPasswordForm extends KeyConfirmationForm {
     public function validatePasswordAndRePasswordMatch($attribute) {
         if (!$this->hasErrors()) {
             if ($this->newPassword !== $this->newRePassword) {
-                $this->addError($attribute, 'error.rePassword_does_not_match');
+                $this->addError($attribute, E::NEW_RE_PASSWORD_DOES_NOT_MATCH);
             }
         }
     }

@@ -1,6 +1,7 @@
 <?php
 namespace common\models;
 
+use common\helpers\Error as E;
 use common\components\UserPass;
 use common\validators\LanguageValidator;
 use Ely\Yii2\TempmailValidator;
@@ -57,22 +58,22 @@ class Account extends ActiveRecord {
     public function rules() {
         return [
             [['username'], 'filter', 'filter' => 'trim'],
-            [['username'], 'required', 'message' => 'error.username_required'],
+            [['username'], 'required', 'message' => E::USERNAME_REQUIRED],
             [['username'], 'string', 'min' => 3, 'max' => 21,
-                'tooShort' => 'error.username_too_short',
-                'tooLong' => 'error.username_too_long',
+                'tooShort' => E::USERNAME_TOO_SHORT,
+                'tooLong' => E::USERNAME_TOO_LONG,
             ],
             [['username'], 'match', 'pattern' => '/^[\p{L}\d-_\.!?#$%^&*()\[\]:;]+$/u',
-                'message' => 'error.username_invalid',
+                'message' => E::USERNAME_INVALID,
             ],
-            [['username'], 'unique', 'message' => 'error.username_not_available'],
+            [['username'], 'unique', 'message' => E::USERNAME_NOT_AVAILABLE],
 
             [['email'], 'filter', 'filter' => 'trim'],
-            [['email'], 'required', 'message' => 'error.email_required'],
-            [['email'], 'string', 'max' => 255, 'tooLong' => 'error.email_too_long'],
-            [['email'], 'email', 'checkDNS' => true, 'enableIDN' => true, 'message' => 'error.email_invalid'],
-            [['email'], TempmailValidator::class, 'message' => 'error.email_is_tempmail'],
-            [['email'], 'unique', 'message' => 'error.email_not_available'],
+            [['email'], 'required', 'message' => E::EMAIL_REQUIRED],
+            [['email'], 'string', 'max' => 255, 'tooLong' => E::EMAIL_TOO_LONG],
+            [['email'], 'email', 'checkDNS' => true, 'enableIDN' => true, 'message' => E::EMAIL_INVALID],
+            [['email'], TempmailValidator::class, 'message' => E::EMAIL_IS_TEMPMAIL],
+            [['email'], 'unique', 'message' => E::EMAIL_NOT_AVAILABLE],
 
             [['lang'], LanguageValidator::class],
             [['lang'], 'default', 'value' => 'en'],

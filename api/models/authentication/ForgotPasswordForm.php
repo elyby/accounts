@@ -2,6 +2,7 @@
 namespace api\models\authentication;
 
 use api\models\base\ApiForm;
+use common\helpers\Error as E;
 use api\traits\AccountFinder;
 use common\components\UserFriendlyRandomKey;
 use common\models\Account;
@@ -18,7 +19,7 @@ class ForgotPasswordForm extends ApiForm {
 
     public function rules() {
         return [
-            ['login', 'required', 'message' => 'error.login_required'],
+            ['login', 'required', 'message' => E::LOGIN_REQUIRED],
             ['login', 'validateLogin'],
             ['login', 'validateActivity'],
             ['login', 'validateFrequency'],
@@ -28,7 +29,7 @@ class ForgotPasswordForm extends ApiForm {
     public function validateLogin($attribute) {
         if (!$this->hasErrors()) {
             if ($this->getAccount() === null) {
-                $this->addError($attribute, 'error.' . $attribute . '_not_exist');
+                $this->addError($attribute, E::LOGIN_NOT_EXIST);
             }
         }
     }
@@ -37,7 +38,7 @@ class ForgotPasswordForm extends ApiForm {
         if (!$this->hasErrors()) {
             $account = $this->getAccount();
             if ($account->status !== Account::STATUS_ACTIVE) {
-                $this->addError($attribute, 'error.account_not_activated');
+                $this->addError($attribute, E::ACCOUNT_NOT_ACTIVATED);
             }
         }
     }
@@ -46,7 +47,7 @@ class ForgotPasswordForm extends ApiForm {
         if (!$this->hasErrors()) {
             $emailConfirmation = $this->getEmailActivation();
             if ($emailConfirmation !== null && !$emailConfirmation->canRepeat()) {
-                $this->addError($attribute, 'error.recently_sent_message');
+                $this->addError($attribute, E::RECENTLY_SENT_MESSAGE);
             }
         }
     }

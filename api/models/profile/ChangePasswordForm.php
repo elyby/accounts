@@ -2,6 +2,7 @@
 namespace api\models\profile;
 
 use api\models\base\PasswordProtectedForm;
+use common\helpers\Error as E;
 use common\models\Account;
 use common\validators\PasswordValidate;
 use Yii;
@@ -31,7 +32,8 @@ class ChangePasswordForm extends PasswordProtectedForm {
      */
     public function rules() {
         return ArrayHelper::merge(parent::rules(), [
-            [['newPassword', 'newRePassword'], 'required', 'message' => 'error.{attribute}_required'],
+            ['newPassword', 'required', 'message' => E::NEW_PASSWORD_REQUIRED],
+            ['newRePassword', 'required', 'message' => E::NEW_RE_PASSWORD_REQUIRED],
             ['newPassword', PasswordValidate::class],
             ['newRePassword', 'validatePasswordAndRePasswordMatch'],
             ['logoutAll', 'boolean'],
@@ -41,7 +43,7 @@ class ChangePasswordForm extends PasswordProtectedForm {
     public function validatePasswordAndRePasswordMatch($attribute) {
         if (!$this->hasErrors($attribute)) {
             if ($this->newPassword !== $this->newRePassword) {
-                $this->addError($attribute, 'error.newRePassword_does_not_match');
+                $this->addError($attribute, E::NEW_RE_PASSWORD_DOES_NOT_MATCH);
             }
         }
     }
@@ -49,7 +51,7 @@ class ChangePasswordForm extends PasswordProtectedForm {
     /**
      * @return boolean
      */
-    public function changePassword() {
+    public function changePassword() : bool {
         if (!$this->validate()) {
             return false;
         }
@@ -79,7 +81,7 @@ class ChangePasswordForm extends PasswordProtectedForm {
         return true;
     }
 
-    protected function getAccount() {
+    protected function getAccount() : Account {
         return $this->_account;
     }
 

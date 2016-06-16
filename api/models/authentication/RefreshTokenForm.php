@@ -2,6 +2,7 @@
 namespace api\models\authentication;
 
 use api\models\base\ApiForm;
+use common\helpers\Error as E;
 use common\models\AccountSession;
 use Yii;
 
@@ -16,7 +17,7 @@ class RefreshTokenForm extends ApiForm {
 
     public function rules() {
         return [
-            ['refresh_token', 'required'],
+            ['refresh_token', 'required', 'message' => E::REFRESH_TOKEN_REQUIRED],
             ['refresh_token', 'validateRefreshToken'],
         ];
     }
@@ -25,7 +26,7 @@ class RefreshTokenForm extends ApiForm {
         if (!$this->hasErrors()) {
             /** @var AccountSession|null $token */
             if ($this->getSession() === null) {
-                $this->addError('refresh_token', 'error.refresh_token_not_exist');
+                $this->addError('refresh_token', E::REFRESH_TOKEN_NOT_EXISTS);
             }
         }
     }

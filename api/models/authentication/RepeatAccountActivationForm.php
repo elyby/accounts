@@ -2,6 +2,7 @@
 namespace api\models\authentication;
 
 use api\models\base\ApiForm;
+use common\helpers\Error as E;
 use common\components\UserFriendlyRandomKey;
 use common\models\Account;
 use common\models\confirmations\RegistrationConfirmation;
@@ -18,7 +19,7 @@ class RepeatAccountActivationForm extends ApiForm {
     public function rules() {
         return [
             ['email', 'filter', 'filter' => 'trim'],
-            ['email', 'required', 'message' => 'error.email_required'],
+            ['email', 'required', 'message' => E::EMAIL_REQUIRED],
             ['email', 'validateEmailForAccount'],
             ['email', 'validateExistsActivation'],
         ];
@@ -28,12 +29,12 @@ class RepeatAccountActivationForm extends ApiForm {
         if (!$this->hasErrors($attribute)) {
             $account = $this->getAccount();
             if ($account === null) {
-                $this->addError($attribute, "error.{$attribute}_not_found");
+                $this->addError($attribute, E::EMAIL_NOT_FOUND);
             } elseif ($account->status === Account::STATUS_ACTIVE) {
-                $this->addError($attribute, "error.account_already_activated");
+                $this->addError($attribute, E::ACCOUNT_ALREADY_ACTIVATED);
             } elseif ($account->status !== Account::STATUS_REGISTERED) {
                 // TODO: такие аккаунты следует логировать за попытку к саботажу
-                $this->addError($attribute, "error.account_cannot_resend_message");
+                $this->addError($attribute, E::ACCOUNT_CANNOT_RESEND_MESSAGE);
             }
         }
     }
@@ -42,7 +43,7 @@ class RepeatAccountActivationForm extends ApiForm {
         if (!$this->hasErrors($attribute)) {
             $activation = $this->getActivation();
             if ($activation !== null && !$activation->canRepeat()) {
-                $this->addError($attribute, 'error.recently_sent_message');
+                $this->addError($attribute, E::RECENTLY_SENT_MESSAGE);
             }
         }
     }

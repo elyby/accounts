@@ -1,12 +1,13 @@
 <?php
 namespace common\validators;
 
+use common\helpers\Error as E;
 use Yii;
 use yii\validators\Validator;
 
 class LanguageValidator extends Validator {
 
-    public $message = 'error.unsupported_language';
+    public $message = E::UNSUPPORTED_LANGUAGE;
 
     protected function validateValue($value) {
         if (empty($value)) {
