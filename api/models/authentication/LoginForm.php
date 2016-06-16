@@ -3,6 +3,7 @@ namespace api\models\authentication;
 
 use api\models\AccountIdentity;
 use api\models\base\ApiForm;
+use common\helpers\Error as E;
 use api\traits\AccountFinder;
 use common\models\Account;
 use Yii;
@@ -19,12 +20,12 @@ class LoginForm extends ApiForm {
 
     public function rules() {
         return [
-            ['login', 'required', 'message' => 'error.login_required'],
+            ['login', 'required', 'message' => E::LOGIN_REQUIRED],
             ['login', 'validateLogin'],
 
             ['password', 'required', 'when' => function(self $model) {
                 return !$model->hasErrors();
-            }, 'message' => 'error.password_required'],
+            }, 'message' => E::PASSWORD_REQUIRED],
             ['password', 'validatePassword'],
 
             ['login', 'validateActivity'],
@@ -36,7 +37,7 @@ class LoginForm extends ApiForm {
     public function validateLogin($attribute) {
         if (!$this->hasErrors()) {
             if ($this->getAccount() === null) {
-                $this->addError($attribute, 'error.' . $attribute . '_not_exist');
+                $this->addError($attribute, E::LOGIN_NOT_EXIST);
             }
         }
     }
@@ -45,7 +46,7 @@ class LoginForm extends ApiForm {
         if (!$this->hasErrors()) {
             $account = $this->getAccount();
             if ($account === null || !$account->validatePassword($this->password)) {
-                $this->addError($attribute, 'error.' . $attribute . '_incorrect');
+                $this->addError($attribute, E::PASSWORD_INCORRECT);
             }
         }
     }
@@ -54,7 +55,7 @@ class LoginForm extends ApiForm {
         if (!$this->hasErrors()) {
             $account = $this->getAccount();
             if ($account->status !== Account::STATUS_ACTIVE) {
-                $this->addError($attribute, 'error.account_not_activated');
+                $this->addError($attribute, E::ACCOUNT_NOT_ACTIVATED);
             }
         }
     }

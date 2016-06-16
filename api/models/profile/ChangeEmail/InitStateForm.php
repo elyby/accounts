@@ -21,7 +21,7 @@ class InitStateForm extends PasswordProtectedForm {
         parent::__construct($config);
     }
 
-    public function getAccount() {
+    public function getAccount() : Account {
         return $this->account;
     }
 
@@ -32,7 +32,7 @@ class InitStateForm extends PasswordProtectedForm {
         ]);
     }
 
-    public function sendCurrentEmailConfirmation() {
+    public function sendCurrentEmailConfirmation() : bool {
         if (!$this->validate()) {
             return false;
         }
@@ -55,7 +55,7 @@ class InitStateForm extends PasswordProtectedForm {
      * @return CurrentEmailConfirmation
      * @throws ErrorException
      */
-    public function createCode() {
+    public function createCode() : CurrentEmailConfirmation {
         $account = $this->getAccount();
         $emailActivation = new CurrentEmailConfirmation();
         $emailActivation->account_id = $account->id;

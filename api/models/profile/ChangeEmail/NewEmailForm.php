@@ -2,6 +2,7 @@
 namespace api\models\profile\ChangeEmail;
 
 use api\models\base\KeyConfirmationForm;
+use common\helpers\Error as E;
 use common\models\Account;
 use common\models\confirmations\NewEmailConfirmation;
 use common\models\EmailActivation;
@@ -33,7 +34,7 @@ class NewEmailForm extends KeyConfirmationForm {
 
     public function rules() {
         return array_merge(parent::rules(), [
-            ['email', 'required', 'message' => 'error.email_required'],
+            ['email', 'required', 'message' => E::EMAIL_REQUIRED],
             ['email', 'validateEmail'],
         ]);
     }

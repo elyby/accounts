@@ -1,6 +1,7 @@
 <?php
 namespace api\models;
 
+use common\helpers\Error as E;
 use api\models\base\ApiForm;
 use Yii;
 use yii\base\ErrorException;
@@ -18,9 +19,11 @@ class FeedbackForm extends ApiForm {
 
     public function rules() {
         return [
-            [['subject', 'email', 'message'], 'required', 'message' => 'error.{attribute}_required'],
+            ['subject', 'required', 'message' => E::SUBJECT_REQUIRED],
+            ['email', 'required', 'message' => E::EMAIL_REQUIRED],
+            ['message', 'required', 'message' => E::MESSAGE_REQUIRED],
             [['subject'], 'string', 'max' => 255],
-            [['email'], 'email'],
+            [['email'], 'email', 'message' => E::EMAIL_INVALID],
             [['message'], 'string', 'max' => 65535],
         ];
     }

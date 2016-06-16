@@ -1,14 +1,15 @@
 <?php
 namespace api\validators;
 
+use common\helpers\Error as E;
 use common\models\EmailActivation;
 use yii\validators\Validator;
 
 class EmailActivationKeyValidator extends Validator {
 
-    public $notExist = 'error.key_not_exists';
+    public $notExist = E::KEY_NOT_EXISTS;
 
-    public $expired = 'error.key_expire';
+    public $expired = E::KEY_EXPIRE;
 
     public function validateValue($value) {
         if (($model = $this->findEmailActivationModel($value)) === null) {

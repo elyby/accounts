@@ -4,6 +4,7 @@ namespace api\controllers;
 use api\models\authentication\ConfirmEmailForm;
 use api\models\authentication\RepeatAccountActivationForm;
 use api\models\authentication\RegistrationForm;
+use common\helpers\Error as E;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
@@ -60,7 +61,7 @@ class SignupController extends Controller {
                 'errors' => $this->normalizeModelErrors($model->getErrors()),
             ];
 
-            if ($response['errors']['email'] === 'error.recently_sent_message') {
+            if ($response['errors']['email'] === E::RECENTLY_SENT_MESSAGE) {
                 $activation = $model->getActivation();
                 $response['data'] = [
                     'canRepeatIn' => $activation->canRepeatIn(),

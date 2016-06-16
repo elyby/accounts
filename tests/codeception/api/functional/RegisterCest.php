@@ -18,7 +18,7 @@ class RegisterCest {
     public function testIncorrectRegistration(FunctionalTester $I) {
         $route = new SignupRoute($I);
 
-        $I->wantTo('get error.you_must_accept_rules if we don\'t accept rules');
+        $I->wantTo('get error.rulesAgreement_required if we don\'t accept rules');
         $route->register([
             'username' => 'ErickSkrauch',
             'email' => 'erickskrauch@ely.by',
@@ -28,17 +28,17 @@ class RegisterCest {
         $I->canSeeResponseContainsJson([
             'success' => false,
             'errors' => [
-                'rulesAgreement' => 'error.you_must_accept_rules',
+                'rulesAgreement' => 'error.rulesAgreement_required',
             ],
         ]);
 
-        $I->wantTo('don\'t see error.you_must_accept_rules if we accept rules');
+        $I->wantTo('don\'t see error.rulesAgreement_requireds if we accept rules');
         $route->register([
             'rulesAgreement' => true,
         ]);
         $I->cantSeeResponseContainsJson([
             'errors' => [
-                'rulesAgreement' => 'error.you_must_accept_rules',
+                'rulesAgreement' => 'error.rulesAgreement_required',
             ],
         ]);
 

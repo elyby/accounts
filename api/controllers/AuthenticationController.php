@@ -5,6 +5,7 @@ use api\models\authentication\ForgotPasswordForm;
 use api\models\authentication\LoginForm;
 use api\models\authentication\RecoverPasswordForm;
 use api\models\authentication\RefreshTokenForm;
+use common\helpers\Error as E;
 use common\helpers\StringHelper;
 use Yii;
 use yii\filters\AccessControl;
@@ -48,7 +49,7 @@ class AuthenticationController extends Controller {
                 'errors' => $this->normalizeModelErrors($model->getErrors()),
             ];
 
-            if (ArrayHelper::getValue($data['errors'], 'login') === 'error.account_not_activated') {
+            if (ArrayHelper::getValue($data['errors'], 'login') === E::ACCOUNT_NOT_ACTIVATED) {
                 $data['data']['email'] = $model->getAccount()->email;
             }
 
@@ -69,7 +70,7 @@ class AuthenticationController extends Controller {
                 'errors' => $this->normalizeModelErrors($model->getErrors()),
             ];
 
-            if (ArrayHelper::getValue($data['errors'], 'login') === 'error.email_frequency') {
+            if (ArrayHelper::getValue($data['errors'], 'login') === E::RECENTLY_SENT_MESSAGE) {
                 $emailActivation = $model->getEmailActivation();
                 $data['data'] = [
                     'canRepeatIn' => $emailActivation->canRepeatIn(),

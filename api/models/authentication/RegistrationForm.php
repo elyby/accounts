@@ -3,6 +3,7 @@ namespace api\models\authentication;
 
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\base\ApiForm;
+use common\helpers\Error as E;
 use api\models\profile\ChangeUsernameForm;
 use common\components\UserFriendlyRandomKey;
 use common\models\Account;
@@ -26,14 +27,14 @@ class RegistrationForm extends ApiForm {
 
     public function rules() {
         return [
-            [[], ReCaptchaValidator::class, 'message' => 'error.captcha_invalid', 'when' => !YII_ENV_TEST],
-            ['rulesAgreement', 'required', 'message' => 'error.you_must_accept_rules'],
+            [[], ReCaptchaValidator::class, 'message' => E::CAPTCHA_INVALID, 'when' => !YII_ENV_TEST],
+            ['rulesAgreement', 'required', 'message' => E::RULES_AGREEMENT_REQUIRED],
 
             ['username', 'validateUsername', 'skipOnEmpty' => false],
             ['email', 'validateEmail', 'skipOnEmpty' => false],
 
-            ['password', 'required', 'message' => 'error.password_required'],
-            ['rePassword', 'required', 'message' => 'error.rePassword_required'],
+            ['password', 'required', 'message' => E::PASSWORD_REQUIRED],
+            ['rePassword', 'required', 'message' => E::RE_PASSWORD_REQUIRED],
             ['password', PasswordValidate::class],
             ['rePassword', 'validatePasswordAndRePasswordMatch'],
 
@@ -60,7 +61,7 @@ class RegistrationForm extends ApiForm {
     public function validatePasswordAndRePasswordMatch($attribute) {
         if (!$this->hasErrors()) {
             if ($this->password !== $this->rePassword) {
-                $this->addError($attribute, "error.rePassword_does_not_match");
+                $this->addError($attribute, E::RE_PASSWORD_DOES_NOT_MATCH);
             }
         }
     }

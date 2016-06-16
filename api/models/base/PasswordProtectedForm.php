@@ -1,6 +1,7 @@
 <?php
 namespace api\models\base;
 
+use common\helpers\Error as E;
 use Yii;
 
 class PasswordProtectedForm extends ApiForm {
@@ -9,14 +10,14 @@ class PasswordProtectedForm extends ApiForm {
 
     public function rules() {
         return [
-            [['password'], 'required', 'message' => 'error.password_required'],
+            [['password'], 'required', 'message' => E::PASSWORD_REQUIRED],
             [['password'], 'validatePassword'],
         ];
     }
 
     public function validatePassword() {
         if (!$this->getAccount()->validatePassword($this->password)) {
-            $this->addError('password', 'error.password_invalid');
+            $this->addError('password', E::PASSWORD_INVALID);
         }
     }
 

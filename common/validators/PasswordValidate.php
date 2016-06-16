@@ -1,6 +1,7 @@
 <?php
 namespace common\validators;
 
+use common\helpers\Error as E;
 use yii\validators\StringValidator;
 
 /**
@@ -10,6 +11,6 @@ class PasswordValidate extends StringValidator {
 
     public $min = 8;
 
-    public $tooShort = 'error.password_too_short';
+    public $tooShort = E::PASSWORD_TOO_SHORT;
 
 }

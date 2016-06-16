@@ -22,11 +22,11 @@ class ConfirmNewEmailForm extends KeyConfirmationForm {
     /**
      * @return Account
      */
-    public function getAccount() {
+    public function getAccount() : Account {
         return $this->account;
     }
 
-    public function changeEmail() {
+    public function changeEmail() : bool {
         if (!$this->validate()) {
             return false;
         }
