@@ -46,7 +46,8 @@ RUN yes | pecl install xdebug \
 # Next composer and global composer package, as their versions may change from time to time
 RUN curl -sS https://getcomposer.org/installer | php \
  && mv composer.phar /usr/local/bin/composer.phar \
- && composer.phar global require --no-progress "fxp/composer-asset-plugin:~1.1.4" "hirak/prestissimo:>=0.3.1"
+ && echo '{"github-oauth": {"github.com": "***REMOVED***"}}' > ~/.composer/auth.json \
+ && composer.phar global require --no-progress "hirak/prestissimo:>=0.3.1"
 
 COPY ./docker/php/composer.sh /usr/local/bin/composer
 RUN chmod a+x /usr/local/bin/composer

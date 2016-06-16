@@ -23,4 +23,8 @@ return [
             'class' => \common\components\RabbitMQ\Component::class,
         ],
     ],
+    'aliases' => [
+        '@bower' => '@vendor/bower-asset',
+        '@npm'   => '@vendor/npm-asset',
+    ],
 ];

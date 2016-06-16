@@ -36,21 +36,15 @@
         "codeception/verify": "*",
         "phploc/phploc": "^3.0.1"
     },
-    "provide": {
-        "bower-asset/jquery": "*",
-        "bower-asset/jquery.inputmask": "*",
-        "bower-asset/punycode": "*",
-        "bower-asset/yii2-pjax": "*"
-    },
     "config": {
         "process-timeout": 1800
     },
-    "extra": {
-        "asset-installer-paths": {
-            "npm-asset-library": "vendor/npm",
-            "bower-asset-library": "vendor/bower"
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
         }
-    },
+    ],
     "scripts": {
         "build-tests" : "cd tests && codecept build",
         "test" : "codecept run -c tests",
