@@ -7,7 +7,10 @@ use common\components\oauth\Storage\Yii2\AccessTokenStorage;
 use common\components\oauth\Storage\Yii2\ClientStorage;
 use common\components\oauth\Storage\Yii2\ScopeStorage;
 use common\components\oauth\Storage\Yii2\SessionStorage;
+use common\components\oauth\Util\KeyAlgorithm\UuidAlgorithm;
 use League\OAuth2\Server\AuthorizationServer;
+use League\OAuth2\Server\Grant;
+use League\OAuth2\Server\Util\SecureKey;
 use yii\base\InvalidConfigException;
 
 /**
@@ -29,10 +32,10 @@ class Component extends \yii\base\Component {
      * @var array grant type => class
      */
     public $grantMap = [
-        'authorization_code' => 'League\OAuth2\Server\Grant\AuthCodeGrant',
-        'client_credentials' => 'League\OAuth2\Server\Grant\ClientCredentialsGrant',
-        'password'           => 'League\OAuth2\Server\Grant\PasswordGrant',
-        'refresh_token'      => 'League\OAuth2\Server\Grant\RefreshTokenGrant'
+        'authorization_code' => Grant\AuthCodeGrant::class,
+        'client_credentials' => Grant\ClientCredentialsGrant::class,
+        'password'           => Grant\PasswordGrant::class,
+        'refresh_token'      => Grant\RefreshTokenGrant::class,
     ];
 
     public function getAuthServer() {
@@ -57,6 +60,8 @@ class Component extends \yii\base\Component {
                 $grant = new $this->grantMap[$grantType]();
                 $this->_authServer->addGrantType($grant);
             }
+
+            SecureKey::setAlgorithm(new UuidAlgorithm());
         }
 
         return $this->_authServer;

@@ -17,7 +17,7 @@ class OauthSteps extends \tests\codeception\api\FunctionalTester {
         ], ['accept' => true]);
         $this->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
         $response = json_decode($this->grabResponse(), true);
-        preg_match('/code=(\w+)/', $response['redirectUri'], $matches);
+        preg_match('/code=([\w-]+)/', $response['redirectUri'], $matches);
 
         return $matches[1];
     }
