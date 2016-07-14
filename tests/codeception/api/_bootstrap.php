@@ -21,6 +21,4 @@ $_SERVER['SERVER_NAME'] =  parse_url(\Codeception\Configuration::config()['confi
 $_SERVER['SERVER_PORT'] =  parse_url(\Codeception\Configuration::config()['config']['test_entry_url'], PHP_URL_PORT) ?: '80';
 
 Yii::setAlias('@tests', dirname(dirname(__DIR__)));
-
-// disable deep cloning of properties inside specify block
 \Codeception\Specify\Config::setDeepClone(false);

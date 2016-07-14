@@ -1,7 +1,4 @@
 <?php
-/**
- * Application configuration shared by all applications and test types
- */
 return [
     'language' => 'en-US',
     'controllerMap' => [
@@ -14,7 +11,9 @@ return [
     ],
     'components' => [
         'db' => [
-            'dsn' => 'mysql:host=db;dbname=ely_accounts_test',
+            'dsn' => 'mysql:host=testdb;dbname=ely_accounts_test',
+            'username' => 'ely_accounts_tester',
+            'password' => 'ely_accounts_tester_password',
         ],
         'mailer' => [
             'useFileTransport' => true,
@@ -23,9 +22,10 @@ return [
             'showScriptName' => true,
         ],
         'redis' => [
-            'database' => 1,
+            'hostname' => 'testredis',
         ],
         'amqp' => [
+            'host' => 'testrabbit',
             'user' => 'ely-accounts-tester',
             'password' => 'tester-password',
             'vhost' => '/account.ely.by/tests',

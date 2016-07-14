@@ -12,11 +12,11 @@ modules:
         Yii2:
             configFile: '../config/api/functional.php'
         Redis:
-            host: redis
+            host: testredis
             port: 6379
-            database: 1
+            database: 0
         AMQP:
-            host: rabbitmq
+            host: testrabbit
             port: 5672
             username: 'ely-accounts-tester'
             password: 'tester-password'

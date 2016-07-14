@@ -46,9 +46,6 @@
         }
     ],
     "scripts": {
-        "build-tests" : "cd tests && codecept build",
-        "test" : "codecept run -c tests",
-        "test-api" : "codecept run -c tests/codeception/api",
         "phploc" : "phploc ./api ./common ./console"
     }
 }

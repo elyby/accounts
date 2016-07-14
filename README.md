@@ -62,10 +62,5 @@ docker-compose restart
 ## Тестирование php бэкэнда
 
 ```sh
-# Прежде чем тестировать, необходимо накатить миграции
-docker exec -it app php tests/codeception/bin/yii migrate --interactive=0
-# Собрать все тестовые окружения
-docker exec -it app ./vendor/bin/codecept build -c tests
-# И запустить собственно процесс тестирования
-docker exec -it app ./vendor/bin/codecept run -c tests
+./tests/run-tests.sh
 ```

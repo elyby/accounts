@@ -2,8 +2,6 @@ version: '2'
 services:
     app:
         build: .
-        expose:
-            - "9000"
         links:
             - db
             - redis
@@ -13,9 +11,6 @@ services:
         volumes:
             - ./:/var/www/html/
         env_file: .env
-        environment:
-            ENABLE_ENV_FILE: 1
-            ENABLE_LOCALCONF: 1
 
     web:
         build: ./docker/nginx
@@ -47,14 +42,24 @@ services:
 
     db:
         build: ./docker/mariadb
+        environment:
+            MYSQL_ROOT_PASSWORD: ""
+            MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+            MYSQL_DATABASE: "ely_accounts"
+            MYSQL_USER: "ely_accounts_user"
+            MYSQL_PASSWORD: "ely_accounts_password"
 
     redis:
         image: redis:3.0
 
     rabbitmq:
         build: ./docker/rabbitmq
+        environment:
+            RABBITMQ_DEFAULT_USER: "ely-accounts-app"
+            RABBITMQ_DEFAULT_PASS: "app-password"
+            RABBITMQ_DEFAULT_VHOST: "/account.ely.by"
         ports:
-            - "15672:15672"
+            - "15672:15672" # Manager interface
 
     phpmyadmin:
         build: ./docker/phpmyadmin
@@ -62,7 +67,6 @@ services:
             - PMA_ARBITRARY=1
             - PMA_USER=root
             - PMA_PASSWORD=
-        restart: always
         ports:
             - "8181:80"
         links:

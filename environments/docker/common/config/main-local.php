@@ -3,8 +3,8 @@ return [
     'components' => [
         'db' => [
             'dsn' => 'mysql:host=db;dbname=ely_accounts',
-            'username' => 'root',
-            'password' => '',
+            'username' => 'ely_accounts_user',
+            'password' => 'ely_accounts_password',
         ],
         'mailer' => [
             'useFileTransport' => true,

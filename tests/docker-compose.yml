@@ -1,0 +1,30 @@
+version: '2'
+services:
+    testphp:
+        build: ./..
+        links:
+            - testdb
+            - testredis
+            - testrabbit
+        volumes:
+            - ./../:/var/www/html/
+        env_file: ./../.env
+
+    testdb:
+        build: ./../docker/mariadb
+        environment:
+            MYSQL_ROOT_PASSWORD: ""
+            MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+            MYSQL_DATABASE: "ely_accounts_test"
+            MYSQL_USER: "ely_accounts_tester"
+            MYSQL_PASSWORD: "ely_accounts_tester_password"
+
+    testredis:
+        image: redis:3.0
+
+    testrabbit:
+        build: ./../docker/rabbitmq
+        environment:
+            RABBITMQ_DEFAULT_USER: "ely-accounts-tester"
+            RABBITMQ_DEFAULT_PASS: "tester-password"
+            RABBITMQ_DEFAULT_VHOST: "/account.ely.by/tests"
