@@ -22,6 +22,11 @@ class AuthenticationRoute extends BasePage {
         $this->actor->sendPOST($this->getUrl(), $params);
     }
 
+    public function logout() {
+        $this->route = ['authentication/logout'];
+        $this->actor->sendPOST($this->getUrl());
+    }
+
     public function forgotPassword($login = '') {
         $this->route = ['authentication/forgot-password'];
         $this->actor->sendPOST($this->getUrl(), [

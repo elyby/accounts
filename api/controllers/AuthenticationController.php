@@ -3,6 +3,7 @@ namespace api\controllers;
 
 use api\models\authentication\ForgotPasswordForm;
 use api\models\authentication\LoginForm;
+use api\models\authentication\LogoutForm;
 use api\models\authentication\RecoverPasswordForm;
 use api\models\authentication\RefreshTokenForm;
 use common\helpers\Error as E;
@@ -26,6 +27,11 @@ class AuthenticationController extends Controller {
                         'allow' => true,
                         'roles' => ['?'],
                     ],
+                    [
+                        'actions' => ['logout'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
                 ],
             ],
         ]);
@@ -34,6 +40,7 @@ class AuthenticationController extends Controller {
     public function verbs() {
         return [
             'login' => ['POST'],
+            'logout' => ['POST'],
             'forgot-password' => ['POST'],
             'recover-password' => ['POST'],
             'refresh-token' => ['POST'],
@@ -59,6 +66,15 @@ class AuthenticationController extends Controller {
         return array_merge([
             'success' => true,
         ], $result->getAsResponse());
+    }
+
+    public function actionLogout() {
+        $form = new LogoutForm();
+        $form->logout();
+
+        return [
+            'success' => true,
+        ];
     }
 
     public function actionForgotPassword() {
