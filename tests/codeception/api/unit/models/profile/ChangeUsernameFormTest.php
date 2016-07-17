@@ -7,7 +7,6 @@ use common\models\Account;
 use common\models\UsernameHistory;
 use tests\codeception\api\unit\DbTestCase;
 use tests\codeception\common\fixtures\AccountFixture;
-use Yii;
 
 /**
  * @property AccountFixture $accounts
@@ -92,7 +91,7 @@ class ChangeUsernameFormTest extends DbTestCase {
 
     public function testCreateTask() {
         $model = $this->createModel();
-        $model->createTask('1', 'test1', 'test');
+        $model->createEventTask('1', 'test1', 'test');
         // TODO: у меня пока нет идей о том, чтобы это как-то успешно протестировать, увы
         // но по крайней мере можно убедиться, что оно не падает где-то на этом шаге
     }

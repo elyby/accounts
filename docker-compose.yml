@@ -56,8 +56,8 @@ services:
         build: ./docker/rabbitmq
         environment:
             RABBITMQ_DEFAULT_USER: "ely-accounts-app"
-            RABBITMQ_DEFAULT_PASS: "app-password"
-            RABBITMQ_DEFAULT_VHOST: "/account.ely.by"
+            RABBITMQ_DEFAULT_PASS: "ely-accounts-app-password"
+            RABBITMQ_DEFAULT_VHOST: "/ely.by"
         ports:
             - "15672:15672" # Manager interface
 

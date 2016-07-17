@@ -57,7 +57,7 @@ class ChangeUsernameForm extends PasswordProtectedForm {
             throw $e;
         }
 
-        $this->createTask($account->id, $account->username, $oldNickname);
+        $this->createEventTask($account->id, $account->username, $oldNickname);
 
         return true;
     }
@@ -69,18 +69,18 @@ class ChangeUsernameForm extends PasswordProtectedForm {
      * @param string  $newNickname
      * @param string  $oldNickname
      */
-    public function createTask($accountId, $newNickname, $oldNickname) {
-        $message = Amqp::getInstance()->prepareMessage(new UsernameChanged([
+    public function createEventTask($accountId, $newNickname, $oldNickname) {
+        $model = new UsernameChanged([
             'accountId' => $accountId,
             'oldUsername' => $oldNickname,
             'newUsername' => $newNickname,
-        ]), [
+        ]);
+
+        $message = Amqp::getInstance()->prepareMessage($model, [
             'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT,
         ]);
 
-        Amqp::sendToExchange('account', 'username-changed', $message, [
-            3 => true, // durable -> true
-        ]);
+        Amqp::sendToEventsExchange('accounts.username-changed', $message);
     }
 
 }

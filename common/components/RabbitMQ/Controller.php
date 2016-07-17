@@ -46,6 +46,19 @@ abstract class Controller extends \yii\console\Controller {
         return Yii::$app->get('amqp');
     }
 
+    /**
+     * Позволяет задать карту route из amqp к обработчику внутри класса:
+     * return [
+     *     'accounts.change-username' => 'routeChangeUsername',
+     *     'accounts.delete-account' => 'routeAccountDeleted',
+     * ];
+     *
+     * @return array
+     */
+    public function getRoutesMap() {
+        return [];
+    }
+
     protected function configureListen() {
         $exchangeName = $this->getExchangeName();
         $connection = $this->getAmqp()->getConnection();
@@ -66,9 +79,15 @@ abstract class Controller extends \yii\console\Controller {
     }
 
     public function callback(AMQPMessage $msg) {
-        $routingKey = $msg->delivery_info['routing_key'];
-        $method = 'route' . Inflector::camelize($routingKey);
         $body = Json::decode($msg->body, true);
+        /** @var string $routingKey */
+        $routingKey = $msg->delivery_info['routing_key'];
+        $map = $this->getRoutesMap();
+        if (isset($map[$routingKey])) {
+            $method = $map[$routingKey];
+        } else {
+            $method = 'route' . Inflector::camelize($routingKey);
+        }
 
         if (!method_exists($this, $method)) {
             $this->log(

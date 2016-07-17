@@ -3,25 +3,36 @@ namespace console\controllers;
 
 use common\components\Mojang\Api as MojangApi;
 use common\components\Mojang\exceptions\NoContentException;
+use common\components\RabbitMQ\Component as RabbitMQComponent;
 use common\models\amqp\UsernameChanged;
 use common\models\MojangUsername;
 use console\controllers\base\AmqpController;
-use Yii;
 
 class AccountQueueController extends AmqpController {
 
     public function getExchangeName() {
-        return 'account';
+        return 'events';
     }
 
     public function getQueueName() {
-        return 'account-operations';
+        return 'accounts-events';
     }
 
-    public function getExchangeDeclareArgs() {
+    protected function getExchangeDeclareArgs() {
         return array_replace(parent::getExchangeDeclareArgs(), [
+            1 => RabbitMQComponent::TYPE_TOPIC, // type -> topic
             3 => true, // durable -> true
         ]);
+    }
+
+    protected function getQueueBindArgs($exchangeName, $queueName) {
+        return [$queueName, $exchangeName, 'accounts.#'];
+    }
+
+    public function getRoutesMap() {
+        return [
+            'accounts.username-changed' => 'routeUsernameChanged',
+        ];
     }
 
     public function routeUsernameChanged(UsernameChanged $body) {

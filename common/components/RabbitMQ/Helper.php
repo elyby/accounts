@@ -16,4 +16,11 @@ class Helper {
         static::getInstance()->sendToExchange($exchange, $routingKey, $message, $exchangeArgs);
     }
 
+    public static function sendToEventsExchange($routingKey, $message) {
+        static::sendToExchange('events', $routingKey, $message, [
+            1 => Component::TYPE_TOPIC, // type -> topic
+            3 => true, // durable -> true
+        ]);
+    }
+
 }
