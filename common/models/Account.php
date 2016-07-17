@@ -140,6 +140,8 @@ class Account extends ActiveRecord {
      * @param OauthClient $client
      * @param \League\OAuth2\Server\Entity\ScopeEntity[] $scopes
      *
+     * TODO: этому методу здесь не место.
+     *
      * @return bool
      */
     public function canAutoApprove(OauthClient $client, array $scopes = []) {
@@ -160,23 +162,6 @@ class Account extends ActiveRecord {
     }
 
     /**
-     * @inheritdoc
-     */
-    protected static function getSecretKey() {
-        return Yii::$app->params['jwtSecret'];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected static function getHeaderToken() {
-        return [
-            'iss' => Yii::$app->request->hostInfo,
-            'aud' => Yii::$app->request->hostInfo,
-        ];
-    }
-
-    /**
      * Выполняет проверку, принадлежит ли этому нику аккаунт у Mojang
      * @return bool
      */
@@ -184,15 +169,6 @@ class Account extends ActiveRecord {
         return MojangUsername::find()
             ->andWhere(['username' => $this->username])
             ->exists();
-    }
-
-    /**
-     * TODO: нужно создать PR в UserTrait репо, чтобы этот метод сделали абстрактным
-     *
-     * @return int
-     */
-    public function getId() {
-        return $this->getPrimaryKey();
     }
 
 }
