@@ -78,10 +78,7 @@ class LoginForm extends ApiForm {
             $account->save();
         }
 
-        /** @var \api\components\User\Component $component */
-        $component = Yii::$app->user;
-
-        return $component->login($account, $this->rememberMe);
+        return Yii::$app->user->login($account, $this->rememberMe);
     }
 
     protected function getAccountClassName() {

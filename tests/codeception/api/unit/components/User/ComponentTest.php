@@ -9,6 +9,7 @@ use Codeception\Specify;
 use common\models\AccountSession;
 use Emarref\Jwt\Algorithm\AlgorithmInterface;
 use Emarref\Jwt\Claim\ClaimInterface;
+use Emarref\Jwt\Claim\Expiration;
 use Emarref\Jwt\Token;
 use tests\codeception\api\unit\DbTestCase;
 use tests\codeception\common\_support\ProtectedCaller;
@@ -50,8 +51,13 @@ class ComponentTest extends DbTestCase {
             $result = $this->component->login($account, false);
             expect($result)->isInstanceOf(LoginResult::class);
             expect($result->getSession())->null();
-            expect(is_string($result->getJwt()))->true();
             expect($result->getIdentity())->equals($account);
+            $jwt = $result->getJwt();
+            expect(is_string($jwt))->true();
+            $token = $this->component->parseToken($jwt);
+            $claim = $token->getPayload()->findClaimByName(Expiration::NAME);
+            // Токен выписывается на 7 дней, но мы проверим хотя бы на 2 суток
+            expect($claim->getValue())->greaterThan(time() + 60 * 60 * 24 * 2);
         });
 
         $this->specify('success get LoginResult object with session value if rememberMe is true', function() {
@@ -60,9 +66,14 @@ class ComponentTest extends DbTestCase {
             $result = $this->component->login($account, true);
             expect($result)->isInstanceOf(LoginResult::class);
             expect($result->getSession())->isInstanceOf(AccountSession::class);
-            expect(is_string($result->getJwt()))->true();
             expect($result->getIdentity())->equals($account);
             expect($result->getSession()->refresh())->true();
+            $jwt = $result->getJwt();
+            expect(is_string($jwt))->true();
+            $token = $this->component->parseToken($jwt);
+            $claim = $token->getPayload()->findClaimByName(Expiration::NAME);
+            // Токен выписывается на 1 час, т.к. в дальнейшем он будет рефрешиться
+            expect($claim->getValue())->lessOrEquals(time() + 3600);
         });
     }
 

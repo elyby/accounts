@@ -63,6 +63,9 @@ class Component extends YiiUserComponent {
             $token->addClaim(new SessionIdClaim($session->id));
         } else {
             $session = null;
+            // Если мы не сохраняем сессию, то токен должен жить подольше, чтобы
+            // не прогорала сессия во время работы с аккаунтом
+            $token->addClaim(new Claim\Expiration(time() + 60 * 60 * 24 * 7));
         }
 
         $jwt = $this->serializeToken($token);
