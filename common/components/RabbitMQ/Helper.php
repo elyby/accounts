@@ -9,7 +9,7 @@ class Helper {
      * @return Component $amqp
      */
     public static function getInstance() {
-        return Yii::$app->get('amqp');
+        return Yii::$app->amqp;
     }
 
     public static function sendToExchange($exchange, $routingKey, $message, $exchangeArgs = []) {

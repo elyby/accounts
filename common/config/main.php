@@ -3,21 +3,21 @@ return [
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'components' => [
         'cache' => [
-            'class' => 'yii\caching\FileCache',
+            'class' => yii\caching\FileCache::class,
         ],
         'db' => [
-            'class' => 'yii\db\Connection',
+            'class' => yii\db\Connection::class,
             'charset' => 'utf8',
         ],
         'mailer' => [
-            'class' => 'yii\swiftmailer\Mailer',
+            'class' => yii\swiftmailer\Mailer::class,
             'viewPath' => '@common/mail',
         ],
         'security' => [
             'passwordHashStrategy' => 'password_hash',
         ],
         'redis' => [
-            'class' => 'yii\redis\Connection',
+            'class' => yii\redis\Connection::class,
         ],
         'amqp' => [
             'class' => \common\components\RabbitMQ\Component::class,

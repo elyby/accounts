@@ -43,7 +43,7 @@ abstract class Controller extends \yii\console\Controller {
      * @return Component
      */
     protected function getAmqp() {
-        return Yii::$app->get('amqp');
+        return Yii::$app->amqp;
     }
 
     /**

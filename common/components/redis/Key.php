@@ -12,7 +12,7 @@ class Key {
      * @return \yii\redis\Connection
      */
     public function getRedis() {
-        return Yii::$app->get('redis');
+        return Yii::$app->redis;
     }
 
     public function getKey() {

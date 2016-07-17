@@ -10,7 +10,7 @@ class Set extends Key implements IteratorAggregate {
      * @return \yii\redis\Connection
      */
     public static function getDb() {
-        return Yii::$app->get('redis');
+        return Yii::$app->redis;
     }
 
     public function add($value) {

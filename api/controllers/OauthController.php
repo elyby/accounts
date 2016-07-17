@@ -48,9 +48,7 @@ class OauthController extends Controller {
      * @return \League\OAuth2\Server\AuthorizationServer
      */
     protected function getServer() {
-        /** @var \common\components\oauth\Component $oauth */
-        $oauth = Yii::$app->get('oauth');
-        return $oauth->authServer;
+        return Yii::$app->oauth->authServer;
     }
 
     /**
