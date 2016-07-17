@@ -20,6 +20,9 @@ use yii\web\User as YiiUserComponent;
 
 /**
  * @property AccountSession|null $activeSession
+ * @property AccountIdentity|null $identity
+ *
+ * @method AccountIdentity|null getIdentity()
  */
 class Component extends YiiUserComponent {
 

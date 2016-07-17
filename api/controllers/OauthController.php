@@ -116,7 +116,7 @@ class OauthController extends Controller {
         $grant = $this->getGrantType();
         try {
             $authParams = $grant->checkAuthorizeParams();
-            $account = $this->getAccount();
+            $account = Yii::$app->user->identity;
             /** @var \League\OAuth2\Server\Entity\ClientEntity $client */
             $client = $authParams['client'];
             /** @var \common\models\OauthClient $clientModel */

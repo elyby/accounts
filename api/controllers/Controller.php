@@ -2,12 +2,9 @@
 namespace api\controllers;
 
 use api\traits\ApiNormalize;
-use Yii;
 use yii\filters\auth\HttpBearerAuth;
 
 /**
- * @property \common\models\Account|null $account
- *
  * Поведения:
  * @mixin \yii\filters\ContentNegotiator
  * @mixin \yii\filters\VerbFilter
@@ -29,13 +26,6 @@ class Controller extends \yii\rest\Controller {
         unset($parentBehaviors['rateLimiter']);
 
         return $parentBehaviors;
-    }
-
-    /**
-     * @return \common\models\Account|null
-     */
-    public function getAccount() {
-        return Yii::$app->getUser()->getIdentity();
     }
 
 }

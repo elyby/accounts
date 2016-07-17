@@ -1,7 +1,6 @@
 <?php
 namespace tests\codeception\api\functional;
 
-use Codeception\Specify;
 use tests\codeception\api\_pages\AccountsRoute;
 use tests\codeception\api\FunctionalTester;
 
@@ -26,6 +25,21 @@ class AccountsChangeEmailInitializeCest {
         $I->canSeeResponseContainsJson([
             'success' => true,
         ]);
+    }
+
+    public function testChangeEmailInitializeFrequencyError(FunctionalTester $I) {
+        $I->wantTo('see change email request frequency error');
+        $I->loggedInAsActiveAccount('ILLIMUNATI', 'password_0');
+
+        $this->route->changeEmailInitialize('password_0');
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+            'errors' => [
+                'email' => 'error.recently_sent_message',
+            ],
+        ]);
+        $I->canSeeResponseJsonMatchesJsonPath('$.data.canRepeatIn');
+        $I->canSeeResponseJsonMatchesJsonPath('$.data.repeatFrequency');
     }
 
 }

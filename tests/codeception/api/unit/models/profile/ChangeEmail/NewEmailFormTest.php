@@ -62,14 +62,15 @@ class NewEmailFormTest extends DbTestCase {
     public function testSendNewEmailConfirmation() {
         $this->specify('send email', function() {
             /** @var Account $account */
-            $account = Account::findOne($this->accounts['admin']['id']);
+            $account = Account::findOne($this->accounts['account-with-change-email-init-state']['id']);
             /** @var NewEmailForm $model */
+            $key = $this->emailActivations['currentChangeEmailConfirmation']['key'];
             $model = new NewEmailForm($account, [
-                'key' => $this->emailActivations['currentEmailConfirmation']['key'],
+                'key' => $key,
                 'email' => 'my-new-email@ely.by',
             ]);
             expect($model->sendNewEmailConfirmation())->true();
-            expect(EmailActivation::findOne($this->emailActivations['currentEmailConfirmation']['key']))->null();
+            expect(EmailActivation::findOne($key))->null();
             expect(EmailActivation::findOne([
                 'account_id' => $account->id,
                 'type' => EmailActivation::TYPE_NEW_EMAIL_CONFIRMATION,

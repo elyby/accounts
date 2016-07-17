@@ -24,12 +24,6 @@ return [
         'type' => \common\models\EmailActivation::TYPE_FORGOT_PASSWORD_KEY,
         'created_at' => time() - (new \common\models\confirmations\ForgotPassword())->repeatTimeout - 10,
     ],
-    'currentEmailConfirmation' => [
-        'key' => 'H26HBDCHHAG2HGHGHS',
-        'account_id' => 1,
-        'type' => \common\models\EmailActivation::TYPE_CURRENT_EMAIL_CONFIRMATION,
-        'created_at' => time() - 10,
-    ],
     'currentChangeEmailConfirmation' => [
         'key' => 'H27HBDCHHAG2HGHGHS',
         'account_id' => 7,

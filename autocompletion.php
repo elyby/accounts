@@ -30,6 +30,8 @@ abstract class BaseApplication extends yii\base\Application {
  * @property \api\components\User\Component $user User component.
  * @property \api\components\ReCaptcha\Component $reCaptcha
  * @property \common\components\oauth\Component $oauth
+ *
+ * @method \api\components\User\Component getUser()
  */
 class WebApplication extends yii\web\Application {
 }

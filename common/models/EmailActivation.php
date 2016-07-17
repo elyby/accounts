@@ -4,7 +4,6 @@ namespace common\models;
 use common\behaviors\DataBehavior;
 use common\behaviors\EmailActivationExpirationBehavior;
 use common\components\UserFriendlyRandomKey;
-use Yii;
 use yii\base\InvalidConfigException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -45,7 +44,7 @@ class EmailActivation extends ActiveRecord {
             ],
             'expirationBehavior' => [
                 'class' => EmailActivationExpirationBehavior::class,
-                'repeatTimeout' => 5 * 60,
+                'repeatTimeout' => 5 * 60, // 5m
                 'expirationTimeout' => -1,
             ],
             'dataBehavior' => [

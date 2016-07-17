@@ -7,6 +7,7 @@ use api\models\profile\ChangeEmail\NewEmailForm;
 use api\models\profile\ChangeLanguageForm;
 use api\models\profile\ChangePasswordForm;
 use api\models\profile\ChangeUsernameForm;
+use common\helpers\Error as E;
 use common\models\Account;
 use Yii;
 use yii\filters\AccessControl;
@@ -59,7 +60,6 @@ class AccountsController extends Controller {
     }
 
     public function actionCurrent() {
-        /** @var Account $account */
         $account = Yii::$app->user->identity;
 
         return [
@@ -76,7 +76,6 @@ class AccountsController extends Controller {
     }
 
     public function actionChangePassword() {
-        /** @var Account $account */
         $account = Yii::$app->user->identity;
         $model = new ChangePasswordForm($account);
         $model->load(Yii::$app->request->post());
@@ -108,15 +107,24 @@ class AccountsController extends Controller {
     }
 
     public function actionChangeEmailInitialize() {
-        /** @var Account $account */
         $account = Yii::$app->user->identity;
         $model = new InitStateForm($account);
         $model->load(Yii::$app->request->post());
         if (!$model->sendCurrentEmailConfirmation()) {
-            return [
+            $data = [
                 'success' => false,
                 'errors' => $this->normalizeModelErrors($model->getErrors()),
             ];
+
+            if (ArrayHelper::getValue($data['errors'], 'email') === E::RECENTLY_SENT_MESSAGE) {
+                $emailActivation = $model->getEmailActivation();
+                $data['data'] = [
+                    'canRepeatIn' => $emailActivation->canRepeatIn(),
+                    'repeatFrequency' => $emailActivation->repeatTimeout,
+                ];
+            }
+
+            return $data;
         }
 
         return [
@@ -125,7 +133,6 @@ class AccountsController extends Controller {
     }
 
     public function actionChangeEmailSubmitNewEmail() {
-        /** @var Account $account */
         $account = Yii::$app->user->identity;
         $model = new NewEmailForm($account);
         $model->load(Yii::$app->request->post());
@@ -142,7 +149,6 @@ class AccountsController extends Controller {
     }
 
     public function actionChangeEmailConfirmNewEmail() {
-        /** @var Account $account */
         $account = Yii::$app->user->identity;
         $model = new ConfirmNewEmailForm($account);
         $model->load(Yii::$app->request->post());
@@ -162,7 +168,6 @@ class AccountsController extends Controller {
     }
 
     public function actionChangeLang() {
-        /** @var Account $account */
         $account = Yii::$app->user->identity;
         $model = new ChangeLanguageForm($account);
         $model->load(Yii::$app->request->post());
