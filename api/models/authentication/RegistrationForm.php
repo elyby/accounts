@@ -11,6 +11,7 @@ use common\models\confirmations\RegistrationConfirmation;
 use common\models\EmailActivation;
 use common\validators\LanguageValidator;
 use common\validators\PasswordValidate;
+use Exception;
 use Ramsey\Uuid\Uuid;
 use Yii;
 use yii\base\ErrorException;
@@ -68,6 +69,7 @@ class RegistrationForm extends ApiForm {
 
     /**
      * @return Account|null the saved model or null if saving fails
+     * @throws Exception
      */
     public function signup() {
         if (!$this->validate()) {
@@ -97,14 +99,14 @@ class RegistrationForm extends ApiForm {
 
             $this->sendMail($emailActivation, $account);
 
+            $changeUsernameForm = new ChangeUsernameForm();
+            $changeUsernameForm->createEventTask($account->id, $account->username, null);
+
             $transaction->commit();
-        } catch (ErrorException $e) {
+        } catch (Exception $e) {
             $transaction->rollBack();
             throw $e;
         }
-
-        $changeUsernameForm = new ChangeUsernameForm();
-        $changeUsernameForm->createEventTask($account->id, $account->username, null);
 
         return $account;
     }

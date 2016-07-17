@@ -6,6 +6,7 @@ use common\helpers\Error;
 use common\helpers\Amqp;
 use common\models\amqp\UsernameChanged;
 use common\models\UsernameHistory;
+use Exception;
 use PhpAmqpLib\Message\AMQPMessage;
 use Yii;
 use yii\base\ErrorException;
@@ -51,13 +52,13 @@ class ChangeUsernameForm extends PasswordProtectedForm {
                 throw new ErrorException('Cannot save username history record');
             }
 
+            $this->createEventTask($account->id, $account->username, $oldNickname);
+
             $transaction->commit();
-        } catch (ErrorException $e) {
+        } catch (Exception $e) {
             $transaction->rollBack();
             throw $e;
         }
-
-        $this->createEventTask($account->id, $account->username, $oldNickname);
 
         return true;
     }
@@ -68,13 +69,13 @@ class ChangeUsernameForm extends PasswordProtectedForm {
      * @param integer $accountId
      * @param string  $newNickname
      * @param string  $oldNickname
+     * @throws \PhpAmqpLib\Exception\AMQPExceptionInterface
      */
     public function createEventTask($accountId, $newNickname, $oldNickname) {
-        $model = new UsernameChanged([
-            'accountId' => $accountId,
-            'oldUsername' => $oldNickname,
-            'newUsername' => $newNickname,
-        ]);
+        $model = new UsernameChanged;
+        $model->accountId = $accountId;
+        $model-> oldUsername = $oldNickname;
+        $model->newUsername = $newNickname;
 
         $message = Amqp::getInstance()->prepareMessage($model, [
             'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT,
