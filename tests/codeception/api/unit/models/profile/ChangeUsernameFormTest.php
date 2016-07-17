@@ -7,6 +7,7 @@ use common\models\Account;
 use common\models\UsernameHistory;
 use tests\codeception\api\unit\DbTestCase;
 use tests\codeception\common\fixtures\AccountFixture;
+use tests\codeception\common\fixtures\UsernameHistoryFixture;
 
 /**
  * @property AccountFixture $accounts
@@ -16,10 +17,8 @@ class ChangeUsernameFormTest extends DbTestCase {
 
     public function fixtures() {
         return [
-            'accounts' => [
-                'class' => AccountFixture::class,
-                'dataFile' => '@tests/codeception/common/fixtures/data/accounts.php',
-            ],
+            'accounts' => AccountFixture::class,
+            'history' => UsernameHistoryFixture::class,
         ];
     }
 
@@ -36,11 +35,6 @@ class ChangeUsernameFormTest extends DbTestCase {
     }
 
     public function testChangeWithoutChange() {
-        $this->markTestSkipped('This test is written invalid');
-        return;
-
-        // TODO: этот тест написан неправильно - запись всё равно добавляется в базу данных, но тест не замечает
-        /** @noinspection PhpUnreachableStatementInspection */
         $this->specify('no new UsernameHistory record, if we don\'t change nickname', function() {
             $model = $this->createModel([
                 'password' => 'password_0',
@@ -51,7 +45,7 @@ class ChangeUsernameFormTest extends DbTestCase {
             expect(UsernameHistory::findOne([
                 'AND',
                 'username' => $this->accounts['admin']['username'],
-                ['>=', 'applied_in', $callTime - 5],
+                ['>=', 'applied_in', $callTime],
             ]))->null();
         });
     }
