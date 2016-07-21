@@ -18,22 +18,19 @@ class Api {
      * @url http://wiki.vg/Mojang_API#Username_-.3E_UUID_at_time
      */
     public function usernameToUUID($username, $atTime = null) {
-        $client = $this->createClient();
-        $request = $client->createRequest('GET', 'https://api.mojang.com/users/profiles/minecraft/' . $username);
-        $queryParams = [];
+        $query = [];
         if ($atTime !== null) {
-            $queryParams['atTime'] = $atTime;
+            $query['atTime'] = $atTime;
         }
 
-        $request->setQuery($queryParams);
-        $response = $client->send($request);
+        $response = $this->createClient()->get($this->buildUsernameToUUIDRoute($username), $query);
         if ($response->getStatusCode() === 204) {
             throw new NoContentException('Username not found');
         } elseif ($response->getStatusCode() !== 200) {
             throw new MojangApiException('Unexpected request result');
         }
 
-        $data = $response->json(['object' => false]);
+        $data = json_decode($response->getBody(), true);
         $responseObj = new UsernameToUUIDResponse();
         $responseObj->id = $data['id'];
         $responseObj->name = $data['name'];
@@ -45,6 +42,10 @@ class Api {
 
     protected function createClient() {
         return new GuzzleClient();
+    }
+
+    protected function buildUsernameToUUIDRoute($username) {
+        return 'https://api.mojang.com/users/profiles/minecraft/' . $username;
     }
 
 }
