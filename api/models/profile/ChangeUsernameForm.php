@@ -1,7 +1,9 @@
 <?php
 namespace api\models\profile;
 
-use api\models\base\PasswordProtectedForm;
+use api\models\AccountIdentity;
+use api\models\base\ApiForm;
+use api\validators\PasswordRequiredValidator;
 use common\helpers\Error;
 use common\helpers\Amqp;
 use common\models\amqp\UsernameChanged;
@@ -10,17 +12,19 @@ use Exception;
 use PhpAmqpLib\Message\AMQPMessage;
 use Yii;
 use yii\base\ErrorException;
-use yii\helpers\ArrayHelper;
 
-class ChangeUsernameForm extends PasswordProtectedForm {
+class ChangeUsernameForm extends ApiForm {
 
     public $username;
 
+    public $password;
+
     public function rules() {
-        return ArrayHelper::merge(parent::rules(), [
+        return [
             ['username', 'required', 'message' => Error::USERNAME_REQUIRED],
             ['username', 'validateUsername'],
-        ]);
+            ['password', PasswordRequiredValidator::class],
+        ];
     }
 
     public function validateUsername($attribute) {
@@ -82,6 +86,10 @@ class ChangeUsernameForm extends PasswordProtectedForm {
         ]);
 
         Amqp::sendToEventsExchange('accounts.username-changed', $message);
+    }
+
+    protected function getAccount() : AccountIdentity {
+        return Yii::$app->user->identity;
     }
 
 }

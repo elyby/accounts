@@ -1,6 +1,7 @@
 <?php
 namespace tests\codeception\api\models\profile;
 
+use api\models\AccountIdentity;
 use api\models\profile\ChangeUsernameForm;
 use Codeception\Specify;
 use common\models\Account;
@@ -8,6 +9,7 @@ use common\models\UsernameHistory;
 use tests\codeception\api\unit\DbTestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\UsernameHistoryFixture;
+use Yii;
 
 /**
  * @property AccountFixture $accounts
@@ -22,9 +24,15 @@ class ChangeUsernameFormTest extends DbTestCase {
         ];
     }
 
+    public function setUp() {
+        parent::setUp();
+        $account = AccountIdentity::findOne($this->getAccountId());
+        Yii::$app->user->setIdentity($account);
+    }
+
     public function testChange() {
         $this->specify('successfully change username to new one', function() {
-            $model = $this->createModel([
+            $model = new ChangeUsernameForm([
                 'password' => 'password_0',
                 'username' => 'my_new_nickname',
             ]);
@@ -36,7 +44,7 @@ class ChangeUsernameFormTest extends DbTestCase {
 
     public function testChangeWithoutChange() {
         $this->specify('no new UsernameHistory record, if we don\'t change nickname', function() {
-            $model = $this->createModel([
+            $model = new ChangeUsernameForm([
                 'password' => 'password_0',
                 'username' => $this->accounts['admin']['username'],
             ]);
@@ -53,7 +61,7 @@ class ChangeUsernameFormTest extends DbTestCase {
     public function testChangeCase() {
         $this->specify('username should change, if we change case of some letters', function() {
             $newUsername = mb_strtoupper($this->accounts['admin']['username']);
-            $model = $this->createModel([
+            $model = new ChangeUsernameForm([
                 'password' => 'password_0',
                 'username' => $newUsername,
             ]);
@@ -65,7 +73,7 @@ class ChangeUsernameFormTest extends DbTestCase {
 
     public function testValidateUsername() {
         $this->specify('error.username_not_available expected if username is already taken', function() {
-            $model = $this->createModel([
+            $model = new ChangeUsernameForm([
                 'password' => 'password_0',
                 'username' => 'Jon',
             ]);
@@ -74,7 +82,7 @@ class ChangeUsernameFormTest extends DbTestCase {
         });
 
         $this->specify('error.username_not_available is NOT expected if username is already taken by CURRENT user', function() {
-            $model = $this->createModel([
+            $model = new ChangeUsernameForm([
                 'password' => 'password_0',
                 'username' => $this->accounts['admin']['username'],
             ]);
@@ -84,25 +92,10 @@ class ChangeUsernameFormTest extends DbTestCase {
     }
 
     public function testCreateTask() {
-        $model = $this->createModel();
+        $model = new ChangeUsernameForm();
         $model->createEventTask('1', 'test1', 'test');
         // TODO: у меня пока нет идей о том, чтобы это как-то успешно протестировать, увы
         // но по крайней мере можно убедиться, что оно не падает где-то на этом шаге
-    }
-
-    private function createModel(array $params = []) : ChangeUsernameForm {
-        /** @noinspection PhpUnusedLocalVariableInspection */
-        $params = array_merge($params, [
-            'accountId' => $this->getAccountId(),
-        ]);
-
-        return new class($params) extends ChangeUsernameForm {
-            public $accountId;
-
-            protected function getAccount() {
-                return Account::findOne($this->accountId);
-            }
-        };
     }
 
     private function getAccountId() {

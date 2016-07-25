@@ -1,7 +1,8 @@
 <?php
 namespace api\models\profile\ChangeEmail;
 
-use api\models\base\PasswordProtectedForm;
+use api\models\base\ApiForm;
+use api\validators\PasswordRequiredValidator;
 use common\helpers\Error as E;
 use common\models\Account;
 use common\models\confirmations\CurrentEmailConfirmation;
@@ -11,9 +12,11 @@ use yii\base\ErrorException;
 use yii\base\Exception;
 use yii\base\InvalidConfigException;
 
-class InitStateForm extends PasswordProtectedForm {
+class InitStateForm extends ApiForm {
 
     public $email;
+
+    public $password;
 
     private $account;
 
@@ -28,9 +31,10 @@ class InitStateForm extends PasswordProtectedForm {
     }
 
     public function rules() {
-        return array_merge(parent::rules(), [
+        return [
             ['email', 'validateFrequency'],
-        ]);
+            ['password', PasswordRequiredValidator::class, 'account' => $this->account],
+        ];
     }
 
     public function validateFrequency($attribute) {
@@ -90,7 +94,6 @@ class InitStateForm extends PasswordProtectedForm {
     }
 
     public function sendCode(EmailActivation $code) {
-        /** @var \yii\swiftmailer\Mailer $mailer */
         $mailer = Yii::$app->mailer;
         $fromEmail = Yii::$app->params['fromEmail'];
         if (!$fromEmail) {
@@ -98,7 +101,6 @@ class InitStateForm extends PasswordProtectedForm {
         }
 
         $acceptor = $code->account;
-        /** @var \yii\swiftmailer\Message $message */
         $message = $mailer->compose([
             'html' => '@app/mails/current-email-confirmation-html',
             'text' => '@app/mails/current-email-confirmation-text',

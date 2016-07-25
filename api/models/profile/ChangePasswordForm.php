@@ -1,7 +1,8 @@
 <?php
 namespace api\models\profile;
 
-use api\models\base\PasswordProtectedForm;
+use api\models\base\ApiForm;
+use api\validators\PasswordRequiredValidator;
 use common\helpers\Error as E;
 use common\models\Account;
 use common\validators\PasswordValidate;
@@ -9,13 +10,15 @@ use Yii;
 use yii\base\ErrorException;
 use yii\helpers\ArrayHelper;
 
-class ChangePasswordForm extends PasswordProtectedForm {
+class ChangePasswordForm extends ApiForm {
 
     public $newPassword;
 
     public $newRePassword;
 
     public $logoutAll;
+
+    public $password;
 
     /**
      * @var \common\models\Account
@@ -37,6 +40,7 @@ class ChangePasswordForm extends PasswordProtectedForm {
             ['newPassword', PasswordValidate::class],
             ['newRePassword', 'validatePasswordAndRePasswordMatch'],
             ['logoutAll', 'boolean'],
+            ['password', PasswordRequiredValidator::class, 'account' => $this->_account],
         ]);
     }
 
@@ -49,7 +53,8 @@ class ChangePasswordForm extends PasswordProtectedForm {
     }
 
     /**
-     * @return boolean
+     * @return bool
+     * @throws ErrorException
      */
     public function changePassword() : bool {
         if (!$this->validate()) {

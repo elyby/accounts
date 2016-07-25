@@ -89,7 +89,7 @@ class Account extends ActiveRecord {
      * @return bool if password provided is valid for current user
      * @throws InvalidConfigException
      */
-    public function validatePassword($password, $passwordHashStrategy = NULL) {
+    public function validatePassword($password, $passwordHashStrategy = NULL) : bool {
         if ($passwordHashStrategy === NULL) {
             $passwordHashStrategy = $this->password_hash_strategy;
         }
