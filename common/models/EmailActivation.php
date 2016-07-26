@@ -64,7 +64,7 @@ class EmailActivation extends ActiveRecord {
     public static function instantiate($row) {
         $type = ArrayHelper::getValue($row, 'type');
         if ($type === null) {
-            return new static;
+            return parent::instantiate($row);
         }
 
         $classMap = self::getClassMap();
@@ -78,9 +78,9 @@ class EmailActivation extends ActiveRecord {
     public static function getClassMap() {
         return [
             self::TYPE_REGISTRATION_EMAIL_CONFIRMATION => confirmations\RegistrationConfirmation::class,
-            self::TYPE_FORGOT_PASSWORD_KEY => confirmations\ForgotPassword::class,
-            self::TYPE_CURRENT_EMAIL_CONFIRMATION => confirmations\CurrentEmailConfirmation::class,
-            self::TYPE_NEW_EMAIL_CONFIRMATION => confirmations\NewEmailConfirmation::class,
+            self::TYPE_FORGOT_PASSWORD_KEY             => confirmations\ForgotPassword::class,
+            self::TYPE_CURRENT_EMAIL_CONFIRMATION      => confirmations\CurrentEmailConfirmation::class,
+            self::TYPE_NEW_EMAIL_CONFIRMATION          => confirmations\NewEmailConfirmation::class,
         ];
     }
 
@@ -91,11 +91,19 @@ class EmailActivation extends ActiveRecord {
 
         if ($this->key === null) {
             do {
-                $this->key = UserFriendlyRandomKey::make();
-            } while (EmailActivation::find()->andWhere(['key' => $this->key])->exists());
+                $this->key = $this->generateKey();
+            } while ($this->isKeyExists($this->key));
         }
 
         return true;
+    }
+
+    protected function generateKey() : string {
+        return UserFriendlyRandomKey::make();
+    }
+
+    protected function isKeyExists(string $key) : bool {
+        return self::find()->andWhere(['key' => $key])->exists();
     }
 
 }
