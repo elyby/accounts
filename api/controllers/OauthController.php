@@ -16,13 +16,13 @@ class OauthController extends Controller {
     public function behaviors() {
         return ArrayHelper::merge(parent::behaviors(), [
             'authenticator' => [
-                'except' => ['validate', 'issue-token'],
+                'except' => ['validate', 'token'],
             ],
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['validate', 'issue-token'],
+                        'actions' => ['validate', 'token'],
                         'allow' => true,
                         'roles' => ['?'],
                     ],
@@ -38,9 +38,9 @@ class OauthController extends Controller {
 
     public function verbs() {
         return [
-            'validate'    => ['GET'],
-            'complete'    => ['POST'],
-            'issue-token' => ['POST'],
+            'validate' => ['GET'],
+            'complete' => ['POST'],
+            'token'    => ['POST'],
         ];
     }
 
@@ -166,7 +166,7 @@ class OauthController extends Controller {
      *
      * @return array
      */
-    public function actionIssueToken() {
+    public function actionToken() {
         $this->attachRefreshTokenGrantIfNeedle();
         try {
             $response = $this->getServer()->issueAccessToken();
