@@ -3,15 +3,14 @@ namespace api\models;
 
 use common\models\Account;
 use Emarref\Jwt\Claim\JwtId;
-use Emarref\Jwt\Exception\VerificationException;
-use Emarref\Jwt\Token;
+use Emarref\Jwt\Exception\ExpiredException;
 use Yii;
 use yii\base\NotSupportedException;
-use yii\helpers\StringHelper;
 use yii\web\IdentityInterface;
 use yii\web\UnauthorizedHttpException;
 
 class AccountIdentity extends Account implements IdentityInterface {
+
     /**
      * @inheritdoc
      */
@@ -20,14 +19,10 @@ class AccountIdentity extends Account implements IdentityInterface {
         $component = Yii::$app->user;
         try {
             $token = $component->parseToken($token);
-        } catch (VerificationException $e) {
-            if (StringHelper::startsWith($e->getMessage(), 'Token expired at')) {
-                $message = 'Token expired';
-            } else {
-                $message = 'Incorrect token';
-            }
-
-            throw new UnauthorizedHttpException($message);
+        } catch (ExpiredException $e) {
+            throw new UnauthorizedHttpException('Token expired');
+        } catch (\Exception $e) {
+            throw new UnauthorizedHttpException('Incorrect token');
         }
 
         // Если исключение выше не случилось, то значит всё оке
