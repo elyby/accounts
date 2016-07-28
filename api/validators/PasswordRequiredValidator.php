@@ -36,7 +36,7 @@ class PasswordRequiredValidator extends Validator {
         }
 
         if ($this->account->validatePassword($value) === false) {
-            return [E::PASSWORD_INVALID, []];
+            return [E::PASSWORD_INCORRECT, []];
         }
 
         return null;

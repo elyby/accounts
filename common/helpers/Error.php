@@ -20,14 +20,6 @@ final class Error {
     const LOGIN_NOT_EXIST = 'error.login_not_exist';
 
     const PASSWORD_REQUIRED = 'error.password_required';
-    const PASSWORD_INVALID = 'error.password_invalid';
-    /**
-     * TODO: На фронте с password_incorrect и password_invalid возникла неувязочка.
-     * Один возникает у формы входа и там уместно предлагать восстановление пароля.
-     * Другой возникает у паролезащищённой формы и там уже ничего предлагать не нужно.
-     * Но по факту это ведь одна и та же ошибка.
-     * @deprecated
-     */
     const PASSWORD_INCORRECT = 'error.password_incorrect';
     const PASSWORD_TOO_SHORT = 'error.password_too_short';
 
