@@ -61,7 +61,7 @@ class SignupController extends Controller {
                 'errors' => $this->normalizeModelErrors($model->getErrors()),
             ];
 
-            if ($response['errors']['email'] === E::RECENTLY_SENT_MESSAGE) {
+            if (ArrayHelper::getValue($response['errors'], 'email') === E::RECENTLY_SENT_MESSAGE) {
                 $activation = $model->getActivation();
                 $response['data'] = [
                     'canRepeatIn' => $activation->canRepeatIn(),

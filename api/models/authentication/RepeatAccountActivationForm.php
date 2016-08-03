@@ -1,6 +1,7 @@
 <?php
 namespace api\models\authentication;
 
+use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\base\ApiForm;
 use common\helpers\Error as E;
 use common\components\UserFriendlyRandomKey;
@@ -12,12 +13,15 @@ use yii\base\ErrorException;
 
 class RepeatAccountActivationForm extends ApiForm {
 
+    public $captcha;
+
     public $email;
 
     private $emailActivation;
 
     public function rules() {
         return [
+            ['captcha', ReCaptchaValidator::class],
             ['email', 'filter', 'filter' => 'trim'],
             ['email', 'required', 'message' => E::EMAIL_REQUIRED],
             ['email', 'validateEmailForAccount'],
@@ -26,7 +30,7 @@ class RepeatAccountActivationForm extends ApiForm {
     }
 
     public function validateEmailForAccount($attribute) {
-        if (!$this->hasErrors($attribute)) {
+        if (!$this->hasErrors()) {
             $account = $this->getAccount();
             if ($account === null) {
                 $this->addError($attribute, E::EMAIL_NOT_FOUND);
@@ -40,7 +44,7 @@ class RepeatAccountActivationForm extends ApiForm {
     }
 
     public function validateExistsActivation($attribute) {
-        if (!$this->hasErrors($attribute)) {
+        if (!$this->hasErrors()) {
             $activation = $this->getActivation();
             if ($activation !== null && !$activation->canRepeat()) {
                 $this->addError($attribute, E::RECENTLY_SENT_MESSAGE);

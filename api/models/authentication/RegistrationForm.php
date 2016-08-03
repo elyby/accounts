@@ -19,16 +19,23 @@ use yii\base\InvalidConfigException;
 
 class RegistrationForm extends ApiForm {
 
+    public $captcha;
+
     public $username;
+
     public $email;
+
     public $password;
+
     public $rePassword;
+
     public $rulesAgreement;
+
     public $lang;
 
     public function rules() {
         return [
-            [[], ReCaptchaValidator::class, 'message' => E::CAPTCHA_INVALID, 'when' => !YII_ENV_TEST],
+            ['captcha', ReCaptchaValidator::class],
             ['rulesAgreement', 'required', 'message' => E::RULES_AGREEMENT_REQUIRED],
 
             ['username', 'validateUsername', 'skipOnEmpty' => false],
