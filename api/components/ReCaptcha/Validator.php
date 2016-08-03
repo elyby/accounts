@@ -1,7 +1,8 @@
 <?php
 namespace api\components\ReCaptcha;
 
-
+use common\helpers\Error as E;
+use GuzzleHttp\Client as GuzzleClient;
 use Yii;
 use yii\base\Exception;
 use yii\base\InvalidConfigException;
@@ -9,9 +10,47 @@ use yii\base\InvalidConfigException;
 class Validator extends \yii\validators\Validator {
 
     const SITE_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
-    const CAPTCHA_RESPONSE_FIELD = 'g-recaptcha-response';
 
     public $skipOnEmpty = false;
+
+    public $message = E::CAPTCHA_INVALID;
+
+    public $requiredMessage = E::CAPTCHA_REQUIRED;
+
+    public function init() {
+        parent::init();
+        if ($this->getComponent() === null) {
+            throw new InvalidConfigException('Required "reCaptcha" component as instance of ' . Component::class . '.');
+        }
+
+        $this->when = function() {
+            return !YII_ENV_TEST;
+        };
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function validateValue($value) {
+        if (empty($value)) {
+            return [$this->requiredMessage, []];
+        }
+
+        $response = $this->createClient()->post(self::SITE_VERIFY_URL, [
+            'form_params' => [
+                'secret' => $this->getComponent()->secret,
+                'response' => $value,
+                'remoteip' => Yii::$app->getRequest()->getUserIP(),
+            ],
+        ]);
+        $data = json_decode($response->getBody(), true);
+
+        if (!isset($data['success'])) {
+            throw new Exception('Invalid recaptcha verify response.');
+        }
+
+        return $data['success'] ? null : [$this->message, []];
+    }
 
     /**
      * @return Component
@@ -20,46 +59,8 @@ class Validator extends \yii\validators\Validator {
         return Yii::$app->reCaptcha;
     }
 
-    public function init() {
-        parent::init();
-        if ($this->getComponent() === null) {
-            throw new InvalidConfigException('Required "reCaptcha" component as instance of ' . Component::class . '.');
-        }
-
-        if ($this->message === null) {
-            $this->message = Yii::t('yii', 'The verification code is incorrect.');
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function validateValue($value) {
-        $value = Yii::$app->request->post(self::CAPTCHA_RESPONSE_FIELD);
-        if (empty($value)) {
-            return [$this->message, []];
-        }
-
-        $requestParams = [
-            'secret' => $this->getComponent()->secret,
-            'response' => $value,
-            'remoteip' => Yii::$app->request->userIP,
-        ];
-
-        $requestUrl = self::SITE_VERIFY_URL . '?' . http_build_query($requestParams);
-        $response = $this->getResponse($requestUrl);
-
-        if (!isset($response['success'])) {
-            throw new Exception('Invalid recaptcha verify response.');
-        }
-
-        return $response['success'] ? null : [$this->message, []];
-    }
-
-    protected function getResponse($request) {
-        $response = file_get_contents($request);
-
-        return json_decode($response, true);
+    protected function createClient() {
+        return new GuzzleClient();
     }
 
 }

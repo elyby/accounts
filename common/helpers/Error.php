@@ -40,6 +40,7 @@ final class Error {
     const REFRESH_TOKEN_REQUIRED = 'error.refresh_token_required';
     const REFRESH_TOKEN_NOT_EXISTS = 'error.refresh_token_not_exist';
 
+    const CAPTCHA_REQUIRED = 'error.captcha_required';
     const CAPTCHA_INVALID = 'error.captcha_invalid';
 
     const RULES_AGREEMENT_REQUIRED = 'error.rulesAgreement_required';
