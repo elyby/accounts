@@ -1,7 +1,6 @@
 <?php
 namespace api\controllers;
 
-use api\traits\ApiNormalize;
 use Yii;
 use yii\filters\auth\HttpBearerAuth;
 
@@ -9,17 +8,16 @@ use yii\filters\auth\HttpBearerAuth;
  * Поведения:
  * @mixin \yii\filters\ContentNegotiator
  * @mixin \yii\filters\VerbFilter
- * @mixin \yii\filters\auth\CompositeAuth
+ * @mixin HttpBearerAuth
  */
-class Controller extends \yii\rest\Controller {
-    use ApiNormalize;
+class ApiController extends \yii\rest\Controller {
 
     public function behaviors() {
         $parentBehaviors = parent::behaviors();
-        // Добавляем авторизатор для входа по jwt токенам
+        // Добавляем авторизатор для входа по Bearer токенам
         $parentBehaviors['authenticator'] = [
             'class' => HttpBearerAuth::class,
-            'user' => Yii::$app->getUser(),
+            'user' => Yii::$app->apiUser,
         ];
 
         // xml нам не понадобится

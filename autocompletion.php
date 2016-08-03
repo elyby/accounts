@@ -28,6 +28,7 @@ abstract class BaseApplication extends yii\base\Application {
  * Include only Web application related components here
  *
  * @property \api\components\User\Component $user User component.
+ * @property \api\components\ApiUser\Component $apiUser Api User component.
  * @property \api\components\ReCaptcha\Component $reCaptcha
  * @property \common\components\oauth\Component $oauth
  *

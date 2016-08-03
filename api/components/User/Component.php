@@ -26,6 +26,12 @@ use yii\web\User as YiiUserComponent;
  */
 class Component extends YiiUserComponent {
 
+    public $enableSession = false;
+
+    public $loginUrl = null;
+
+    public $identityClass = AccountIdentity::class;
+
     public $secret;
 
     public $expirationTimeout = 3600; // 1h
