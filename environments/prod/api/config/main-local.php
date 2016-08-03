@@ -6,6 +6,7 @@ return [
             'cookieValidationKey' => '',
         ],
         'reCaptcha' => [
+            'public' => '',
             'secret' => '',
         ],
     ],

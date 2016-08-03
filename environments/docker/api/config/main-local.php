@@ -7,6 +7,7 @@ $config = [
             'cookieValidationKey' => '',
         ],
         'reCaptcha' => [
+            'public' => '',
             'secret' => '',
         ],
     ],
