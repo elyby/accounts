@@ -18,11 +18,12 @@ class OptionsCest {
     public function testRecaptchaPublicKey(FunctionalTester $I) {
         $I->wantTo('Get recaptcha public key');
 
-        $this->route->recaptchaPublicKey();
+        $this->route->get();
         $I->canSeeResponseCodeIs(200);
-        // TODO: эта проверка не проходит, т.к внутри почему-то после запроса не устанавливаются http заголовки
-        //$I->seeHttpHeader('Content-Type', 'text/html; charset=UTF-8');
-        $I->canSeeResponseEquals('public-key');
+        $I->canSeeResponseIsJson();
+        $I->canSeeResponseContainsJson([
+            'reCaptchaPublicKey' => 'public-key',
+        ]);
     }
 
 }

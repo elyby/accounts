@@ -8,8 +8,8 @@ use yii\codeception\BasePage;
  */
 class OptionsRoute extends BasePage {
 
-    public function recaptchaPublicKey() {
-        $this->route = ['options/recaptcha-public-key'];
+    public function get() {
+        $this->route = ['options/index'];
         $this->actor->sendGET($this->getUrl());
     }
 

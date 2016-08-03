@@ -4,7 +4,7 @@
 # vendor будет заполнен уже внутри контейнера
 vendor
 # node_modules для этого контейнера не нужны
-node_modules
+frontend/node_modules
 
 # Все -local файлы
 */config/*-local.php
