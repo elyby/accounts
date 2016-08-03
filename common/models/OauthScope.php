@@ -1,7 +1,6 @@
 <?php
 namespace common\models;
 
-use Yii;
 use yii\db\ActiveRecord;
 
 /**
@@ -12,6 +11,7 @@ class OauthScope extends ActiveRecord {
 
     const OFFLINE_ACCESS = 'offline_access';
     const MINECRAFT_SERVER_SESSION = 'minecraft_server_session';
+    const ACCOUNT_EMAIL = 'account_email';
 
     public static function tableName() {
         return '{{%oauth_scopes}}';
