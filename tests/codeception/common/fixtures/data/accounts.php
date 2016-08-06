@@ -107,4 +107,17 @@ return [
         'created_at' => 1463349615,
         'updated_at' => 1463349615,
     ],
+    'account-with-old-rules-version' => [
+        'id' => 9,
+        'uuid' => '410462d3-8e71-47cc-bac6-64f77f88cf80',
+        'username' => 'Veleyaba',
+        'email' => 'veleyaba@gmail.com',
+        'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
+        'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
+        'lang' => 'en',
+        'status' => \common\models\Account::STATUS_ACTIVE,
+        'rules_agreement_version' => null,
+        'created_at' => 1470499952,
+        'updated_at' => 1470499952,
+    ],
 ];

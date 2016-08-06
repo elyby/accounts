@@ -59,4 +59,9 @@ class AccountsRoute extends BasePage {
         ]);
     }
 
+    public function acceptRules() {
+        $this->route = ['accounts/accept-rules'];
+        $this->actor->sendPOST($this->getUrl());
+    }
+
 }
