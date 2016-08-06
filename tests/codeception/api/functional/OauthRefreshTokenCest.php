@@ -1,10 +1,9 @@
 <?php
 namespace tests\codeception\api;
 
-use common\models\OauthScope;
+use common\models\OauthScope as S;
 use tests\codeception\api\_pages\OauthRoute;
 use tests\codeception\api\functional\_steps\OauthSteps;
-use Yii;
 
 class OauthRefreshTokenCest {
 
@@ -35,12 +34,12 @@ class OauthRefreshTokenCest {
     }
 
     public function testRefreshTokenWithSameScopes(OauthSteps $I) {
-        $refreshToken = $I->getRefreshToken();
+        $refreshToken = $I->getRefreshToken([S::MINECRAFT_SERVER_SESSION]);
         $this->route->issueToken($this->buildParams(
             $refreshToken,
             'ely',
             'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
-            [OauthScope::MINECRAFT_SERVER_SESSION, OauthScope::OFFLINE_ACCESS]
+            [S::MINECRAFT_SERVER_SESSION, S::OFFLINE_ACCESS]
         ));
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
@@ -53,12 +52,12 @@ class OauthRefreshTokenCest {
     }
 
     public function testRefreshTokenWithNewScopes(OauthSteps $I) {
-        $refreshToken = $I->getRefreshToken();
+        $refreshToken = $I->getRefreshToken([S::MINECRAFT_SERVER_SESSION]);
         $this->route->issueToken($this->buildParams(
             $refreshToken,
             'ely',
             'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
-            [OauthScope::MINECRAFT_SERVER_SESSION, OauthScope::OFFLINE_ACCESS, 'change_skin']
+            [S::MINECRAFT_SERVER_SESSION, S::OFFLINE_ACCESS, S::ACCOUNT_EMAIL]
         ));
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();

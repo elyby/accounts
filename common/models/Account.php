@@ -25,7 +25,8 @@ use yii\db\ActiveRecord;
  * @property integer $password_changed_at
  *
  * Геттеры-сеттеры:
- * @property string            $password пароль пользователя (только для записи)
+ * @property string  $password пароль пользователя (только для записи)
+ * @property string  $profileLink ссылка на профиль на Ely без поддержки static url (только для записи)
  *
  * Отношения:
  * @property EmailActivation[] $emailActivations
@@ -144,7 +145,7 @@ class Account extends ActiveRecord {
      *
      * @return bool
      */
-    public function canAutoApprove(OauthClient $client, array $scopes = []) {
+    public function canAutoApprove(OauthClient $client, array $scopes = []) : bool {
         if ($client->is_trusted) {
             return true;
         }
@@ -165,10 +166,14 @@ class Account extends ActiveRecord {
      * Выполняет проверку, принадлежит ли этому нику аккаунт у Mojang
      * @return bool
      */
-    public function hasMojangUsernameCollision() {
+    public function hasMojangUsernameCollision() : bool {
         return MojangUsername::find()
             ->andWhere(['username' => $this->username])
             ->exists();
+    }
+
+    public function getProfileLink() : string {
+        return 'http://ely.by/u' . $this->id;
     }
 
 }

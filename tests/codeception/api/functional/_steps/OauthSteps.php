@@ -1,11 +1,12 @@
 <?php
 namespace tests\codeception\api\functional\_steps;
 
+use common\models\OauthScope as S;
 use tests\codeception\api\_pages\OauthRoute;
 
 class OauthSteps extends \tests\codeception\api\FunctionalTester {
 
-    public function getAuthCode($online = true) {
+    public function getAuthCode(array $permissions = []) {
         // TODO: по идее можно напрямую сделать зпись в базу, что ускорит процесс тестирования
         $this->loggedInAsActiveAccount();
         $route = new OauthRoute($this);
@@ -13,7 +14,7 @@ class OauthSteps extends \tests\codeception\api\FunctionalTester {
             'client_id' => 'ely',
             'redirect_uri' => 'http://ely.by',
             'response_type' => 'code',
-            'scope' => 'minecraft_server_session' . ($online ? '' : ',offline_access'),
+            'scope' => implode(',', $permissions),
         ], ['accept' => true]);
         $this->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
         $response = json_decode($this->grabResponse(), true);
@@ -22,9 +23,22 @@ class OauthSteps extends \tests\codeception\api\FunctionalTester {
         return $matches[1];
     }
 
-    public function getRefreshToken() {
+    public function getAccessToken(array $permissions = []) {
+        $authCode = $this->getAuthCode($permissions);
+        $response = $this->issueToken($authCode);
+
+        return $response['access_token'];
+    }
+
+    public function getRefreshToken(array $permissions = []) {
         // TODO: по идее можно напрямую сделать зпись в базу, что ускорит процесс тестирования
-        $authCode = $this->getAuthCode(false);
+        $authCode = $this->getAuthCode(array_merge([S::OFFLINE_ACCESS], $permissions));
+        $response = $this->issueToken($authCode);
+
+        return $response['refresh_token'];
+    }
+
+    public function issueToken($authCode) {
         $route = new OauthRoute($this);
         $route->issueToken([
             'code' => $authCode,
@@ -34,9 +48,7 @@ class OauthSteps extends \tests\codeception\api\FunctionalTester {
             'grant_type' => 'authorization_code',
         ]);
 
-        $response = json_decode($this->grabResponse(), true);
-
-        return $response['refresh_token'];
+        return json_decode($this->grabResponse(), true);
     }
 
 }

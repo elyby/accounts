@@ -2,7 +2,6 @@
 namespace common\models;
 
 use common\components\redis\Set;
-use Yii;
 use yii\db\ActiveRecord;
 
 /**
@@ -13,6 +12,8 @@ use yii\db\ActiveRecord;
  * @property integer $expire_time
  *
  * @property Set     $scopes
+ *
+ * @property OauthSession $session
  */
 class OauthAccessToken extends ActiveRecord {
 
@@ -36,6 +37,10 @@ class OauthAccessToken extends ActiveRecord {
         $this->getScopes()->delete();
 
         return true;
+    }
+
+    public function isExpired() {
+        return time() > $this->expire_time;
     }
 
 }

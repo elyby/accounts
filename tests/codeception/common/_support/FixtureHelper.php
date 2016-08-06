@@ -7,7 +7,6 @@ use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\AccountSessionFixture;
 use tests\codeception\common\fixtures\EmailActivationFixture;
 use tests\codeception\common\fixtures\OauthClientFixture;
-use tests\codeception\common\fixtures\OauthScopeFixture;
 use tests\codeception\common\fixtures\OauthSessionFixture;
 use tests\codeception\common\fixtures\UsernameHistoryFixture;
 use yii\test\FixtureTrait;
@@ -55,10 +54,6 @@ class FixtureHelper extends Module {
             'oauthClients' => [
                 'class' => OauthClientFixture::class,
                 'dataFile' => '@tests/codeception/common/fixtures/data/oauth-clients.php',
-            ],
-            'oauthScopes' => [
-                'class' => OauthScopeFixture::class,
-                'dataFile' => '@tests/codeception/common/fixtures/data/oauth-scopes.php',
             ],
             'oauthSessions' => [
                 'class' => OauthSessionFixture::class,

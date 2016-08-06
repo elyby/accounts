@@ -1,9 +1,9 @@
 <?php
 namespace tests\codeception\api;
 
+use common\models\OauthScope as S;
 use tests\codeception\api\_pages\OauthRoute;
 use tests\codeception\api\functional\_steps\OauthSteps;
-use Yii;
 
 class OauthAccessTokenCest {
 
@@ -55,7 +55,7 @@ class OauthAccessTokenCest {
     }
 
     public function testIssueTokenWithRefreshToken(OauthSteps $I) {
-        $authCode = $I->getAuthCode(false);
+        $authCode = $I->getAuthCode([S::OFFLINE_ACCESS]);
         $this->route->issueToken($this->buildParams(
             $authCode,
             'ely',
