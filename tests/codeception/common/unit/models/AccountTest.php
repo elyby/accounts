@@ -8,6 +8,7 @@ use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\MojangUsernameFixture;
 use tests\codeception\common\unit\DbTestCase;
 use Yii;
+use const common\LATEST_RULES_VERSION;
 
 /**
  * @property array $accounts
@@ -173,6 +174,31 @@ class AccountTest extends DbTestCase {
             $model = new Account();
             $model->username = 'rare-username';
             expect($model->hasMojangUsernameCollision())->false();
+        });
+    }
+
+    public function testGetProfileLink() {
+        $model = new Account();
+        $model->id = '123';
+        $this->assertEquals('http://ely.by/u123', $model->getProfileLink());
+    }
+
+    public function testIsAgreedWithActualRules() {
+        $this->specify('get false, if rules field set in null', function() {
+            $model = new Account();
+            expect($model->isAgreedWithActualRules())->false();
+        });
+
+        $this->specify('get false, if rules field have version less, then actual', function() {
+            $model = new Account();
+            $model->rules_agreement_version = 0;
+            expect($model->isAgreedWithActualRules())->false();
+        });
+
+        $this->specify('get true, if rules field have equals rules version', function() {
+            $model = new Account();
+            $model->rules_agreement_version = LATEST_RULES_VERSION;
+            expect($model->isAgreedWithActualRules())->true();
         });
     }
 

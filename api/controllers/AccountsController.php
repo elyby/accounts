@@ -1,6 +1,7 @@
 <?php
 namespace api\controllers;
 
+use api\models\profile\AcceptRulesForm;
 use api\models\profile\ChangeEmail\ConfirmNewEmailForm;
 use api\models\profile\ChangeEmail\InitStateForm;
 use api\models\profile\ChangeEmail\NewEmailForm;
@@ -21,7 +22,7 @@ class AccountsController extends Controller {
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['current'],
+                        'actions' => ['current', 'accept-rules'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -37,9 +38,10 @@ class AccountsController extends Controller {
                         'allow' => true,
                         'roles' => ['@'],
                         'matchCallback' => function() {
-                            /** @var Account $account */
                             $account = Yii::$app->user->identity;
-                            return $account->status > Account::STATUS_REGISTERED;
+
+                            return $account->status > Account::STATUS_REGISTERED
+                                && $account->isAgreedWithActualRules();
                         },
                     ],
                 ],
@@ -56,6 +58,7 @@ class AccountsController extends Controller {
             'change-email-submit-new-email' => ['POST'],
             'change-email-confirm-new-email' => ['POST'],
             'change-lang' => ['POST'],
+            'accept-rules' => ['POST'],
         ];
     }
 
@@ -72,6 +75,7 @@ class AccountsController extends Controller {
             'isActive' => $account->status === Account::STATUS_ACTIVE,
             'passwordChangedAt' => $account->password_changed_at,
             'hasMojangUsernameCollision' => $account->hasMojangUsernameCollision(),
+            'shouldAcceptRules' => !$account->isAgreedWithActualRules(),
         ];
     }
 
@@ -172,6 +176,22 @@ class AccountsController extends Controller {
         $model = new ChangeLanguageForm($account);
         $model->load(Yii::$app->request->post());
         if (!$model->applyLanguage()) {
+            return [
+                'success' => false,
+                'errors' => $this->normalizeModelErrors($model->getErrors()),
+            ];
+        }
+
+        return [
+            'success' => true,
+        ];
+    }
+
+    public function actionAcceptRules() {
+        $account = Yii::$app->user->identity;
+        $model = new AcceptRulesForm($account);
+        $model->load(Yii::$app->request->post());
+        if (!$model->agreeWithLatestRules()) {
             return [
                 'success' => false,
                 'errors' => $this->normalizeModelErrors($model->getErrors()),

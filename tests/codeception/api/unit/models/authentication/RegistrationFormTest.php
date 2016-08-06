@@ -8,6 +8,7 @@ use common\models\EmailActivation;
 use tests\codeception\api\unit\DbTestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use Yii;
+use const common\LATEST_RULES_VERSION;
 
 /**
  * @property array $accounts
@@ -99,6 +100,7 @@ class RegistrationFormTest extends DbTestCase {
         expect('user should be valid', $account)->isInstanceOf(Account::class);
         expect('password should be correct', $account->validatePassword('some_password'))->true();
         expect('uuid is set', $account->uuid)->notEmpty();
+        expect('actual rules version is set', $account->rules_agreement_version)->equals(LATEST_RULES_VERSION);
         expect('user model exists in database', Account::find()->andWhere([
             'username' => 'some_username',
             'email' => 'some_email@example.com',
