@@ -16,6 +16,7 @@ use Ramsey\Uuid\Uuid;
 use Yii;
 use yii\base\ErrorException;
 use yii\base\InvalidConfigException;
+use const common\LATEST_RULES_VERSION;
 
 class RegistrationForm extends ApiForm {
 
@@ -92,6 +93,7 @@ class RegistrationForm extends ApiForm {
             $account->password = $this->password;
             $account->lang = $this->lang;
             $account->status = Account::STATUS_REGISTERED;
+            $account->rules_agreement_version = LATEST_RULES_VERSION;
             if (!$account->save()) {
                 throw new ErrorException('Account not created.');
             }

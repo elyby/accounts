@@ -37,9 +37,10 @@ class AccountsController extends Controller {
                         'allow' => true,
                         'roles' => ['@'],
                         'matchCallback' => function() {
-                            /** @var Account $account */
                             $account = Yii::$app->user->identity;
-                            return $account->status > Account::STATUS_REGISTERED;
+
+                            return $account->status > Account::STATUS_REGISTERED
+                                && $account->isAgreedWithActualRules();
                         },
                     ],
                 ],
@@ -72,6 +73,7 @@ class AccountsController extends Controller {
             'isActive' => $account->status === Account::STATUS_ACTIVE,
             'passwordChangedAt' => $account->password_changed_at,
             'hasMojangUsernameCollision' => $account->hasMojangUsernameCollision(),
+            'shouldAcceptRules' => !$account->isAgreedWithActualRules(),
         ];
     }
 

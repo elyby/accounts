@@ -9,6 +9,7 @@ use Yii;
 use yii\base\InvalidConfigException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use const common\LATEST_RULES_VERSION;
 
 /**
  * Поля модели:
@@ -20,6 +21,7 @@ use yii\db\ActiveRecord;
  * @property integer $password_hash_strategy
  * @property string  $lang
  * @property integer $status
+ * @property integer $rules_agreement_version
  * @property integer $created_at
  * @property integer $updated_at
  * @property integer $password_changed_at
@@ -164,6 +166,7 @@ class Account extends ActiveRecord {
 
     /**
      * Выполняет проверку, принадлежит ли этому нику аккаунт у Mojang
+     *
      * @return bool
      */
     public function hasMojangUsernameCollision() : bool {
@@ -172,8 +175,27 @@ class Account extends ActiveRecord {
             ->exists();
     }
 
+    /**
+     * Т.к. у нас нет инфы по static_url пользователя, то пока генерируем самый простой вариант
+     * с ссылкой на профиль по id. На Ely он всё равно редиректнется на static, а мы так или
+     * иначе обеспечим отдачу этой инфы.
+     *
+     * @return string
+     */
     public function getProfileLink() : string {
         return 'http://ely.by/u' . $this->id;
+    }
+
+    /**
+     * При создании структуры БД все аккаунты получают null значение в это поле, однако оно
+     * обязательно для заполнения. Все мигрировавшие с Ely аккаунты будут иметь null значение,
+     * а актуальной версией будет 1 версия правил сайта (т.к. раньше их просто не было). Ну а
+     * дальше уже будем инкрементить.
+     *
+     * @return bool
+     */
+    public function isAgreedWithActualRules() : bool {
+        return $this->rules_agreement_version === LATEST_RULES_VERSION;
     }
 
 }

@@ -51,5 +51,10 @@
     ],
     "scripts": {
         "phploc" : "phploc ./api ./common ./console"
+    },
+    "autoload": {
+        "files": [
+            "common/consts.php"
+        ]
     }
 }

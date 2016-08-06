@@ -1,7 +1,6 @@
 <?php
 namespace tests\codeception\api\functional;
 
-use Codeception\Specify;
 use tests\codeception\api\_pages\AccountsRoute;
 use tests\codeception\api\FunctionalTester;
 
@@ -30,6 +29,7 @@ class AccountsCurrentCest {
             'shouldChangePassword' => false,
             'isActive' => true,
             'hasMojangUsernameCollision' => false,
+            'shouldAcceptRules' => false,
         ]);
         $I->canSeeResponseJsonMatchesJsonPath('$.passwordChangedAt');
     }
