@@ -1,9 +1,9 @@
 <?php
 namespace api\controllers;
 
-use common\models\OauthScope;
+use api\components\ApiUser\AccessControl;
+use common\models\OauthScope as S;
 use Yii;
-use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 
 class IdentityInfoController extends ApiController {
@@ -16,7 +16,7 @@ class IdentityInfoController extends ApiController {
                     [
                         'actions' => ['index'],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => [S::ACCOUNT_INFO],
                     ],
                 ],
             ],
@@ -28,12 +28,13 @@ class IdentityInfoController extends ApiController {
         $response = [
             'id' => $account->id,
             'uuid' => $account->uuid,
+            'username' => $account->username,
             'registeredAt' => $account->created_at,
             'profileLink' => $account->getProfileLink(),
             'preferredLanguage' => $account->lang,
         ];
 
-        if (Yii::$app->apiUser->can(OauthScope::ACCOUNT_EMAIL)) {
+        if (Yii::$app->apiUser->can(S::ACCOUNT_EMAIL)) {
             $response['email'] = $account->email;
         }
 

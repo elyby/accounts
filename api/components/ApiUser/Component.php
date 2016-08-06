@@ -10,10 +10,14 @@ use yii\web\User as YiiUserComponent;
  */
 class Component extends YiiUserComponent {
 
-    public $identity = Identity::class;
+    public $identityClass = Identity::class;
 
     public $enableSession = false;
 
     public $loginUrl = null;
+
+    public function getAccessChecker() {
+        return new AuthChecker();
+    }
 
 }
