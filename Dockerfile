@@ -43,6 +43,8 @@ RUN yes | pecl install xdebug \
  && echo "xdebug.cli_color=1" >> /usr/local/etc/php/conf.d/xdebug.ini \
  && echo "xdebug.var_display_max_depth=10" >> /usr/local/etc/php/conf.d/xdebug.ini
 
+ENV COMPOSER_NO_INTERACTION 1
+
 # Next composer and global composer package, as their versions may change from time to time
 RUN curl -sS https://getcomposer.org/installer | php \
  && mv composer.phar /usr/local/bin/composer.phar \
