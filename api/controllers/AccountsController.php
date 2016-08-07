@@ -1,6 +1,7 @@
 <?php
 namespace api\controllers;
 
+use api\filters\ActiveUserRule;
 use api\models\profile\AcceptRulesForm;
 use api\models\profile\ChangeEmail\ConfirmNewEmailForm;
 use api\models\profile\ChangeEmail\InitStateForm;
@@ -27,6 +28,7 @@ class AccountsController extends Controller {
                         'roles' => ['@'],
                     ],
                     [
+                        'class' => ActiveUserRule::class,
                         'actions' => [
                             'change-password',
                             'change-username',
@@ -35,14 +37,6 @@ class AccountsController extends Controller {
                             'change-email-confirm-new-email',
                             'change-lang',
                         ],
-                        'allow' => true,
-                        'roles' => ['@'],
-                        'matchCallback' => function() {
-                            $account = Yii::$app->user->identity;
-
-                            return $account->status > Account::STATUS_REGISTERED
-                                && $account->isAgreedWithActualRules();
-                        },
                     ],
                 ],
             ],

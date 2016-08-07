@@ -1,6 +1,7 @@
 <?php
 namespace api\controllers;
 
+use api\filters\ActiveUserRule;
 use common\components\oauth\Exception\AcceptRequiredException;
 use common\components\oauth\Exception\AccessDeniedException;
 use common\models\OauthClient;
@@ -27,9 +28,8 @@ class OauthController extends Controller {
                         'roles' => ['?'],
                     ],
                     [
+                        'class' => ActiveUserRule::class,
                         'actions' => ['complete'],
-                        'allow' => true,
-                        'roles' => ['@'],
                     ],
                 ],
             ],
