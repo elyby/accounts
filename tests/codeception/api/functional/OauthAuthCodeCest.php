@@ -1,8 +1,8 @@
 <?php
 namespace tests\codeception\api;
 
+use common\models\OauthScope as S;
 use tests\codeception\api\_pages\OauthRoute;
-use Yii;
 
 class OauthAuthCodeCest {
 
@@ -23,9 +23,7 @@ class OauthAuthCodeCest {
             'ely',
             'http://ely.by',
             'code',
-            [
-                'minecraft_server_session'
-            ],
+            [S::MINECRAFT_SERVER_SESSION],
             'test-state'
         ));
         $I->canSeeResponseCodeIs(200);
@@ -102,7 +100,7 @@ class OauthAuthCodeCest {
             'ely',
             'http://ely.by',
             'code',
-            ['minecraft_server_session']
+            [S::MINECRAFT_SERVER_SESSION]
         ));
         $I->canSeeResponseCodeIs(401);
         $I->canSeeResponseContainsJson([
@@ -120,7 +118,7 @@ class OauthAuthCodeCest {
             'ely',
             'http://ely.by',
             'code',
-            ['minecraft_server_session']
+            [S::MINECRAFT_SERVER_SESSION]
         ), ['accept' => true]);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseContainsJson([
@@ -147,7 +145,7 @@ class OauthAuthCodeCest {
             'ely',
             'http://ely.by',
             'code',
-            ['minecraft_server_session']
+            [S::MINECRAFT_SERVER_SESSION]
         ));
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseContainsJson([
@@ -163,13 +161,13 @@ class OauthAuthCodeCest {
             'ely',
             'http://ely.by',
             'code',
-            ['minecraft_server_session']
+            [S::MINECRAFT_SERVER_SESSION]
         ), ['accept' => true]);
         $this->route->complete($this->buildQueryParams(
             'ely',
             'http://ely.by',
             'code',
-            ['minecraft_server_session', 'change_skin']
+            [S::MINECRAFT_SERVER_SESSION, S::ACCOUNT_INFO]
         ));
         $I->canSeeResponseCodeIs(401);
         $I->canSeeResponseContainsJson([
@@ -187,7 +185,7 @@ class OauthAuthCodeCest {
             'ely',
             'http://ely.by',
             'code',
-            ['minecraft_server_session']
+            [S::MINECRAFT_SERVER_SESSION]
         ), ['accept' => false]);
         $I->canSeeResponseCodeIs(401);
         $I->canSeeResponseContainsJson([
@@ -271,7 +269,7 @@ class OauthAuthCodeCest {
 
         $I->wantTo('check behavior on some invalid scopes');
         $this->route->$action($this->buildQueryParams('ely', 'http://ely.by', 'code', [
-            'minecraft_server_session',
+            S::MINECRAFT_SERVER_SESSION,
             'some_wrong_scope',
         ]));
         $I->canSeeResponseCodeIs(400);
