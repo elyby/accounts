@@ -10,7 +10,10 @@ services:
             - testredis
             - testrabbit
         volumes:
-            - ./../:/var/www/html/
+            - ./codeception/_output:/var/www/html/tests/codeception/_output
+            - ./codeception/api/_output:/var/www/html/tests/codeception/api/_output
+            - ./codeception/common/_output:/var/www/html/tests/codeception/common/_output
+            - ./codeception/console/_output:/var/www/html/tests/codeception/console/_output
         environment:
             - YII_DEBUG=true
             - YII_ENV=test
