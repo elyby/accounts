@@ -23,7 +23,8 @@
         "guzzlehttp/guzzle": "^6.0.0",
         "php-amqplib/php-amqplib": "~2.6.2",
         "ely/yii2-tempmail-validator": "~1.0.0",
-        "emarref/jwt": "dev-master#1e4fdf731f9fdfbc5906659ef5384715197fd90b"
+        "emarref/jwt": "dev-master#1e4fdf731f9fdfbc5906659ef5384715197fd90b",
+        "ely/amqp-controller": "^0.1.0"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",
@@ -47,6 +48,10 @@
         {
             "type": "git",
             "url": "git@github.com:erickskrauch/jwt.git"
+        },
+        {
+            "type": "git",
+            "url": "git@gitlab.com:elyby/amqp-controller.git"
         }
     ],
     "scripts": {
