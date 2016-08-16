@@ -105,7 +105,7 @@ class AccountTest extends DbTestCase {
         });
 
         $this->specify('email should be not tempmail', function() {
-            $model = new Account(['email' => 'c1414001@trbvn.com']);
+            $model = new Account(['email' => 'ibrpycwyjdnt@dropmail.me']);
             expect($model->validate(['email']))->false();
             expect($model->getErrors('email'))->equals(['error.email_is_tempmail']);
         });
