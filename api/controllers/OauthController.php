@@ -45,20 +45,6 @@ class OauthController extends Controller {
     }
 
     /**
-     * @return \League\OAuth2\Server\AuthorizationServer
-     */
-    protected function getServer() {
-        return Yii::$app->oauth->authServer;
-    }
-
-    /**
-     * @return \League\OAuth2\Server\Grant\AuthCodeGrant
-     */
-    protected function getGrantType() {
-        return $this->getServer()->getGrantType('authorization_code');
-    }
-
-    /**
      * Запрос, который должен проверить переданные параметры oAuth авторизации
      * и сформировать ответ для нашего приложения на фронте
      *
@@ -181,6 +167,14 @@ class OauthController extends Controller {
         return $response;
     }
 
+    /**
+     * Этот метод нужен за тем, что \League\OAuth2\Server\AuthorizationServer не предоставляет
+     * метода для проверки, можно ли выдавать refresh_token для пришедшего токена. Он просто
+     * выдаёт refresh_token, если этот grant присутствует в конфигурации сервера. Так что чтобы
+     * как-то решить эту проблему, мы не включаем RefreshTokenGrant в базовую конфигурацию сервера,
+     * а подключаем его только в том случае, если у auth_token есть право на рефреш или если это
+     * и есть запрос на refresh токена.
+     */
     private function attachRefreshTokenGrantIfNeedle() {
         $grantType = Yii::$app->request->post('grant_type');
         if ($grantType === 'authorization_code' && Yii::$app->request->post('code')) {
@@ -210,7 +204,7 @@ class OauthController extends Controller {
      *
      * @return array
      */
-    private function buildSuccessResponse($queryParams, OauthClient $clientModel, $scopes) {
+    private function buildSuccessResponse(array $queryParams, OauthClient $clientModel, array $scopes) {
         return [
             'success' => true,
             // Возвращаем только те ключи, которые имеют реальное отношение к oAuth параметрам
@@ -249,6 +243,20 @@ class OauthController extends Controller {
         }
 
         return $response;
+    }
+
+    /**
+     * @return \League\OAuth2\Server\AuthorizationServer
+     */
+    private function getServer() {
+        return Yii::$app->oauth->authServer;
+    }
+
+    /**
+     * @return \League\OAuth2\Server\Grant\AuthCodeGrant
+     */
+    private function getGrantType() {
+        return $this->getServer()->getGrantType('authorization_code');
     }
 
 }
