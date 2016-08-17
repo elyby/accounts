@@ -94,6 +94,7 @@ class RegistrationForm extends ApiForm {
             $account->lang = $this->lang;
             $account->status = Account::STATUS_REGISTERED;
             $account->rules_agreement_version = LATEST_RULES_VERSION;
+            $account->setRegistrationIp(Yii::$app->request->getUserIP());
             if (!$account->save()) {
                 throw new ErrorException('Account not created.');
             }

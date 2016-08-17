@@ -9,6 +9,7 @@ use tests\codeception\api\unit\DbTestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use Yii;
 use const common\LATEST_RULES_VERSION;
+use yii\web\Request;
 
 /**
  * @property array $accounts
@@ -23,6 +24,7 @@ class RegistrationFormTest extends DbTestCase {
         $mailer->fileTransportCallback = function () {
             return 'testing_message.eml';
         };
+        $this->mockRequest();
     }
 
     protected function tearDown() {
@@ -100,6 +102,7 @@ class RegistrationFormTest extends DbTestCase {
         expect('user should be valid', $account)->isInstanceOf(Account::class);
         expect('password should be correct', $account->validatePassword('some_password'))->true();
         expect('uuid is set', $account->uuid)->notEmpty();
+        expect('registration_ip is set', $account->registration_ip)->notNull();
         expect('actual rules version is set', $account->rules_agreement_version)->equals(LATEST_RULES_VERSION);
         expect('user model exists in database', Account::find()->andWhere([
             'username' => 'some_username',
@@ -113,6 +116,21 @@ class RegistrationFormTest extends DbTestCase {
     }
 
     // TODO: там в самой форме есть метод sendMail(), который рано или поздно должен переехать. К нему нужны будут тоже тесты
+
+    private function mockRequest($ip = '88.225.20.236') {
+        $request = $this->getMockBuilder(Request::class)
+            ->setMethods(['getUserIP'])
+            ->getMock();
+
+        $request
+            ->expects($this->any())
+            ->method('getUserIP')
+            ->will($this->returnValue($ip));
+
+        Yii::$app->set('request', $request);
+
+        return $request;
+    }
 
     private function getMessageFile() {
         /** @var \yii\swiftmailer\Mailer $mailer */

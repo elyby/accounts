@@ -22,6 +22,7 @@ use const common\LATEST_RULES_VERSION;
  * @property string  $lang
  * @property integer $status
  * @property integer $rules_agreement_version
+ * @property string  $registration_ip
  * @property integer $created_at
  * @property integer $updated_at
  * @property integer $password_changed_at
@@ -196,6 +197,14 @@ class Account extends ActiveRecord {
      */
     public function isAgreedWithActualRules() : bool {
         return $this->rules_agreement_version === LATEST_RULES_VERSION;
+    }
+
+    public function setRegistrationIp($ip) {
+        $this->registration_ip = $ip === null ? null : inet_pton($ip);
+    }
+
+    public function getRegistrationIp() {
+        return $this->registration_ip === null ? null : inet_ntop($this->registration_ip);
     }
 
 }

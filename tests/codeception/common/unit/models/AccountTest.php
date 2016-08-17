@@ -202,4 +202,24 @@ class AccountTest extends DbTestCase {
         });
     }
 
+    public function testSetRegistrationIp() {
+        $account = new Account();
+        $account->setRegistrationIp('42.72.205.204');
+        $this->assertEquals('42.72.205.204', inet_ntop($account->registration_ip));
+        $account->setRegistrationIp('2001:1620:28:1:b6f:8bca:93:a116');
+        $this->assertEquals('2001:1620:28:1:b6f:8bca:93:a116', inet_ntop($account->registration_ip));
+        $account->setRegistrationIp(null);
+        $this->assertNull($account->registration_ip);
+    }
+
+    public function testGetRegistrationIp() {
+        $account = new Account();
+        $account->setRegistrationIp('42.72.205.204');
+        $this->assertEquals('42.72.205.204', $account->getRegistrationIp());
+        $account->setRegistrationIp('2001:1620:28:1:b6f:8bca:93:a116');
+        $this->assertEquals('2001:1620:28:1:b6f:8bca:93:a116', $account->getRegistrationIp());
+        $account->setRegistrationIp(null);
+        $this->assertNull($account->getRegistrationIp());
+    }
+
 }
