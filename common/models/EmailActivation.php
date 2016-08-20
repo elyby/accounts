@@ -3,6 +3,7 @@ namespace common\models;
 
 use common\behaviors\DataBehavior;
 use common\behaviors\EmailActivationExpirationBehavior;
+use common\behaviors\PrimaryKeyValueBehavior;
 use common\components\UserFriendlyRandomKey;
 use yii\base\InvalidConfigException;
 use yii\behaviors\TimestampBehavior;
@@ -41,6 +42,12 @@ class EmailActivation extends ActiveRecord {
             [
                 'class' => TimestampBehavior::class,
                 'updatedAtAttribute' => false,
+            ],
+            [
+                'class' => PrimaryKeyValueBehavior::class,
+                'value' => function() {
+                    return UserFriendlyRandomKey::make();
+                },
             ],
             'expirationBehavior' => [
                 'class' => EmailActivationExpirationBehavior::class,
@@ -82,28 +89,6 @@ class EmailActivation extends ActiveRecord {
             self::TYPE_CURRENT_EMAIL_CONFIRMATION      => confirmations\CurrentEmailConfirmation::class,
             self::TYPE_NEW_EMAIL_CONFIRMATION          => confirmations\NewEmailConfirmation::class,
         ];
-    }
-
-    public function beforeSave($insert) {
-        if (!parent::beforeSave($insert)) {
-            return false;
-        }
-
-        if ($this->key === null) {
-            do {
-                $this->key = $this->generateKey();
-            } while ($this->isKeyExists($this->key));
-        }
-
-        return true;
-    }
-
-    protected function generateKey() : string {
-        return UserFriendlyRandomKey::make();
-    }
-
-    protected function isKeyExists(string $key) : bool {
-        return self::find()->andWhere(['key' => $key])->exists();
     }
 
 }

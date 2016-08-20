@@ -28,30 +28,4 @@ class EmailActivationTest extends DbTestCase {
         });
     }
 
-    public function testBeforeSave() {
-        $this->specify('method should generate value for key field if it empty', function() {
-            $model = new EmailActivation();
-            $model->beforeSave(true);
-            expect($model->key)->notNull();
-        });
-
-        $this->specify('method should repeat code generation if code duplicate with exists', function() {
-            /** @var EmailActivation|\PHPUnit_Framework_MockObject_MockObject $model */
-            $model = $this->getMockBuilder(EmailActivation::class)
-                ->setMethods(['generateKey', 'isKeyExists'])
-                ->getMock();
-
-            $model->expects($this->exactly(3))
-                ->method('generateKey')
-                ->will($this->onConsecutiveCalls('1', '2', '3'));
-
-            $model->expects($this->exactly(3))
-                  ->method('isKeyExists')
-                  ->will($this->onConsecutiveCalls(true, true, false));
-
-            $model->beforeSave(true);
-            expect($model->key)->equals('3');
-        });
-    }
-
 }
