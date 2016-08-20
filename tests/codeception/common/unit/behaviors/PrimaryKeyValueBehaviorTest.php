@@ -9,7 +9,7 @@ use yii\db\ActiveRecord;
 class PrimaryKeyValueBehaviorTest extends TestCase {
     use Specify;
 
-    public function testSetPrimaryKeyValue() {
+    public function testRefreshPrimaryKeyValue() {
         $this->specify('method should generate value for primary key field on call', function() {
             $model = new DummyModel();
             /** @var PrimaryKeyValueBehavior|\PHPUnit_Framework_MockObject_MockObject $behavior */

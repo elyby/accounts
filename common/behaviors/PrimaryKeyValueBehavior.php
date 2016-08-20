@@ -25,16 +25,19 @@ class PrimaryKeyValueBehavior extends Behavior {
     }
 
     public function setPrimaryKeyValue() : bool {
-        $owner = $this->owner;
-        if ($owner->getPrimaryKey() === null) {
-            do {
-                $key = $this->generateValue();
-            } while ($this->isValueExists($key));
-
-            $owner->{$this->getPrimaryKeyName()} = $key;
+        if ($this->owner->getPrimaryKey() === null) {
+            $this->refreshPrimaryKeyValue();
         }
 
         return true;
+    }
+
+    public function refreshPrimaryKeyValue() {
+        do {
+            $key = $this->generateValue();
+        } while ($this->isValueExists($key));
+
+        $this->owner->{$this->getPrimaryKeyName()} = $key;
     }
 
     protected function generateValue() : string {

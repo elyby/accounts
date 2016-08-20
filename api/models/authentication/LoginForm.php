@@ -52,6 +52,7 @@ class LoginForm extends ApiForm {
     }
 
     public function validateActivity($attribute) {
+        // TODO: проверить, не заблокирован ли аккаунт
         if (!$this->hasErrors()) {
             $account = $this->getAccount();
             if ($account->status !== Account::STATUS_ACTIVE) {
