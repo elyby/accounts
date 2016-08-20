@@ -17,6 +17,14 @@ class Migration extends YiiMigration {
         return $tableOptions;
     }
 
+    public function createTable($table, $columns, $options = null) {
+        if ($options === null) {
+            $options = $this->getTableOptions();
+        }
+
+        parent::createTable($table, $columns, $options);
+    }
+
     protected function primary(...$columns) {
         switch (count($columns)) {
             case 0:
