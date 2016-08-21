@@ -8,7 +8,6 @@ use Codeception\Specify;
 use common\models\Account;
 use tests\codeception\api\unit\DbTestCase;
 use tests\codeception\common\fixtures\AccountFixture;
-use Yii;
 
 /**
  * @property AccountFixture $accounts
@@ -82,6 +81,14 @@ class LoginFormTest extends DbTestCase {
             ]);
             $model->validateActivity('login');
             expect($model->getErrors('login'))->equals(['error.account_not_activated']);
+        });
+
+        $this->specify('error.account_banned if account has banned status', function () {
+            $model = $this->createModel([
+                'account' => new AccountIdentity(['status' => Account::STATUS_BANNED]),
+            ]);
+            $model->validateActivity('login');
+            expect($model->getErrors('login'))->equals(['error.account_banned']);
         });
 
         $this->specify('no errors if account active', function () {

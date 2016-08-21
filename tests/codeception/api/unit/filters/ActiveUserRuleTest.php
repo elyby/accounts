@@ -18,7 +18,13 @@ class ActiveUserRuleTest extends TestCase {
         $account = new AccountIdentity();
 
         $this->specify('get false if user not finished registration', function() use (&$account) {
-            $account->status = 0;
+            $account->status = Account::STATUS_REGISTERED;
+            $filter = $this->getFilterMock($account);
+            expect($this->callProtected($filter, 'matchCustom', new Action(null, null)))->false();
+        });
+
+        $this->specify('get false if user has banned status', function() use (&$account) {
+            $account->status = Account::STATUS_BANNED;
             $filter = $this->getFilterMock($account);
             expect($this->callProtected($filter, 'matchCustom', new Action(null, null)))->false();
         });

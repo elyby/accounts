@@ -17,13 +17,10 @@ class ActiveUserRule extends AccessRule {
     protected function matchCustom($action) {
         $account = $this->getIdentity();
 
-        return $account->status > Account::STATUS_REGISTERED
+        return $account->status === Account::STATUS_ACTIVE
             && $account->isAgreedWithActualRules();
     }
 
-    /**
-     * @return \api\models\AccountIdentity|null
-     */
     protected function getIdentity() {
         return Yii::$app->getUser()->getIdentity();
     }

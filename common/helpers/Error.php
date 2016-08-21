@@ -27,6 +27,7 @@ final class Error {
     const KEY_NOT_EXISTS = 'error.key_not_exists';
     const KEY_EXPIRE = 'error.key_expire';
 
+    const ACCOUNT_BANNED = 'error.account_banned';
     const ACCOUNT_NOT_ACTIVATED = 'error.account_not_activated';
     const ACCOUNT_ALREADY_ACTIVATED = 'error.account_already_activated';
     const ACCOUNT_CANNOT_RESEND_MESSAGE = 'error.account_cannot_resend_message';
