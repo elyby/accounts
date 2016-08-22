@@ -20,6 +20,8 @@ services:
             - app
         volumes_from:
             - app
+        environment:
+            - AUTHSERVER_HOST=authserver.ely.by
 
     node-dev-server:
         build: ./frontend
