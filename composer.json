@@ -14,14 +14,14 @@
     },
     "minimum-stability": "stable",
     "require": {
-        "php": "~7.0.6",
+        "php": "^7.0.6",
         "yiisoft/yii2": "2.0.9",
         "yiisoft/yii2-swiftmailer": "*",
-        "ramsey/uuid": "~3.1",
+        "ramsey/uuid": "^3.5.0",
         "league/oauth2-server": "~4.1.5",
         "yiisoft/yii2-redis": "~2.0.0",
         "guzzlehttp/guzzle": "^6.0.0",
-        "php-amqplib/php-amqplib": "~2.6.2",
+        "php-amqplib/php-amqplib": "^2.6.2",
         "ely/yii2-tempmail-validator": "~1.0.0",
         "emarref/jwt": "~1.0.2",
         "ely/amqp-controller": "^0.1.0"
