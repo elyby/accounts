@@ -1,6 +1,7 @@
 <?php
 namespace api\modules\authserver;
 
+use Yii;
 use yii\base\BootstrapInterface;
 use yii\base\InvalidConfigException;
 
@@ -29,6 +30,14 @@ class Module extends \yii\base\Module implements BootstrapInterface {
         $app->getUrlManager()->addRules([
             $this->baseDomain . '/' . $this->id . '/auth/<action>' => $this->id . '/authentication/<action>',
         ], false);
+    }
+
+    public static function info($message) {
+        Yii::info($message, 'legacy-authserver');
+    }
+
+    public static function error($message) {
+        Yii::info($message, 'legacy-authserver');
     }
 
 }

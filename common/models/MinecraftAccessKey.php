@@ -54,7 +54,7 @@ class MinecraftAccessKey extends ActiveRecord {
     }
 
     public function isActual() : bool {
-        return $this->timestamp + self::LIFETIME >= time();
+        return $this->updated_at + self::LIFETIME >= time();
     }
 
 }

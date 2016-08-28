@@ -30,5 +30,9 @@ return [
             'password' => 'tester-password',
             'vhost' => '/account.ely.by/tests',
         ],
+        'security' => [
+            // Для тестов нам не сильно важна безопасность, а вот время прохождения тестов значительно сокращается
+            'passwordHashCost' => 4,
+        ],
     ],
 ];
