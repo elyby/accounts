@@ -8,7 +8,7 @@ class ErrorHandler extends \yii\web\ErrorHandler {
     public function convertExceptionToArray($exception) {
         if ($exception instanceof AuthserverException) {
             return [
-                'error' => $this->getExceptionName($exception),
+                'error' => $exception->getName(),
                 'errorMessage' => $exception->getMessage(),
             ];
         }
