@@ -13,6 +13,16 @@ class AuthenticationController extends Controller {
         return $behaviors;
     }
 
+    public function verbs() {
+        return [
+            'authenticate' => ['POST'],
+            'refresh'      => ['POST'],
+            'validate'     => ['POST'],
+            'signout'      => ['POST'],
+            'invalidate'   => ['POST'],
+        ];
+    }
+
     public function actionAuthenticate() {
         $model = new models\AuthenticationForm();
         $model->loadByPost();
