@@ -47,6 +47,9 @@ return [
             'class' => \common\components\oauth\Component::class,
             'grantTypes' => ['authorization_code'],
         ],
+        'errorHandler' => [
+            'class' => \api\components\ErrorHandler::class,
+        ],
     ],
     'modules' => [
         'authserver' => [
