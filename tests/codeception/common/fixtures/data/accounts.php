@@ -120,4 +120,17 @@ return [
         'created_at' => 1470499952,
         'updated_at' => 1470499952,
     ],
+    'banned-account' => [
+        'id' => 10,
+        'uuid' => 'd2e7360e-50cf-4b9b-baa0-c4440a150795',
+        'username' => 'Banned',
+        'email' => 'banned@ely.by',
+        'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
+        'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
+        'lang' => 'en',
+        'status' => \common\models\Account::STATUS_BANNED,
+        'rules_agreement_version' => \common\LATEST_RULES_VERSION,
+        'created_at' => 1472682343,
+        'updated_at' => 1472682343,
+    ],
 ];

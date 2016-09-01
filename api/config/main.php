@@ -9,7 +9,7 @@ $params = array_merge(
 return [
     'id' => 'accounts-site-api',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
+    'bootstrap' => ['log', 'authserver'],
     'controllerNamespace' => 'api\controllers',
     'params' => $params,
     'components' => [
@@ -46,6 +46,15 @@ return [
         'oauth' => [
             'class' => \common\components\oauth\Component::class,
             'grantTypes' => ['authorization_code'],
+        ],
+        'errorHandler' => [
+            'class' => \api\components\ErrorHandler::class,
+        ],
+    ],
+    'modules' => [
+        'authserver' => [
+            'class' => \api\modules\authserver\Module::class,
+            'baseDomain' => $params['authserverDomain'],
         ],
     ],
 ];

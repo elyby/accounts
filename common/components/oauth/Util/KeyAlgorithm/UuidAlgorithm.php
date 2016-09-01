@@ -11,7 +11,7 @@ class UuidAlgorithm extends DefaultAlgorithm implements KeyAlgorithmInterface {
      * @inheritdoc
      */
     public function generate($len = 40) : string {
-        return Uuid::uuid5(Uuid::NAMESPACE_DNS, parent::generate($len))->toString();
+        return Uuid::uuid4()->toString();
     }
 
 }

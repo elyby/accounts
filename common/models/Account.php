@@ -43,6 +43,7 @@ use const common\LATEST_RULES_VERSION;
 class Account extends ActiveRecord {
 
     const STATUS_DELETED = -10;
+    const STATUS_BANNED = -1;
     const STATUS_REGISTERED = 0;
     const STATUS_ACTIVE = 10;
 

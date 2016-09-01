@@ -54,7 +54,11 @@ class LoginForm extends ApiForm {
     public function validateActivity($attribute) {
         if (!$this->hasErrors()) {
             $account = $this->getAccount();
-            if ($account->status !== Account::STATUS_ACTIVE) {
+            if ($account->status === Account::STATUS_BANNED) {
+                $this->addError($attribute, E::ACCOUNT_BANNED);
+            }
+
+            if ($account->status === Account::STATUS_REGISTERED) {
                 $this->addError($attribute, E::ACCOUNT_NOT_ACTIVATED);
             }
         }
