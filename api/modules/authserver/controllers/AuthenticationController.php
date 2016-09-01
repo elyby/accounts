@@ -30,14 +30,14 @@ class AuthenticationController extends Controller {
         return $model->authenticate()->getResponseData(true);
     }
 
-    public function refreshAction() {
+    public function actionRefresh() {
         $model = new models\RefreshTokenForm();
         $model->loadByPost();
 
         return $model->refresh()->getResponseData(false);
     }
 
-    public function validateAction() {
+    public function actionValidate() {
         $model = new models\ValidateForm();
         $model->loadByPost();
         $model->validateToken();
@@ -45,7 +45,7 @@ class AuthenticationController extends Controller {
         // которое обработает ErrorHandler
     }
 
-    public function signoutAction() {
+    public function actionSignout() {
         $model = new models\SignoutForm();
         $model->loadByPost();
         $model->signout();
@@ -53,7 +53,7 @@ class AuthenticationController extends Controller {
         // которое обработает ErrorHandler
     }
 
-    public function invalidateAction() {
+    public function actionInvalidate() {
         $model = new models\InvalidateForm();
         $model->loadByPost();
         $model->invalidateToken();

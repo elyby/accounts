@@ -6,6 +6,10 @@ use yii\base\Model;
 
 abstract class Form extends Model {
 
+    public function formName() {
+        return '';
+    }
+
     public function loadByGet() {
         return $this->load(Yii::$app->request->get());
     }

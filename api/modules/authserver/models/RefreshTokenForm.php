@@ -3,18 +3,17 @@ namespace api\modules\authserver\models;
 
 use api\modules\authserver\exceptions\ForbiddenOperationException;
 use api\modules\authserver\validators\RequiredValidator;
+use common\models\Account;
 use common\models\MinecraftAccessKey;
 
 class RefreshTokenForm extends Form {
 
     public $accessToken;
     public $clientToken;
-    public $selectedProfile;
-    public $requestUser;
 
     public function rules() {
         return [
-            [['accessToken', 'clientToken', 'selectedProfile', 'requestUser'], RequiredValidator::class],
+            [['accessToken', 'clientToken'], RequiredValidator::class],
         ];
     }
 
@@ -32,6 +31,10 @@ class RefreshTokenForm extends Form {
         ]);
         if ($accessToken === null) {
             throw new ForbiddenOperationException('Invalid token.');
+        }
+
+        if ($accessToken->account->status === Account::STATUS_BANNED) {
+            throw new ForbiddenOperationException('This account has been suspended.');
         }
 
         $accessToken->refreshPrimaryKeyValue();

@@ -6,6 +6,7 @@ use Codeception\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\AccountSessionFixture;
 use tests\codeception\common\fixtures\EmailActivationFixture;
+use tests\codeception\common\fixtures\MinecraftAccessKeyFixture;
 use tests\codeception\common\fixtures\OauthClientFixture;
 use tests\codeception\common\fixtures\OauthSessionFixture;
 use tests\codeception\common\fixtures\UsernameHistoryFixture;
@@ -59,6 +60,7 @@ class FixtureHelper extends Module {
                 'class' => OauthSessionFixture::class,
                 'dataFile' => '@tests/codeception/common/fixtures/data/oauth-sessions.php',
             ],
+            'minecraftAccessKeys' => MinecraftAccessKeyFixture::class,
         ];
     }
 
