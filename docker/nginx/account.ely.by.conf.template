@@ -31,7 +31,7 @@ server {
     }
 
     location ~* \.php$ {
-        fastcgi_pass  app:9000;
+        fastcgi_pass  ${PHP_LINK}:9000;
         include       fastcgi_params;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         fastcgi_param SERVER_NAME $host;

@@ -14,14 +14,13 @@ services:
 
     web:
         build: ./docker/nginx
-        ports:
-            - "80:80"
         links:
             - app
         volumes_from:
             - app
         environment:
             - AUTHSERVER_HOST=authserver.ely.by
+            - PHP_LINK=app
 
     node-dev-server:
         build: ./frontend
