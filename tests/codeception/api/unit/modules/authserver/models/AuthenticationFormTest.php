@@ -104,7 +104,7 @@ class AuthenticationFormTest extends DbTestCase {
     public function testCreateMinecraftAccessTokenWithExistsClientId() {
         $authForm = new AuthenticationForm();
         $fixturesCount = count($this->minecraftAccessKeys->data);
-        $authForm->clientToken = $this->minecraftAccessKeys[0]['client_token'];
+        $authForm->clientToken = $this->minecraftAccessKeys['admin-token']['client_token'];
         /** @var Account $account */
         $account = $this->accounts->getModel('admin');
         /** @var MinecraftAccessKey $result */
