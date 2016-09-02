@@ -39,7 +39,7 @@ class OauthAccessToken extends ActiveRecord {
         return true;
     }
 
-    public function isExpired() {
+    public function isExpired() : bool {
         return time() > $this->expire_time;
     }
 
