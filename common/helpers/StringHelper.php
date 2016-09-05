@@ -1,6 +1,8 @@
 <?php
 namespace common\helpers;
 
+use Ramsey\Uuid\Uuid;
+
 class StringHelper {
 
     public static function getEmailMask(string $email) : string {
@@ -23,14 +25,18 @@ class StringHelper {
 
     /**
      * Проверяет на то, что переданная строка является валидным UUID
-     * Regex найдено на просторах интернета: http://stackoverflow.com/a/6223221
      *
      * @param string $uuid
      * @return bool
      */
     public static function isUuid(string $uuid) : bool {
-        $re = '/[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}/';
-        return preg_match($re, $uuid, $matches) === 1;
+        try {
+            Uuid::fromString($uuid);
+        } catch (\InvalidArgumentException $e) {
+            return false;
+        }
+
+        return true;
     }
 
 }

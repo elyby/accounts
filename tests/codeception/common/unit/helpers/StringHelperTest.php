@@ -15,8 +15,8 @@ class StringHelperTest extends \PHPUnit_Framework_TestCase {
 
     public function testIsUuid() {
         $this->assertTrue(StringHelper::isUuid('a80b4487-a5c6-45a5-9829-373b4a494135'));
+        $this->assertTrue(StringHelper::isUuid('a80b4487a5c645a59829373b4a494135'));
         $this->assertFalse(StringHelper::isUuid('12345678'));
-        $this->assertFalse(StringHelper::isUuid('12345678-1234-1234-1234-123456789123'));
     }
 
 }

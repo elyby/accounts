@@ -30,8 +30,19 @@ class JoinCest {
         $this->expectSuccessResponse($I);
     }
 
-    public function joinByModernOauth2Token(OauthSteps $I) {
-        $I->wantTo('join to server, using moder oAuth2 generated token');
+    public function joinByPassJsonInPost(AuthserverSteps $I) {
+        $I->wantTo('join to server, passing data in body as encoded json');
+        list($accessToken) = $I->amAuthenticated();
+        $this->route->join(json_encode([
+            'accessToken' => $accessToken,
+            'selectedProfile' => 'df936908-b2e1-544d-96f8-2977ec213022',
+            'serverId' => Uuid::uuid(),
+        ]));
+        $this->expectSuccessResponse($I);
+    }
+
+    public function joinByOauth2Token(OauthSteps $I) {
+        $I->wantTo('join to server, using modern oAuth2 generated token');
         $accessToken = $I->getAccessToken([S::MINECRAFT_SERVER_SESSION]);
         $this->route->join([
             'accessToken' => $accessToken,

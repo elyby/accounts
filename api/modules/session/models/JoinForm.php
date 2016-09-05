@@ -3,57 +3,89 @@ namespace api\modules\session\models;
 
 use api\modules\session\exceptions\ForbiddenOperationException;
 use api\modules\session\exceptions\IllegalArgumentException;
+use api\modules\session\models\protocols\JoinInterface;
 use api\modules\session\Module as Session;
 use api\modules\session\validators\RequiredValidator;
+use common\helpers\StringHelper;
 use common\models\OauthScope as S;
 use common\validators\UuidValidator;
 use common\models\Account;
 use common\models\MinecraftAccessKey;
 use Yii;
 use yii\base\ErrorException;
+use yii\base\Model;
 use yii\web\UnauthorizedHttpException;
 
-class JoinForm extends Form {
+class JoinForm extends Model {
 
-    public $accessToken;
-    public $selectedProfile;
-    public $serverId;
+    private $accessToken;
+    private $selectedProfile;
+    private $serverId;
 
+    /**
+     * @var Account|null
+     */
     private $account;
+
+    /**
+     * @var JoinInterface
+     */
+    private $protocol;
+
+    public function __construct(JoinInterface $protocol, array $config = []) {
+        $this->protocol = $protocol;
+        $this->accessToken = $protocol->getAccessToken();
+        $this->selectedProfile = $protocol->getSelectedProfile();
+        $this->serverId = $protocol->getServerId();
+
+        parent::__construct($config);
+    }
 
     public function rules() {
         return [
-            [['accessToken', 'selectedProfile', 'serverId'], RequiredValidator::class],
+            [['accessToken', 'serverId'], RequiredValidator::class],
             [['accessToken', 'selectedProfile'], 'validateUuid'],
             [['accessToken'], 'validateAccessToken'],
         ];
     }
 
     public function join() {
-        Session::info(
-            "User with access_token = '{$this->accessToken}' trying join to server with server_id = " .
-            "'{$this->serverId}'."
-        );
+        $serverId = $this->serverId;
+        $accessToken = $this->accessToken;
+        Session::info("User with access_token = '{$accessToken}' trying join to server with server_id = '{$serverId}'.");
         if (!$this->validate()) {
             return false;
         }
 
         $account = $this->getAccount();
-        $sessionModel = new SessionModel($account->username, $this->serverId);
+        $sessionModel = new SessionModel($account->username, $serverId);
         if (!$sessionModel->save()) {
             throw new ErrorException('Cannot save join session model');
         }
 
         Session::info(
-            "User with access_token = '{$this->accessToken}' and nickname = '{$account->username}' successfully " .
-            "joined to server_id = '{$this->serverId}'."
+            "User with access_token = '{$accessToken}' and nickname = '{$account->username}' successfully joined to " .
+            "server_id = '{$serverId}'."
         );
 
         return true;
     }
 
+    public function validate($attributeNames = null, $clearErrors = true) {
+        if (!$this->protocol->validate()) {
+            throw new IllegalArgumentException();
+        }
+
+        return parent::validate($attributeNames, $clearErrors);
+    }
+
     public function validateUuid($attribute) {
         if ($this->hasErrors($attribute)) {
+            return;
+        }
+
+        if ($attribute === 'selectedProfile' && !StringHelper::isUuid($this->selectedProfile)) {
+            // Это нормально. Там может быть ник игрока, если это Legacy авторизация
             return;
         }
 
@@ -101,12 +133,20 @@ class JoinForm extends Form {
             throw new ForbiddenOperationException('Expired access_token.');
         }
 
-        if ($account->uuid !== $this->selectedProfile) {
+        $selectedProfile = $this->selectedProfile;
+        $isUuid = StringHelper::isUuid($selectedProfile);
+        if ($isUuid && $account->uuid !== $selectedProfile) {
             Session::error(
-                "User with access_token = '{$accessToken}' trying to join with identity = '{$this->selectedProfile}'," .
+                "User with access_token = '{$accessToken}' trying to join with identity = '{$selectedProfile}'," .
                 " but access_token issued to account with id = '{$account->uuid}'."
             );
             throw new ForbiddenOperationException('Wrong selected_profile.');
+        } elseif (!$isUuid && $account->username !== $selectedProfile) {
+            Session::error(
+                "User with access_token = '{$accessToken}' trying to join with identity = '{$selectedProfile}'," .
+                " but access_token issued to account with username = '{$account->username}'."
+            );
+            throw new ForbiddenOperationException('Invalid credentials');
         }
 
         $this->account = $account;

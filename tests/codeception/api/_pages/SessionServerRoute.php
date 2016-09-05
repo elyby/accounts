@@ -13,4 +13,9 @@ class SessionServerRoute extends BasePage {
         $this->actor->sendPOST($this->getUrl(), $params);
     }
 
+    public function joinLegacy(array $params) {
+        $this->route = ['sessionserver/session/join-legacy'];
+        $this->actor->sendGET($this->getUrl(), $params);
+    }
+
 }
