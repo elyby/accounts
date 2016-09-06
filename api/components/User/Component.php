@@ -22,7 +22,7 @@ use yii\web\User as YiiUserComponent;
  * @property AccountSession|null $activeSession
  * @property AccountIdentity|null $identity
  *
- * @method AccountIdentity|null getIdentity()
+ * @method AccountIdentity|null getIdentity($autoRenew = true)
  */
 class Component extends YiiUserComponent {
 

@@ -4,6 +4,7 @@ namespace api\modules\session\controllers;
 use api\controllers\ApiController;
 use api\modules\session\exceptions\ForbiddenOperationException;
 use api\modules\session\exceptions\SessionServerException;
+use api\modules\session\filters\RateLimiter;
 use api\modules\session\models\HasJoinedForm;
 use api\modules\session\models\JoinForm;
 use api\modules\session\models\protocols\LegacyJoin;
@@ -18,6 +19,10 @@ class SessionController extends ApiController {
     public function behaviors() {
         $behaviors = parent::behaviors();
         unset($behaviors['authenticator']);
+        $behaviors['rateLimiting'] = [
+            'class' => RateLimiter::class,
+            'only' => ['has-joined', 'has-joined-legacy'],
+        ];
 
         return $behaviors;
     }
