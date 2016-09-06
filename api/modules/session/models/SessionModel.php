@@ -1,6 +1,7 @@
 <?php
 namespace api\modules\session\models;
 
+use common\models\Account;
 use Yii;
 
 class SessionModel {
@@ -50,7 +51,15 @@ class SessionModel {
         return Yii::$app->redis->executeCommand('DEL', [static::buildKey($this->username, $this->serverId)]);
     }
 
-    protected static function buildKey($username, $serverId) {
+    /**
+     * @return Account|null
+     * TODO: после перехода на PHP 7.1 установить тип как ?Account
+     */
+    public function getAccount() {
+        return Account::findOne(['username' => $this->username]);
+    }
+
+    protected static function buildKey($username, $serverId) : string {
         return md5('minecraft:join-server:' . mb_strtolower($username) . ':' . $serverId);
     }
 

@@ -18,9 +18,9 @@ use yii\web\UnauthorizedHttpException;
 
 class JoinForm extends Model {
 
-    private $accessToken;
-    private $selectedProfile;
-    private $serverId;
+    public $accessToken;
+    public $selectedProfile;
+    public $serverId;
 
     /**
      * @var Account|null

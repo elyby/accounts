@@ -23,6 +23,9 @@ return [
         'amqp' => [
             'class' => \common\components\RabbitMQ\Component::class,
         ],
+        'guzzle' => [
+            'class' => \GuzzleHttp\Client::class,
+        ],
     ],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',

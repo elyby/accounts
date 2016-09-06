@@ -18,4 +18,14 @@ class SessionServerRoute extends BasePage {
         $this->actor->sendGET($this->getUrl(), $params);
     }
 
+    public function hasJoined(array $params) {
+        $this->route = ['sessionserver/session/has-joined'];
+        $this->actor->sendGET($this->getUrl(), $params);
+    }
+
+    public function hasJoinedLegacy(array $params) {
+        $this->route = ['sessionserver/session/has-joined-legacy'];
+        $this->actor->sendGET($this->getUrl(), $params);
+    }
+
 }
