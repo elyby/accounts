@@ -1,4 +1,4 @@
-FROM nginx:1.9
+FROM nginx:1.11
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY account.ely.by.conf.template /etc/nginx/conf.d/account.ely.by.conf.template

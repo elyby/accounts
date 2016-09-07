@@ -4,7 +4,6 @@ server {
     set $root_path       '/var/www/html';
     set $api_path        '${root_path}/api/web';
     set $frontend_path   '${root_path}/frontend/dist';
-    set $authserver_host '${AUTHSERVER_HOST}';
 
     root                  $root_path;
     charset               utf-8;
@@ -12,15 +11,19 @@ server {
     etag                  on;
 
     set $request_url $request_uri;
-    if ($host = $authserver_host) {
+    set $host_with_uri '${host}${request_uri}';
+
+    if ($host_with_uri ~* '^${AUTHSERVER_HOST}/auth') {
         set $request_url '/api/authserver${request_uri}';
+        rewrite ^/auth /api/authserver$uri last;
+    }
+
+    if ($host_with_uri ~* '^${AUTHSERVER_HOST}/session') {
+        set $request_url '/api/minecraft${request_uri}';
+        rewrite ^/session /api/minecraft$uri last;
     }
 
     location / {
-        if ($host = $authserver_host) {
-            rewrite ^ /api/authserver$uri last;
-        }
-
         alias $frontend_path;
         index index.html;
         try_files $uri /index.html =404;

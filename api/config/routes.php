@@ -7,4 +7,9 @@ return [
     '/oauth2/v1/<action>' => 'oauth/<action>',
 
     '/account/v1/info' => 'identity-info/index',
+
+    '/minecraft/session/join' => 'session/session/join',
+    '/minecraft/session/legacy/join' => 'session/session/join-legacy',
+    '/minecraft/session/hasJoined' => 'session/session/has-joined',
+    '/minecraft/session/legacy/hasJoined' => 'session/session/has-joined-legacy',
 ];

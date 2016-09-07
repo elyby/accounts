@@ -9,7 +9,7 @@ $params = array_merge(
 return [
     'id' => 'accounts-site-api',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log', 'authserver', 'sessionserver'],
+    'bootstrap' => ['log', 'authserver'],
     'controllerNamespace' => 'api\controllers',
     'params' => $params,
     'components' => [
@@ -56,7 +56,7 @@ return [
             'class' => \api\modules\authserver\Module::class,
             'baseDomain' => $params['authserverDomain'],
         ],
-        'sessionserver' => [
+        'session' => [
             'class' => \api\modules\session\Module::class,
         ],
     ],

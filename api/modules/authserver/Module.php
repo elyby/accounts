@@ -4,6 +4,7 @@ namespace api\modules\authserver;
 use Yii;
 use yii\base\BootstrapInterface;
 use yii\base\InvalidConfigException;
+use yii\web\NotFoundHttpException;
 
 class Module extends \yii\base\Module implements BootstrapInterface {
 
@@ -23,6 +24,16 @@ class Module extends \yii\base\Module implements BootstrapInterface {
         }
     }
 
+    public function beforeAction($action) {
+        if (!parent::beforeAction($action)) {
+            return false;
+        }
+
+        $this->checkHost();
+
+        return true;
+    }
+
     /**
      * @param \yii\base\Application $app the application currently running
      */
@@ -38,6 +49,19 @@ class Module extends \yii\base\Module implements BootstrapInterface {
 
     public static function error($message) {
         Yii::info($message, 'legacy-authserver');
+    }
+
+    /**
+     * Поскольку это legacy метод и документации в новой среде для него не будет,
+     * нет смысла выставлять на показ внутренние url, так что ограничиваем доступ
+     * только для заходов по старому домену
+     *
+     * @throws NotFoundHttpException
+     */
+    protected function checkHost() {
+        if (Yii::$app->request->getHostInfo() !== $this->baseDomain) {
+            throw new NotFoundHttpException();
+        }
     }
 
 }
