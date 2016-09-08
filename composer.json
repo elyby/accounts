@@ -23,7 +23,7 @@
         "guzzlehttp/guzzle": "^6.0.0",
         "php-amqplib/php-amqplib": "^2.6.2",
         "ely/yii2-tempmail-validator": "~1.0.0",
-        "emarref/jwt": "~1.0.2",
+        "emarref/jwt": "~1.0.3",
         "ely/amqp-controller": "^0.1.0"
     },
     "require-dev": {
