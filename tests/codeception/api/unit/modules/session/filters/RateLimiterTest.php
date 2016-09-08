@@ -11,7 +11,7 @@ use yii\web\Request;
 
 class RateLimiterTest extends TestCase {
 
-    public function testCheckRateLimiterWithValidServerId() {
+    public function testCheckRateLimiterWithOldAuthserver() {
         /** @var Connection|\PHPUnit_Framework_MockObject_MockObject $redis */
         $redis = $this->getMockBuilder(Connection::class)
             ->setMethods(['executeCommand'])
@@ -32,6 +32,30 @@ class RateLimiterTest extends TestCase {
             ->will($this->returnValue(new OauthClient()));
 
         $filter->checkRateLimit(null, new Request(), null, null);
+    }
+
+    public function testCheckRateLimiterWithValidServerId() {
+        /** @var Connection|\PHPUnit_Framework_MockObject_MockObject $redis */
+        $redis = $this->getMockBuilder(Connection::class)
+            ->setMethods(['executeCommand'])
+            ->getMock();
+
+        $redis->expects($this->never())
+            ->method('executeCommand');
+
+        Yii::$app->set('redis', $redis);
+
+        /** @var Request|\PHPUnit_Framework_MockObject_MockObject $request */
+        $request = $this->getMockBuilder(Request::class)
+            ->setMethods(['getHostInfo'])
+            ->getMock();
+
+        $request->expects($this->any())
+            ->method('getHostInfo')
+            ->will($this->returnValue('http://authserver.ely.by'));
+
+        $filter = new RateLimiter();
+        $filter->checkRateLimit(null, $request, null, null);
     }
 
     /**

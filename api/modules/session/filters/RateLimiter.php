@@ -3,6 +3,7 @@ namespace api\modules\session\filters;
 
 use common\models\OauthClient;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\web\Request;
 use yii\web\TooManyRequestsHttpException;
 
@@ -11,12 +12,43 @@ class RateLimiter extends \yii\filters\RateLimiter {
     public $limit = 180;
     public $limitTime = 3600; // 1h
 
+    public $authserverDomain;
+
     private $server;
+
+    public function init() {
+        parent::init();
+        if ($this->authserverDomain === null) {
+            $this->authserverDomain = Yii::$app->params['authserverDomain'] ?? null;
+        }
+
+        if ($this->authserverDomain === null) {
+            throw new InvalidConfigException('authserverDomain param is required');
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function beforeAction($action) {
+        $this->checkRateLimit(
+            null,
+            $this->request ?: Yii::$app->getRequest(),
+            $this->response ?: Yii::$app->getResponse(),
+            $action
+        );
+
+        return true;
+    }
 
     /**
      * @inheritdoc
      */
     public function checkRateLimit($user, $request, $response, $action) {
+        if ($request->getHostInfo() === $this->authserverDomain) {
+            return;
+        }
+
         $server = $this->getServer($request);
         if ($server !== null) {
             return;
