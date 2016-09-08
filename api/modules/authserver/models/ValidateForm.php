@@ -24,7 +24,7 @@ class ValidateForm extends Form {
             throw new ForbiddenOperationException('Invalid token.');
         }
 
-        if (!$result->isActual()) {
+        if ($result->isExpired()) {
             $result->delete();
             throw new ForbiddenOperationException('Token expired.');
         }

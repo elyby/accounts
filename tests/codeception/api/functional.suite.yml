@@ -6,6 +6,7 @@ modules:
         - tests\codeception\common\_support\FixtureHelper
         - Redis
         - AMQP
+        - Asserts
         - REST:
             depends: Yii2
     config:

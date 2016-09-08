@@ -3,7 +3,8 @@ return [
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'components' => [
         'cache' => [
-            'class' => yii\caching\FileCache::class,
+            'class' => yii\redis\Cache::class,
+            'redis' => 'redis',
         ],
         'db' => [
             'class' => yii\db\Connection::class,
@@ -21,6 +22,9 @@ return [
         ],
         'amqp' => [
             'class' => \common\components\RabbitMQ\Component::class,
+        ],
+        'guzzle' => [
+            'class' => \GuzzleHttp\Client::class,
         ],
     ],
     'aliases' => [

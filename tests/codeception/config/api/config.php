@@ -9,4 +9,7 @@ return [
             'secret' => 'private-key',
         ],
     ],
+    'params' => [
+        'authserverDomain' => 'http://authserver.ely.by',
+    ],
 ];

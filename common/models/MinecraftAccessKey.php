@@ -53,8 +53,8 @@ class MinecraftAccessKey extends ActiveRecord {
         return $this->hasOne(Account::class, ['id' => 'account_id']);
     }
 
-    public function isActual() : bool {
-        return $this->updated_at + self::LIFETIME >= time();
+    public function isExpired() : bool {
+        return time() > $this->updated_at + self::LIFETIME;
     }
 
 }

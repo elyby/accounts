@@ -26,6 +26,24 @@ return [
                 [
                     'class' => \yii\log\FileTarget::class,
                     'levels' => ['error', 'warning'],
+                    'except' => [
+                        'legacy-authserver',
+                        'session',
+                        'api\modules\session\exceptions\SessionServerException:*',
+                        'api\modules\authserver\exceptions\AuthserverException:*',
+                    ],
+                ],
+                [
+                    'class' => \yii\log\FileTarget::class,
+                    'levels' => ['error', 'info'],
+                    'categories' => ['legacy-authserver'],
+                    'logFile' => '@runtime/logs/authserver.log',
+                ],
+                [
+                    'class' => \yii\log\FileTarget::class,
+                    'levels' => ['error', 'info'],
+                    'categories' => ['session'],
+                    'logFile' => '@runtime/logs/session.log',
                 ],
             ],
         ],
@@ -55,6 +73,9 @@ return [
         'authserver' => [
             'class' => \api\modules\authserver\Module::class,
             'baseDomain' => $params['authserverDomain'],
+        ],
+        'session' => [
+            'class' => \api\modules\session\Module::class,
         ],
     ],
 ];
