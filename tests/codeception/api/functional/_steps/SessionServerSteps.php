@@ -34,5 +34,33 @@ class SessionServerSteps extends \tests\codeception\api\FunctionalTester {
 
         return [$username, $serverId];
     }
+    
+    public function canSeeValidTexturesResponse($expectedUsername, $expectedUuid) {
+        $this->seeResponseIsJson();
+        $this->canSeeResponseContainsJson([
+            'name' => $expectedUsername,
+            'id' => $expectedUuid,
+            'ely' => true,
+            'properties' => [
+                [
+                    'name' => 'textures',
+                    'signature' => 'Cg==',
+                ],
+            ],
+        ]);
+        $this->canSeeResponseJsonMatchesJsonPath('$.properties[0].value');
+        $value = json_decode($this->grabResponse(), true)['properties'][0]['value'];
+        $decoded = json_decode(base64_decode($value), true);
+        $this->assertArrayHasKey('timestamp', $decoded);
+        $this->assertArrayHasKey('textures', $decoded);
+        $this->assertEquals($expectedUuid, $decoded['profileId']);
+        $this->assertEquals($expectedUsername, $decoded['profileName']);
+        $this->assertTrue($decoded['ely']);
+        $textures = $decoded['textures'];
+        $this->assertArrayHasKey('SKIN', $textures);
+        $skinTextures = $textures['SKIN'];
+        $this->assertArrayHasKey('url', $skinTextures);
+        $this->assertArrayHasKey('hash', $skinTextures);
+    }
 
 }

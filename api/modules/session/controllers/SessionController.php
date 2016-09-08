@@ -3,6 +3,7 @@ namespace api\modules\session\controllers;
 
 use api\controllers\ApiController;
 use api\modules\session\exceptions\ForbiddenOperationException;
+use api\modules\session\exceptions\IllegalArgumentException;
 use api\modules\session\exceptions\SessionServerException;
 use api\modules\session\filters\RateLimiter;
 use api\modules\session\models\HasJoinedForm;
@@ -10,7 +11,9 @@ use api\modules\session\models\JoinForm;
 use api\modules\session\models\protocols\LegacyJoin;
 use api\modules\session\models\protocols\ModernHasJoined;
 use api\modules\session\models\protocols\ModernJoin;
+use common\models\Account;
 use common\models\Textures;
+use Ramsey\Uuid\Uuid;
 use Yii;
 use yii\web\Response;
 
@@ -97,6 +100,21 @@ class SessionController extends ApiController {
         }
 
         return 'YES';
+    }
+
+    public function actionProfile($uuid) {
+        try {
+            $uuid = Uuid::fromString($uuid)->toString();
+        } catch(\InvalidArgumentException $e) {
+            throw new IllegalArgumentException('Invalid uuid format.');
+        }
+
+        $account = Account::findOne(['uuid' => $uuid]);
+        if ($account === null) {
+            throw new ForbiddenOperationException('Invalid uuid.');
+        }
+
+        return (new Textures($account))->getMinecraftResponse();
     }
 
 }

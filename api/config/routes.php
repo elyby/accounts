@@ -12,4 +12,5 @@ return [
     '/minecraft/session/legacy/join' => 'session/session/join-legacy',
     '/minecraft/session/hasJoined' => 'session/session/has-joined',
     '/minecraft/session/legacy/hasJoined' => 'session/session/has-joined-legacy',
+    '/minecraft/session/profile/<uuid>' => 'session/session/profile',
 ];

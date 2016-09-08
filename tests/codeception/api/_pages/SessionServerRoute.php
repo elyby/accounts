@@ -28,4 +28,9 @@ class SessionServerRoute extends BasePage {
         $this->actor->sendGET($this->getUrl(), $params);
     }
 
+    public function profile($profileUuid) {
+        $this->route = '/minecraft/session/profile/' . $profileUuid;
+        $this->actor->sendGET($this->getUrl());
+    }
+
 }

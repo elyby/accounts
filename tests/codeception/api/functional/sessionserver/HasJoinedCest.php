@@ -26,31 +26,7 @@ class HasJoinedCest {
             'serverId' => $serverId,
         ]);
         $I->seeResponseCodeIs(200);
-        $I->seeResponseIsJson();
-        $I->canSeeResponseContainsJson([
-            'name' => $username,
-            'id' => 'df936908b2e1544d96f82977ec213022',
-            'ely' => true,
-            'properties' => [
-                [
-                    'name' => 'textures',
-                    'signature' => 'Cg==',
-                ],
-            ],
-        ]);
-        $I->canSeeResponseJsonMatchesJsonPath('$.properties[0].value');
-        $value = json_decode($I->grabResponse(), true)['properties'][0]['value'];
-        $decoded = json_decode(base64_decode($value), true);
-        $I->assertArrayHasKey('timestamp', $decoded);
-        $I->assertArrayHasKey('textures', $decoded);
-        $I->assertEquals('df936908b2e1544d96f82977ec213022', $decoded['profileId']);
-        $I->assertEquals('Admin', $decoded['profileName']);
-        $I->assertTrue($decoded['ely']);
-        $textures = $decoded['textures'];
-        $I->assertArrayHasKey('SKIN', $textures);
-        $skinTextures = $textures['SKIN'];
-        $I->assertArrayHasKey('url', $skinTextures);
-        $I->assertArrayHasKey('hash', $skinTextures);
+        $I->canSeeValidTexturesResponse($username, 'df936908b2e1544d96f82977ec213022');
     }
 
     public function wrongArguments(FunctionalTester $I) {
