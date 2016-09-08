@@ -3,6 +3,7 @@ namespace api\components;
 
 use api\modules\authserver\exceptions\AuthserverException;
 use api\modules\session\exceptions\SessionServerException;
+use Yii;
 
 class ErrorHandler extends \yii\web\ErrorHandler {
 
@@ -15,6 +16,16 @@ class ErrorHandler extends \yii\web\ErrorHandler {
         }
 
         return parent::convertExceptionToArray($exception);
+    }
+
+    public function logException($exception) {
+        if ($exception instanceof AuthserverException) {
+            Yii::error($exception, AuthserverException::class . ':' . $exception->getName());
+        } elseif ($exception instanceof SessionServerException) {
+            Yii::error($exception, SessionServerException::class . ':' . $exception->getName());
+        } else {
+            parent::logException($exception);
+        }
     }
 
 }
