@@ -11,6 +11,7 @@ use common\models\confirmations\RegistrationConfirmation;
 use common\models\EmailActivation;
 use common\validators\LanguageValidator;
 use common\validators\PasswordValidate;
+use Ely\Email\Renderer;
 use Exception;
 use Ramsey\Uuid\Uuid;
 use Yii;
@@ -131,13 +132,18 @@ class RegistrationForm extends ApiForm {
             throw new InvalidConfigException('Please specify fromEmail app in app params');
         }
 
-        /** @var \yii\swiftmailer\Message $message */
-        $message = $mailer->compose([
-            'html' => '@app/mails/registration-confirmation-html',
-            'text' => '@app/mails/registration-confirmation-text',
-        ], [
+        $htmlBody = (new Renderer())->getTemplate('register')
+            ->setLocale($account->lang)
+            ->setParams([
+                'username' => $account->username,
                 'key' => $emailActivation->key,
+                'link' => Yii::$app->request->getHostInfo() . '/activation/' . $emailActivation->key,
             ])
+            ->render();
+
+        /** @var \yii\swiftmailer\Message $message */
+        $message = $mailer->compose()
+            ->setHtmlBody($htmlBody)
             ->setTo([$account->email => $account->username])
             ->setFrom([$fromEmail => 'Ely.by Accounts'])
             ->setSubject('Ely.by Account registration');
