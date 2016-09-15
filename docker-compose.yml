@@ -2,29 +2,21 @@ version: '2'
 services:
     app:
         build: .
-        links:
+        depends_on:
             - db
             - redis
             - rabbitmq
-        depends_on:
-            - app-console-account-queue
         volumes:
             - ./:/var/www/html/
         env_file: .env
-        networks:
-            - default
-            - nginx-proxy
 
     web:
         build: ./docker/nginx
-        links:
-            - app
         volumes_from:
             - app
-        environment:
-            - AUTHSERVER_HOST=authserver.ely.by.local
-            - PHP_LINK=app
-            - VIRTUAL_HOST=account.ely.by.local,authserver.ely.by.local
+        links:
+            - app:php
+        env_file: .env
         networks:
             - default
             - nginx-proxy
@@ -42,7 +34,7 @@ services:
         build: .
         volumes:
             - ./:/var/www/html/
-        command: ["./docker/wait-for-it.sh", "rabbitmq:5672", "--", "./yii account-queue"]
+        command: ["docker/wait-for-it.sh", "rabbitmq:5672", "--", "php", "yii", "account-queue"]
         links:
             - db
             - redis
@@ -50,22 +42,14 @@ services:
 
     db:
         build: ./docker/mariadb
-        environment:
-            MYSQL_ROOT_PASSWORD: ""
-            MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-            MYSQL_DATABASE: "ely_accounts"
-            MYSQL_USER: "ely_accounts_user"
-            MYSQL_PASSWORD: "ely_accounts_password"
+        env_file: .env
 
     redis:
         image: redis:3.0
 
     rabbitmq:
         build: ./docker/rabbitmq
-        environment:
-            RABBITMQ_DEFAULT_USER: "ely-accounts-app"
-            RABBITMQ_DEFAULT_PASS: "ely-accounts-app-password"
-            RABBITMQ_DEFAULT_VHOST: "/ely.by"
+        env_file: .env
         ports:
             - "15672:15672" # Manager interface
 
@@ -77,7 +61,7 @@ services:
             - PMA_PASSWORD=
         ports:
             - "8181:80"
-        links:
+        depends_on:
             - db
 
 networks:

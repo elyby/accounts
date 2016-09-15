@@ -1,21 +1,20 @@
 <?php
 $params = array_merge(
     require(__DIR__ . '/../../common/config/params.php'),
-    require(__DIR__ . '/../../common/config/params-local.php'),
-    require(__DIR__ . '/params.php'),
-    require(__DIR__ . '/params-local.php')
+    require(__DIR__ . '/params.php')
 );
 
 return [
-    'id' => 'app-console',
+    'id' => 'accounts-console',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'console\controllers',
+    'params' => $params,
     'components' => [
         'log' => [
             'targets' => [
                 [
-                    'class' => 'yii\log\FileTarget',
+                    'class' => yii\log\FileTarget::class,
                     'levels' => ['error', 'warning'],
                 ],
             ],
@@ -23,9 +22,8 @@ return [
     ],
     'controllerMap' => [
         'migrate' => [
-            'class'        => 'yii\console\controllers\MigrateController',
+            'class'        => yii\console\controllers\MigrateController::class,
             'templateFile' => '@console/views/migration.php',
         ],
     ],
-    'params' => $params,
 ];

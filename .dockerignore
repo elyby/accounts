@@ -5,9 +5,8 @@
 vendor
 # node_modules для этого контейнера не нужны
 frontend/node_modules
-
-# Все -local файлы
-*/config/*-local.php
+frontend/webpack/node_modules
+frontend/scripts/node_modules
 
 # Все временные файлы
 */runtime

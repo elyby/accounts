@@ -8,6 +8,9 @@ return [
         ],
         'db' => [
             'class' => yii\db\Connection::class,
+            'dsn' => 'mysql:host=db;dbname=' . getenv('MYSQL_DATABASE'),
+            'username' => getenv('MYSQL_USER'),
+            'password' => getenv('MYSQL_PASSWORD'),
             'charset' => 'utf8',
         ],
         'mailer' => [
@@ -19,12 +22,21 @@ return [
         ],
         'redis' => [
             'class' => yii\redis\Connection::class,
+            'hostname' => 'redis',
+            'password' => null,
+            'port' => 6379,
+            'database' => 0,
         ],
         'amqp' => [
-            'class' => \common\components\RabbitMQ\Component::class,
+            'class' => common\components\RabbitMQ\Component::class,
+            'host' => 'rabbitmq',
+            'port' => 5672,
+            'user' => getenv('RABBITMQ_DEFAULT_USER'),
+            'password' => getenv('RABBITMQ_DEFAULT_PASS'),
+            'vhost' => getenv('RABBITMQ_DEFAULT_VHOST'),
         ],
         'guzzle' => [
-            'class' => \GuzzleHttp\Client::class,
+            'class' => GuzzleHttp\Client::class,
         ],
     ],
     'aliases' => [
