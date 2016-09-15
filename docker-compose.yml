@@ -11,6 +11,9 @@ services:
         volumes:
             - ./:/var/www/html/
         env_file: .env
+        networks:
+            - default
+            - nginx-proxy
 
     web:
         build: ./docker/nginx
@@ -19,8 +22,12 @@ services:
         volumes_from:
             - app
         environment:
-            - AUTHSERVER_HOST=authserver.ely.by
+            - AUTHSERVER_HOST=authserver.ely.by.local
             - PHP_LINK=app
+            - VIRTUAL_HOST=account.ely.by.local,authserver.ely.by.local
+        networks:
+            - default
+            - nginx-proxy
 
     node-dev-server:
         build: ./frontend
@@ -35,7 +42,7 @@ services:
         build: .
         volumes:
             - ./:/var/www/html/
-        command: ./docker/wait-for-it.sh rabbitmq:5672 -- ./yii account-queue
+        command: ["./docker/wait-for-it.sh", "rabbitmq:5672", "--", "./yii account-queue"]
         links:
             - db
             - redis
@@ -72,3 +79,8 @@ services:
             - "8181:80"
         links:
             - db
+
+networks:
+    nginx-proxy:
+        external:
+            name: nginx-proxy
