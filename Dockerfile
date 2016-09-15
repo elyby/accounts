@@ -10,6 +10,7 @@ RUN apt-get update \
          libicu-dev \
          libmcrypt-dev \
          zlib1g-dev \
+         openssh-server \
      --no-install-recommends \
 
  # Install PHP extensions
@@ -59,7 +60,8 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
 # Поставим xdebug отдельно, т.к. потом его потенциально придётся отсюда убирать
-RUN yes | pecl install xdebug \
+# фиксируем версию, т.к. 2.4.1 не собирается под 7.1
+RUN yes | pecl install xdebug-2.4.0 \
  && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
  && echo "xdebug.default_enable=1" >> /usr/local/etc/php/conf.d/xdebug.ini \
  && echo "xdebug.remote_enable=1" >> /usr/local/etc/php/conf.d/xdebug.ini \

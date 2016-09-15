@@ -7,4 +7,5 @@ COPY run.sh /run.sh
 RUN rm /etc/nginx/conf.d/default.conf \
  && chmod a+x /run.sh
 
-CMD ["/run.sh"]
+ENTRYPOINT ["/run.sh"]
+CMD ["nginx", "-g", "daemon off;"]
