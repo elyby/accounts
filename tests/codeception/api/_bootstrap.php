@@ -3,8 +3,7 @@ use Codeception\Configuration;
 use Codeception\Specify\Config;
 
 defined('YII_DEBUG') or define('YII_DEBUG', true);
-defined('YII_ENV_TEST') or define('YII_ENV_TEST', true);
-defined('YII_ENV') or define('YII_ENV', 'dev');
+defined('YII_ENV') or define('YII_ENV', 'test');
 
 defined('API_ENTRY_URL') or define('API_ENTRY_URL', parse_url(Configuration::config()['config']['test_entry_url'], PHP_URL_PATH));
 defined('API_ENTRY_FILE') or define('API_ENTRY_FILE', __DIR__ . '/../../../api/web/index.php');
