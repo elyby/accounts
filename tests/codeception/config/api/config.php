@@ -9,6 +9,11 @@ return [
             'secret' => 'private-key',
         ],
     ],
+    'modules' => [
+        'authserver' => [
+            'baseDomain' => 'http://localhost',
+        ],
+    ],
     'params' => [
         'authserverHost' => 'authserver.ely.by',
     ],
