@@ -3,7 +3,7 @@ return [
     'language' => 'en-US',
     'controllerMap' => [
         'fixture' => [
-            'class' => 'yii\faker\FixtureController',
+            'class' => yii\faker\FixtureController::class,
             'fixtureDataPath' => '@tests/codeception/common/fixtures/data',
             'templatePath' => '@tests/codeception/common/templates/fixtures',
             'namespace' => 'tests\codeception\common\fixtures',

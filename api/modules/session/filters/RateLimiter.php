@@ -41,8 +41,7 @@ class RateLimiter extends \yii\filters\RateLimiter {
      * @inheritdoc
      */
     public function checkRateLimit($user, $request, $response, $action) {
-        // TODO: теперь в authserverDomain хранится hostname без schema, а getHostInfo() возвращает с http(s).
-        if ($request->getHostInfo() === $this->authserverDomain) {
+        if (parse_url($request->getHostInfo(), PHP_URL_HOST) === $this->authserverDomain) {
             return;
         }
 

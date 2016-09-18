@@ -1,6 +1,7 @@
 <?php
 namespace tests\codeception\api\models\authentication;
 
+use api\components\ReCaptcha\Validator;
 use api\models\authentication\RepeatAccountActivationForm;
 use Codeception\Specify;
 use common\models\EmailActivation;
@@ -23,6 +24,11 @@ class RepeatAccountActivationFormTest extends DbTestCase {
         $mailer->fileTransportCallback = function () {
             return 'testing_message.eml';
         };
+        Yii::$container->set(Validator::class, new class extends Validator {
+            public function validateValue($value) {
+                return null;
+            }
+        });
     }
 
     protected function tearDown() {

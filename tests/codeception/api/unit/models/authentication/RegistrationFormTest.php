@@ -1,6 +1,7 @@
 <?php
 namespace tests\codeception\api\models\authentication;
 
+use api\components\ReCaptcha\Validator;
 use api\models\authentication\RegistrationForm;
 use Codeception\Specify;
 use common\models\Account;
@@ -25,6 +26,11 @@ class RegistrationFormTest extends DbTestCase {
             return 'testing_message.eml';
         };
         $this->mockRequest();
+        Yii::$container->set(Validator::class, new class extends Validator {
+            public function validateValue($value) {
+                return null;
+            }
+        });
     }
 
     protected function tearDown() {

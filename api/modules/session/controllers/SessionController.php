@@ -25,7 +25,7 @@ class SessionController extends ApiController {
         $behaviors['rateLimiting'] = [
             'class' => RateLimiter::class,
             'only' => ['has-joined', 'has-joined-legacy'],
-            'authserverDomain' => getenv('AUTHSERVER_HOST'),
+            'authserverDomain' => Yii::$app->params['authserverHost'],
         ];
 
         return $behaviors;

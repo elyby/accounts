@@ -10,6 +10,6 @@ return [
         ],
     ],
     'params' => [
-        'authserverDomain' => 'http://authserver.ely.by',
+        'authserverHost' => 'authserver.ely.by',
     ],
 ];
