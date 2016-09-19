@@ -12,7 +12,7 @@ settings:
     memory_limit: 1024M
     log: true
 config:
-    test_entry_url: http://localhost:8080/api/web/index.php
+    test_entry_url: http://localhost/api/web/index.php
 coverage:
     enabled: true
     remote: true
@@ -24,4 +24,4 @@ coverage:
             - ../../../api/mails/*
             - ../../../api/web/*
             - ../../../api/runtime/*
-    c3url: 'http://localhost:8080/api/web/index.php'
+    c3url: 'http://localhost/api/web/index.php'
