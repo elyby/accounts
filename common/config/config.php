@@ -12,6 +12,9 @@ return [
             'username' => getenv('MYSQL_USER'),
             'password' => getenv('MYSQL_PASSWORD'),
             'charset' => 'utf8',
+            'schemaMap' => [
+                'mysql' => common\db\mysql\Schema::class,
+            ],
         ],
         'mailer' => [
             'class' => yii\swiftmailer\Mailer::class,
