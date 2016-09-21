@@ -9,6 +9,7 @@ use common\components\UserFriendlyRandomKey;
 use common\models\Account;
 use common\models\confirmations\RegistrationConfirmation;
 use common\models\EmailActivation;
+use common\models\UsernameHistory;
 use common\validators\LanguageValidator;
 use common\validators\PasswordValidate;
 use Ely\Email\Renderer;
@@ -106,6 +107,14 @@ class RegistrationForm extends ApiForm {
 
             if (!$emailActivation->save()) {
                 throw new ErrorException('Unable save email-activation model.');
+            }
+
+            $usernamesHistory = new UsernameHistory();
+            $usernamesHistory->account_id = $account->id;
+            $usernamesHistory->username = $account->username;
+            $usernamesHistory->applied_in = $account->created_at;
+            if (!$usernamesHistory->save()) {
+                throw new ErrorException('Cannot save username history record');
             }
 
             $this->sendMail($emailActivation, $account);

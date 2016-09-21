@@ -133,4 +133,17 @@ return [
         'created_at' => 1472682343,
         'updated_at' => 1472682343,
     ],
+    'account-with-usernames-history' => [
+        'id' => 11,
+        'uuid' => 'd6b3e935-6466-4cb8-86db-b5df91ae6541',
+        'username' => 'klik202',
+        'email' => 'klik202@mail.ru',
+        'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
+        'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
+        'lang' => 'ru',
+        'status' => \common\models\Account::STATUS_ACTIVE,
+        'rules_agreement_version' => \common\LATEST_RULES_VERSION,
+        'created_at' => 1474404139,
+        'updated_at' => 1474404149,
+    ],
 ];

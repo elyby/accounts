@@ -13,14 +13,22 @@ server {
     set $request_url $request_uri;
     set $host_with_uri '${host}${request_uri}';
 
-    if ($host_with_uri ~* '^${AUTHSERVER_HOST}/auth') {
+    rewrite_log on;
+    error_log /var/log/nginx/error.log debug;
+
+    if ($host_with_uri ~ '^${AUTHSERVER_HOST}/auth') {
         set $request_url '/api/authserver${request_uri}';
         rewrite ^/auth /api/authserver$uri last;
     }
 
-    if ($host_with_uri ~* '^${AUTHSERVER_HOST}/session') {
+    if ($host_with_uri ~ '^${AUTHSERVER_HOST}/session') {
         set $request_url '/api/minecraft${request_uri}';
         rewrite ^/session /api/minecraft$uri last;
+    }
+
+    if ($host_with_uri ~ '^${AUTHSERVER_HOST}/api/(user|profiles)') {
+        set $request_url '/api/mojang${request_uri}';
+        rewrite ^/api/(user|profiles) /api/mojang$uri last;
     }
 
     location / {

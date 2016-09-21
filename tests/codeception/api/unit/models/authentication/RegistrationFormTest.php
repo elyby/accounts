@@ -6,6 +6,7 @@ use api\models\authentication\RegistrationForm;
 use Codeception\Specify;
 use common\models\Account;
 use common\models\EmailActivation;
+use common\models\UsernameHistory;
 use tests\codeception\api\unit\DbTestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use Yii;
@@ -117,6 +118,11 @@ class RegistrationFormTest extends DbTestCase {
         expect('email activation code exists in database', EmailActivation::find()->andWhere([
             'account_id' => $account->id,
             'type' => EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION,
+        ])->exists())->true();
+        expect('username history record exists in database', UsernameHistory::find()->andWhere([
+            'username' => $account->username,
+            'account_id' => $account->id,
+            'applied_in' => $account->created_at,
         ])->exists())->true();
         expect_file('message file exists', $this->getMessageFile())->exists();
     }

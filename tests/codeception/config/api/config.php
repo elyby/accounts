@@ -11,7 +11,7 @@ return [
     ],
     'modules' => [
         'authserver' => [
-            'baseDomain' => 'http://localhost',
+            'host' => 'localhost',
         ],
     ],
     'params' => [
