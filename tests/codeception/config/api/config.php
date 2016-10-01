@@ -9,7 +9,12 @@ return [
             'secret' => 'private-key',
         ],
     ],
+    'modules' => [
+        'authserver' => [
+            'baseDomain' => 'http://localhost',
+        ],
+    ],
     'params' => [
-        'authserverDomain' => 'http://authserver.ely.by',
+        'authserverHost' => 'authserver.ely.by',
     ],
 ];

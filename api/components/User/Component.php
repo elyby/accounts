@@ -7,7 +7,6 @@ use Emarref\Jwt\Algorithm\AlgorithmInterface;
 use Emarref\Jwt\Algorithm\Hs256;
 use Emarref\Jwt\Claim;
 use Emarref\Jwt\Encryption\Factory as EncryptionFactory;
-use Emarref\Jwt\Encryption\Factory;
 use Emarref\Jwt\Exception\VerificationException;
 use Emarref\Jwt\Jwt;
 use Emarref\Jwt\Token;
@@ -122,7 +121,7 @@ class Component extends YiiUserComponent {
 
         $jwt = new Jwt();
         $token = $jwt->deserialize($jwtString);
-        $context = new VerificationContext(Factory::create($this->getAlgorithm()));
+        $context = new VerificationContext(EncryptionFactory::create($this->getAlgorithm()));
         $context->setAudience($hostInfo);
         $context->setIssuer($hostInfo);
         $jwt->verify($token, $context);

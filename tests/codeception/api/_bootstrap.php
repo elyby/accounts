@@ -1,24 +1,25 @@
 <?php
+use Codeception\Configuration;
+use Codeception\Specify\Config;
+
 defined('YII_DEBUG') or define('YII_DEBUG', true);
 defined('YII_ENV') or define('YII_ENV', 'test');
 
-defined('YII_APP_BASE_PATH') or define('YII_APP_BASE_PATH', dirname(dirname(dirname(__DIR__))));
+defined('API_ENTRY_URL') or define('API_ENTRY_URL', parse_url(Configuration::config()['config']['test_entry_url'], PHP_URL_PATH));
+defined('API_ENTRY_FILE') or define('API_ENTRY_FILE', __DIR__ . '/../../../api/web/index.php');
 
-defined('API_ENTRY_URL') or define('API_ENTRY_URL', parse_url(\Codeception\Configuration::config()['config']['test_entry_url'], PHP_URL_PATH));
-defined('API_ENTRY_FILE') or define('API_ENTRY_FILE', YII_APP_BASE_PATH . '/api/web/index-test.php');
-
-require_once(YII_APP_BASE_PATH . '/vendor/autoload.php');
-require_once(YII_APP_BASE_PATH . '/vendor/yiisoft/yii2/Yii.php');
-require_once(YII_APP_BASE_PATH . '/common/config/bootstrap.php');
-require_once(YII_APP_BASE_PATH . '/api/config/bootstrap.php');
+require_once __DIR__ . '/../../../vendor/autoload.php';
+require_once __DIR__ . '/../../../vendor/yiisoft/yii2/Yii.php';
+require_once __DIR__ . '/../../../common/config/bootstrap.php';
+require_once __DIR__ . '/../../../api/config/bootstrap.php';
 
 // set correct script paths
 
 // the entry script file path for functional tests
 $_SERVER['SCRIPT_FILENAME'] = API_ENTRY_FILE;
 $_SERVER['SCRIPT_NAME'] = API_ENTRY_URL;
-$_SERVER['SERVER_NAME'] =  parse_url(\Codeception\Configuration::config()['config']['test_entry_url'], PHP_URL_HOST);
-$_SERVER['SERVER_PORT'] =  parse_url(\Codeception\Configuration::config()['config']['test_entry_url'], PHP_URL_PORT) ?: '80';
+$_SERVER['SERVER_NAME'] =  parse_url(Configuration::config()['config']['test_entry_url'], PHP_URL_HOST);
+$_SERVER['SERVER_PORT'] =  parse_url(Configuration::config()['config']['test_entry_url'], PHP_URL_PORT) ?: '80';
 
 Yii::setAlias('@tests', dirname(dirname(__DIR__)));
-\Codeception\Specify\Config::setDeepClone(false);
+Config::setDeepClone(false);

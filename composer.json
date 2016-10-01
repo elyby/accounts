@@ -25,7 +25,7 @@
         "ely/yii2-tempmail-validator": "~1.0.0",
         "emarref/jwt": "~1.0.3",
         "ely/amqp-controller": "^0.1.0",
-        "ely/email-renderer": "dev-master#10e77d7a60403e87ca6e8c7d9e62a36fc5e08565"
+        "ely/email-renderer": "dev-master#4a751652b5a325d44d3bc79a464dda9232486cbc"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",
@@ -33,10 +33,11 @@
         "yiisoft/yii2-gii": "*",
         "yiisoft/yii2-faker": "*",
         "flow/jsonpath": "^0.3.1",
-        "codeception/codeception": "~2.1.10",
+        "codeception/codeception": "~2.2.4",
         "codeception/specify": "*",
         "codeception/verify": "*",
-        "phploc/phploc": "^3.0.1"
+        "phploc/phploc": "^3.0.1",
+        "predis/predis": "^1.0"
     },
     "config": {
         "process-timeout": 1800

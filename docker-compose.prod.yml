@@ -1,15 +1,11 @@
 version: '2'
 services:
     app:
-        build:
-            dockerfile: Dockerfile-dev
-            context: .
+        build: .
         depends_on:
             - db
             - redis
             - rabbitmq
-        volumes:
-            - ./:/var/www/html/
         env_file: .env
 
     web:
@@ -35,27 +31,8 @@ services:
             - ./data/redis:/data
 
     rabbitmq:
-        image: rabbitmq:3.6-management
+        image: rabbitmq:3.6
         env_file: .env
-        environment:
-            - VIRTUAL_HOST=rabbitmq.account.ely.by.local
-            - VIRTUAL_PORT=15672
-        networks:
-            - default
-            - nginx-proxy
-
-    phpmyadmin:
-        build: ./docker/phpmyadmin
-        environment:
-            - PMA_ARBITRARY=1
-            - PMA_USER=root
-            - PMA_PASSWORD=
-            - VIRTUAL_HOST=pma.account.ely.by.local
-        depends_on:
-            - db
-        networks:
-            - default
-            - nginx-proxy
 
 networks:
     nginx-proxy:

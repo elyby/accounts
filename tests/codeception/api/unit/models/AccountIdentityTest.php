@@ -3,6 +3,10 @@ namespace codeception\api\unit\models;
 
 use api\models\AccountIdentity;
 use Codeception\Specify;
+use Emarref\Jwt\Claim;
+use Emarref\Jwt\Encryption\Factory as EncryptionFactory;
+use Emarref\Jwt\Jwt;
+use Emarref\Jwt\Token;
 use tests\codeception\api\unit\DbTestCase;
 use tests\codeception\common\_support\ProtectedCaller;
 use tests\codeception\common\fixtures\AccountFixture;
@@ -33,9 +37,13 @@ class AccountIdentityTest extends DbTestCase {
      * @expectedExceptionMessage Token expired
      */
     public function testFindIdentityByAccessTokenWithExpiredToken() {
-        $expiredToken = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODA4MCIsImlzcyI6Imh0d' .
-                        'HA6XC9cL2xvY2FsaG9zdDo4MDgwIiwiaWF0IjoxNDY0NTkzMTkzLCJleHAiOjE0NjQ1OTY3OTN9.DV' .
-                        '8uwh0OQhBYXkrNvxwJeO-kEjb9MQeLr3-6GoHM7RY';
+        $token = new Token();
+        $token->addClaim(new Claim\Audience('http://localhost'));
+        $token->addClaim(new Claim\Issuer('http://localhost'));
+        $token->addClaim(new Claim\IssuedAt(1464593193));
+        $token->addClaim(new Claim\Expiration(1464596793));
+        $token->addClaim(new Claim\JwtId($this->accounts['admin']['id']));
+        $expiredToken = (new Jwt())->serialize($token, EncryptionFactory::create(Yii::$app->user->getAlgorithm()));
 
         AccountIdentity::findIdentityByAccessToken($expiredToken);
     }

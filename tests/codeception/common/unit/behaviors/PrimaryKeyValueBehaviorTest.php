@@ -3,7 +3,7 @@ namespace codeception\common\unit\behaviors;
 
 use Codeception\Specify;
 use common\behaviors\PrimaryKeyValueBehavior;
-use tests\codeception\api\unit\TestCase;
+use tests\codeception\common\unit\TestCase;
 use yii\db\ActiveRecord;
 
 class PrimaryKeyValueBehaviorTest extends TestCase {

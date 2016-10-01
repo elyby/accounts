@@ -6,7 +6,7 @@ use common\models\confirmations\ForgotPassword;
 use common\models\confirmations\RegistrationConfirmation;
 use common\models\EmailActivation;
 use tests\codeception\common\fixtures\EmailActivationFixture;
-use tests\codeception\console\unit\DbTestCase;
+use tests\codeception\common\unit\DbTestCase;
 
 class EmailActivationTest extends DbTestCase {
     use Specify;

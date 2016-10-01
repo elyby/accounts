@@ -66,6 +66,19 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
   && rm "node-v$NODE_VERSION-linux-x64.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
+# Поставим xdebug отдельно, т.к. потом его потенциально придётся отсюда убирать
+RUN yes | pecl install xdebug \
+ && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
+ && echo "xdebug.default_enable=1" >> /usr/local/etc/php/conf.d/xdebug.ini \
+ && echo "xdebug.remote_enable=1" >> /usr/local/etc/php/conf.d/xdebug.ini \
+ && echo "xdebug.remote_handler=dbgp" >> /usr/local/etc/php/conf.d/xdebug.ini \
+ && echo "xdebug.remote_mode=req" >> /usr/local/etc/php/conf.d/xdebug.ini \
+ && echo "xdebug.remote_autostart=1" >> /usr/local/etc/php/conf.d/xdebug.ini \
+ && echo "xdebug.remote_port=9000" >> /usr/local/etc/php/conf.d/xdebug.ini \
+ && echo "xdebug.remote_connect_back=1" >> /usr/local/etc/php/conf.d/xdebug.ini \
+ && echo "xdebug.cli_color=1" >> /usr/local/etc/php/conf.d/xdebug.ini \
+ && echo "xdebug.var_display_max_depth=10" >> /usr/local/etc/php/conf.d/xdebug.ini
+
 ENV COMPOSER_NO_INTERACTION 1
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_DISCARD_CHANGES true
@@ -112,7 +125,7 @@ COPY ./composer.json /var/www/composer.json
 
 # Устанавливаем зависимости PHP
 RUN cd .. \
- && composer install --no-interaction --no-suggest --no-dev --optimize-autoloader \
+ && composer install --no-interaction --no-suggest \
  && cd -
 
 # Устанавливаем зависимости для Node.js

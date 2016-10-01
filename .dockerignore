@@ -3,11 +3,9 @@
 
 # vendor будет заполнен уже внутри контейнера
 vendor
-# node_modules для этого контейнера не нужны
+# Всё, что динамично на фронте
 frontend/node_modules
-
-# Все -local файлы
-*/config/*-local.php
+frontend/dist
 
 # Все временные файлы
 */runtime

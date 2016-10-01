@@ -1,4 +1,4 @@
-# Account Ely.by
+# Accounts Ely.by
 
 ## Развёртывание dev
 
@@ -6,61 +6,49 @@
 [docker](https://docs.docker.com/engine/installation/) и его
 [docker-compose](https://docs.docker.com/compose/install/).
 
-Сливаем репозиторий:
+Кроме того, нужно установить, настроить и запустить [nginx-proxy](https://gitlab.com/elyby/nginx-proxy)
+контейнер. Это делается один раз в рамках системы и в дальнейшем используется и для других проектов.
+
+За тем сливаем репозиторий:
 
 ```sh
-git clone git@bitbucket.org:ErickSkrauch/ely.by-account.git account.ely.by.local
+git clone git@gitlab.com:elyby/account.git account.ely.by
 cd account.ely.by.local
 ```
 
-Выполняем первый запуск контейнеров:
+Далее нужно создать `.env`, `docker-compose.yml` и `id_rsa` файлы:
+
+```sh
+cp .env-dist .env
+cp docker-compose.dev.yml docker-compose.yml
+cp ~/.ssh/id_rsa id_rsa # Использовать ссылку нельзя
+```
+
+Касательно файла id_rsa: часть зависимостей находятся в наших приватных репозиториях, получить
+доступ куда можно только в том случае, если в контейнере окажется ключ, который имеет доступ к этим
+репозиториям.
+
+Все вышеперечисленные файла находятся под gitignore, так что с полученными файлами можно произвести
+все необходимые манипуляции под конкретный кейс использования. **В файле `.env` обязательно следует
+задать `JWT_USER_SECRET`, иначе авторизация на бекенде не заработает.**
+
+После этого просто выполняем старт всех контейнеров:
 
 ```sh
 docker-compose up -d
 ```
 
-Далее нужно влезть в работающие контейнеры и сделать что-нибудь, что их настроит.
+Они автоматически сбилдятся и начнут свою работу.
 
 ### Как влезть в работающий контейнер
 
-Сперва, с помощью команды `docker ps` мы увидим все запущенные контейнеры. Нас интересуют значения из первой колонки
-CONTAINER ID. Узнать, чему они соответствуют можно прочитав название IMAGE из 2 колонки. Чтобы выполнить команду
-внутри работабщего контейнера, нужно выполнить:
+Сперва, с помощью команды `docker ps` мы увидим все запущенные контейнеры. Нас интересуют значения
+из первой колонки CONTAINER ID или NAMES. Узнать, чему они соответствуют можно прочитав название IMAGE
+из 2 колонки. Чтобы выполнить команду внутри работабщего контейнера, нужно выполнить:
 
 ```
-docker exec -it a7c267b27f49 /bin/bash
+docker exec -it accountelyby_app_1 bash
 ```
 
-Где `a7c267b27f49` - одно из значений из первой колонки. Для выхода из контейнера используем `exit`.
-
--------------------------
-
-Так вот, нам нужно выполнить ряд команд. Здесь и далее я буду писать имена контейнеров в их соответствии с compose
-файлом, но в реалиях их нужно будет заменить на реальные значения:
-
-```sh
-# Настройка php контейнера
-docker exec -it app php init --env=Docker
-docker exec -it app php composer install
-docker exec -it app php ./yii migrate --interactive=0
-
-# Настройка node контейнера
-docker exec -it node-dev-server npm i
-docker exec -it node-dev-server npm --prefix ./webpack i ./webpack
-docker exec -it node-dev-server npm --prefix ./scripts i ./scripts
-
-# Настройка rabbitmq контейнера
-docker exec -it rabbitmq /init.sh
-```
-
-После этого перезапускаем все контейнеры командой:
-
-```sh
-docker-compose restart
-```
-
-## Тестирование php бэкэнда
-
-```sh
-./tests/run-tests.sh
-```
+Где `accountelyby_app_1` - одно из значений CONTAINER ID или NAMES. Для выхода из контейнера
+используем `exit`.

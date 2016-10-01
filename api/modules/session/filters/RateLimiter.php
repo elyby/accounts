@@ -19,10 +19,6 @@ class RateLimiter extends \yii\filters\RateLimiter {
     public function init() {
         parent::init();
         if ($this->authserverDomain === null) {
-            $this->authserverDomain = Yii::$app->params['authserverDomain'] ?? null;
-        }
-
-        if ($this->authserverDomain === null) {
             throw new InvalidConfigException('authserverDomain param is required');
         }
     }
@@ -45,7 +41,7 @@ class RateLimiter extends \yii\filters\RateLimiter {
      * @inheritdoc
      */
     public function checkRateLimit($user, $request, $response, $action) {
-        if ($request->getHostInfo() === $this->authserverDomain) {
+        if (parse_url($request->getHostInfo(), PHP_URL_HOST) === $this->authserverDomain) {
             return;
         }
 
