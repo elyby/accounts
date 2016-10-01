@@ -57,6 +57,17 @@ services:
             - default
             - nginx-proxy
 
+    # Эта штука работает дико медленно, грузит процессор и т.д. и т.п.
+    # Раскоментировать только в случае лютой надобности
+    #node-dev-server:
+    #    build: ./frontend
+    #    ports:
+    #        - "8080:8080"
+    #    volumes:
+    #        - ./frontend/:/usr/src/app/
+    #    environment:
+    #        DOCKERIZED: "true"
+
 networks:
     nginx-proxy:
         external:

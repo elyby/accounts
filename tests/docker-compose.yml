@@ -1,17 +1,17 @@
 version: '2'
 services:
     testphp:
-        build: ./..
-        links:
-            - testdb
-            - testredis
-            - testrabbit
+        extends:
+            file: ../docker-compose.dev.yml
+            service: app
         volumes:
             - ./../:/var/www/html/
         env_file: ./../.env
 
     testdb:
-        build: ./../docker/mariadb
+        extends:
+            file: ../docker-compose.dev.yml
+            service: db
         environment:
             MYSQL_ROOT_PASSWORD: ""
             MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
@@ -20,10 +20,14 @@ services:
             MYSQL_PASSWORD: "ely_accounts_tester_password"
 
     testredis:
-        image: redis:3.0
+        extends:
+            file: ../docker-compose.dev.yml
+            service: redis
 
     testrabbit:
-        build: ./../docker/rabbitmq
+        extends:
+            file: ../docker-compose.dev.yml
+            service: rabbitmq
         environment:
             RABBITMQ_DEFAULT_USER: "ely-accounts-tester"
             RABBITMQ_DEFAULT_PASS: "tester-password"

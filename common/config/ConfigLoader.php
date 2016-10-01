@@ -44,7 +44,7 @@ class ConfigLoader {
         }
 
         // Настройки конкретного приложения для действующего окружения
-        $path = self::ROOT_PATH . '/' . $this->application . '/config/main-' . YII_ENV . '.php';
+        $path = self::ROOT_PATH . '/' . $this->application . '/config/config-' . YII_ENV . '.php';
         if (file_exists($path)) {
             $toMerge[] = require $path;
         }
