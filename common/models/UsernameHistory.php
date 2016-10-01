@@ -1,7 +1,6 @@
 <?php
 namespace common\models;
 
-use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
@@ -40,6 +39,18 @@ class UsernameHistory extends ActiveRecord {
 
     public function getAccount() {
         return $this->hasOne(Account::class, ['id' => 'account_id']);
+    }
+
+    /**
+     * @param int $afterTime
+     * @return UsernameHistory|null
+     */
+    public function findNext(int $afterTime = null) /*: ?UsernameHistory*/ {
+        return self::find()
+            ->andWhere(['account_id' => $this->account_id])
+            ->andWhere(['>', 'applied_in', $afterTime ?: $this->applied_in])
+            ->orderBy(['applied_in' => SORT_ASC])
+            ->one();
     }
 
 }

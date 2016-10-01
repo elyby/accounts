@@ -15,11 +15,11 @@ class Module extends \yii\base\Module implements BootstrapInterface {
     /**
      * @var string базовый домен, запросы на который этот модуль должен обрабатывать
      */
-    public $baseDomain = 'https://authserver.ely.by';
+    public $host = 'authserver.ely.by';
 
     public function init() {
         parent::init();
-        if ($this->baseDomain === null) {
+        if ($this->host === null) {
             throw new InvalidConfigException('base domain must be specified');
         }
     }
@@ -39,7 +39,7 @@ class Module extends \yii\base\Module implements BootstrapInterface {
      */
     public function bootstrap($app) {
         $app->getUrlManager()->addRules([
-            $this->baseDomain . '/' . $this->id . '/auth/<action>' => $this->id . '/authentication/<action>',
+            "http://$this->host/$this->id/auth/<action>" => "$this->id/authentication/<action>",
         ], false);
     }
 
@@ -59,7 +59,7 @@ class Module extends \yii\base\Module implements BootstrapInterface {
      * @throws NotFoundHttpException
      */
     protected function checkHost() {
-        if (Yii::$app->request->getHostInfo() !== $this->baseDomain) {
+        if (parse_url(Yii::$app->request->getHostInfo(), PHP_URL_HOST) !== $this->host) {
             throw new NotFoundHttpException();
         }
     }

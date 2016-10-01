@@ -70,10 +70,13 @@ return [
     'modules' => [
         'authserver' => [
             'class' => api\modules\authserver\Module::class,
-            'baseDomain' => getenv('AUTHSERVER_HOST'),
+            'host' => $params['authserverHost'],
         ],
         'session' => [
             'class' => api\modules\session\Module::class,
+        ],
+        'mojang' => [
+            'class' => api\modules\mojang\Module::class,
         ],
     ],
 ];
