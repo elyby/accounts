@@ -84,15 +84,20 @@ class ForgotPasswordForm extends ApiForm {
             throw new InvalidConfigException('Please specify fromEmail app in app params');
         }
 
-        $acceptor = $emailActivation->account;
+        $account = $emailActivation->account;
+        $htmlBody = Yii::$app->emailRenderer->getTemplate('forgotPassword')
+            ->setLocale($account->lang)
+            ->setParams([
+                'username' => $account->username,
+                'key' => $emailActivation->key,
+                'link' => Yii::$app->request->getHostInfo() . '/recover-password/' . $emailActivation->key,
+            ])
+            ->render();
+
         /** @var \yii\swiftmailer\Message $message */
-        $message = $mailer->compose([
-            'html' => '@app/mails/forgot-password-html',
-            'text' => '@app/mails/forgot-password-text',
-        ], [
-            'key' => $emailActivation->key,
-        ])
-            ->setTo([$acceptor->email => $acceptor->username])
+        $message = $mailer->compose()
+            ->setHtmlBody($htmlBody)
+            ->setTo([$account->email => $account->username])
             ->setFrom([$fromEmail => 'Ely.by Accounts'])
             ->setSubject('Ely.by Account forgot password');
 

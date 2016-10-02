@@ -25,7 +25,7 @@
         "ely/yii2-tempmail-validator": "~1.0.0",
         "emarref/jwt": "~1.0.3",
         "ely/amqp-controller": "^0.1.0",
-        "ely/email-renderer": "dev-master#8c975737c6681af4bbd161ff27fe6326d39ba9d6"
+        "ely/email-renderer": "dev-master#c70ab0d3b0208bb7d61281a166ec7a9c5344eaad"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",
