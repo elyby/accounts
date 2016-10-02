@@ -20,6 +20,7 @@ class Yii extends \yii\BaseYii {
  * @property \yii\redis\Connection $redis
  * @property \common\components\RabbitMQ\Component $amqp
  * @property \GuzzleHttp\Client $guzzle
+ * @property \common\components\EmailRenderer $emailRenderer
  */
 abstract class BaseApplication extends yii\base\Application {
 }

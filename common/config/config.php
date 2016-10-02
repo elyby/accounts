@@ -41,6 +41,10 @@ return [
         'guzzle' => [
             'class' => GuzzleHttp\Client::class,
         ],
+        'emailRenderer' => [
+            'class' => common\components\EmailRenderer::class,
+            'basePath' => '/images/emails',
+        ],
     ],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',

@@ -12,7 +12,6 @@ use common\models\EmailActivation;
 use common\models\UsernameHistory;
 use common\validators\LanguageValidator;
 use common\validators\PasswordValidate;
-use Ely\Email\Renderer;
 use Exception;
 use Ramsey\Uuid\Uuid;
 use Yii;
@@ -141,7 +140,7 @@ class RegistrationForm extends ApiForm {
             throw new InvalidConfigException('Please specify fromEmail app in app params');
         }
 
-        $htmlBody = (new Renderer())->getTemplate('register')
+        $htmlBody = Yii::$app->emailRenderer->getTemplate('register')
             ->setLocale($account->lang)
             ->setParams([
                 'username' => $account->username,
