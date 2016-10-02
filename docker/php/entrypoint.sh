@@ -2,7 +2,7 @@
 
 cd /var/www/html
 
-if [ "$1" = 'bash' ]
+if [ "$1" = "bash" ] || [ "$1" = "composer" ]
 then
     exec "$@"
     exit 0
@@ -28,6 +28,11 @@ then
     cp -r ./../dist ./frontend/dist
 fi
 
-wait-for-it db:3306 -- "./yii migrate/up --interactive=0"
+if [ "$YII_ENV" != "test" ]
+then
+    wait-for-it db:3306 -- "php /var/www/html/yii migrate/up --interactive=0"
+else
+    wait-for-it testdb:3306 -- "php /var/www/html/tests/codeception/bin/yii migrate/up --interactive=0"
+fi
 
 exec "$@"

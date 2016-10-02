@@ -1,17 +1,26 @@
 version: '2'
 services:
     testphp:
-        extends:
-            file: ../docker-compose.dev.yml
-            service: app
+        container_name: accountelyby_testphp
+        build:
+            context: ../
+            dockerfile: Dockerfile-dev
+        depends_on:
+            - testdb
+            - testredis
+            - testrabbit
         volumes:
             - ./../:/var/www/html/
-        env_file: ./../.env
+        environment:
+            - YII_DEBUG=true
+            - YII_ENV=test
+            # Это я потом, когда-нибудь, уберу
+            - XDEBUG_CONFIG=remote_host=10.254.254.254
+            - PHP_IDE_CONFIG=serverName=docker
 
     testdb:
-        extends:
-            file: ../docker-compose.dev.yml
-            service: db
+        container_name: accountelyby_testdb
+        build: ./../docker/mariadb
         environment:
             MYSQL_ROOT_PASSWORD: ""
             MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
@@ -20,14 +29,12 @@ services:
             MYSQL_PASSWORD: "ely_accounts_tester_password"
 
     testredis:
-        extends:
-            file: ../docker-compose.dev.yml
-            service: redis
+        container_name: accountelyby_testredis
+        image: redis:3.0-alpine
 
     testrabbit:
-        extends:
-            file: ../docker-compose.dev.yml
-            service: rabbitmq
+        container_name: accountelyby_testrabbit
+        image: rabbitmq:3.6
         environment:
             RABBITMQ_DEFAULT_USER: "ely-accounts-tester"
             RABBITMQ_DEFAULT_PASS: "tester-password"
