@@ -75,7 +75,7 @@ RUN yes | pecl install xdebug \
  && echo "xdebug.remote_mode=req" >> /usr/local/etc/php/conf.d/xdebug.ini \
  && echo "xdebug.remote_autostart=1" >> /usr/local/etc/php/conf.d/xdebug.ini \
  && echo "xdebug.remote_port=9000" >> /usr/local/etc/php/conf.d/xdebug.ini \
- && echo "xdebug.remote_connect_back=1" >> /usr/local/etc/php/conf.d/xdebug.ini \
+ && echo "xdebug.remote_connect_back=0" >> /usr/local/etc/php/conf.d/xdebug.ini \
  && echo "xdebug.cli_color=1" >> /usr/local/etc/php/conf.d/xdebug.ini \
  && echo "xdebug.var_display_max_depth=10" >> /usr/local/etc/php/conf.d/xdebug.ini
 
