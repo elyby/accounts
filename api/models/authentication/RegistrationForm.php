@@ -144,7 +144,7 @@ class RegistrationForm extends ApiForm {
             ->setLocale($account->lang)
             ->setParams([
                 'username' => $account->username,
-                'key' => $emailActivation->key,
+                'code' => $emailActivation->key,
                 'link' => Yii::$app->request->getHostInfo() . '/activation/' . $emailActivation->key,
             ])
             ->render();

@@ -89,7 +89,7 @@ class ForgotPasswordForm extends ApiForm {
             ->setLocale($account->lang)
             ->setParams([
                 'username' => $account->username,
-                'key' => $emailActivation->key,
+                'code' => $emailActivation->key,
                 'link' => Yii::$app->request->getHostInfo() . '/recover-password/' . $emailActivation->key,
             ])
             ->render();
