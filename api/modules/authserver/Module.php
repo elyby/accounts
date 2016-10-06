@@ -40,6 +40,7 @@ class Module extends \yii\base\Module implements BootstrapInterface {
     public function bootstrap($app) {
         $app->getUrlManager()->addRules([
             "http://$this->host/$this->id/auth/<action>" => "$this->id/authentication/<action>",
+            "https://$this->host/$this->id/auth/<action>" => "$this->id/authentication/<action>",
         ], false);
     }
 
