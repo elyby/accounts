@@ -35,8 +35,8 @@ class FeedbackForm extends ApiForm {
 
         /** @var \yii\swiftmailer\Mailer $mailer */
         $mailer = Yii::$app->mailer;
-        $fromEmail = Yii::$app->params['supportEmail'];
-        if (!$fromEmail) {
+        $supportEmail = Yii::$app->params['supportEmail'];
+        if (!$supportEmail) {
             throw new InvalidConfigException('Please specify supportEmail value in app params');
         }
 
@@ -47,7 +47,7 @@ class FeedbackForm extends ApiForm {
             'account' => $account,
         ]);
         $message
-            ->setTo($this->email)
+            ->setTo($supportEmail)
             ->setFrom([$this->email => $account ? $account->username : $this->email])
             ->setSubject($this->subject);
 
