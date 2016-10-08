@@ -4,6 +4,8 @@
  */
 ?>
 
-Вы предприняли попытку сменить свой E-mail адрес. Это так? Если да, то код ниже позволит вам пройти 2 шаг.
+You want to change you account E-mail. Right? So you must pass the code below into field on site.
 
-Код активации <?= $key ?>
+Code: <?= $key ?>
+
+// P.S. yes, this is E-mail is not designed yet :)

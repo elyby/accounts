@@ -5,6 +5,8 @@
  */
 ?>
 
-Этот E-mail адрес был указан как новый для аккаунта <?= $account->username ?>. Чтобы подтвердить это E-mail, введите код ниже в форму на сайте.
+This E-mail was specified as new for account <?= $account->username ?>. To confirm this E-mail, pass code below into form on site.
 
-Код: <?= $key ?>
+Code: <?= $key ?>
+
+// P.S. yes, this is E-mail is not designed yet :)

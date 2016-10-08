@@ -6,7 +6,11 @@
 ?>
 
 <p>
-    Этот E-mail адрес был указан как новый для аккаунта <?= $account->username ?>. Чтобы подтвердить это E-mail,
-    введите код ниже в форму на сайте.
+    This E-mail was specified as new for account <?= $account->username ?>. To confirm this E-mail, pass code
+    below into form on site.
 </p>
-<p>Код: <?= $key ?></p>
+<p>Code: <?= $key ?></p>
+
+<br />
+
+<p><i>// P.S. yes, this is E-mail is not designed yet :)</i></p>
