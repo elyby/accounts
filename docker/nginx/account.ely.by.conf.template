@@ -56,7 +56,7 @@ server {
     }
 
     # Раздача статики для frontend с указанием max-кэша. Сброс будет по #hash после ребилда webpackом
-    location ~* ^.+\.(jpg|jpeg|gif|png|svg|js|json|css|zip|rar|eot|ttf|woff|ico)$ {
+    location ~* ^.+\.(jpg|jpeg|gif|png|svg|js|json|css|zip|rar|eot|ttf|woff|woff2|ico)$ {
         root       $frontend_path;
         expires    max;
         etag       off;
