@@ -38,6 +38,17 @@ class AuthorizationCest {
         $this->testSuccessResponse($I);
     }
 
+    public function byEmailWithParamsAsJsonInPostBody(FunctionalTester $I) {
+        $I->wantTo('authenticate by email and password, passing values as serialized string in post body');
+        $this->route->authenticate(json_encode([
+            'username' => 'admin@ely.by',
+            'password' => 'password_0',
+            'clientToken' => Uuid::uuid4()->toString(),
+        ]));
+
+        $this->testSuccessResponse($I);
+    }
+
     public function wrongArguments(FunctionalTester $I) {
         $I->wantTo('get error on wrong amount of arguments');
         $this->route->authenticate([

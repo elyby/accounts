@@ -16,10 +16,10 @@ abstract class Form extends Model {
 
     public function loadByPost() {
         $data = Yii::$app->request->post();
-        // TODO: проверить, парсит ли Yii2 raw body и что он делает, если там неспаршенный json
-        /*if (empty($data)) {
-            $data = $request->getJsonRawBody(true);
-        }*/
+        if (empty($data)) {
+            // TODO: помнится у Yii2 есть механизм парсинга данных входящего запроса. Лучше будет сделать это там
+            $data = json_decode(Yii::$app->request->getRawBody(), true);
+        }
 
         return $this->load($data);
     }
