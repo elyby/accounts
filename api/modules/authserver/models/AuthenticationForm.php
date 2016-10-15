@@ -80,6 +80,7 @@ class AuthenticationForm extends Form {
             $accessTokenModel->insert();
         } else {
             $accessTokenModel->refreshPrimaryKeyValue();
+            $accessTokenModel->update();
         }
 
         return $accessTokenModel;

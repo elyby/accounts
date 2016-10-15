@@ -89,7 +89,6 @@ class AuthenticationFormTest extends DbTestCase {
 
     public function testCreateMinecraftAccessToken() {
         $authForm = new AuthenticationForm();
-        $fixturesCount = count($this->minecraftAccessKeys->data);
         $authForm->clientToken = Uuid::uuid4();
         /** @var Account $account */
         $account = $this->accounts->getModel('admin');
@@ -98,12 +97,11 @@ class AuthenticationFormTest extends DbTestCase {
         $this->assertInstanceOf(MinecraftAccessKey::class, $result);
         $this->assertEquals($account->id, $result->account_id);
         $this->assertEquals($authForm->clientToken, $result->client_token);
-        $this->assertEquals($fixturesCount + 1, MinecraftAccessKey::find()->count());
+        $this->assertInstanceOf(MinecraftAccessKey::class, MinecraftAccessKey::findOne($result->access_token));
     }
 
     public function testCreateMinecraftAccessTokenWithExistsClientId() {
         $authForm = new AuthenticationForm();
-        $fixturesCount = count($this->minecraftAccessKeys->data);
         $authForm->clientToken = $this->minecraftAccessKeys['admin-token']['client_token'];
         /** @var Account $account */
         $account = $this->accounts->getModel('admin');
@@ -112,7 +110,8 @@ class AuthenticationFormTest extends DbTestCase {
         $this->assertInstanceOf(MinecraftAccessKey::class, $result);
         $this->assertEquals($account->id, $result->account_id);
         $this->assertEquals($authForm->clientToken, $result->client_token);
-        $this->assertEquals($fixturesCount, MinecraftAccessKey::find()->count());
+        $this->assertNull(MinecraftAccessKey::findOne($this->minecraftAccessKeys['admin-token']['access_token']));
+        $this->assertInstanceOf(MinecraftAccessKey::class, MinecraftAccessKey::findOne($result->access_token));
     }
 
     private function createAuthForm($status = Account::STATUS_ACTIVE) {
@@ -142,6 +141,5 @@ class AuthenticationFormTest extends DbTestCase {
 
         return $authForm;
     }
-
 
 }
