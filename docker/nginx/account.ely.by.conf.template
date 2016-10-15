@@ -37,7 +37,7 @@ server {
     }
 
     location /api {
-        try_files $uri $uri /api/web/index.php?$is_args$args;
+        try_files $uri $uri /api/web/index.php$is_args$args;
     }
 
     location ~* \.php$ {
