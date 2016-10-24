@@ -69,8 +69,8 @@ class AuthenticationForm extends Form {
     protected function createMinecraftAccessToken(Account $account) : MinecraftAccessKey {
         /** @var MinecraftAccessKey|null $accessTokenModel */
         $accessTokenModel = MinecraftAccessKey::findOne([
-            'client_token' => $this->clientToken,
             'account_id' => $account->id,
+            'client_token' => $this->clientToken,
         ]);
 
         if ($accessTokenModel === null) {
