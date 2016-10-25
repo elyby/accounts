@@ -7,6 +7,7 @@ use common\components\RabbitMQ\Component as RabbitMQComponent;
 use common\models\amqp\UsernameChanged;
 use common\models\MojangUsername;
 use console\controllers\base\AmqpController;
+use GuzzleHttp\Exception\RequestException;
 
 class AccountQueueController extends AmqpController {
 
@@ -41,6 +42,8 @@ class AccountQueueController extends AmqpController {
             $response = $mojangApi->usernameToUUID($body->newUsername);
         } catch (NoContentException $e) {
             $response = false;
+        } catch (RequestException $e) {
+            return true;
         }
 
         /** @var MojangUsername|null $mojangUsername */

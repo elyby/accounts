@@ -14,7 +14,7 @@ class Api {
      *
      * @return UsernameToUUIDResponse
      * @throws MojangApiException
-     * @throws NoContentException
+     * @throws NoContentException|\GuzzleHttp\Exception\RequestException
      * @url http://wiki.vg/Mojang_API#Username_-.3E_UUID_at_time
      */
     public function usernameToUUID($username, $atTime = null) {

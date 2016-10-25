@@ -78,7 +78,7 @@ class ChangeUsernameForm extends ApiForm {
     public function createEventTask($accountId, $newNickname, $oldNickname) {
         $model = new UsernameChanged;
         $model->accountId = $accountId;
-        $model-> oldUsername = $oldNickname;
+        $model->oldUsername = $oldNickname;
         $model->newUsername = $newNickname;
 
         $message = Amqp::getInstance()->prepareMessage($model, [
