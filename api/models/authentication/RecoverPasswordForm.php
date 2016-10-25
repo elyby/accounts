@@ -52,7 +52,7 @@ class RecoverPasswordForm extends KeyConfirmationForm {
                 throw new ErrorException('Unable remove activation key.');
             }
 
-            if (!$account->save()) {
+            if (!$account->save(false)) {
                 throw new ErrorException('Unable activate user account.');
             }
 
