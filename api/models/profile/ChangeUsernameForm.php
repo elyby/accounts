@@ -6,6 +6,7 @@ use api\models\base\ApiForm;
 use api\validators\PasswordRequiredValidator;
 use common\helpers\Error;
 use common\helpers\Amqp;
+use common\models\Account;
 use common\models\amqp\UsernameChanged;
 use common\models\UsernameHistory;
 use Exception;
@@ -28,7 +29,7 @@ class ChangeUsernameForm extends ApiForm {
     }
 
     public function validateUsername($attribute) {
-        $account = $this->getAccount();
+        $account = new Account();
         $account->username = $this->$attribute;
         if (!$account->validate(['username'])) {
             $this->addErrors($account->getErrors());
