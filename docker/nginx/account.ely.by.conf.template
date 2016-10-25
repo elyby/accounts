@@ -43,9 +43,12 @@ server {
     location ~* \.php$ {
         fastcgi_pass  php:9000;
         include       fastcgi_params;
+
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         fastcgi_param SERVER_NAME $host;
         fastcgi_param REQUEST_URI $request_url;
+        fastcgi_param REMOTE_ADDR $http_x_real_ip;
+
         try_files     $uri =404;
     }
 
