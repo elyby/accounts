@@ -16,6 +16,7 @@ use Ramsey\Uuid\Uuid;
 use Yii;
 use yii\base\ErrorException;
 use yii\base\InvalidConfigException;
+use yii\helpers\ArrayHelper;
 use const common\LATEST_RULES_VERSION;
 
 class RegistrationForm extends ApiForm {
@@ -48,6 +49,7 @@ class RegistrationForm extends ApiForm {
             ['rePassword', 'validatePasswordAndRePasswordMatch'],
 
             ['lang', LanguageValidator::class],
+            ['lang', 'default', 'value' => 'en'],
         ];
     }
 
@@ -80,7 +82,7 @@ class RegistrationForm extends ApiForm {
      * @throws Exception
      */
     public function signup() {
-        if (!$this->validate()) {
+        if (!$this->validate() && !$this->canContinue($this->getFirstErrors())) {
             return null;
         }
 
@@ -95,7 +97,7 @@ class RegistrationForm extends ApiForm {
             $account->status = Account::STATUS_REGISTERED;
             $account->rules_agreement_version = LATEST_RULES_VERSION;
             $account->setRegistrationIp(Yii::$app->request->getUserIP());
-            if (!$account->save()) {
+            if (!$account->save(false)) {
                 throw new ErrorException('Account not created.');
             }
 
@@ -155,6 +157,45 @@ class RegistrationForm extends ApiForm {
         if (!$message->send()) {
             throw new ErrorException('Unable send email with activation code.');
         }
+    }
+
+    /**
+     * Метод проверяет, можно ли занять указанный при регистрации ник или e-mail. Так случается,
+     * что пользователи вводят неправильный e-mail или ник, после замечают это и пытаются вновь
+     * выпонить регистрацию. Мы не будем им мешать и просто удаляем существующие недозарегистрированные
+     * аккаунты, позволяя им зарегистрироваться.
+     *
+     * @param array $errors массив, где ключ - это поле, а значение - первая ошибка из нашего
+     * стандартного словаря ошибок
+     *
+     * @return bool
+     */
+    protected function canContinue(array $errors) : bool {
+        if (ArrayHelper::getValue($errors, 'username') === E::USERNAME_NOT_AVAILABLE) {
+            $duplicatedUsername = Account::findOne([
+                'username' => $this->username,
+                'status' => Account::STATUS_REGISTERED,
+            ]);
+
+            if ($duplicatedUsername !== null) {
+                $duplicatedUsername->delete();
+                unset($errors['username']);
+            }
+        }
+
+        if (ArrayHelper::getValue($errors, 'email') === E::EMAIL_NOT_AVAILABLE) {
+            $duplicatedEmail = Account::findOne([
+                'email' => $this->email,
+                'status' => Account::STATUS_REGISTERED,
+            ]);
+
+            if ($duplicatedEmail !== null) {
+                $duplicatedEmail->delete();
+                unset($errors['email']);
+            }
+        }
+
+        return empty($errors);
     }
 
 }

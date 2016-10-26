@@ -1,7 +1,6 @@
 <?php
 namespace tests\codeception\api\functional;
 
-use Codeception\Specify;
 use common\models\Account;
 use tests\codeception\api\_pages\SignupRoute;
 use tests\codeception\api\FunctionalTester;
@@ -216,6 +215,40 @@ class RegisterCest {
             'rulesAgreement' => true,
             'lang' => 'ru',
         ]);
+        $this->assertSuccessRegistration($I);
+    }
+
+    public function testUserCorrectRegistrationWithReassignUsername(FunctionalTester $I) {
+        $route = new SignupRoute($I);
+
+        $I->wantTo('ensure that signup allow reassign not finished registration username');
+        $route->register([
+            'username' => 'howe.garnett',
+            'email' => 'custom-email@gmail.com',
+            'password' => 'some_password',
+            'rePassword' => 'some_password',
+            'rulesAgreement' => true,
+            'lang' => 'ru',
+        ]);
+        $this->assertSuccessRegistration($I);
+    }
+
+    public function testUserCorrectRegistrationWithReassignEmail(FunctionalTester $I) {
+        $route = new SignupRoute($I);
+
+        $I->wantTo('ensure that signup allow reassign not finished registration email');
+        $route->register([
+            'username' => 'CustomUsername',
+            'email' => 'achristiansen@gmail.com',
+            'password' => 'some_password',
+            'rePassword' => 'some_password',
+            'rulesAgreement' => true,
+            'lang' => 'ru',
+        ]);
+        $this->assertSuccessRegistration($I);
+    }
+
+    private function assertSuccessRegistration(FunctionalTester $I) {
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson(['success' => true]);

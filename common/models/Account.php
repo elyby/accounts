@@ -3,7 +3,6 @@ namespace common\models;
 
 use common\helpers\Error as E;
 use common\components\UserPass;
-use common\validators\LanguageValidator;
 use Ely\Yii2\TempmailValidator;
 use Yii;
 use yii\base\InvalidConfigException;
@@ -79,9 +78,6 @@ class Account extends ActiveRecord {
             [['email'], 'email', 'checkDNS' => true, 'enableIDN' => true, 'message' => E::EMAIL_INVALID],
             [['email'], TempmailValidator::class, 'message' => E::EMAIL_IS_TEMPMAIL],
             [['email'], 'unique', 'message' => E::EMAIL_NOT_AVAILABLE],
-
-            [['lang'], LanguageValidator::class],
-            [['lang'], 'default', 'value' => 'en'],
         ];
     }
 
