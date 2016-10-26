@@ -3,6 +3,7 @@ namespace api\models\authentication;
 
 use api\models\AccountIdentity;
 use api\models\base\KeyConfirmationForm;
+use api\models\profile\ChangeUsernameForm;
 use common\models\Account;
 use common\models\EmailActivation;
 use Yii;
@@ -33,6 +34,9 @@ class ConfirmEmailForm extends KeyConfirmationForm {
             if (!$account->save()) {
                 throw new ErrorException('Unable activate user account.');
             }
+
+            $changeUsernameForm = new ChangeUsernameForm();
+            $changeUsernameForm->createEventTask($account->id, $account->username, null);
 
             $transaction->commit();
         } catch (ErrorException $e) {

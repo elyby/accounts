@@ -30,7 +30,10 @@ class ChangeUsernameForm extends ApiForm {
 
     public function validateUsername($attribute) {
         $account = new Account();
+        $account->id = $this->getAccount()->id;
         $account->username = $this->$attribute;
+        // Это чтобы unique validator учёл, что ник может быть забит на текущий аккаунт
+        $account->setIsNewRecord(false);
         if (!$account->validate(['username'])) {
             $this->addErrors($account->getErrors());
         }
@@ -46,7 +49,7 @@ class ChangeUsernameForm extends ApiForm {
         $oldNickname = $account->username;
         try {
             $account->username = $this->username;
-            if (!$account->save()) {
+            if (!$account->save(false)) {
                 throw new ErrorException('Cannot save account model with new username');
             }
 
