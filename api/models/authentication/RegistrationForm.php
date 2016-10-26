@@ -4,7 +4,6 @@ namespace api\models\authentication;
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\base\ApiForm;
 use common\helpers\Error as E;
-use api\models\profile\ChangeUsernameForm;
 use common\components\UserFriendlyRandomKey;
 use common\models\Account;
 use common\models\confirmations\RegistrationConfirmation;
@@ -117,9 +116,6 @@ class RegistrationForm extends ApiForm {
             }
 
             $this->sendMail($emailActivation, $account);
-
-            $changeUsernameForm = new ChangeUsernameForm();
-            $changeUsernameForm->createEventTask($account->id, $account->username, null);
 
             $transaction->commit();
         } catch (Exception $e) {
