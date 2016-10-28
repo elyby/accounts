@@ -32,8 +32,7 @@ RUN cd ../frontend \
  && cd -
 
 # Удаляем ключи из production контейнера на всякий случай
-RUN ssh-add -D \
- && rm -rf /root/.ssh
+RUN rm -rf /root/.ssh
 
 # Наконец переносим все сорцы внутрь контейнера
 COPY . /var/www/html
