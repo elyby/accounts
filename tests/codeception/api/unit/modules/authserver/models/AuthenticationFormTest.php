@@ -8,19 +8,15 @@ use api\modules\authserver\models\AuthenticationForm;
 use common\models\Account;
 use common\models\MinecraftAccessKey;
 use Ramsey\Uuid\Uuid;
-use tests\codeception\api\unit\DbTestCase;
+use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\_support\ProtectedCaller;
 use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\MinecraftAccessKeyFixture;
 
-/**
- * @property AccountFixture $accounts
- * @property MinecraftAccessKeyFixture $minecraftAccessKeys
- */
-class AuthenticationFormTest extends DbTestCase {
+class AuthenticationFormTest extends TestCase {
     use ProtectedCaller;
 
-    public function fixtures() {
+    public function _fixtures() {
         return [
             'accounts' => AccountFixture::class,
             'minecraftAccessKeys' => MinecraftAccessKeyFixture::class,
@@ -91,7 +87,7 @@ class AuthenticationFormTest extends DbTestCase {
         $authForm = new AuthenticationForm();
         $authForm->clientToken = Uuid::uuid4();
         /** @var Account $account */
-        $account = $this->accounts->getModel('admin');
+        $account = $this->tester->grabFixture('accounts', 'admin');
         /** @var MinecraftAccessKey $result */
         $result = $this->callProtected($authForm, 'createMinecraftAccessToken', $account);
         $this->assertInstanceOf(MinecraftAccessKey::class, $result);
@@ -102,15 +98,16 @@ class AuthenticationFormTest extends DbTestCase {
 
     public function testCreateMinecraftAccessTokenWithExistsClientId() {
         $authForm = new AuthenticationForm();
-        $authForm->clientToken = $this->minecraftAccessKeys['admin-token']['client_token'];
+        $minecraftFixture = $this->tester->grabFixture('minecraftAccessKeys', 'admin-token');
+        $authForm->clientToken = $minecraftFixture['client_token'];
         /** @var Account $account */
-        $account = $this->accounts->getModel('admin');
+        $account = $this->tester->grabFixture('accounts', 'admin');
         /** @var MinecraftAccessKey $result */
         $result = $this->callProtected($authForm, 'createMinecraftAccessToken', $account);
         $this->assertInstanceOf(MinecraftAccessKey::class, $result);
         $this->assertEquals($account->id, $result->account_id);
         $this->assertEquals($authForm->clientToken, $result->client_token);
-        $this->assertNull(MinecraftAccessKey::findOne($this->minecraftAccessKeys['admin-token']['access_token']));
+        $this->assertNull(MinecraftAccessKey::findOne($minecraftFixture['access_token']));
         $this->assertInstanceOf(MinecraftAccessKey::class, MinecraftAccessKey::findOne($result->access_token));
     }
 

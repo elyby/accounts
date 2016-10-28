@@ -5,18 +5,15 @@ use api\validators\EmailActivationKeyValidator;
 use Codeception\Specify;
 use common\models\confirmations\ForgotPassword;
 use common\models\EmailActivation;
-use tests\codeception\api\unit\DbTestCase;
+use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\_support\ProtectedCaller;
 use tests\codeception\common\fixtures\EmailActivationFixture;
 
-/**
- * @property EmailActivationFixture $emailActivations
- */
-class EmailActivationKeyValidatorTest extends DbTestCase {
+class EmailActivationKeyValidatorTest extends TestCase {
     use Specify;
     use ProtectedCaller;
 
-    public function fixtures() {
+    public function _fixtures() {
         return [
             'emailActivations' => EmailActivationFixture::class,
         ];
@@ -24,7 +21,7 @@ class EmailActivationKeyValidatorTest extends DbTestCase {
 
     public function testFindEmailActivationModel() {
         $this->specify('get EmailActivation model for exists key', function() {
-            $key = array_values($this->emailActivations->data)[0]['key'];
+            $key = $this->tester->grabFixture('emailActivations', 'freshRegistrationConfirmation')['key'];
             $model = new EmailActivationKeyValidator();
             /** @var EmailActivation $result */
             $result = $this->callProtected($model, 'findEmailActivationModel', $key);

@@ -2,41 +2,34 @@
 namespace tests\codeception\api\traits;
 
 use api\traits\ApiNormalize;
-use Codeception\Specify;
-use Codeception\TestCase\Test;
+use tests\codeception\api\unit\TestCase;
 
 class ApiNormalizeTestClass {
     use ApiNormalize;
 }
 
-/**
- * @property \tests\codeception\api\UnitTester $actor
- */
-class ApiNormalizerTest extends Test {
-    use Specify;
+class ApiNormalizerTest extends TestCase  {
 
     public function testNormalizeModelErrors() {
         $object = new ApiNormalizeTestClass();
-        $this->specify('', function() use ($object) {
-            $normalized = $object->normalizeModelErrors([
-                'rulesAgreement' => [
-                    'error.you_must_accept_rules',
-                ],
-                'email' => [
-                    'error.email_required',
-                ],
-                'username' => [
-                    'error.username_too_short',
-                    'error.username_not_unique',
-                ],
-            ]);
+        $normalized = $object->normalizeModelErrors([
+            'rulesAgreement' => [
+                'error.you_must_accept_rules',
+            ],
+            'email' => [
+                'error.email_required',
+            ],
+            'username' => [
+                'error.username_too_short',
+                'error.username_not_unique',
+            ],
+        ]);
 
-            expect($normalized)->equals([
-                'rulesAgreement' => 'error.you_must_accept_rules',
-                'email' => 'error.email_required',
-                'username' => 'error.username_too_short',
-            ]);
-        });
+        $this->assertEquals([
+            'rulesAgreement' => 'error.you_must_accept_rules',
+            'email' => 'error.email_required',
+            'username' => 'error.username_too_short',
+        ], $normalized);
     }
 
 }

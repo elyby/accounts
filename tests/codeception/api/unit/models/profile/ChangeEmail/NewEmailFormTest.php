@@ -2,87 +2,50 @@
 namespace codeception\api\unit\models\profile\ChangeEmail;
 
 use api\models\profile\ChangeEmail\NewEmailForm;
-use Codeception\Specify;
 use common\models\Account;
 use common\models\confirmations\NewEmailConfirmation;
 use common\models\EmailActivation;
-use tests\codeception\api\unit\DbTestCase;
+use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\EmailActivationFixture;
-use Yii;
 
-/**
- * @property AccountFixture $accounts
- * @property EmailActivationFixture $emailActivations
- */
-class NewEmailFormTest extends DbTestCase {
-    use Specify;
+class NewEmailFormTest extends TestCase {
 
-    public function setUp() {
-        parent::setUp();
-        /** @var \yii\swiftmailer\Mailer $mailer */
-        $mailer = Yii::$app->mailer;
-        $mailer->fileTransportCallback = function () {
-            return 'testing_message.eml';
-        };
-    }
-
-    protected function tearDown() {
-        if (file_exists($this->getMessageFile())) {
-            unlink($this->getMessageFile());
-        }
-
-        parent::tearDown();
-    }
-
-    public function fixtures() {
+    public function _fixtures() {
         return [
-            'accounts' => [
-                'class' => AccountFixture::class,
-                'dataFile' => '@tests/codeception/common/fixtures/data/accounts.php',
-            ],
+            'accounts' => AccountFixture::class,
             'emailActivations' => EmailActivationFixture::class,
         ];
     }
 
     public function testCreateCode() {
-        $this->specify('create valid code and store it to database', function() {
-            /** @var Account $account */
-            $account = Account::findOne($this->accounts['admin']['id']);
-            $model = new NewEmailForm($account);
-            $model->email = 'my-new-email@ely.by';
-            $activationModel = $model->createCode();
-            expect($activationModel)->isInstanceOf(NewEmailConfirmation::class);
-            expect($activationModel->account_id)->equals($account->id);
-            expect($activationModel->newEmail)->equals($model->email);
-            expect(EmailActivation::findOne($activationModel->key))->notNull();
-        });
+        /** @var Account $account */
+        $account = $this->tester->grabFixture('accounts', 'admin');
+        $model = new NewEmailForm($account);
+        $model->email = 'my-new-email@ely.by';
+        $activationModel = $model->createCode();
+        $this->assertInstanceOf(NewEmailConfirmation::class, $activationModel);
+        $this->assertEquals($account->id, $activationModel->account_id);
+        $this->assertEquals($model->email, $activationModel->newEmail);
+        $this->assertNotNull(EmailActivation::findOne($activationModel->key));
     }
 
     public function testSendNewEmailConfirmation() {
-        $this->specify('send email', function() {
-            /** @var Account $account */
-            $account = Account::findOne($this->accounts['account-with-change-email-init-state']['id']);
-            /** @var NewEmailForm $model */
-            $key = $this->emailActivations['currentChangeEmailConfirmation']['key'];
-            $model = new NewEmailForm($account, [
-                'key' => $key,
-                'email' => 'my-new-email@ely.by',
-            ]);
-            expect($model->sendNewEmailConfirmation())->true();
-            expect(EmailActivation::findOne($key))->null();
-            expect(EmailActivation::findOne([
-                'account_id' => $account->id,
-                'type' => EmailActivation::TYPE_NEW_EMAIL_CONFIRMATION,
-            ]))->notNull();
-            expect_file($this->getMessageFile())->exists();
-        });
-    }
-
-    private function getMessageFile() {
-        /** @var \yii\swiftmailer\Mailer $mailer */
-        $mailer = Yii::$app->mailer;
-        return Yii::getAlias($mailer->fileTransportPath) . '/testing_message.eml';
+        /** @var Account $account */
+        $account = $this->tester->grabFixture('accounts', 'account-with-change-email-init-state');
+        /** @var NewEmailForm $model */
+        $key = $this->tester->grabFixture('emailActivations', 'currentChangeEmailConfirmation')['key'];
+        $model = new NewEmailForm($account, [
+            'key' => $key,
+            'email' => 'my-new-email@ely.by',
+        ]);
+        $this->assertTrue($model->sendNewEmailConfirmation());
+        $this->assertNull(EmailActivation::findOne($key));
+        $this->assertNotNull(EmailActivation::findOne([
+            'account_id' => $account->id,
+            'type' => EmailActivation::TYPE_NEW_EMAIL_CONFIRMATION,
+        ]));
+        $this->tester->canSeeEmailIsSent();
     }
 
 }

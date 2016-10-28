@@ -5,32 +5,27 @@ use api\models\AccountIdentity;
 use api\traits\AccountFinder;
 use Codeception\Specify;
 use common\models\Account;
-use tests\codeception\api\unit\DbTestCase;
+use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 
-/**
- * @property \tests\codeception\api\UnitTester $actor
- * @property array $accounts
- */
-class AccountFinderTest extends DbTestCase {
+class AccountFinderTest extends TestCase {
     use Specify;
 
-    public function fixtures() {
+    public function _fixtures() {
         return [
-            'accounts' => [
-                'class' => AccountFixture::class,
-                'dataFile' => '@tests/codeception/common/fixtures/data/accounts.php',
-            ],
+            'accounts' => AccountFixture::class,
         ];
     }
 
     public function testGetAccount() {
         $this->specify('founded account for passed login data', function() {
             $model = new AccountFinderTestTestClass();
-            $model->login = $this->accounts['admin']['email'];
+            /** @var Account $account */
+            $account = $this->tester->grabFixture('accounts', 'admin');
+            $model->login = $account->email;
             $account = $model->getAccount();
             expect($account)->isInstanceOf(Account::class);
-            expect($account->id)->equals($this->accounts['admin']['id']);
+            expect($account->id)->equals($account->id);
         });
 
         $this->specify('founded account for passed login data with changed account model class name', function() {
@@ -40,10 +35,12 @@ class AccountFinderTest extends DbTestCase {
                     return AccountIdentity::class;
                 }
             };
-            $model->login = $this->accounts['admin']['email'];
+            /** @var Account $account */
+            $account = $this->tester->grabFixture('accounts', 'admin');
+            $model->login = $account->email;
             $account = $model->getAccount();
             expect($account)->isInstanceOf(AccountIdentity::class);
-            expect($account->id)->equals($this->accounts['admin']['id']);
+            expect($account->id)->equals($account->id);
         });
 
         $this->specify('null, if account not founded', function() {

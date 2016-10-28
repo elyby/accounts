@@ -7,7 +7,7 @@ use Emarref\Jwt\Claim;
 use Emarref\Jwt\Encryption\Factory as EncryptionFactory;
 use Emarref\Jwt\Jwt;
 use Emarref\Jwt\Token;
-use tests\codeception\api\unit\DbTestCase;
+use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\_support\ProtectedCaller;
 use tests\codeception\common\fixtures\AccountFixture;
 use Yii;
@@ -16,11 +16,11 @@ use yii\web\IdentityInterface;
 /**
  * @property AccountIdentity $accounts
  */
-class AccountIdentityTest extends DbTestCase {
+class AccountIdentityTest extends TestCase {
     use Specify;
     use ProtectedCaller;
 
-    public function fixtures() {
+    public function _fixtures() {
         return [
             'accounts' => AccountFixture::class,
         ];
@@ -29,7 +29,7 @@ class AccountIdentityTest extends DbTestCase {
     public function testFindIdentityByAccessToken() {
         $identity = AccountIdentity::findIdentityByAccessToken($this->generateToken());
         $this->assertInstanceOf(IdentityInterface::class, $identity);
-        $this->assertEquals($this->accounts['admin']['id'], $identity->getId());
+        $this->assertEquals($this->tester->grabFixture('accounts', 'admin')['id'], $identity->getId());
     }
 
     /**
@@ -42,7 +42,7 @@ class AccountIdentityTest extends DbTestCase {
         $token->addClaim(new Claim\Issuer('http://localhost'));
         $token->addClaim(new Claim\IssuedAt(1464593193));
         $token->addClaim(new Claim\Expiration(1464596793));
-        $token->addClaim(new Claim\JwtId($this->accounts['admin']['id']));
+        $token->addClaim(new Claim\JwtId($this->tester->grabFixture('accounts', 'admin')['id']));
         $expiredToken = (new Jwt())->serialize($token, EncryptionFactory::create(Yii::$app->user->getAlgorithm()));
 
         AccountIdentity::findIdentityByAccessToken($expiredToken);
@@ -60,7 +60,7 @@ class AccountIdentityTest extends DbTestCase {
         /** @var \api\components\User\Component $component */
         $component = Yii::$app->user;
         /** @var AccountIdentity $account */
-        $account = AccountIdentity::findOne($this->accounts['admin']['id']);
+        $account = AccountIdentity::findOne($this->tester->grabFixture('accounts', 'admin')['id']);
 
         $token = $this->callProtected($component, 'createToken', $account);
 

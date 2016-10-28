@@ -4,11 +4,11 @@ namespace codeception\api\unit\validators;
 use api\validators\PasswordRequiredValidator;
 use Codeception\Specify;
 use common\models\Account;
-use tests\codeception\api\unit\DbTestCase;
+use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\_support\ProtectedCaller;
 use common\helpers\Error as E;
 
-class PasswordRequiredValidatorTest extends DbTestCase {
+class PasswordRequiredValidatorTest extends TestCase {
     use Specify;
     use ProtectedCaller;
 

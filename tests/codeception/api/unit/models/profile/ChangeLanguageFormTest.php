@@ -2,35 +2,25 @@
 namespace codeception\api\unit\models\profile;
 
 use api\models\profile\ChangeLanguageForm;
-use Codeception\Specify;
 use common\models\Account;
-use tests\codeception\api\unit\DbTestCase;
+use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 
-/**
- * @property AccountFixture $accounts
- */
-class ChangeLanguageFormTest extends DbTestCase {
-    use Specify;
+class ChangeLanguageFormTest extends TestCase {
 
-    public function fixtures() {
+    public function _fixtures() {
         return [
-            'accounts' => [
-                'class' => AccountFixture::class,
-                'dataFile' => '@tests/codeception/common/fixtures/data/accounts.php',
-            ],
+            'accounts' => AccountFixture::class
         ];
     }
 
     public function testApplyLanguage() {
-        $this->specify('language changed', function() {
-            /** @var Account $account */
-            $account = Account::findOne($this->accounts['admin']);
-            $model = new ChangeLanguageForm($account);
-            $model->lang = 'ru';
-            expect($model->applyLanguage())->true();
-            expect($account->lang)->equals('ru');
-        });
+        /** @var Account $account */
+        $account = $this->tester->grabFixture('accounts', 'admin');
+        $model = new ChangeLanguageForm($account);
+        $model->lang = 'ru';
+        $this->assertTrue($model->applyLanguage());
+        $this->assertEquals('ru', $account->lang);
     }
 
 }
