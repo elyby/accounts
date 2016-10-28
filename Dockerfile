@@ -33,7 +33,6 @@ RUN cd ../frontend \
 
 # Удаляем ключи из production контейнера на всякий случай
 RUN ssh-add -D \
- && ssh-agent -k > /dev/null 2>&1
  && rm -rf /root/.ssh
 
 # Наконец переносим все сорцы внутрь контейнера
