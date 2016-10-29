@@ -6,27 +6,17 @@ use common\components\UserPass;
 use common\models\Account;
 use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\MojangUsernameFixture;
-use tests\codeception\common\unit\DbTestCase;
+use tests\codeception\common\unit\TestCase;
 use Yii;
 use const common\LATEST_RULES_VERSION;
 
-/**
- * @property array $accounts
- * @property array $mojangAccounts
- */
-class AccountTest extends DbTestCase {
+class AccountTest extends TestCase {
     use Specify;
 
-    public function fixtures() {
+    public function _fixtures() {
         return [
-            'accounts' => [
-                'class' => AccountFixture::class,
-                'dataFile' => '@tests/codeception/common/fixtures/data/accounts.php',
-            ],
-            'mojangAccounts' => [
-                'class' => MojangUsernameFixture::class,
-                'dataFile' => '@tests/codeception/common/fixtures/data/mojang-usernames.php',
-            ],
+            'accounts' => AccountFixture::class,
+            'mojangAccounts' => MojangUsernameFixture::class,
         ];
     }
 
@@ -73,7 +63,8 @@ class AccountTest extends DbTestCase {
         });
 
         $this->specify('username should be unique', function() {
-            $model = new Account(['username' => $this->accounts['admin']['username']]);
+            $model = new Account();
+            $model->username = $this->tester->grabFixture('accounts', 'admin')['username'];
             expect($model->validate('username'))->false();
             expect($model->getErrors('username'))->equals(['error.username_not_available']);
         });
@@ -111,7 +102,7 @@ class AccountTest extends DbTestCase {
         });
 
         $this->specify('email should be unique', function() {
-            $model = new Account(['email' => $this->accounts['admin']['email']]);
+            $model = new Account(['email' => $this->tester->grabFixture('accounts', 'admin')['email']]);
             expect($model->validate('email'))->false();
             expect($model->getErrors('email'))->equals(['error.email_not_available']);
         });

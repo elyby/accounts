@@ -1,8 +1,22 @@
 <?php
 namespace tests\codeception\common\unit;
 
-class TestCase extends \yii\codeception\TestCase {
+class TestCase extends \Codeception\Test\Unit  {
 
-    public $appConfig = '@tests/codeception/config/common/unit.php';
+    /**
+     * @var \tests\codeception\common\UnitTester
+     */
+    protected $tester;
+
+    /**
+     * Список фикстур, что будут загружены перед тестом, но после зачистки базы данных
+     *
+     * @url http://codeception.com/docs/modules/Yii2#fixtures
+     *
+     * @return array
+     */
+    public function _fixtures() {
+        return [];
+    }
 
 }
