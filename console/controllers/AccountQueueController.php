@@ -37,7 +37,7 @@ class AccountQueueController extends AmqpController {
     }
 
     public function routeUsernameChanged(UsernameChanged $body) {
-        $mojangApi = new MojangApi();
+        $mojangApi = $this->createMojangApi();
         try {
             $response = $mojangApi->usernameToUUID($body->newUsername);
         } catch (NoContentException $e) {
@@ -66,6 +66,13 @@ class AccountQueueController extends AmqpController {
         }
 
         return true;
+    }
+
+    /**
+     * @return MojangApi
+     */
+    protected function createMojangApi() : MojangApi {
+        return new MojangApi();
     }
 
 }
