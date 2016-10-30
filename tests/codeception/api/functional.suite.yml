@@ -12,6 +12,7 @@ modules:
     config:
         Yii2:
             configFile: '../config/api/functional.php'
+            cleanup: true
         Redis:
             host: testredis
             port: 6379
