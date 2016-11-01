@@ -67,26 +67,6 @@ class ChangeUsernameFormTest extends TestCase {
         );
     }
 
-    public function testValidateUsername() {
-        $this->specify('error.username_not_available expected if username is already taken', function() {
-            $model = new ChangeUsernameForm([
-                'password' => 'password_0',
-                'username' => 'Jon',
-            ]);
-            $model->validateUsername('username');
-            expect($model->getErrors('username'))->equals(['error.username_not_available']);
-        });
-
-        $this->specify('error.username_not_available is NOT expected if username is already taken by CURRENT user', function() {
-            $model = new ChangeUsernameForm([
-                'password' => 'password_0',
-                'username' => $this->tester->grabFixture('accounts', 'admin')['username'],
-            ]);
-            $model->validateUsername('username');
-            expect($model->getErrors('username'))->isEmpty();
-        });
-    }
-
     public function testCreateTask() {
         $model = new ChangeUsernameForm();
         $model->createEventTask('1', 'test1', 'test');

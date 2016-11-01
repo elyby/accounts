@@ -5,7 +5,7 @@ use api\models\base\ApiForm;
 use api\validators\PasswordRequiredValidator;
 use common\helpers\Error as E;
 use common\models\Account;
-use common\validators\PasswordValidate;
+use common\validators\PasswordValidator;
 use Yii;
 use yii\base\ErrorException;
 use yii\helpers\ArrayHelper;
@@ -37,7 +37,7 @@ class ChangePasswordForm extends ApiForm {
         return ArrayHelper::merge(parent::rules(), [
             ['newPassword', 'required', 'message' => E::NEW_PASSWORD_REQUIRED],
             ['newRePassword', 'required', 'message' => E::NEW_RE_PASSWORD_REQUIRED],
-            ['newPassword', PasswordValidate::class],
+            ['newPassword', PasswordValidator::class],
             ['newRePassword', 'validatePasswordAndRePasswordMatch'],
             ['logoutAll', 'boolean'],
             ['password', PasswordRequiredValidator::class, 'account' => $this->_account],
@@ -77,7 +77,7 @@ class ChangePasswordForm extends ApiForm {
             }
         }
 
-        if (!$account->save(false)) {
+        if (!$account->save()) {
             throw new ErrorException('Cannot save user model');
         }
 

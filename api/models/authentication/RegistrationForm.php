@@ -9,8 +9,10 @@ use common\models\Account;
 use common\models\confirmations\RegistrationConfirmation;
 use common\models\EmailActivation;
 use common\models\UsernameHistory;
+use common\validators\EmailValidator;
 use common\validators\LanguageValidator;
-use common\validators\PasswordValidate;
+use common\validators\PasswordValidator;
+use common\validators\UsernameValidator;
 use Exception;
 use Ramsey\Uuid\Uuid;
 use Yii;
@@ -40,33 +42,17 @@ class RegistrationForm extends ApiForm {
             ['captcha', ReCaptchaValidator::class],
             ['rulesAgreement', 'required', 'message' => E::RULES_AGREEMENT_REQUIRED],
 
-            ['username', 'validateUsername', 'skipOnEmpty' => false],
-            ['email', 'validateEmail', 'skipOnEmpty' => false],
+            ['username', UsernameValidator::class],
+            ['email', EmailValidator::class],
 
             ['password', 'required', 'message' => E::PASSWORD_REQUIRED],
             ['rePassword', 'required', 'message' => E::RE_PASSWORD_REQUIRED],
-            ['password', PasswordValidate::class],
+            ['password', PasswordValidator::class],
             ['rePassword', 'validatePasswordAndRePasswordMatch'],
 
             ['lang', LanguageValidator::class],
             ['lang', 'default', 'value' => 'en'],
         ];
-    }
-
-    public function validateUsername() {
-        $account = new Account();
-        $account->username = $this->username;
-        if (!$account->validate(['username'])) {
-            $this->addErrors($account->getErrors());
-        }
-    }
-
-    public function validateEmail() {
-        $account = new Account();
-        $account->email = $this->email;
-        if (!$account->validate(['email'])) {
-            $this->addErrors($account->getErrors());
-        }
     }
 
     public function validatePasswordAndRePasswordMatch($attribute) {
@@ -97,7 +83,7 @@ class RegistrationForm extends ApiForm {
             $account->status = Account::STATUS_REGISTERED;
             $account->rules_agreement_version = LATEST_RULES_VERSION;
             $account->setRegistrationIp(Yii::$app->request->getUserIP());
-            if (!$account->save(false)) {
+            if (!$account->save()) {
                 throw new ErrorException('Account not created.');
             }
 

@@ -31,7 +31,7 @@ class ConfirmEmailForm extends KeyConfirmationForm {
                 throw new ErrorException('Unable remove activation key.');
             }
 
-            if (!$account->save(false)) {
+            if (!$account->save()) {
                 throw new ErrorException('Unable activate user account.');
             }
 
