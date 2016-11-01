@@ -1,9 +1,7 @@
 <?php
 namespace common\models;
 
-use common\helpers\Error as E;
 use common\components\UserPass;
-use Ely\Yii2\TempmailValidator;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\behaviors\TimestampBehavior;
@@ -56,17 +54,6 @@ class Account extends ActiveRecord {
     public function behaviors() {
         return [
             TimestampBehavior::class,
-        ];
-    }
-
-    public function rules() {
-        return [
-            [['email'], 'filter', 'filter' => 'trim'],
-            [['email'], 'required', 'message' => E::EMAIL_REQUIRED],
-            [['email'], 'string', 'max' => 255, 'tooLong' => E::EMAIL_TOO_LONG],
-            [['email'], 'email', 'checkDNS' => true, 'enableIDN' => true, 'message' => E::EMAIL_INVALID],
-            [['email'], TempmailValidator::class, 'message' => E::EMAIL_IS_TEMPMAIL],
-            [['email'], 'unique', 'message' => E::EMAIL_NOT_AVAILABLE],
         ];
     }
 

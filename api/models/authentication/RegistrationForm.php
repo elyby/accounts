@@ -9,6 +9,7 @@ use common\models\Account;
 use common\models\confirmations\RegistrationConfirmation;
 use common\models\EmailActivation;
 use common\models\UsernameHistory;
+use common\validators\EmailValidator;
 use common\validators\LanguageValidator;
 use common\validators\PasswordValidate;
 use common\validators\UsernameValidator;
@@ -42,7 +43,7 @@ class RegistrationForm extends ApiForm {
             ['rulesAgreement', 'required', 'message' => E::RULES_AGREEMENT_REQUIRED],
 
             ['username', UsernameValidator::class],
-            ['email', 'validateEmail', 'skipOnEmpty' => false],
+            ['email', EmailValidator::class],
 
             ['password', 'required', 'message' => E::PASSWORD_REQUIRED],
             ['rePassword', 'required', 'message' => E::RE_PASSWORD_REQUIRED],
@@ -52,14 +53,6 @@ class RegistrationForm extends ApiForm {
             ['lang', LanguageValidator::class],
             ['lang', 'default', 'value' => 'en'],
         ];
-    }
-
-    public function validateEmail() {
-        $account = new Account();
-        $account->email = $this->email;
-        if (!$account->validate(['email'])) {
-            $this->addErrors($account->getErrors());
-        }
     }
 
     public function validatePasswordAndRePasswordMatch($attribute) {
