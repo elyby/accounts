@@ -2,7 +2,6 @@
 namespace common\models;
 
 use common\components\redis\Set;
-use Yii;
 use yii\db\ActiveRecord;
 
 /**
@@ -38,7 +37,7 @@ class OauthSession extends ActiveRecord {
     }
 
     public function getScopes() {
-        return new Set($this->getDb()->getSchema()->getRawTableName($this->tableName()), $this->id, 'scopes');
+        return new Set(static::getDb()->getSchema()->getRawTableName(static::tableName()), $this->id, 'scopes');
     }
 
     public function beforeDelete() {

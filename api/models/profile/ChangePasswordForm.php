@@ -77,7 +77,7 @@ class ChangePasswordForm extends ApiForm {
             }
         }
 
-        if (!$account->save()) {
+        if (!$account->save(false)) {
             throw new ErrorException('Cannot save user model');
         }
 

@@ -17,7 +17,7 @@ class ConfirmEmailForm extends KeyConfirmationForm {
         }
 
         $confirmModel = $this->getActivationCodeModel();
-        if ($confirmModel->type != EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION) {
+        if ($confirmModel->type !== EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION) {
             $confirmModel->delete();
             // TODO: вот где-то здесь нужно ещё попутно сгенерировать соответствующую ошибку
             return false;
@@ -31,7 +31,7 @@ class ConfirmEmailForm extends KeyConfirmationForm {
                 throw new ErrorException('Unable remove activation key.');
             }
 
-            if (!$account->save()) {
+            if (!$account->save(false)) {
                 throw new ErrorException('Unable activate user account.');
             }
 

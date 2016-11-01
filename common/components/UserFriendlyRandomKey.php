@@ -9,7 +9,7 @@ class UserFriendlyRandomKey {
         $numChars = strlen($chars);
         $key = '';
         for ($i = 0; $i < $length; $i++) {
-            $key .= substr($chars, rand(1, $numChars) - 1, 1);
+            $key .= $chars[random_int(0, $numChars - 1)];
         }
 
         return $key;

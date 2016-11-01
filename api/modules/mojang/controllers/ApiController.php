@@ -32,7 +32,7 @@ class ApiController extends Controller {
             // ник пользователь не сменил его на нечто иное
             $account = null;
             if ($record !== null) {
-                if ($record->findNext($at) !== null || $record->account->username === $record->username) {
+                if ($record->account->username === $record->username || $record->findNext($at) !== null) {
                     $account = $record->account;
                 }
             }

@@ -54,7 +54,7 @@ class AuthCodeStorage extends AbstractStorage implements AuthCodeInterface {
      * @inheritdoc
      */
     public function getScopes(OriginalAuthCodeEntity $token) {
-        $result = (new Set($this->dataTable, $token->getId(), 'scopes'));
+        $result = new Set($this->dataTable, $token->getId(), 'scopes');
         $response = [];
         foreach ($result as $scope) {
             // TODO: нужно проверить все выданные скоупы на их существование

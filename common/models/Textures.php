@@ -2,6 +2,8 @@
 namespace common\models;
 
 use common\components\SkinSystem\Api as SkinSystemApi;
+use DateInterval;
+use DateTime;
 
 class Textures {
 
@@ -38,7 +40,7 @@ class Textures {
 
     public function getTexturesValue($encrypted = true) {
         $array = [
-            'timestamp' => time() + 60 * 60 * 24 * 2,
+            'timestamp' => (new DateTime())->add(new DateInterval('P2D'))->getTimestamp(),
             'profileId' => str_replace('-', '', $this->account->uuid),
             'profileName' => $this->account->username,
             'textures' => $this->getTextures(),
@@ -51,7 +53,7 @@ class Textures {
         if (!$encrypted) {
             return $array;
         } else {
-            return $this->encrypt($array);
+            return static::encrypt($array);
         }
     }
 
