@@ -38,7 +38,7 @@ class ChangeUsernameForm extends ApiForm {
         $oldNickname = $account->username;
         try {
             $account->username = $this->username;
-            if (!$account->save(false)) {
+            if (!$account->save()) {
                 throw new ErrorException('Cannot save account model with new username');
             }
 

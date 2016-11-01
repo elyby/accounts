@@ -21,7 +21,7 @@ class AcceptRulesForm extends ApiForm {
     public function agreeWithLatestRules() : bool {
         $account = $this->getAccount();
         $account->rules_agreement_version = LATEST_RULES_VERSION;
-        if (!$account->save(false)) {
+        if (!$account->save()) {
             throw new ErrorException('Cannot set user rules version');
         }
 

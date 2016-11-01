@@ -31,7 +31,7 @@ class ChangeLanguageForm extends ApiForm {
 
         $account = $this->getAccount();
         $account->lang = $this->lang;
-        if (!$account->save(false)) {
+        if (!$account->save()) {
             throw new ErrorException('Cannot change user language');
         }
 
