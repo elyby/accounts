@@ -11,6 +11,7 @@ use common\models\EmailActivation;
 use common\models\UsernameHistory;
 use common\validators\LanguageValidator;
 use common\validators\PasswordValidate;
+use common\validators\UsernameValidator;
 use Exception;
 use Ramsey\Uuid\Uuid;
 use Yii;
@@ -40,7 +41,7 @@ class RegistrationForm extends ApiForm {
             ['captcha', ReCaptchaValidator::class],
             ['rulesAgreement', 'required', 'message' => E::RULES_AGREEMENT_REQUIRED],
 
-            ['username', 'validateUsername', 'skipOnEmpty' => false],
+            ['username', UsernameValidator::class],
             ['email', 'validateEmail', 'skipOnEmpty' => false],
 
             ['password', 'required', 'message' => E::PASSWORD_REQUIRED],
@@ -51,14 +52,6 @@ class RegistrationForm extends ApiForm {
             ['lang', LanguageValidator::class],
             ['lang', 'default', 'value' => 'en'],
         ];
-    }
-
-    public function validateUsername() {
-        $account = new Account();
-        $account->username = $this->username;
-        if (!$account->validate(['username'])) {
-            $this->addErrors($account->getErrors());
-        }
     }
 
     public function validateEmail() {

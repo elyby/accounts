@@ -4,11 +4,10 @@ namespace api\models\profile;
 use api\models\AccountIdentity;
 use api\models\base\ApiForm;
 use api\validators\PasswordRequiredValidator;
-use common\helpers\Error;
 use common\helpers\Amqp;
-use common\models\Account;
 use common\models\amqp\UsernameChanged;
 use common\models\UsernameHistory;
+use common\validators\UsernameValidator;
 use Exception;
 use PhpAmqpLib\Message\AMQPMessage;
 use Yii;
@@ -22,21 +21,11 @@ class ChangeUsernameForm extends ApiForm {
 
     public function rules() {
         return [
-            ['username', 'required', 'message' => Error::USERNAME_REQUIRED],
-            ['username', 'validateUsername'],
+            ['username', UsernameValidator::class, 'accountCallback' => function() {
+                return $this->getAccount()->id;
+            }],
             ['password', PasswordRequiredValidator::class],
         ];
-    }
-
-    public function validateUsername($attribute) {
-        $account = new Account();
-        $account->id = $this->getAccount()->id;
-        $account->username = $this->$attribute;
-        // Это чтобы unique validator учёл, что ник может быть забит на текущий аккаунт
-        $account->setIsNewRecord(false);
-        if (!$account->validate(['username'])) {
-            $this->addErrors($account->getErrors());
-        }
     }
 
     public function change() {

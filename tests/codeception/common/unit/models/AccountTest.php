@@ -20,56 +20,6 @@ class AccountTest extends TestCase {
         ];
     }
 
-    public function testValidateUsername() {
-        $this->specify('username required', function() {
-            $model = new Account(['username' => null]);
-            expect($model->validate(['username']))->false();
-            expect($model->getErrors('username'))->equals(['error.username_required']);
-        });
-
-        $this->specify('username should be at least 3 symbols length', function() {
-            $model = new Account(['username' => 'at']);
-            expect($model->validate(['username']))->false();
-            expect($model->getErrors('username'))->equals(['error.username_too_short']);
-        });
-
-        $this->specify('username should be not more than 21 symbols length', function() {
-            $model = new Account(['username' => 'erickskrauch_erickskrauch']);
-            expect($model->validate(['username']))->false();
-            expect($model->getErrors('username'))->equals(['error.username_too_long']);
-        });
-
-        $this->specify('username can contain many cool symbols', function() {
-            $shouldBeValid = [
-                'русский_ник', 'русский_ник_на_грани!', 'numbers1132', '*__*-Stars-*__*', '1-_.!?#$%^&*()[]',
-                '[ESP]Эрик', 'Свят_помидор;', 'зроблена_ў_беларусі:)',
-            ];
-            foreach($shouldBeValid as $nickname) {
-                $model = new Account(['username' => $nickname]);
-                expect($nickname . ' passed validation', $model->validate(['username']))->true();
-                expect($model->getErrors('username'))->isEmpty();
-            }
-        });
-
-        $this->specify('username cannot contain some symbols', function() {
-            $shouldBeInvalid = [
-                'nick@name', 'spaced nick',
-            ];
-            foreach($shouldBeInvalid as $nickname) {
-                $model = new Account(['username' => $nickname]);
-                expect($nickname . ' fail validation', $model->validate('username'))->false();
-                expect($model->getErrors('username'))->equals(['error.username_invalid']);
-            }
-        });
-
-        $this->specify('username should be unique', function() {
-            $model = new Account();
-            $model->username = $this->tester->grabFixture('accounts', 'admin')['username'];
-            expect($model->validate('username'))->false();
-            expect($model->getErrors('username'))->equals(['error.username_not_available']);
-        });
-    }
-
     public function testValidateEmail() {
         // TODO: пропускать этот тест, если падает ошибка с недостпуностью интернет соединения
         $this->specify('email required', function() {

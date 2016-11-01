@@ -61,17 +61,6 @@ class Account extends ActiveRecord {
 
     public function rules() {
         return [
-            [['username'], 'filter', 'filter' => 'trim'],
-            [['username'], 'required', 'message' => E::USERNAME_REQUIRED],
-            [['username'], 'string', 'min' => 3, 'max' => 21,
-                'tooShort' => E::USERNAME_TOO_SHORT,
-                'tooLong' => E::USERNAME_TOO_LONG,
-            ],
-            [['username'], 'match', 'pattern' => '/^[\p{L}\d-_\.!?#$%^&*()\[\]:;]+$/u',
-                'message' => E::USERNAME_INVALID,
-            ],
-            [['username'], 'unique', 'message' => E::USERNAME_NOT_AVAILABLE],
-
             [['email'], 'filter', 'filter' => 'trim'],
             [['email'], 'required', 'message' => E::EMAIL_REQUIRED],
             [['email'], 'string', 'max' => 255, 'tooLong' => E::EMAIL_TOO_LONG],
