@@ -7,7 +7,7 @@ use yii\validators\StringValidator;
 /**
  * Класс должен реализовывать в себе все критерии валидации пароля пользователя
  */
-class PasswordValidate extends StringValidator {
+class PasswordValidator extends StringValidator {
 
     public $min = 8;
 

@@ -11,7 +11,7 @@ use common\models\EmailActivation;
 use common\models\UsernameHistory;
 use common\validators\EmailValidator;
 use common\validators\LanguageValidator;
-use common\validators\PasswordValidate;
+use common\validators\PasswordValidator;
 use common\validators\UsernameValidator;
 use Exception;
 use Ramsey\Uuid\Uuid;
@@ -47,7 +47,7 @@ class RegistrationForm extends ApiForm {
 
             ['password', 'required', 'message' => E::PASSWORD_REQUIRED],
             ['rePassword', 'required', 'message' => E::RE_PASSWORD_REQUIRED],
-            ['password', PasswordValidate::class],
+            ['password', PasswordValidator::class],
             ['rePassword', 'validatePasswordAndRePasswordMatch'],
 
             ['lang', LanguageValidator::class],
