@@ -2,32 +2,25 @@
 namespace codeception\api\unit\models\profile;
 
 use api\models\profile\AcceptRulesForm;
-use Codeception\Specify;
 use common\models\Account;
-use tests\codeception\api\unit\DbTestCase;
+use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use const common\LATEST_RULES_VERSION;
 
-/**
- * @property AccountFixture $accounts
- */
-class AcceptRulesFormTest extends DbTestCase {
-    use Specify;
+class AcceptRulesFormTest extends TestCase {
 
-    public function fixtures() {
+    public function _fixtures() {
         return [
             'accounts' => AccountFixture::class,
         ];
     }
 
-    public function testApplyLanguage() {
-        $this->specify('rules version bumped to latest', function() {
-            /** @var Account $account */
-            $account = Account::findOne($this->accounts['account-with-old-rules-version']);
-            $model = new AcceptRulesForm($account);
-            expect($model->agreeWithLatestRules())->true();
-            expect($account->rules_agreement_version)->equals(LATEST_RULES_VERSION);
-        });
+    public function testAgreeWithLatestRules() {
+        /** @var Account $account */
+        $account = Account::findOne($this->tester->grabFixture('accounts', 'account-with-old-rules-version'));
+        $model = new AcceptRulesForm($account);
+        $this->assertTrue($model->agreeWithLatestRules());
+        $this->assertEquals(LATEST_RULES_VERSION, $account->rules_agreement_version);
     }
 
 }

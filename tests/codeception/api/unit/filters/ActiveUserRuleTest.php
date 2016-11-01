@@ -7,8 +7,8 @@ use Codeception\Specify;
 use common\models\Account;
 use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\_support\ProtectedCaller;
-use const common\LATEST_RULES_VERSION;
 use yii\base\Action;
+use const common\LATEST_RULES_VERSION;
 
 class ActiveUserRuleTest extends TestCase {
     use Specify;

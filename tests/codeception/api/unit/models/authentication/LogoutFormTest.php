@@ -6,10 +6,10 @@ use api\models\AccountIdentity;
 use api\models\authentication\LogoutForm;
 use Codeception\Specify;
 use common\models\AccountSession;
-use tests\codeception\api\unit\DbTestCase;
+use tests\codeception\api\unit\TestCase;
 use Yii;
 
-class LogoutFormTest extends DbTestCase {
+class LogoutFormTest extends TestCase {
     use Specify;
 
     public function testValidateLogout() {

@@ -13,23 +13,19 @@ class DataBehaviorTest extends TestCase {
     use ProtectedCaller;
 
     public function testSetKey() {
-        $this->specify('setting value should change model data field', function() {
-            $model = $this->createModel();
-            /** @var DataBehavior $behavior */
-            $behavior = $model->behaviors['dataBehavior'];
-            $this->callProtected($behavior, 'setKey', 'my-key', 'my-value');
-            expect($model->_data)->equals(serialize(['my-key' => 'my-value']));
-        });
+        $model = $this->createModel();
+        /** @var DataBehavior $behavior */
+        $behavior = $model->behaviors['dataBehavior'];
+        $this->callProtected($behavior, 'setKey', 'my-key', 'my-value');
+        $this->assertEquals(serialize(['my-key' => 'my-value']), $model->_data);
     }
 
     public function testGetKey() {
-        $this->specify('getting value from exists data should work', function() {
-            $model = $this->createModel();
-            $model->_data = serialize(['some-key' => 'some-value']);
-            /** @var DataBehavior $behavior */
-            $behavior = $model->behaviors['dataBehavior'];
-            expect($this->callProtected($behavior, 'getKey', 'some-key'))->equals('some-value');
-        });
+        $model = $this->createModel();
+        $model->_data = serialize(['some-key' => 'some-value']);
+        /** @var DataBehavior $behavior */
+        $behavior = $model->behaviors['dataBehavior'];
+        $this->assertEquals('some-value', $this->callProtected($behavior, 'getKey', 'some-key'));
     }
 
     public function testGetData() {

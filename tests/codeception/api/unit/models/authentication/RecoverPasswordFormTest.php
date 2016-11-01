@@ -6,39 +6,32 @@ use api\models\authentication\RecoverPasswordForm;
 use Codeception\Specify;
 use common\models\Account;
 use common\models\EmailActivation;
-use tests\codeception\api\unit\DbTestCase;
+use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\EmailActivationFixture;
-use Yii;
 
-/**
- * @property EmailActivationFixture $emailActivations
- */
-class RecoverPasswordFormTest extends DbTestCase {
+class RecoverPasswordFormTest extends TestCase {
     use Specify;
 
-    public function fixtures() {
+    public function _fixtures() {
         return [
             'emailActivations' => EmailActivationFixture::class,
         ];
     }
 
     public function testRecoverPassword() {
-        $fixture = $this->emailActivations['freshPasswordRecovery'];
-        $this->specify('change user account password by email confirmation key', function() use ($fixture) {
-            $model = new RecoverPasswordForm([
-                'key' => $fixture['key'],
-                'newPassword' => '12345678',
-                'newRePassword' => '12345678',
-            ]);
-            $result = $model->recoverPassword();
-            expect($result)->isInstanceOf(LoginResult::class);
-            expect('session was not generated', $result->getSession())->null();
-            $activationExists = EmailActivation::find()->andWhere(['key' => $fixture['key']])->exists();
-            expect($activationExists)->false();
-            /** @var Account $account */
-            $account = Account::findOne($fixture['account_id']);
-            expect($account->validatePassword('12345678'))->true();
-        });
+        $fixture = $this->tester->grabFixture('emailActivations', 'freshPasswordRecovery');
+        $model = new RecoverPasswordForm([
+            'key' => $fixture['key'],
+            'newPassword' => '12345678',
+            'newRePassword' => '12345678',
+        ]);
+        $result = $model->recoverPassword();
+        $this->assertInstanceOf(LoginResult::class, $result);
+        $this->assertNull($result->getSession(), 'session was not generated');
+        $this->assertFalse(EmailActivation::find()->andWhere(['key' => $fixture['key']])->exists());
+        /** @var Account $account */
+        $account = Account::findOne($fixture['account_id']);
+        $this->assertTrue($account->validatePassword('12345678'));
     }
 
 }

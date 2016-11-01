@@ -11,25 +11,18 @@ class LanguageValidatorTest extends TestCase {
     use ProtectedCaller;
 
     public function testGetFilesNames() {
-        $this->specify('get list of 2 languages: ru and en', function() {
-            $model = $this->createModelWithFixturePath();
-            expect($this->callProtected($model, 'getFilesNames'))->equals(['en', 'ru']);
-        });
+        $model = $this->createModelWithFixturePath();
+        $this->assertEquals(['en', 'ru'], $this->callProtected($model, 'getFilesNames'));
     }
 
-    public function testValidateValue() {
-        $this->specify('get null, because language is supported', function() {
-            $model = $this->createModelWithFixturePath();
-            expect($this->callProtected($model, 'validateValue', 'ru'))->null();
-        });
+    public function testValidateValueSupportedLanguage() {
+        $model = $this->createModelWithFixturePath();
+        $this->assertNull($this->callProtected($model, 'validateValue', 'ru'));
+    }
 
-        $this->specify('get error message, because language is unsupported', function() {
-            $model = $this->createModelWithFixturePath();
-            expect($this->callProtected($model, 'validateValue', 'by'))->equals([
-                $model->message,
-                [],
-            ]);
-        });
+    public function testValidateNotSupportedLanguage() {
+        $model = $this->createModelWithFixturePath();
+        $this->assertEquals([$model->message, []], $this->callProtected($model, 'validateValue', 'by'));
     }
 
     /**

@@ -16,6 +16,8 @@ use yii\test\InitDbFixture;
 /**
  * This helper is used to populate the database with needed fixtures before any tests are run.
  * All fixtures will be loaded before the suite is started and unloaded after it completes.
+ *
+ * TODO: try to remove
  */
 class FixtureHelper extends Module {
 
@@ -52,14 +54,8 @@ class FixtureHelper extends Module {
             'accountSessions' => AccountSessionFixture::class,
             'emailActivations' => EmailActivationFixture::class,
             'usernamesHistory' => UsernameHistoryFixture::class,
-            'oauthClients' => [
-                'class' => OauthClientFixture::class,
-                'dataFile' => '@tests/codeception/common/fixtures/data/oauth-clients.php',
-            ],
-            'oauthSessions' => [
-                'class' => OauthSessionFixture::class,
-                'dataFile' => '@tests/codeception/common/fixtures/data/oauth-sessions.php',
-            ],
+            'oauthClients' => OauthClientFixture::class,
+            'oauthSessions' => OauthSessionFixture::class,
             'minecraftAccessKeys' => MinecraftAccessKeyFixture::class,
         ];
     }

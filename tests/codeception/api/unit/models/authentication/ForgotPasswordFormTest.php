@@ -4,41 +4,16 @@ namespace codeception\api\unit\models\authentication;
 use api\models\authentication\ForgotPasswordForm;
 use Codeception\Specify;
 use common\models\EmailActivation;
-use tests\codeception\api\unit\DbTestCase;
+use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\EmailActivationFixture;
-use Yii;
 
-/**
- * @property AccountFixture $accounts
- * @property EmailActivationFixture $emailActivations
- */
-class ForgotPasswordFormTest extends DbTestCase {
+class ForgotPasswordFormTest extends TestCase {
     use Specify;
 
-    protected function setUp() {
-        parent::setUp();
-        /** @var \yii\swiftmailer\Mailer $mailer */
-        $mailer = Yii::$app->mailer;
-        $mailer->fileTransportCallback = function () {
-            return 'testing_message.eml';
-        };
-    }
-
-    protected function tearDown() {
-        if (file_exists($this->getMessageFile())) {
-            unlink($this->getMessageFile());
-        }
-
-        parent::tearDown();
-    }
-
-    public function fixtures() {
+    public function _fixtures() {
         return [
-            'accounts' => [
-                'class' => AccountFixture::class,
-                'dataFile' => '@tests/codeception/common/fixtures/data/accounts.php',
-            ],
+            'accounts' => AccountFixture::class,
             'emailActivations' => EmailActivationFixture::class,
         ];
     }
@@ -51,7 +26,7 @@ class ForgotPasswordFormTest extends DbTestCase {
         });
 
         $this->specify('empty errors if login is exists', function() {
-            $model = new ForgotPasswordForm(['login' => $this->accounts['admin']['username']]);
+            $model = new ForgotPasswordForm(['login' => $this->tester->grabFixture('accounts', 'admin')['username']]);
             $model->validateLogin('login');
             expect($model->getErrors('login'))->isEmpty();
         });
@@ -59,13 +34,17 @@ class ForgotPasswordFormTest extends DbTestCase {
 
     public function testValidateActivity() {
         $this->specify('error.account_not_activated if account is not confirmed', function() {
-            $model = new ForgotPasswordForm(['login' => $this->accounts['not-activated-account']['username']]);
+            $model = new ForgotPasswordForm([
+                'login' => $this->tester->grabFixture('accounts', 'not-activated-account')['username'],
+            ]);
             $model->validateActivity('login');
             expect($model->getErrors('login'))->equals(['error.account_not_activated']);
         });
 
         $this->specify('empty errors if login is exists', function() {
-            $model = new ForgotPasswordForm(['login' => $this->accounts['admin']['username']]);
+            $model = new ForgotPasswordForm([
+                'login' => $this->tester->grabFixture('accounts', 'admin')['username'],
+            ]);
             $model->validateLogin('login');
             expect($model->getErrors('login'))->isEmpty();
         });
@@ -74,8 +53,8 @@ class ForgotPasswordFormTest extends DbTestCase {
     public function testValidateFrequency() {
         $this->specify('error.account_not_activated if recently was message', function() {
             $model = $this->createModel([
-                'login' => $this->accounts['admin']['username'],
-                'key' => $this->emailActivations['freshPasswordRecovery']['key'],
+                'login' => $this->tester->grabFixture('accounts', 'admin')['username'],
+                'key' => $this->tester->grabFixture('emailActivations', 'freshPasswordRecovery')['key'],
             ]);
 
             $model->validateFrequency('login');
@@ -84,8 +63,8 @@ class ForgotPasswordFormTest extends DbTestCase {
 
         $this->specify('empty errors if email was sent a long time ago', function() {
             $model = $this->createModel([
-                'login' => $this->accounts['admin']['username'],
-                'key' => $this->emailActivations['oldPasswordRecovery']['key'],
+                'login' => $this->tester->grabFixture('accounts', 'admin')['username'],
+                'key' => $this->tester->grabFixture('emailActivations', 'oldPasswordRecovery')['key'],
             ]);
 
             $model->validateFrequency('login');
@@ -94,7 +73,7 @@ class ForgotPasswordFormTest extends DbTestCase {
 
         $this->specify('empty errors if previous confirmation model not founded', function() {
             $model = $this->createModel([
-                'login' => $this->accounts['admin']['username'],
+                'login' => $this->tester->grabFixture('accounts', 'admin')['username'],
                 'key' => 'invalid-key',
             ]);
 
@@ -105,32 +84,26 @@ class ForgotPasswordFormTest extends DbTestCase {
 
     public function testForgotPassword() {
         $this->specify('successfully send message with restore password key', function() {
-            $model = new ForgotPasswordForm(['login' => $this->accounts['admin']['username']]);
+            $model = new ForgotPasswordForm(['login' => $this->tester->grabFixture('accounts', 'admin')['username']]);
             expect($model->forgotPassword())->true();
             expect($model->getEmailActivation())->notNull();
-            expect_file($this->getMessageFile())->exists();
+            $this->tester->canSeeEmailIsSent(1);
         });
     }
 
     public function testForgotPasswordResend() {
         $this->specify('successfully renew and send message with restore password key', function() {
+            $fixture = $this->tester->grabFixture('accounts', 'account-with-expired-forgot-password-message');
             $model = new ForgotPasswordForm([
-                'login' => $this->accounts['account-with-expired-forgot-password-message']['username'],
+                'login' => $fixture['username'],
             ]);
             $callTime = time();
             expect($model->forgotPassword())->true();
             $emailActivation = $model->getEmailActivation();
             expect($emailActivation)->notNull();
             expect($emailActivation->created_at)->greaterOrEquals($callTime);
-            expect_file($this->getMessageFile())->exists();
+            $this->tester->canSeeEmailIsSent(1);
         });
-    }
-
-    private function getMessageFile() {
-        /** @var \yii\swiftmailer\Mailer $mailer */
-        $mailer = Yii::$app->mailer;
-
-        return Yii::getAlias($mailer->fileTransportPath) . '/testing_message.eml';
     }
 
     /**

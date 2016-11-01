@@ -1,31 +1,35 @@
 <?php
 namespace codeception\common\unit\models;
 
-use Codeception\Specify;
-use common\models\confirmations\ForgotPassword;
-use common\models\confirmations\RegistrationConfirmation;
+use common\models\confirmations;
 use common\models\EmailActivation;
 use tests\codeception\common\fixtures\EmailActivationFixture;
-use tests\codeception\common\unit\DbTestCase;
+use tests\codeception\common\unit\TestCase;
 
-class EmailActivationTest extends DbTestCase {
-    use Specify;
+class EmailActivationTest extends TestCase {
 
-    public function fixtures() {
+    public function _fixtures() {
         return [
             'emailActivations' => EmailActivationFixture::class,
         ];
     }
 
     public function testInstantiate() {
-        $this->specify('return valid model type', function() {
-            expect(EmailActivation::findOne([
-                'type' => EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION,
-            ]))->isInstanceOf(RegistrationConfirmation::class);
-            expect(EmailActivation::findOne([
-                'type' => EmailActivation::TYPE_FORGOT_PASSWORD_KEY,
-            ]))->isInstanceOf(ForgotPassword::class);
-        });
+        $this->assertInstanceOf(confirmations\RegistrationConfirmation::class, EmailActivation::findOne([
+            'type' => EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION,
+        ]));
+
+        $this->assertInstanceOf(confirmations\ForgotPassword::class, EmailActivation::findOne([
+            'type' => EmailActivation::TYPE_FORGOT_PASSWORD_KEY,
+        ]));
+
+        $this->assertInstanceOf(confirmations\CurrentEmailConfirmation::class, EmailActivation::findOne([
+            'type' => EmailActivation::TYPE_CURRENT_EMAIL_CONFIRMATION,
+        ]));
+
+        $this->assertInstanceOf(confirmations\NewEmailConfirmation::class, EmailActivation::findOne([
+            'type' => EmailActivation::TYPE_NEW_EMAIL_CONFIRMATION,
+        ]));
     }
 
 }

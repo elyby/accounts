@@ -12,12 +12,10 @@ class EmailActivationExpirationBehaviorTest extends TestCase {
     use ProtectedCaller;
 
     public function testCalculateTime() {
-        $this->specify('just use create_time and plus passed time', function() {
-            $behavior = $this->createBehavior();
-            $time = time();
-            $behavior->owner->created_at = $time;
-            expect($this->callProtected($behavior, 'calculateTime', 10))->equals($time + 10);
-        });
+        $behavior = $this->createBehavior();
+        $time = time();
+        $behavior->owner->created_at = $time;
+        $this->assertEquals($time + 10, $this->callProtected($behavior, 'calculateTime', 10));
     }
 
     public function testCompareTime() {

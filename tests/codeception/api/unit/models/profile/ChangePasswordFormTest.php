@@ -7,19 +7,15 @@ use api\models\profile\ChangePasswordForm;
 use Codeception\Specify;
 use common\models\Account;
 use common\models\AccountSession;
-use tests\codeception\api\unit\DbTestCase;
+use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\AccountSessionFixture;
 use Yii;
 
-/**
- * @property AccountFixture $accounts
- * @property AccountSessionFixture $accountSessions
- */
-class ChangePasswordFormTest extends DbTestCase {
+class ChangePasswordFormTest extends TestCase {
     use Specify;
 
-    public function fixtures() {
+    public function _fixtures() {
         return [
             'accounts' => AccountFixture::class,
             'accountSessions' => AccountSessionFixture::class,
@@ -68,7 +64,7 @@ class ChangePasswordFormTest extends DbTestCase {
     public function testChangePassword() {
         $this->specify('successfully change password with modern hash strategy', function() {
             /** @var Account $account */
-            $account = Account::findOne($this->accounts['admin']['id']);
+            $account = Account::findOne($this->tester->grabFixture('accounts', 'admin')['id']);
             $model = new ChangePasswordForm($account, [
                 'password' => 'password_0',
                 'newPassword' => 'my-new-password',
@@ -83,7 +79,7 @@ class ChangePasswordFormTest extends DbTestCase {
 
         $this->specify('successfully change password with legacy hash strategy', function() {
             /** @var Account $account */
-            $account = Account::findOne($this->accounts['user-with-old-password-type']['id']);
+            $account = Account::findOne($this->tester->grabFixture('accounts', 'user-with-old-password-type')['id']);
             $model = new ChangePasswordForm($account, [
                 'password' => '12345678',
                 'newPassword' => 'my-new-password',
@@ -111,7 +107,7 @@ class ChangePasswordFormTest extends DbTestCase {
             ->getMock();
 
         /** @var AccountSession $session */
-        $session = AccountSession::findOne($this->accountSessions['admin2']['id']);
+        $session = AccountSession::findOne($this->tester->grabFixture('accountSessions', 'admin2')['id']);
 
         $component
             ->expects($this->any())
@@ -122,7 +118,7 @@ class ChangePasswordFormTest extends DbTestCase {
 
         $this->specify('change password with removing all session, except current', function() use ($session) {
             /** @var Account $account */
-            $account = Account::findOne($this->accounts['admin']['id']);
+            $account = Account::findOne($this->tester->grabFixture('accounts', 'admin')['id']);
 
             $model = new ChangePasswordForm($account, [
                 'password' => 'password_0',
