@@ -1,6 +1,8 @@
 <?php
 namespace api\components\User;
 
+use DateInterval;
+use DateTime;
 use Yii;
 use yii\web\IdentityInterface;
 
@@ -33,9 +35,12 @@ class RenewResult {
         /** @var Component $component */
         $component = Yii::$app->user;
 
+        $now = new DateTime();
+        $expiresIn = (clone $now)->add(new DateInterval($component->expirationTimeout));
+
         return [
             'access_token' => $this->getJwt(),
-            'expires_in' => $component->expirationTimeout,
+            'expires_in' => $expiresIn->getTimestamp() - $now->getTimestamp(),
         ];
     }
 
