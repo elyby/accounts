@@ -34,12 +34,14 @@ return [
                 [
                     'class' => yii\log\FileTarget::class,
                     'levels' => ['error', 'info'],
+                    'logVars' => [],
                     'categories' => ['legacy-authserver'],
                     'logFile' => '@runtime/logs/authserver.log',
                 ],
                 [
                     'class' => yii\log\FileTarget::class,
                     'levels' => ['error', 'info'],
+                    'logVars' => [],
                     'categories' => ['session'],
                     'logFile' => '@runtime/logs/session.log',
                 ],
