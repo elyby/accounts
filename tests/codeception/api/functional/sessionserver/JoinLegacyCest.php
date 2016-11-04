@@ -84,6 +84,17 @@ class JoinLegacyCest {
         $I->canSeeResponseContains('Ely.by authorization required');
     }
 
+    public function joinWithNilUuids(FunctionalTester $I) {
+        $I->wantTo('join to some server by legacy protocol with nil accessToken and selectedProfile');
+        $this->route->joinLegacy([
+            'sessionId' => 'token:00000000-0000-0000-0000-000000000000:00000000-0000-0000-0000-000000000000',
+            'user' => 'SomeUser',
+            'serverId' => Uuid::uuid(),
+        ]);
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContains('credentials can not be null.');
+    }
+
     private function expectSuccessResponse(FunctionalTester $I) {
         $I->seeResponseCodeIs(200);
         $I->canSeeResponseEquals('OK');
