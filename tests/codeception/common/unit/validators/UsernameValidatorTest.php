@@ -45,7 +45,7 @@ class UsernameValidatorTest extends TestCase {
 
     public function testValidateAttributePattern() {
         $shouldBeValid = [
-            'русский_ник', 'русский_ник_на_грани!', 'numbers1132', '*__*-Stars-*__*', '1-_.!?$%^&*()[]',
+            'русский_ник', 'русский_ник_на_грани!', 'numbers1132', '*__*-Stars-*__*', '1-_.!$%^&*()[]',
             '[ESP]Эрик', 'Свят_помидор;', 'зроблена_ў_беларусі:)',
         ];
         foreach($shouldBeValid as $nickname) {
@@ -55,7 +55,7 @@ class UsernameValidatorTest extends TestCase {
         }
 
         $shouldBeInvalid = [
-            'nick@name', 'spaced nick', 'im#hashed'
+            'nick@name', 'spaced nick', 'im#hashed', 'quest?ion'
         ];
         foreach($shouldBeInvalid as $nickname) {
             $model = $this->createModel($nickname);
