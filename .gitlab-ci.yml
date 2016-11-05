@@ -14,12 +14,11 @@ test:backend:
     before_script:
         - docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
         - echo "$SSH_PRIVATE_KEY" > id_rsa
+        - docker-compose -f tests/docker-compose.yml build --pull testphp
     after_script:
         - docker-compose -f tests/docker-compose.yml down -v
     script:
         - docker-compose -f tests/docker-compose.yml run --rm testphp ./vendor/bin/codecept run -c tests
-    tags:
-        - docker
 
 test:frontend:
     image: node:5.12
