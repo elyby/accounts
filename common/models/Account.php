@@ -111,34 +111,6 @@ class Account extends ActiveRecord {
     }
 
     /**
-     * Метод проверяет, может ли текущий пользователь быть автоматически авторизован
-     * для указанного клиента без запроса доступа к необходимому списку прав
-     *
-     * @param OauthClient $client
-     * @param \League\OAuth2\Server\Entity\ScopeEntity[] $scopes
-     *
-     * TODO: этому методу здесь не место.
-     *
-     * @return bool
-     */
-    public function canAutoApprove(OauthClient $client, array $scopes = []) : bool {
-        if ($client->is_trusted) {
-            return true;
-        }
-
-        /** @var OauthSession|null $session */
-        $session = $this->getOauthSessions()->andWhere(['client_id' => $client->id])->one();
-        if ($session !== null) {
-            $existScopes = $session->getScopes()->members();
-            if (empty(array_diff(array_keys($scopes), $existScopes))) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Выполняет проверку, принадлежит ли этому нику аккаунт у Mojang
      *
      * @return bool
