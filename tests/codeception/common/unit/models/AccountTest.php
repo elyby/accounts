@@ -4,6 +4,7 @@ namespace tests\codeception\common\unit\models;
 use Codeception\Specify;
 use common\components\UserPass;
 use common\models\Account;
+use tests\codeception\common\fixtures\MojangUsernameFixture;
 use tests\codeception\common\unit\TestCase;
 use Yii;
 use const common\LATEST_RULES_VERSION;
@@ -56,6 +57,10 @@ class AccountTest extends TestCase {
     }
 
     public function testHasMojangUsernameCollision() {
+        $this->tester->haveFixtures([
+            'mojangUsernames' => MojangUsernameFixture::class,
+        ]);
+
         $this->specify('Expect true if collision with current username', function() {
             $model = new Account();
             $model->username = 'ErickSkrauch';
