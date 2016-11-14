@@ -65,7 +65,6 @@ class AccountsController extends Controller {
             'username' => $account->username,
             'email' => $account->email,
             'lang' => $account->lang,
-            'shouldChangePassword' => $account->password_hash_strategy === Account::PASS_HASH_STRATEGY_OLD_ELY,
             'isActive' => $account->status === Account::STATUS_ACTIVE,
             'passwordChangedAt' => $account->password_changed_at,
             'hasMojangUsernameCollision' => $account->hasMojangUsernameCollision(),

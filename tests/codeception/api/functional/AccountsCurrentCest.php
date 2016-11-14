@@ -26,7 +26,6 @@ class AccountsCurrentCest {
             'username' => 'Admin',
             'email' => 'admin@ely.by',
             'lang' => 'en',
-            'shouldChangePassword' => false,
             'isActive' => true,
             'hasMojangUsernameCollision' => false,
             'shouldAcceptRules' => false,
