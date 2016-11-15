@@ -1,5 +1,5 @@
 <?php
-namespace console\controllers\base;
+namespace console\controllers;
 
 use Ely\Amqp\ControllerTrait;
 use Yii;
