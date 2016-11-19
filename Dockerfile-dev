@@ -1,4 +1,4 @@
-FROM registry.ely.by/elyby/accounts-php:latest-dev
+FROM registry.ely.by/elyby/accounts-php:1.0.0-dev
 
 COPY id_rsa /root/.ssh/id_rsa
 
