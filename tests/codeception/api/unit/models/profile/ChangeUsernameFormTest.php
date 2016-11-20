@@ -6,18 +6,15 @@ use api\models\profile\ChangeUsernameForm;
 use Codeception\Specify;
 use common\models\Account;
 use common\models\UsernameHistory;
-use tests\codeception\api\unit\DbTestCase;
+use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\UsernameHistoryFixture;
 use Yii;
 
-/**
- * @property AccountFixture $accounts
- */
-class ChangeUsernameFormTest extends DbTestCase {
+class ChangeUsernameFormTest extends TestCase {
     use Specify;
 
-    public function fixtures() {
+    public function _fixtures() {
         return [
             'accounts' => AccountFixture::class,
             'history' => UsernameHistoryFixture::class,
@@ -31,64 +28,43 @@ class ChangeUsernameFormTest extends DbTestCase {
     }
 
     public function testChange() {
-        $this->specify('successfully change username to new one', function() {
-            $model = new ChangeUsernameForm([
-                'password' => 'password_0',
-                'username' => 'my_new_nickname',
-            ]);
-            expect($model->change())->true();
-            expect(Account::findOne($this->getAccountId())->username)->equals('my_new_nickname');
-            expect(UsernameHistory::findOne(['username' => 'my_new_nickname']))->isInstanceOf(UsernameHistory::class);
-        });
+        $model = new ChangeUsernameForm([
+            'password' => 'password_0',
+            'username' => 'my_new_nickname',
+        ]);
+        $this->assertTrue($model->change());
+        $this->assertEquals('my_new_nickname', Account::findOne($this->getAccountId())->username);
+        $this->assertInstanceOf(UsernameHistory::class, UsernameHistory::findOne(['username' => 'my_new_nickname']));
     }
 
     public function testChangeWithoutChange() {
-        $this->specify('no new UsernameHistory record, if we don\'t change nickname', function() {
-            $model = new ChangeUsernameForm([
-                'password' => 'password_0',
-                'username' => $this->accounts['admin']['username'],
-            ]);
-            $callTime = time();
-            expect($model->change())->true();
-            expect(UsernameHistory::findOne([
-                'AND',
-                'username' => $this->accounts['admin']['username'],
-                ['>=', 'applied_in', $callTime],
-            ]))->null();
-        });
+        $username = $this->tester->grabFixture('accounts', 'admin')['username'];
+        $model = new ChangeUsernameForm([
+            'password' => 'password_0',
+            'username' => $username,
+        ]);
+        $callTime = time();
+        $this->assertTrue($model->change());
+        $this->assertNull(UsernameHistory::findOne([
+            'AND',
+            'username' => $username,
+            ['>=', 'applied_in', $callTime],
+        ]), 'no new UsernameHistory record, if we don\'t change nickname');
     }
 
     public function testChangeCase() {
-        $this->specify('username should change, if we change case of some letters', function() {
-            $newUsername = mb_strtoupper($this->accounts['admin']['username']);
-            $model = new ChangeUsernameForm([
-                'password' => 'password_0',
-                'username' => $newUsername,
-            ]);
-            expect($model->change())->true();
-            expect(Account::findOne($this->getAccountId())->username)->equals($newUsername);
-            expect(UsernameHistory::findOne(['username' => $newUsername]))->isInstanceOf(UsernameHistory::class);
-        });
-    }
-
-    public function testValidateUsername() {
-        $this->specify('error.username_not_available expected if username is already taken', function() {
-            $model = new ChangeUsernameForm([
-                'password' => 'password_0',
-                'username' => 'Jon',
-            ]);
-            $model->validateUsername('username');
-            expect($model->getErrors('username'))->equals(['error.username_not_available']);
-        });
-
-        $this->specify('error.username_not_available is NOT expected if username is already taken by CURRENT user', function() {
-            $model = new ChangeUsernameForm([
-                'password' => 'password_0',
-                'username' => $this->accounts['admin']['username'],
-            ]);
-            $model->validateUsername('username');
-            expect($model->getErrors('username'))->isEmpty();
-        });
+        $newUsername = mb_strtoupper($this->tester->grabFixture('accounts', 'admin')['username']);
+        $model = new ChangeUsernameForm([
+            'password' => 'password_0',
+            'username' => $newUsername,
+        ]);
+        $this->assertTrue($model->change());
+        $this->assertEquals($newUsername, Account::findOne($this->getAccountId())->username);
+        $this->assertInstanceOf(
+            UsernameHistory::class,
+            UsernameHistory::findOne(['username' => $newUsername]),
+            'username should change, if we change case of some letters'
+        );
     }
 
     public function testCreateTask() {
@@ -99,7 +75,7 @@ class ChangeUsernameFormTest extends DbTestCase {
     }
 
     private function getAccountId() {
-        return $this->accounts['admin']['id'];
+        return $this->tester->grabFixture('accounts', 'admin')['id'];
     }
 
 }

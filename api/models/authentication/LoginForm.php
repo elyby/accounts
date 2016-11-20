@@ -77,7 +77,7 @@ class LoginForm extends ApiForm {
         }
 
         $account = $this->getAccount();
-        if ($account->password_hash_strategy === Account::PASS_HASH_STRATEGY_OLD_ELY) {
+        if ($account->password_hash_strategy !== Account::PASS_HASH_STRATEGY_YII2) {
             $account->setPassword($this->password);
             $account->save();
         }

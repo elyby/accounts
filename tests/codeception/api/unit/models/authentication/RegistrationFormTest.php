@@ -1,53 +1,34 @@
 <?php
 namespace tests\codeception\api\models\authentication;
 
-use api\components\ReCaptcha\Validator;
+use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\authentication\RegistrationForm;
 use Codeception\Specify;
 use common\models\Account;
 use common\models\EmailActivation;
 use common\models\UsernameHistory;
-use tests\codeception\api\unit\DbTestCase;
+use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use Yii;
-use const common\LATEST_RULES_VERSION;
 use yii\web\Request;
+use const common\LATEST_RULES_VERSION;
 
-/**
- * @property array $accounts
- */
-class RegistrationFormTest extends DbTestCase {
+class RegistrationFormTest extends TestCase {
     use Specify;
 
     public function setUp() {
         parent::setUp();
-        /** @var \yii\swiftmailer\Mailer $mailer */
-        $mailer = Yii::$app->mailer;
-        $mailer->fileTransportCallback = function () {
-            return 'testing_message.eml';
-        };
         $this->mockRequest();
-        Yii::$container->set(Validator::class, new class extends Validator {
+        Yii::$container->set(ReCaptchaValidator::class, new class extends ReCaptchaValidator {
             public function validateValue($value) {
                 return null;
             }
         });
     }
 
-    protected function tearDown() {
-        if (file_exists($this->getMessageFile())) {
-            unlink($this->getMessageFile());
-        }
-
-        parent::tearDown();
-    }
-
-    public function fixtures() {
+    public function _fixtures() {
         return [
-            'accounts' => [
-                'class' => AccountFixture::class,
-                'dataFile' => '@tests/codeception/common/fixtures/data/accounts.php',
-            ],
+            'accounts' => AccountFixture::class,
         ];
     }
 
@@ -84,7 +65,7 @@ class RegistrationFormTest extends DbTestCase {
         $account = $model->signup();
 
         $this->expectSuccessRegistration($account);
-        expect('lang is set', $account->lang)->equals('ru');
+        $this->assertEquals('ru', $account->lang, 'lang is set');
     }
 
     public function testSignupWithDefaultLanguage() {
@@ -99,32 +80,32 @@ class RegistrationFormTest extends DbTestCase {
         $account = $model->signup();
 
         $this->expectSuccessRegistration($account);
-        expect('lang is set', $account->lang)->equals('en');
+        $this->assertEquals('en', $account->lang, 'lang is set');
     }
 
     /**
      * @param Account|null $account
      */
     private function expectSuccessRegistration($account) {
-        expect('user should be valid', $account)->isInstanceOf(Account::class);
-        expect('password should be correct', $account->validatePassword('some_password'))->true();
-        expect('uuid is set', $account->uuid)->notEmpty();
-        expect('registration_ip is set', $account->registration_ip)->notNull();
-        expect('actual rules version is set', $account->rules_agreement_version)->equals(LATEST_RULES_VERSION);
-        expect('user model exists in database', Account::find()->andWhere([
+        $this->assertInstanceOf(Account::class, $account, 'user should be valid');
+        $this->assertTrue($account->validatePassword('some_password'), 'password should be correct');
+        $this->assertNotEmpty($account->uuid, 'uuid is set');
+        $this->assertNotNull($account->registration_ip, 'registration_ip is set');
+        $this->assertEquals(LATEST_RULES_VERSION, $account->rules_agreement_version, 'actual rules version is set');
+        $this->assertTrue(Account::find()->andWhere([
             'username' => 'some_username',
             'email' => 'some_email@example.com',
-        ])->exists())->true();
-        expect('email activation code exists in database', EmailActivation::find()->andWhere([
+        ])->exists(), 'user model exists in database');
+        $this->assertTrue(EmailActivation::find()->andWhere([
             'account_id' => $account->id,
             'type' => EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION,
-        ])->exists())->true();
-        expect('username history record exists in database', UsernameHistory::find()->andWhere([
+        ])->exists(), 'email activation code exists in database');
+        $this->assertTrue(UsernameHistory::find()->andWhere([
             'username' => $account->username,
             'account_id' => $account->id,
             'applied_in' => $account->created_at,
-        ])->exists())->true();
-        expect_file('message file exists', $this->getMessageFile())->exists();
+        ])->exists(), 'username history record exists in database');
+        $this->tester->canSeeEmailIsSent(1);
     }
 
     // TODO: там в самой форме есть метод sendMail(), который рано или поздно должен переехать. К нему нужны будут тоже тесты
@@ -142,13 +123,6 @@ class RegistrationFormTest extends DbTestCase {
         Yii::$app->set('request', $request);
 
         return $request;
-    }
-
-    private function getMessageFile() {
-        /** @var \yii\swiftmailer\Mailer $mailer */
-        $mailer = Yii::$app->mailer;
-
-        return Yii::getAlias($mailer->fileTransportPath) . '/testing_message.eml';
     }
 
 }

@@ -2,6 +2,8 @@
 namespace api\components\User;
 
 use common\models\AccountSession;
+use DateInterval;
+use DateTime;
 use Yii;
 use yii\web\IdentityInterface;
 
@@ -45,9 +47,13 @@ class LoginResult {
     public function getAsResponse() {
         /** @var Component $component */
         $component = Yii::$app->user;
+
+        $now = new DateTime();
+        $expiresIn = (clone $now)->add(new DateInterval($component->expirationTimeout));
+
         $response = [
             'access_token' => $this->getJwt(),
-            'expires_in' => $component->expirationTimeout,
+            'expires_in' => $expiresIn->getTimestamp() - $now->getTimestamp(),
         ];
 
         $session = $this->getSession();

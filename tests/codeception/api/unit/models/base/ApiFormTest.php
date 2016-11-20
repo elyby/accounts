@@ -2,19 +2,14 @@
 namespace tests\codeception\api\models\base;
 
 use api\models\base\ApiForm;
-use Codeception\Specify;
 use tests\codeception\api\unit\TestCase;
 
 class ApiFormTest extends TestCase {
 
-    use Specify;
-
     public function testLoad() {
         $model = new DummyApiForm();
-        $this->specify('model should load data without ModelName array scope', function () use ($model) {
-            expect('model successful load data without prefix', $model->load(['field' => 'test-data']))->true();
-            expect('field is set as passed data', $model->field)->equals('test-data');
-        });
+        $this->assertTrue($model->load(['field' => 'test-data']), 'model successful load data without prefix');
+        $this->assertEquals('test-data', $model->field, 'field is set as passed data');
     }
 
 }

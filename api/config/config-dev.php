@@ -12,8 +12,5 @@ return [
             'class' => yii\debug\Module::class,
             'allowedIPs' => ['*'],
         ],
-        'gii' => [
-            'class' => yii\gii\Module::class,
-        ],
     ],
 ];

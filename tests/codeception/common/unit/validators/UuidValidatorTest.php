@@ -12,42 +12,66 @@ class UuidValidatorTest extends TestCase {
 
     public function testValidateAttribute() {
         $this->specify('expected error if passed empty value', function() {
-            $model = new UuidTestModel();
-            expect($model->validate())->false();
-            expect($model->getErrors('attribute'))->equals(['Attribute must be valid uuid']);
+            $validator = new UuidValidator();
+            $model = $this->createModel();
+            $validator->validateAttribute($model, 'attribute');
+            $this->assertTrue($model->hasErrors());
+            $this->assertEquals(['Attribute must be valid uuid'], $model->getErrors('attribute'));
         });
 
         $this->specify('expected error if passed invalid string', function() {
-            $model = new UuidTestModel();
+            $validator = new UuidValidator();
+            $model = $this->createModel();
             $model->attribute = '123456789';
-            expect($model->validate())->false();
-            expect($model->getErrors('attribute'))->equals(['Attribute must be valid uuid']);
+            $validator->validateAttribute($model, 'attribute');
+            $this->assertTrue($model->hasErrors());
+            $this->assertEquals(['Attribute must be valid uuid'], $model->getErrors('attribute'));
+        });
+
+        $this->specify('no errors if passed nil uuid and allowNil is set to true', function() {
+            $validator = new UuidValidator();
+            $model = $this->createModel();
+            $model->attribute = '00000000-0000-0000-0000-000000000000';
+            $validator->validateAttribute($model, 'attribute');
+            $this->assertFalse($model->hasErrors());
+        });
+
+        $this->specify('no errors if passed nil uuid and allowNil is set to false', function() {
+            $validator = new UuidValidator();
+            $validator->allowNil = false;
+            $model = $this->createModel();
+            $model->attribute = '00000000-0000-0000-0000-000000000000';
+            $validator->validateAttribute($model, 'attribute');
+            $this->assertTrue($model->hasErrors());
+            $this->assertEquals(['Attribute must be valid uuid'], $model->getErrors('attribute'));
         });
 
         $this->specify('no errors if passed valid uuid', function() {
-            $model = new UuidTestModel();
+            $validator = new UuidValidator();
+            $model = $this->createModel();
             $model->attribute = Uuid::uuid();
-            expect($model->validate())->true();
+            $validator->validateAttribute($model, 'attribute');
+            $this->assertFalse($model->hasErrors());
         });
 
         $this->specify('no errors if passed uuid string without dashes and converted to standart value', function() {
-            $model = new UuidTestModel();
+            $validator = new UuidValidator();
+            $model = $this->createModel();
             $originalUuid = Uuid::uuid();
             $model->attribute = str_replace('-', '', $originalUuid);
-            expect($model->validate())->true();
-            expect($model->attribute)->equals($originalUuid);
+            $validator->validateAttribute($model, 'attribute');
+            $this->assertFalse($model->hasErrors());
+            $this->assertEquals($originalUuid, $model->attribute);
         });
     }
 
-}
-
-class UuidTestModel extends Model {
-    public $attribute;
-
-    public function rules() {
-        return [
-            ['attribute', UuidValidator::class],
-        ];
+    /**
+     * @return Model
+     */
+    public function createModel() {
+        return new class extends Model {
+            public $attribute;
+        };
     }
 
 }

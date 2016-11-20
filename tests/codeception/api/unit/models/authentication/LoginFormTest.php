@@ -6,13 +6,10 @@ use api\models\AccountIdentity;
 use api\models\authentication\LoginForm;
 use Codeception\Specify;
 use common\models\Account;
-use tests\codeception\api\unit\DbTestCase;
+use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 
-/**
- * @property AccountFixture $accounts
- */
-class LoginFormTest extends DbTestCase {
+class LoginFormTest extends TestCase {
     use Specify;
 
     private $originalRemoteAddr;
@@ -28,7 +25,7 @@ class LoginFormTest extends DbTestCase {
         $_SERVER['REMOTE_ADDR'] = $this->originalRemoteAddr;
     }
 
-    public function fixtures() {
+    public function _fixtures() {
         return [
             'accounts' => AccountFixture::class,
         ];
@@ -119,7 +116,7 @@ class LoginFormTest extends DbTestCase {
     public function testLoginWithRehashing() {
         $this->specify('user, that login using account with old pass hash strategy should update it automatically', function () {
             $model = new LoginForm([
-                'login' => $this->accounts['user-with-old-password-type']['username'],
+                'login' => $this->tester->grabFixture('accounts', 'user-with-old-password-type')['username'],
                 'password' => '12345678',
             ]);
             expect($model->login())->isInstanceOf(LoginResult::class);

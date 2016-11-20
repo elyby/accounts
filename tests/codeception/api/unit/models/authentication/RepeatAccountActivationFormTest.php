@@ -1,50 +1,30 @@
 <?php
 namespace tests\codeception\api\models\authentication;
 
-use api\components\ReCaptcha\Validator;
+use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\authentication\RepeatAccountActivationForm;
 use Codeception\Specify;
 use common\models\EmailActivation;
-use tests\codeception\api\unit\DbTestCase;
+use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\EmailActivationFixture;
 use Yii;
 
-/**
- * @property array $accounts
- * @property array $activations
- */
-class RepeatAccountActivationFormTest extends DbTestCase {
+class RepeatAccountActivationFormTest extends TestCase {
     use Specify;
 
     public function setUp() {
         parent::setUp();
-        /** @var \yii\swiftmailer\Mailer $mailer */
-        $mailer = Yii::$app->mailer;
-        $mailer->fileTransportCallback = function () {
-            return 'testing_message.eml';
-        };
-        Yii::$container->set(Validator::class, new class extends Validator {
+        Yii::$container->set(ReCaptchaValidator::class, new class extends ReCaptchaValidator {
             public function validateValue($value) {
                 return null;
             }
         });
     }
 
-    protected function tearDown() {
-        if (file_exists($this->getMessageFile())) {
-            unlink($this->getMessageFile());
-        }
-
-        parent::tearDown();
-    }
-
-    public function fixtures() {
+    public function _fixtures() {
         return [
-            'accounts' => [
-                'class' => AccountFixture::class,
-                'dataFile' => '@tests/codeception/common/fixtures/data/accounts.php',
-            ],
+            'accounts' => AccountFixture::class,
             'activations' => EmailActivationFixture::class,
         ];
     }
@@ -57,13 +37,15 @@ class RepeatAccountActivationFormTest extends DbTestCase {
         });
 
         $this->specify('error.account_already_activated if passed valid email, but account already activated', function() {
-            $model = new RepeatAccountActivationForm(['email' => $this->accounts['admin']['email']]);
+            $fixture = $this->tester->grabFixture('accounts', 'admin');
+            $model = new RepeatAccountActivationForm(['email' => $fixture['email']]);
             $model->validateEmailForAccount('email');
             expect($model->getErrors('email'))->equals(['error.account_already_activated']);
         });
 
         $this->specify('no errors if passed valid email for not activated account', function() {
-            $model = new RepeatAccountActivationForm(['email' => $this->accounts['not-activated-account']['email']]);
+            $fixture = $this->tester->grabFixture('accounts', 'not-activated-account');
+            $model = new RepeatAccountActivationForm(['email' => $fixture['email']]);
             $model->validateEmailForAccount('email');
             expect($model->getErrors('email'))->isEmpty();
         });
@@ -71,17 +53,15 @@ class RepeatAccountActivationFormTest extends DbTestCase {
 
     public function testValidateExistsActivation() {
         $this->specify('error.recently_sent_message if passed email has recently sent message', function() {
-            $model = $this->createModel([
-                'emailKey' => $this->activations['freshRegistrationConfirmation']['key'],
-            ]);
+            $fixture = $this->tester->grabFixture('activations', 'freshRegistrationConfirmation');
+            $model = $this->createModel(['emailKey' => $fixture['key']]);
             $model->validateExistsActivation('email');
             expect($model->getErrors('email'))->equals(['error.recently_sent_message']);
         });
 
         $this->specify('no errors if passed email has expired activation message', function() {
-            $model = $this->createModel([
-                'emailKey' => $this->activations['oldRegistrationConfirmation']['key'],
-            ]);
+            $fixture = $this->tester->grabFixture('activations', 'oldRegistrationConfirmation');
+            $model = $this->createModel(['emailKey' => $fixture['key']]);
             $model->validateExistsActivation('email');
             expect($model->getErrors('email'))->isEmpty();
         });
@@ -91,23 +71,16 @@ class RepeatAccountActivationFormTest extends DbTestCase {
         $this->specify('no magic if we don\'t pass validation', function() {
             $model = new RepeatAccountActivationForm();
             expect($model->sendRepeatMessage())->false();
-            expect_file($this->getMessageFile())->notExists();
+            $this->tester->cantSeeEmailIsSent();
         });
 
         $this->specify('successfully send new message if previous message has expired', function() {
-            $email = $this->accounts['not-activated-account-with-expired-message']['email'];
+            $email = $this->tester->grabFixture('accounts', 'not-activated-account-with-expired-message')['email'];
             $model = new RepeatAccountActivationForm(['email' => $email]);
             expect($model->sendRepeatMessage())->true();
             expect($model->getActivation())->notNull();
-            expect_file($this->getMessageFile())->exists();
+            $this->tester->canSeeEmailIsSent(1);
         });
-    }
-
-    private function getMessageFile() {
-        /** @var \yii\swiftmailer\Mailer $mailer */
-        $mailer = Yii::$app->mailer;
-
-        return Yii::getAlias($mailer->fileTransportPath) . '/testing_message.eml';
     }
 
     /**

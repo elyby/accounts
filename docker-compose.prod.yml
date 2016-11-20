@@ -1,7 +1,7 @@
 version: '2'
 services:
     app:
-        build: .
+        image: registry.ely.by/elyby/accounts:latest
         depends_on:
             - db
             - redis

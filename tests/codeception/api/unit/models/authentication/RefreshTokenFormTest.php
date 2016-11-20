@@ -5,16 +5,13 @@ use api\components\User\RenewResult;
 use api\models\authentication\RefreshTokenForm;
 use Codeception\Specify;
 use common\models\AccountSession;
-use tests\codeception\api\unit\DbTestCase;
+use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountSessionFixture;
 
-/**
- * @property AccountSessionFixture $sessions
- */
-class RefreshTokenFormTest extends DbTestCase {
+class RefreshTokenFormTest extends TestCase {
     use Specify;
 
-    public function fixtures() {
+    public function _fixtures() {
         return [
             'sessions' => AccountSessionFixture::class,
         ];
@@ -45,11 +42,9 @@ class RefreshTokenFormTest extends DbTestCase {
     }
 
     public function testRenew() {
-        $this->specify('success renew token', function() {
-            $model = new RefreshTokenForm();
-            $model->refresh_token = $this->sessions['admin']['refresh_token'];
-            expect($model->renew())->isInstanceOf(RenewResult::class);
-        });
+        $model = new RefreshTokenForm();
+        $model->refresh_token = $this->tester->grabFixture('sessions', 'admin')['refresh_token'];
+        $this->assertInstanceOf(RenewResult::class, $model->renew());
     }
 
 }

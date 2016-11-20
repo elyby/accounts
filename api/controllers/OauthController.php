@@ -4,6 +4,7 @@ namespace api\controllers;
 use api\filters\ActiveUserRule;
 use common\components\oauth\Exception\AcceptRequiredException;
 use common\components\oauth\Exception\AccessDeniedException;
+use common\models\Account;
 use common\models\OauthClient;
 use common\models\OauthScope;
 use League\OAuth2\Server\Exception\OAuthException;
@@ -108,7 +109,7 @@ class OauthController extends Controller {
             /** @var \common\models\OauthClient $clientModel */
             $clientModel = OauthClient::findOne($client->getId());
 
-            if (!$account->canAutoApprove($clientModel, $authParams['scopes'])) {
+            if (!$this->canAutoApprove($account, $clientModel, $authParams)) {
                 $isAccept = Yii::$app->request->post('accept');
                 if ($isAccept === null) {
                     throw new AcceptRequiredException();
@@ -195,6 +196,36 @@ class OauthController extends Controller {
         }
 
         $this->getServer()->addGrantType(new RefreshTokenGrant());
+    }
+
+    /**
+     * Метод проверяет, может ли текущий пользователь быть автоматически авторизован
+     * для указанного клиента без запроса доступа к необходимому списку прав
+     *
+     * @param Account     $account
+     * @param OauthClient $client
+     * @param array       $oauthParams
+     *
+     * @return bool
+     */
+    private function canAutoApprove(Account $account, OauthClient $client, array $oauthParams) : bool {
+        if ($client->is_trusted) {
+            return true;
+        }
+
+        /** @var \League\OAuth2\Server\Entity\ScopeEntity[] $scopes */
+        $scopes = $oauthParams['scopes'];
+
+        /** @var \common\models\OauthSession|null $session */
+        $session = $account->getOauthSessions()->andWhere(['client_id' => $client->id])->one();
+        if ($session !== null) {
+            $existScopes = $session->getScopes()->members();
+            if (empty(array_diff(array_keys($scopes), $existScopes))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

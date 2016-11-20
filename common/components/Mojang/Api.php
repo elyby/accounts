@@ -4,7 +4,7 @@ namespace common\components\Mojang;
 use common\components\Mojang\exceptions\MojangApiException;
 use common\components\Mojang\exceptions\NoContentException;
 use common\components\Mojang\response\UsernameToUUIDResponse;
-use GuzzleHttp\Client as GuzzleClient;
+use Yii;
 
 class Api {
 
@@ -23,7 +23,7 @@ class Api {
             $query['atTime'] = $atTime;
         }
 
-        $response = $this->createClient()->get($this->buildUsernameToUUIDRoute($username), $query);
+        $response = $this->getClient()->get($this->buildUsernameToUUIDRoute($username), $query);
         if ($response->getStatusCode() === 204) {
             throw new NoContentException('Username not found');
         } elseif ($response->getStatusCode() !== 200) {
@@ -40,8 +40,11 @@ class Api {
         return $responseObj;
     }
 
-    protected function createClient() {
-        return new GuzzleClient();
+    /**
+     * @return \GuzzleHttp\Client
+     */
+    protected function getClient() {
+        return Yii::$app->guzzle;
     }
 
     protected function buildUsernameToUUIDRoute($username) {

@@ -3,6 +3,8 @@ namespace api\components\User;
 
 use api\models\AccountIdentity;
 use common\models\AccountSession;
+use DateInterval;
+use DateTime;
 use Emarref\Jwt\Algorithm\AlgorithmInterface;
 use Emarref\Jwt\Algorithm\Hs256;
 use Emarref\Jwt\Claim;
@@ -33,7 +35,9 @@ class Component extends YiiUserComponent {
 
     public $secret;
 
-    public $expirationTimeout = 3600; // 1h
+    public $expirationTimeout = 'PT1H';
+
+    public $sessionTimeout = 'P7D';
 
     public function init() {
         parent::init();
@@ -73,7 +77,7 @@ class Component extends YiiUserComponent {
             $session = null;
             // Если мы не сохраняем сессию, то токен должен жить подольше, чтобы
             // не прогорала сессия во время работы с аккаунтом
-            $token->addClaim(new Claim\Expiration(time() + 60 * 60 * 24 * 7));
+            $token->addClaim(new Claim\Expiration((new DateTime())->add(new DateInterval($this->sessionTimeout))));
         }
 
         $jwt = $this->serializeToken($token);
@@ -135,8 +139,8 @@ class Component extends YiiUserComponent {
      * - Юзер не авторизован
      * - Почему-то нет заголовка с токеном
      * - Во время проверки токена возникла ошибка, что привело к исключению
-     * - В токене не найдено ключа сессии. Такое возможно, если юзер выбрал "не запоминать меня" или просто старые
-     * токены, без поддержки сохранения используемой сессии
+     * - В токене не найдено ключа сессии. Такое возможно, если юзер выбрал "не запоминать меня"
+     * или просто старые токены, без поддержки сохранения используемой сессии
      *
      * @return AccountSession|null
      */
@@ -187,14 +191,14 @@ class Component extends YiiUserComponent {
      * @return Claim\AbstractClaim[]
      */
     protected function getClaims(IdentityInterface $identity) {
-        $currentTime = time();
+        $currentTime = new DateTime();
         $hostInfo = Yii::$app->request->hostInfo;
 
         return [
             new Claim\Audience($hostInfo),
             new Claim\Issuer($hostInfo),
             new Claim\IssuedAt($currentTime),
-            new Claim\Expiration($currentTime + $this->expirationTimeout),
+            new Claim\Expiration($currentTime->add(new DateInterval($this->expirationTimeout))),
             new Claim\JwtId($identity->getId()),
         ];
     }

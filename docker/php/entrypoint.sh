@@ -30,9 +30,9 @@ fi
 
 if [ "$YII_ENV" != "test" ]
 then
-    wait-for-it db:3306 -- "php /var/www/html/yii migrate/up --interactive=0"
+    wait-for-it db:3306 -s -- "php /var/www/html/yii migrate/up --interactive=0"
 else
-    wait-for-it testdb:3306 -- "php /var/www/html/tests/codeception/bin/yii migrate/up --interactive=0"
+    wait-for-it testdb:3306 -s -- "php /var/www/html/tests/codeception/bin/yii migrate/up --interactive=0"
 fi
 
 exec "$@"

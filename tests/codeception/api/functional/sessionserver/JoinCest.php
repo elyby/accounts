@@ -111,6 +111,21 @@ class JoinCest {
         ]);
     }
 
+    public function joinWithNilUuids(FunctionalTester $I) {
+        $I->wantTo('join to some server with nil accessToken and selectedProfile');
+        $this->route->join([
+            'accessToken' => '00000000-0000-0000-0000-000000000000',
+            'selectedProfile' => 'df936908-b2e1-544d-96f8-2977ec213022',
+            'serverId' => Uuid::uuid(),
+        ]);
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseIsJson();
+        $I->canSeeResponseContainsJson([
+            'error' => 'IllegalArgumentException',
+            'errorMessage' => 'credentials can not be null.',
+        ]);
+    }
+
     private function expectSuccessResponse(FunctionalTester $I) {
         $I->seeResponseCodeIs(200);
         $I->seeResponseIsJson();

@@ -4,6 +4,7 @@ namespace common\components\oauth\Storage\Yii2;
 use common\components\oauth\Entity\AuthCodeEntity;
 use common\components\oauth\Entity\SessionEntity;
 use common\models\OauthSession;
+use ErrorException;
 use League\OAuth2\Server\Entity\AccessTokenEntity as OriginalAccessTokenEntity;
 use League\OAuth2\Server\Entity\AuthCodeEntity as OriginalAuthCodeEntity;
 use League\OAuth2\Server\Entity\ScopeEntity;
@@ -67,7 +68,7 @@ class SessionStorage extends AbstractStorage implements SessionInterface {
      */
     public function getByAuthCode(OriginalAuthCodeEntity $authCode) {
         if (!$authCode instanceof AuthCodeEntity) {
-            throw new \ErrorException('This module assumes that $authCode typeof ' . AuthCodeEntity::class);
+            throw new ErrorException('This module assumes that $authCode typeof ' . AuthCodeEntity::class);
         }
 
         return $this->getSession($authCode->getSessionId());
@@ -99,11 +100,11 @@ class SessionStorage extends AbstractStorage implements SessionInterface {
             ])->scalar();
 
         if ($sessionId === false) {
-            $model = new OauthSession([
-                'client_id' => $clientId,
-                'owner_type' => $ownerType,
-                'owner_id' => $ownerId,
-            ]);
+            $model = new OauthSession();
+            $model->client_id = $clientId;
+            $model->owner_type = $ownerType;
+            $model->owner_id = $ownerId;
+            $model->client_redirect_uri = $clientRedirectUri;
 
             if (!$model->save()) {
                 throw new Exception('Cannot save ' . OauthSession::class . ' model.');

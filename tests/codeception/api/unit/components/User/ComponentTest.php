@@ -11,7 +11,7 @@ use Emarref\Jwt\Algorithm\AlgorithmInterface;
 use Emarref\Jwt\Claim\ClaimInterface;
 use Emarref\Jwt\Claim\Expiration;
 use Emarref\Jwt\Token;
-use tests\codeception\api\unit\DbTestCase;
+use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\_support\ProtectedCaller;
 use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\AccountSessionFixture;
@@ -19,11 +19,7 @@ use Yii;
 use yii\web\HeaderCollection;
 use yii\web\Request;
 
-/**
- * @property AccountFixture $accounts
- * @property AccountSessionFixture $sessions
- */
-class ComponentTest extends DbTestCase {
+class ComponentTest extends TestCase {
     use Specify;
     use ProtectedCaller;
 
@@ -37,7 +33,7 @@ class ComponentTest extends DbTestCase {
         $this->component = new Component($this->getComponentArguments());
     }
 
-    public function fixtures() {
+    public function _fixtures() {
         return [
             'accounts' => AccountFixture::class,
             'sessions' => AccountSessionFixture::class,
@@ -62,7 +58,7 @@ class ComponentTest extends DbTestCase {
 
         $this->specify('success get LoginResult object with session value if rememberMe is true', function() {
             /** @var AccountIdentity $account */
-            $account = AccountIdentity::findOne($this->accounts['admin']['id']);
+            $account = AccountIdentity::findOne($this->tester->grabFixture('accounts', 'admin')['id']);
             $result = $this->component->login($account, true);
             expect($result)->isInstanceOf(LoginResult::class);
             expect($result->getSession())->isInstanceOf(AccountSession::class);
@@ -82,7 +78,7 @@ class ComponentTest extends DbTestCase {
             $userIP = '192.168.0.1';
             $this->mockRequest($userIP);
             /** @var AccountSession $session */
-            $session = AccountSession::findOne($this->sessions['admin']['id']);
+            $session = AccountSession::findOne($this->tester->grabFixture('sessions', 'admin')['id']);
             $callTime = time();
             $result = $this->component->renew($session);
             expect($result)->isInstanceOf(RenewResult::class);
@@ -108,7 +104,7 @@ class ComponentTest extends DbTestCase {
     public function testGetActiveSession() {
         $this->specify('get used account session', function() {
             /** @var AccountIdentity $identity */
-            $identity = AccountIdentity::findOne($this->accounts['admin']['id']);
+            $identity = AccountIdentity::findOne($this->tester->grabFixture('accounts', 'admin')['id']);
             $result = $this->component->login($identity, true);
             $this->component->logout();
 
@@ -184,6 +180,7 @@ class ComponentTest extends DbTestCase {
     }
 
     /**
+     * @param string $userIP
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
     private function mockRequest($userIP = '127.0.0.1') {

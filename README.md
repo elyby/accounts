@@ -6,8 +6,11 @@
 [docker](https://docs.docker.com/engine/installation/) и его
 [docker-compose](https://docs.docker.com/compose/install/).
 
-Кроме того, нужно установить, настроить и запустить [nginx-proxy](https://gitlab.com/elyby/nginx-proxy)
+За тем нужно установить, настроить и запустить [nginx-proxy](https://gitlab.com/elyby/nginx-proxy)
 контейнер. Это делается один раз в рамках системы и в дальнейшем используется и для других проектов.
+
+Также необходимо иметь доступ к `registry.ely.by`. Для этого выполнить команду `docker login registry.ely.by`,
+ввести свой логин и пароль. Если доступа нету, то нужно его попросить у кого-нибудь, кто может его выдать.
 
 За тем сливаем репозиторий:
 

@@ -57,11 +57,10 @@ class AccessTokenStorage extends AbstractStorage implements AccessTokenInterface
      * @inheritdoc
      */
     public function create($token, $expireTime, $sessionId) {
-        $model = new OauthAccessToken([
-            'access_token' => $token,
-            'expire_time' => $expireTime,
-            'session_id' => $sessionId,
-        ]);
+        $model = new OauthAccessToken();
+        $model->access_token = $token;
+        $model->expire_time = $expireTime;
+        $model->session_id = $sessionId;
 
         if (!$model->save()) {
             throw new Exception('Cannot save ' . OauthAccessToken::class . ' model.');

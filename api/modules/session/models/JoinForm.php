@@ -90,6 +90,7 @@ class JoinForm extends Model {
         }
 
         $validator = new UuidValidator();
+        $validator->allowNil = false;
         $validator->validateAttribute($this, $attribute);
 
         if ($this->hasErrors($attribute)) {

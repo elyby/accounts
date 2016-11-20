@@ -5,7 +5,7 @@ use api\models\AccountIdentity;
 use api\models\base\KeyConfirmationForm;
 use common\helpers\Error as E;
 use common\models\EmailActivation;
-use common\validators\PasswordValidate;
+use common\validators\PasswordValidator;
 use Yii;
 use yii\base\ErrorException;
 
@@ -19,7 +19,7 @@ class RecoverPasswordForm extends KeyConfirmationForm {
         return array_merge(parent::rules(), [
             ['newPassword', 'required', 'message' => E::NEW_PASSWORD_REQUIRED],
             ['newRePassword', 'required', 'message' => E::NEW_RE_PASSWORD_REQUIRED],
-            ['newPassword', PasswordValidate::class],
+            ['newPassword', PasswordValidator::class],
             ['newRePassword', 'validatePasswordAndRePasswordMatch'],
         ]);
     }

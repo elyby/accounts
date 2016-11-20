@@ -5,14 +5,15 @@ use common\components\redis\Set;
 use yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "oauth_access_tokens".
- *
+ * Поля:
  * @property string  $access_token
  * @property string  $session_id
  * @property integer $expire_time
  *
+ * Геттеры:
  * @property Set     $scopes
  *
+ * Отношения:
  * @property OauthSession $session
  */
 class OauthAccessToken extends ActiveRecord {
@@ -26,7 +27,7 @@ class OauthAccessToken extends ActiveRecord {
     }
 
     public function getScopes() {
-        return new Set($this->getDb()->getSchema()->getRawTableName($this->tableName()), $this->access_token, 'scopes');
+        return new Set(static::getDb()->getSchema()->getRawTableName(static::tableName()), $this->access_token, 'scopes');
     }
 
     public function beforeDelete() {

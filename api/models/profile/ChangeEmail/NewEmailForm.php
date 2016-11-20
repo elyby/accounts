@@ -2,10 +2,10 @@
 namespace api\models\profile\ChangeEmail;
 
 use api\models\base\KeyConfirmationForm;
-use common\helpers\Error as E;
 use common\models\Account;
 use common\models\confirmations\NewEmailConfirmation;
 use common\models\EmailActivation;
+use common\validators\EmailValidator;
 use Yii;
 use yii\base\ErrorException;
 use yii\base\Exception;
@@ -25,26 +25,14 @@ class NewEmailForm extends KeyConfirmationForm {
         parent::__construct($config);
     }
 
-    /**
-     * @return Account
-     */
-    public function getAccount() {
-        return $this->account;
-    }
-
     public function rules() {
         return array_merge(parent::rules(), [
-            ['email', 'required', 'message' => E::EMAIL_REQUIRED],
-            ['email', 'validateEmail'],
+            ['email', EmailValidator::class],
         ]);
     }
 
-    public function validateEmail() {
-        $account = new Account();
-        $account->email = $this->email;
-        if (!$account->validate(['email'])) {
-            $this->addErrors($account->getErrors());
-        }
+    public function getAccount() : Account {
+        return $this->account;
     }
 
     public function sendNewEmailConfirmation() {

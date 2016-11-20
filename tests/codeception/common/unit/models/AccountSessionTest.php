@@ -1,35 +1,27 @@
 <?php
 namespace codeception\common\unit\models;
 
-use Codeception\Specify;
 use common\models\AccountSession;
 use tests\codeception\common\unit\TestCase;
 
 class AccountSessionTest extends TestCase {
-    use Specify;
 
     public function testGenerateRefreshToken() {
-        $this->specify('method call will set refresh_token value', function() {
-            $model = new AccountSession();
-            $model->generateRefreshToken();
-            expect($model->refresh_token)->notNull();
-        });
+        $model = new AccountSession();
+        $model->generateRefreshToken();
+        $this->assertNotNull($model->refresh_token, 'method call will set refresh_token value');
     }
 
     public function testSetIp() {
-        $this->specify('method should convert passed ip string to long', function() {
-            $model = new AccountSession();
-            $model->setIp('127.0.0.1');
-            expect($model->last_used_ip)->equals(2130706433);
-        });
+        $model = new AccountSession();
+        $model->setIp('127.0.0.1');
+        $this->assertEquals(2130706433, $model->last_used_ip, 'method should convert passed ip string to long');
     }
 
     public function testGetReadableIp() {
-        $this->specify('method should convert stored ip long into readable ip string', function() {
-            $model = new AccountSession();
-            $model->last_used_ip = 2130706433;
-            expect($model->getReadableIp())->equals('127.0.0.1');
-        });
+        $model = new AccountSession();
+        $model->last_used_ip = 2130706433;
+        $this->assertEquals('127.0.0.1', $model->getReadableIp(), 'method should convert stored long into readable ip');
     }
 
 }

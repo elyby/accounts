@@ -1,0 +1,72 @@
+stages:
+    - test
+    - build
+    - release
+
+variables:
+    CONTAINER_IMAGE: registry.ely.by/elyby/accounts
+
+test:backend:
+    image: jonaskello/docker-and-compose:1.12.1-1.8.0
+    services:
+        - docker:1.12.1-dind
+    stage: test
+    before_script:
+        - docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
+        - echo "$SSH_PRIVATE_KEY" > id_rsa
+        - docker-compose -f tests/docker-compose.yml build --pull testphp
+    after_script:
+        - docker-compose -f tests/docker-compose.yml down -v
+    script:
+        - docker-compose -f tests/docker-compose.yml run --rm testphp ./vendor/bin/codecept run -c tests
+
+test:frontend:
+    image: node:5.12
+    stage: test
+    cache:
+        paths:
+            - frontend/node_modules
+    script:
+        - cd frontend
+        - npm i --silent
+        - npm run test
+
+build:production:
+    image: docker:latest
+    stage: build
+    before_script:
+        - docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
+        - echo "$SSH_PRIVATE_KEY" > id_rsa
+    script:
+        - export IMAGE_NAME="$CONTAINER_IMAGE:latest"
+        - docker build --pull -t $IMAGE_NAME .
+    only:
+        - develop
+        - tags
+
+release:latest:
+    image: docker:latest
+    stage: release
+    variables:
+        GIT_STRATEGY: none
+    before_script:
+        - docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
+    script:
+        - docker push $CONTAINER_IMAGE:latest
+    only:
+        - develop
+        - tags
+
+release:tag:
+    image: docker:latest
+    stage: release
+    variables:
+        GIT_STRATEGY: none
+    before_script:
+        - docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
+    script:
+        - export IMAGE_NAME="$CONTAINER_IMAGE:$CI_BUILD_TAG"
+        - docker tag $CONTAINER_IMAGE:latest $IMAGE_NAME
+        - docker push $IMAGE_NAME
+    only:
+        - tags

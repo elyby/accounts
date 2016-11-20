@@ -7,6 +7,8 @@ use yii\validators\Validator;
 
 class UuidValidator extends Validator {
 
+    public $allowNil = true;
+
     public $skipOnEmpty = false;
 
     public $message = '{attribute} must be valid uuid';
@@ -16,6 +18,10 @@ class UuidValidator extends Validator {
             $uuid = Uuid::fromString($model->$attribute)->toString();
             $model->$attribute = $uuid;
         } catch (InvalidArgumentException $e) {
+            $this->addError($model, $attribute, $this->message, []);
+        }
+
+        if (isset($uuid) && $this->allowNil === false && $uuid === Uuid::NIL) {
             $this->addError($model, $attribute, $this->message, []);
         }
     }

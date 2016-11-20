@@ -4,19 +4,21 @@ namespace api\models\authentication;
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\base\ApiForm;
 use common\helpers\Error as E;
-use api\models\profile\ChangeUsernameForm;
 use common\components\UserFriendlyRandomKey;
 use common\models\Account;
 use common\models\confirmations\RegistrationConfirmation;
 use common\models\EmailActivation;
 use common\models\UsernameHistory;
+use common\validators\EmailValidator;
 use common\validators\LanguageValidator;
-use common\validators\PasswordValidate;
+use common\validators\PasswordValidator;
+use common\validators\UsernameValidator;
 use Exception;
 use Ramsey\Uuid\Uuid;
 use Yii;
 use yii\base\ErrorException;
 use yii\base\InvalidConfigException;
+use yii\helpers\ArrayHelper;
 use const common\LATEST_RULES_VERSION;
 
 class RegistrationForm extends ApiForm {
@@ -40,32 +42,17 @@ class RegistrationForm extends ApiForm {
             ['captcha', ReCaptchaValidator::class],
             ['rulesAgreement', 'required', 'message' => E::RULES_AGREEMENT_REQUIRED],
 
-            ['username', 'validateUsername', 'skipOnEmpty' => false],
-            ['email', 'validateEmail', 'skipOnEmpty' => false],
+            ['username', UsernameValidator::class],
+            ['email', EmailValidator::class],
 
             ['password', 'required', 'message' => E::PASSWORD_REQUIRED],
             ['rePassword', 'required', 'message' => E::RE_PASSWORD_REQUIRED],
-            ['password', PasswordValidate::class],
+            ['password', PasswordValidator::class],
             ['rePassword', 'validatePasswordAndRePasswordMatch'],
 
             ['lang', LanguageValidator::class],
+            ['lang', 'default', 'value' => 'en'],
         ];
-    }
-
-    public function validateUsername() {
-        $account = new Account();
-        $account->username = $this->username;
-        if (!$account->validate(['username'])) {
-            $this->addErrors($account->getErrors());
-        }
-    }
-
-    public function validateEmail() {
-        $account = new Account();
-        $account->email = $this->email;
-        if (!$account->validate(['email'])) {
-            $this->addErrors($account->getErrors());
-        }
     }
 
     public function validatePasswordAndRePasswordMatch($attribute) {
@@ -81,7 +68,7 @@ class RegistrationForm extends ApiForm {
      * @throws Exception
      */
     public function signup() {
-        if (!$this->validate()) {
+        if (!$this->validate() && !$this->canContinue($this->getFirstErrors())) {
             return null;
         }
 
@@ -117,9 +104,6 @@ class RegistrationForm extends ApiForm {
             }
 
             $this->sendMail($emailActivation, $account);
-
-            $changeUsernameForm = new ChangeUsernameForm();
-            $changeUsernameForm->createEventTask($account->id, $account->username, null);
 
             $transaction->commit();
         } catch (Exception $e) {
@@ -159,6 +143,45 @@ class RegistrationForm extends ApiForm {
         if (!$message->send()) {
             throw new ErrorException('Unable send email with activation code.');
         }
+    }
+
+    /**
+     * Метод проверяет, можно ли занять указанный при регистрации ник или e-mail. Так случается,
+     * что пользователи вводят неправильный e-mail или ник, после замечают это и пытаются вновь
+     * выпонить регистрацию. Мы не будем им мешать и просто удаляем существующие недозарегистрированные
+     * аккаунты, позволяя им зарегистрироваться.
+     *
+     * @param array $errors массив, где ключ - это поле, а значение - первая ошибка из нашего
+     * стандартного словаря ошибок
+     *
+     * @return bool
+     */
+    protected function canContinue(array $errors) : bool {
+        if (ArrayHelper::getValue($errors, 'username') === E::USERNAME_NOT_AVAILABLE) {
+            $duplicatedUsername = Account::findOne([
+                'username' => $this->username,
+                'status' => Account::STATUS_REGISTERED,
+            ]);
+
+            if ($duplicatedUsername !== null) {
+                $duplicatedUsername->delete();
+                unset($errors['username']);
+            }
+        }
+
+        if (ArrayHelper::getValue($errors, 'email') === E::EMAIL_NOT_AVAILABLE) {
+            $duplicatedEmail = Account::findOne([
+                'email' => $this->email,
+                'status' => Account::STATUS_REGISTERED,
+            ]);
+
+            if ($duplicatedEmail !== null) {
+                $duplicatedEmail->delete();
+                unset($errors['email']);
+            }
+        }
+
+        return empty($errors);
     }
 
 }
