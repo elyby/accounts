@@ -2,6 +2,7 @@ version: '2'
 services:
     testphp:
         container_name: accountelyby_testphp
+        image: account_testphp
         build:
             context: ../
             dockerfile: Dockerfile-dev
@@ -23,6 +24,7 @@ services:
 
     testdb:
         container_name: accountelyby_testdb
+        image: account_testdb
         build: ./../docker/mariadb
         environment:
             MYSQL_ROOT_PASSWORD: ""
