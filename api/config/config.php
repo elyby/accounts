@@ -27,6 +27,7 @@ return [
                     'except' => [
                         'legacy-authserver',
                         'session',
+                        'yii\web\HttpException:*',
                         'api\modules\session\exceptions\SessionServerException:*',
                         'api\modules\authserver\exceptions\AuthserverException:*',
                     ],
