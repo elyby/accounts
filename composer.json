@@ -26,7 +26,8 @@
         "emarref/jwt": "~1.0.3",
         "ely/amqp-controller": "dev-master#d7f8cdbc66c45e477c9c7d5d509bc0c1b11fd3ec",
         "ely/email-renderer": "dev-master#38a148cd5081147acc31125ddc49966b149f65cf",
-        "predis/predis": "^1.0"
+        "predis/predis": "^1.0",
+        "mito/yii2-sentry": "dev-1.0.0-dev#193b96880d30e9d3b616652a5abb3c4f28e14f2c"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",
