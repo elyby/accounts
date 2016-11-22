@@ -1,6 +1,6 @@
 <?php
 return [
-    'bootstrap' => ['debug', 'gii'],
+    'bootstrap' => ['debug'],
     'components' => [
         'reCaptcha' => [
             'public' => '6LfwqCYTAAAAAJlaJpqCdzESCjAXUC81Ca6jBHR7',
