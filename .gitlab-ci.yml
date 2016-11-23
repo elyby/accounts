@@ -37,6 +37,7 @@ build:production:
     before_script:
         - docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
         - echo "$SSH_PRIVATE_KEY" > id_rsa
+        - echo "$FRONTEND_ENV_CONFIG" > frontend/config/env.js
     script:
         - export IMAGE_NAME="$CONTAINER_IMAGE:latest"
         - docker build --pull -t $IMAGE_NAME .
