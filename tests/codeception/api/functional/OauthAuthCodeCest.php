@@ -81,7 +81,7 @@ class OauthAuthCodeCest {
     public function testCompleteActionOnWrongConditions(FunctionalTester $I) {
         $I->loggedInAsActiveAccount();
 
-        $I->wantTo('get accept_required if I dom\'t require any scope, but this is first time request');
+        $I->wantTo('get accept_required if I don\'t require any scope, but this is first time request');
         $this->route->complete($this->buildQueryParams(
             'ely',
             'http://ely.by',

@@ -20,4 +20,14 @@ return [
         'is_trusted' => 0,
         'created_at' => 1455318468,
     ],
+    'test1' => [
+        'id' => 'test1',
+        'secret' => 'eEvrKHF47sqiaX94HsX-xXzdGiz3mcsq',
+        'name' => 'Test1',
+        'description' => 'Some description',
+        'redirect_uri' => 'http://test1.net',
+        'account_id' => null,
+        'is_trusted' => 0,
+        'created_at' => 1479937982,
+    ],
 ];
