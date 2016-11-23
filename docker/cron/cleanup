@@ -1,0 +1,2 @@
+# https://crontab.guru/every-hour
+0 * * * * php /var/www/html/yii cleanup/access-tokens >/dev/null 2>&1

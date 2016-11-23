@@ -1,4 +1,8 @@
-FROM registry.ely.by/elyby/accounts-php:1.0.0
+FROM registry.ely.by/elyby/accounts-php:1.1.0
+
+# Вносим конфигурации для крона и воркеров
+COPY docker/cron/* /etc/cron.d/
+COPY docker/supervisor/* /etc/supervisor/conf.d/
 
 COPY id_rsa /root/.ssh/id_rsa
 
