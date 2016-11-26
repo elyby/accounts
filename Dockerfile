@@ -1,4 +1,4 @@
-FROM registry.ely.by/elyby/accounts-php:1.1.1
+FROM registry.ely.by/elyby/accounts-php:1.1.2
 
 # Вносим конфигурации для крона и воркеров
 COPY docker/cron/* /etc/cron.d/
