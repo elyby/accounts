@@ -63,7 +63,7 @@ return [
             'format' => yii\web\Response::FORMAT_JSON,
         ],
         'oauth' => [
-            'class' => common\components\oauth\Component::class,
+            'class' => api\components\OAuth2\Component::class,
             'grantTypes' => ['authorization_code'],
         ],
         'errorHandler' => [

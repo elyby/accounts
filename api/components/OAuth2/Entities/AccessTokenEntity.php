@@ -1,11 +1,9 @@
 <?php
-namespace common\components\oauth\Entity;
+namespace api\components\OAuth2\Entities;
 
-use League\OAuth2\Server\Entity\EntityTrait;
 use League\OAuth2\Server\Entity\SessionEntity as OriginalSessionEntity;
 
 class AccessTokenEntity extends \League\OAuth2\Server\Entity\AccessTokenEntity {
-    use EntityTrait;
 
     protected $sessionId;
 

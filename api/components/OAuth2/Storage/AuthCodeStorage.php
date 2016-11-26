@@ -1,7 +1,7 @@
 <?php
-namespace common\components\oauth\Storage\Redis;
+namespace api\components\OAuth2\Storage;
 
-use common\components\oauth\Entity\AuthCodeEntity;
+use api\components\OAuth2\Entities\AuthCodeEntity;
 use common\components\redis\Key;
 use common\components\redis\Set;
 use League\OAuth2\Server\Entity\AuthCodeEntity as OriginalAuthCodeEntity;
@@ -28,12 +28,16 @@ class AuthCodeStorage extends AbstractStorage implements AuthCodeInterface {
             return null;
         }
 
-        return (new AuthCodeEntity($this->server))->hydrate([
-            'id' => $result['id'],
-            'redirectUri' => $result['client_redirect_uri'],
-            'expireTime' => $result['expire_time'],
-            'sessionId' => $result['session_id'],
-        ]);
+        /** @var SessionStorage $sessionStorage */
+        $sessionStorage = $this->server->getSessionStorage();
+
+        $entity = new AuthCodeEntity($this->server);
+        $entity->setId($result['id']);
+        $entity->setRedirectUri($result['client_redirect_uri']);
+        $entity->setExpireTime($result['expire_time']);
+        $entity->setSession($sessionStorage->getById($result['session_id']));
+
+        return $entity;
     }
 
     /**

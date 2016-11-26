@@ -1,9 +1,9 @@
 <?php
-namespace common\components\oauth\Storage\Yii2;
+namespace api\components\OAuth2\Storage;
 
-use common\components\oauth\Entity\SessionEntity;
+use api\components\OAuth2\Entities\ClientEntity;
+use api\components\OAuth2\Entities\SessionEntity;
 use common\models\OauthClient;
-use League\OAuth2\Server\Entity\ClientEntity;
 use League\OAuth2\Server\Entity\SessionEntity as OriginalSessionEntity;
 use League\OAuth2\Server\Storage\AbstractStorage;
 use League\OAuth2\Server\Storage\ClientInterface;
@@ -18,15 +18,13 @@ class ClientStorage extends AbstractStorage implements ClientInterface {
      * @inheritdoc
      */
     public function get($clientId, $clientSecret = null, $redirectUri = null, $grantType = null) {
-        $query = OauthClient::find()
-            ->select(['id', 'name', 'secret', 'redirect_uri'])
-            ->where([OauthClient::tableName() . '.id' => $clientId]);
-
+        $query = OauthClient::find()->andWhere(['id' => $clientId]);
         if ($clientSecret !== null) {
             $query->andWhere(['secret' => $clientSecret]);
         }
 
-        $model = $query->asArray()->one();
+        /** @var OauthClient|null $model */
+        $model = $query->one();
         if ($model === null) {
             return null;
         }
@@ -39,22 +37,17 @@ class ClientStorage extends AbstractStorage implements ClientInterface {
          * Короче это нужно учесть
          */
         if ($redirectUri !== null) {
-            if ($redirectUri === self::REDIRECT_STATIC_PAGE || $redirectUri === self::REDIRECT_STATIC_PAGE_WITH_CODE) {
+            if (in_array($redirectUri, [self::REDIRECT_STATIC_PAGE, self::REDIRECT_STATIC_PAGE_WITH_CODE], true)) {
                 // Тут, наверное, нужно проверить тип приложения
             } else {
-                if (!StringHelper::startsWith($redirectUri, $model['redirect_uri'], false)) {
+                if (!StringHelper::startsWith($redirectUri, $model->redirect_uri, false)) {
                     return null;
                 }
             }
         }
 
-        $entity = new ClientEntity($this->server);
-        $entity->hydrate([
-            'id' => $model['id'],
-            'name' => $model['name'],
-            'secret' => $model['secret'],
-            'redirectUri' => $redirectUri,
-        ]);
+        $entity = $this->hydrate($model);
+        $entity->setRedirectUri($redirectUri);
 
         return $entity;
     }
@@ -67,17 +60,23 @@ class ClientStorage extends AbstractStorage implements ClientInterface {
             throw new \ErrorException('This module assumes that $session typeof ' . SessionEntity::class);
         }
 
-        $model = OauthClient::find()
-            ->select(['id', 'name'])
-            ->andWhere(['id' => $session->getClientId()])
-            ->asArray()
-            ->one();
-
+        /** @var OauthClient|null $model */
+        $model = OauthClient::findOne($session->getClientId());
         if ($model === null) {
             return null;
         }
 
-        return (new ClientEntity($this->server))->hydrate($model);
+        return $this->hydrate($model);
+    }
+
+    private function hydrate(OauthClient $model) : ClientEntity {
+        $entity = new ClientEntity($this->server);
+        $entity->setId($model->id);
+        $entity->setName($model->name);
+        $entity->setSecret($model->secret);
+        $entity->setRedirectUri($model->redirect_uri);
+
+        return $entity;
     }
 
 }

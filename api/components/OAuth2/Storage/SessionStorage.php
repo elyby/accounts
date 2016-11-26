@@ -1,8 +1,8 @@
 <?php
-namespace common\components\oauth\Storage\Yii2;
+namespace api\components\OAuth2\Storage;
 
-use common\components\oauth\Entity\AuthCodeEntity;
-use common\components\oauth\Entity\SessionEntity;
+use api\components\OAuth2\Entities\AuthCodeEntity;
+use api\components\OAuth2\Entities\SessionEntity;
 use common\models\OauthSession;
 use ErrorException;
 use League\OAuth2\Server\Entity\AccessTokenEntity as OriginalAccessTokenEntity;
@@ -20,33 +20,10 @@ class SessionStorage extends AbstractStorage implements SessionInterface {
 
     /**
      * @param string $sessionId
-     * @return OauthSession|null
-     */
-    private function getSessionModel($sessionId) {
-        if (!isset($this->cache[$sessionId])) {
-            $this->cache[$sessionId] = OauthSession::findOne($sessionId);
-        }
-
-        return $this->cache[$sessionId];
-    }
-
-    private function hydrateEntity($sessionModel) {
-        if (!$sessionModel instanceof OauthSession) {
-            return null;
-        }
-
-        return (new SessionEntity($this->server))->hydrate([
-            'id' => $sessionModel->id,
-            'client_id' => $sessionModel->client_id,
-        ])->setOwner($sessionModel->owner_type, $sessionModel->owner_id);
-    }
-
-    /**
-     * @param string $sessionId
      * @return SessionEntity|null
      */
-    public function getSession($sessionId) {
-        return $this->hydrateEntity($this->getSessionModel($sessionId));
+    public function getById($sessionId) {
+        return $this->hydrate($this->getSessionModel($sessionId));
     }
 
     /**
@@ -60,7 +37,7 @@ class SessionStorage extends AbstractStorage implements SessionInterface {
             },
         ])->one();
 
-        return $this->hydrateEntity($model);
+        return $this->hydrate($model);
     }
 
     /**
@@ -71,7 +48,7 @@ class SessionStorage extends AbstractStorage implements SessionInterface {
             throw new ErrorException('This module assumes that $authCode typeof ' . AuthCodeEntity::class);
         }
 
-        return $this->getSession($authCode->getSessionId());
+        return $this->getById($authCode->getSessionId());
     }
 
     /**
@@ -121,6 +98,23 @@ class SessionStorage extends AbstractStorage implements SessionInterface {
      */
     public function associateScope(OriginalSessionEntity $session, ScopeEntity $scope) {
         $this->getSessionModel($session->getId())->getScopes()->add($scope->getId());
+    }
+
+    private function getSessionModel(string $sessionId) : OauthSession {
+        if (!isset($this->cache[$sessionId])) {
+            $this->cache[$sessionId] = OauthSession::findOne($sessionId);
+        }
+
+        return $this->cache[$sessionId];
+    }
+
+    private function hydrate(OauthSession $sessionModel) {
+        $entity = new SessionEntity($this->server);
+        $entity->setId($sessionModel->id);
+        $entity->setClientId($sessionModel->client_id);
+        $entity->setOwner($sessionModel->owner_type, $sessionModel->owner_id);
+
+        return $entity;
     }
 
 }

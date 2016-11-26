@@ -1,5 +1,5 @@
 <?php
-namespace common\components\oauth\Storage\Redis;
+namespace api\components\OAuth2\Storage;
 
 use common\components\redis\Key;
 use League\OAuth2\Server\Entity\RefreshTokenEntity;
@@ -19,10 +19,12 @@ class RefreshTokenStorage extends AbstractStorage implements RefreshTokenInterfa
             return null;
         }
 
-        return (new RefreshTokenEntity($this->server))
-            ->setId($result['id'])
-            ->setExpireTime($result['expire_time'])
-            ->setAccessTokenId($result['access_token_id']);
+        $entity = new RefreshTokenEntity($this->server);
+        $entity->setId($result['id']);
+        $entity->setExpireTime($result['expire_time']);
+        $entity->setAccessTokenId($result['access_token_id']);
+
+        return $entity;
     }
 
     /**

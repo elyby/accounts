@@ -2,8 +2,8 @@
 namespace api\controllers;
 
 use api\filters\ActiveUserRule;
-use common\components\oauth\Exception\AcceptRequiredException;
-use common\components\oauth\Exception\AccessDeniedException;
+use api\components\OAuth2\Exceptions\AcceptRequiredException;
+use api\components\OAuth2\Exceptions\AccessDeniedException;
 use common\models\Account;
 use common\models\OauthClient;
 use common\models\OauthScope;
@@ -186,7 +186,7 @@ class OauthController extends Controller {
             }
 
             $scopes = $codeModel->getScopes();
-            if (array_search(OauthScope::OFFLINE_ACCESS, array_keys($scopes)) === false) {
+            if (array_search(OauthScope::OFFLINE_ACCESS, array_keys($scopes), true) === false) {
                 return;
             }
         } elseif ($grantType === 'refresh_token') {

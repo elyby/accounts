@@ -1,7 +1,7 @@
 <?php
-namespace common\components\oauth\Storage\Yii2;
+namespace api\components\OAuth2\Storage;
 
-use common\components\oauth\Entity\AccessTokenEntity;
+use api\components\OAuth2\Entities\AccessTokenEntity;
 use common\models\OauthAccessToken;
 use League\OAuth2\Server\Entity\AccessTokenEntity as OriginalAccessTokenEntity;
 use League\OAuth2\Server\Entity\ScopeEntity;
@@ -34,11 +34,15 @@ class AccessTokenStorage extends AbstractStorage implements AccessTokenInterface
             return null;
         }
 
-        return (new AccessTokenEntity($this->server))->hydrate([
-            'id' => $model->access_token,
-            'expireTime' => $model->expire_time,
-            'sessionId' => $model->session_id,
-        ]);
+        /** @var SessionStorage $sessionStorage */
+        $sessionStorage = $this->server->getSessionStorage();
+
+        $token = new AccessTokenEntity($this->server);
+        $token->setId($model->access_token);
+        $token->setExpireTime($model->expire_time);
+        $token->setSession($sessionStorage->getById($model->session_id));
+
+        return $token;
     }
 
     /**
