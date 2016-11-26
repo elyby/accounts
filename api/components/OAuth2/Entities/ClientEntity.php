@@ -15,7 +15,7 @@ class ClientEntity extends \League\OAuth2\Server\Entity\ClientEntity {
         $this->secret = $secret;
     }
 
-    public function setRedirectUri(string $redirectUri) {
+    public function setRedirectUri($redirectUri) {
         $this->redirectUri = $redirectUri;
     }
 
