@@ -111,8 +111,8 @@ class Component extends \yii\base\Component {
     public function sendToExchange($exchangeName, $routingKey, $message, $exchangeArgs = [], $publishArgs = []) {
         $message = $this->prepareMessage($message);
         $channel = $this->getChannel();
-        call_user_func_array([$channel, 'exchange_declare'], $this->prepareExchangeArgs($exchangeName, $exchangeArgs));
-        call_user_func_array([$channel, 'basic_publish'], $this->preparePublishArgs($message, $exchangeName, $routingKey, $publishArgs));
+        $channel->exchange_declare(...$this->prepareExchangeArgs($exchangeName, $exchangeArgs));
+        $channel->basic_publish(...$this->preparePublishArgs($message, $exchangeName, $routingKey, $publishArgs));
     }
 
     /**
