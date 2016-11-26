@@ -1,5 +1,5 @@
 <?php
-namespace api\components\OAuth2\Exceptions;
+namespace api\components\OAuth2\Exception;
 
 use League\OAuth2\Server\Exception\OAuthException;
 

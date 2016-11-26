@@ -1,5 +1,5 @@
 <?php
-namespace api\components\OAuth2\Exceptions;
+namespace api\components\OAuth2\Exception;
 
 class AccessDeniedException extends \League\OAuth2\Server\Exception\AccessDeniedException {
 

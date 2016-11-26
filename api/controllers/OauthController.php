@@ -2,8 +2,8 @@
 namespace api\controllers;
 
 use api\filters\ActiveUserRule;
-use api\components\OAuth2\Exceptions\AcceptRequiredException;
-use api\components\OAuth2\Exceptions\AccessDeniedException;
+use api\components\OAuth2\Exception\AcceptRequiredException;
+use api\components\OAuth2\Exception\AccessDeniedException;
 use common\models\Account;
 use common\models\OauthClient;
 use common\models\OauthScope;
