@@ -12,14 +12,12 @@ class ScopeStorage extends AbstractStorage implements ScopeInterface {
      * @inheritdoc
      */
     public function get($scope, $grantType = null, $clientId = null) {
-        /** @var OauthScope|null $row */
-        $row = OauthScope::findOne($scope);
-        if ($row === null) {
+        if (!in_array($scope, OauthScope::getScopes(), true)) {
             return null;
         }
 
         $entity = new ScopeEntity($this->server);
-        $entity->setId($row->id);
+        $entity->setId($scope);
 
         return $entity;
     }
