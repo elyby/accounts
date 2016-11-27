@@ -1,30 +1,31 @@
 <?php
-namespace common\components\redis;
+namespace common\components\Redis;
 
+use ArrayIterator;
 use IteratorAggregate;
 use Yii;
 
 class Set extends Key implements IteratorAggregate {
 
     /**
-     * @return \yii\redis\Connection
+     * @return Connection
      */
     public static function getDb() {
         return Yii::$app->redis;
     }
 
     public function add($value) {
-        $this->getDb()->executeCommand('SADD', [$this->key, $value]);
+        static::getDb()->sadd($this->key, $value);
         return $this;
     }
 
     public function remove($value) {
-        $this->getDb()->executeCommand('SREM', [$this->key, $value]);
+        static::getDb()->srem($this->key, $value);
         return $this;
     }
 
     public function members() {
-        return $this->getDb()->executeCommand('SMEMBERS', [$this->key]);
+        return static::getDb()->smembers($this->key);
     }
 
     public function getValue() {
@@ -32,18 +33,18 @@ class Set extends Key implements IteratorAggregate {
     }
 
     public function exists($value) {
-        return !!$this->getDb()->executeCommand('SISMEMBER', [$this->key, $value]);
+        return (bool)static::getDb()->sismember($this->key, $value);
     }
 
     public function diff(array $sets) {
-        return $this->getDb()->executeCommand('SDIFF', [$this->key, implode(' ', $sets)]);
+        return static::getDb()->sdiff([$this->key, implode(' ', $sets)]);
     }
 
     /**
      * @inheritdoc
      */
     public function getIterator() {
-        return new \ArrayIterator($this->members());
+        return new ArrayIterator($this->members());
     }
 
 }

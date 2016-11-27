@@ -1,7 +1,7 @@
 <?php
 namespace common\models;
 
-use common\components\redis\Set;
+use common\components\Redis\Set;
 use yii\db\ActiveRecord;
 
 /**

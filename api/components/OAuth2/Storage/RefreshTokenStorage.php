@@ -1,7 +1,7 @@
 <?php
 namespace api\components\OAuth2\Storage;
 
-use common\components\redis\Key;
+use common\components\Redis\Key;
 use League\OAuth2\Server\Entity\RefreshTokenEntity;
 use League\OAuth2\Server\Storage\AbstractStorage;
 use League\OAuth2\Server\Storage\RefreshTokenInterface;

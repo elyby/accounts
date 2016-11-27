@@ -2,8 +2,8 @@
 namespace api\components\OAuth2\Storage;
 
 use api\components\OAuth2\Entities\AuthCodeEntity;
-use common\components\redis\Key;
-use common\components\redis\Set;
+use common\components\Redis\Key;
+use common\components\Redis\Set;
 use League\OAuth2\Server\Entity\AuthCodeEntity as OriginalAuthCodeEntity;
 use League\OAuth2\Server\Entity\ScopeEntity;
 use League\OAuth2\Server\Storage\AbstractStorage;

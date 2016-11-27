@@ -1,5 +1,5 @@
 <?php
-namespace common\components\redis;
+namespace common\components\Redis;
 
 use InvalidArgumentException;
 use Yii;
