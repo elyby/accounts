@@ -9,18 +9,18 @@ class Key {
     protected $key;
 
     /**
-     * @return \yii\redis\Connection
+     * @return Connection
      */
     public function getRedis() {
         return Yii::$app->redis;
     }
 
-    public function getKey() {
+    public function getKey() : string {
         return $this->key;
     }
 
     public function getValue() {
-        return json_decode($this->getRedis()->get($this->key), true);
+        return $this->getRedis()->get($this->key);
     }
 
     public function setValue($value) {
@@ -29,13 +29,25 @@ class Key {
     }
 
     public function delete() {
-        $this->getRedis()->executeCommand('DEL', [$this->key]);
+        $this->getRedis()->del($this->key);
         return $this;
     }
 
+    public function exists() : bool {
+        return (bool)$this->getRedis()->exists($this->key);
+    }
+
     public function expire($ttl) {
-        $this->getRedis()->executeCommand('EXPIRE', [$this->key, $ttl]);
+        $this->getRedis()->expire($this->key, $ttl);
         return $this;
+    }
+
+    public function __construct(...$key) {
+        if (empty($key)) {
+            throw new InvalidArgumentException('You must specify at least one key.');
+        }
+
+        $this->key = $this->buildKey($key);
     }
 
     private function buildKey(array $parts) {
@@ -45,14 +57,6 @@ class Key {
         }
 
         return implode(':', $keyParts);
-    }
-
-    public function __construct(...$key) {
-        if (empty($key)) {
-            throw new InvalidArgumentException('You must specify at least one key.');
-        }
-
-        $this->key = $this->buildKey($key);
     }
 
 }

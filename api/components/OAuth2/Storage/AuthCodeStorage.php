@@ -19,7 +19,7 @@ class AuthCodeStorage extends AbstractStorage implements AuthCodeInterface {
      * @inheritdoc
      */
     public function get($code) {
-        $result = (new Key($this->dataTable, $code))->getValue();
+        $result = json_decode((new Key($this->dataTable, $code))->getValue(), true);
         if (!$result) {
             return null;
         }

@@ -23,14 +23,7 @@ class OauthRefreshTokenCest {
             'ely',
             'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM'
         ));
-        $I->canSeeResponseCodeIs(200);
-        $I->canSeeResponseIsJson();
-        $I->canSeeResponseContainsJson([
-            'token_type' => 'Bearer',
-        ]);
-        $I->canSeeResponseJsonMatchesJsonPath('$.access_token');
-        $I->canSeeResponseJsonMatchesJsonPath('$.refresh_token');
-        $I->canSeeResponseJsonMatchesJsonPath('$.expires_in');
+        $this->canSeeRefreshTokenSuccess($I);
     }
 
     public function testRefreshTokenWithSameScopes(OauthSteps $I) {
@@ -41,14 +34,26 @@ class OauthRefreshTokenCest {
             'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
             [S::MINECRAFT_SERVER_SESSION, S::OFFLINE_ACCESS]
         ));
-        $I->canSeeResponseCodeIs(200);
-        $I->canSeeResponseIsJson();
-        $I->canSeeResponseContainsJson([
-            'token_type' => 'Bearer',
-        ]);
-        $I->canSeeResponseJsonMatchesJsonPath('$.access_token');
-        $I->canSeeResponseJsonMatchesJsonPath('$.refresh_token');
-        $I->canSeeResponseJsonMatchesJsonPath('$.expires_in');
+        $this->canSeeRefreshTokenSuccess($I);
+    }
+
+    public function testRefreshTokenTwice(OauthSteps $I) {
+        $refreshToken = $I->getRefreshToken([S::MINECRAFT_SERVER_SESSION]);
+        $this->route->issueToken($this->buildParams(
+            $refreshToken,
+            'ely',
+            'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
+            [S::MINECRAFT_SERVER_SESSION, S::OFFLINE_ACCESS]
+        ));
+        $this->canSeeRefreshTokenSuccess($I);
+
+        $this->route->issueToken($this->buildParams(
+            $refreshToken,
+            'ely',
+            'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
+            [S::MINECRAFT_SERVER_SESSION, S::OFFLINE_ACCESS]
+        ));
+        $this->canSeeRefreshTokenSuccess($I);
     }
 
     public function testRefreshTokenWithNewScopes(OauthSteps $I) {
@@ -89,6 +94,17 @@ class OauthRefreshTokenCest {
         }
 
         return $params;
+    }
+
+    private function canSeeRefreshTokenSuccess(OauthSteps $I) {
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseIsJson();
+        $I->canSeeResponseContainsJson([
+            'token_type' => 'Bearer',
+        ]);
+        $I->canSeeResponseJsonMatchesJsonPath('$.access_token');
+        $I->canSeeResponseJsonMatchesJsonPath('$.expires_in');
+        $I->cantSeeResponseJsonMatchesJsonPath('$.refresh_token');
     }
 
 }

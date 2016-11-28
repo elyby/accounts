@@ -195,7 +195,10 @@ class OauthController extends Controller {
             return;
         }
 
-        $this->getServer()->addGrantType(new RefreshTokenGrant());
+        $grant = new RefreshTokenGrant();
+        $grant->setRefreshTokenRotation(false);
+
+        $this->getServer()->addGrantType($grant);
     }
 
     /**
