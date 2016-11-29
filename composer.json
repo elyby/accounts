@@ -18,7 +18,7 @@
         "yiisoft/yii2": "2.0.9",
         "yiisoft/yii2-swiftmailer": "*",
         "ramsey/uuid": "^3.5.0",
-        "league/oauth2-server": "dev-improvements#546dbfe85ae7c049cf9266281d228afe8bdd3ef6",
+        "league/oauth2-server": "dev-improvements#b9277ccd664dcb80a766b73674d21de686cb9dda",
         "yiisoft/yii2-redis": "~2.0.0",
         "guzzlehttp/guzzle": "^6.0.0",
         "php-amqplib/php-amqplib": "^2.6.2",

@@ -1,7 +1,7 @@
 <?php
 $params = array_merge(
-    require(__DIR__ . '/../../common/config/params.php'),
-    require(__DIR__ . '/params.php')
+    require __DIR__ . '/../../common/config/params.php',
+    require __DIR__ . '/params.php'
 );
 
 return [
@@ -65,6 +65,10 @@ return [
         'oauth' => [
             'class' => api\components\OAuth2\Component::class,
             'grantTypes' => ['authorization_code'],
+            'grantMap' => [
+                'authorization_code' => api\components\OAuth2\Grants\AuthCodeGrant::class,
+                'refresh_token' => api\components\OAuth2\Grants\RefreshTokenGrant::class,
+            ],
         ],
         'errorHandler' => [
             'class' => api\components\ErrorHandler::class,

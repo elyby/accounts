@@ -1,7 +1,7 @@
 <?php
 namespace api\components\OAuth2\Entities;
 
-use League\OAuth2\Server\Entity\SessionEntity;
+use League\OAuth2\Server\Entity\SessionEntity as OriginalSessionEntity;
 
 class AuthCodeEntity extends \League\OAuth2\Server\Entity\AuthCodeEntity {
 
@@ -15,7 +15,7 @@ class AuthCodeEntity extends \League\OAuth2\Server\Entity\AuthCodeEntity {
      * @inheritdoc
      * @return static
      */
-    public function setSession(SessionEntity $session) {
+    public function setSession(OriginalSessionEntity $session) {
         parent::setSession($session);
         $this->sessionId = $session->getId();
 

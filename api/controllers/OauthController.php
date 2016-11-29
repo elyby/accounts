@@ -8,7 +8,6 @@ use common\models\Account;
 use common\models\OauthClient;
 use common\models\OauthScope;
 use League\OAuth2\Server\Exception\OAuthException;
-use League\OAuth2\Server\Grant\RefreshTokenGrant;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
@@ -195,8 +194,8 @@ class OauthController extends Controller {
             return;
         }
 
-        $grant = new RefreshTokenGrant();
-        $grant->setRefreshTokenRotation(false);
+        $grantClass = Yii::$app->oauth->grantMap['refresh_token'];
+        $grant = new $grantClass;
 
         $this->getServer()->addGrantType($grant);
     }
