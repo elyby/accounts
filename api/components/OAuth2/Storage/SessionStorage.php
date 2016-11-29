@@ -11,12 +11,9 @@ use League\OAuth2\Server\Entity\ScopeEntity;
 use League\OAuth2\Server\Entity\SessionEntity as OriginalSessionEntity;
 use League\OAuth2\Server\Storage\AbstractStorage;
 use League\OAuth2\Server\Storage\SessionInterface;
-use yii\db\ActiveQuery;
 use yii\db\Exception;
 
 class SessionStorage extends AbstractStorage implements SessionInterface {
-
-    private $cache = [];
 
     /**
      * @param string $sessionId
@@ -26,23 +23,10 @@ class SessionStorage extends AbstractStorage implements SessionInterface {
         return $this->hydrate($this->getSessionModel($sessionId));
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getByAccessToken(OriginalAccessTokenEntity $accessToken) {
-        /** @var OauthSession|null $model */
-        $model = OauthSession::find()->innerJoinWith([
-            'accessTokens' => function(ActiveQuery $query) use ($accessToken) {
-                $query->andWhere(['access_token' => $accessToken->getId()]);
-            },
-        ])->one();
-
-        return $this->hydrate($model);
+        throw new ErrorException('This method is not implemented and should not be used');
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getByAuthCode(OriginalAuthCodeEntity $authCode) {
         if (!$authCode instanceof AuthCodeEntity) {
             throw new ErrorException('This module assumes that $authCode typeof ' . AuthCodeEntity::class);
@@ -51,22 +35,17 @@ class SessionStorage extends AbstractStorage implements SessionInterface {
         return $this->getById($authCode->getSessionId());
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getScopes(OriginalSessionEntity $session) {
         $result = [];
         foreach ($this->getSessionModel($session->getId())->getScopes() as $scope) {
-            // TODO: нужно проверить все выданные скоупы на их существование
-            $result[] = (new ScopeEntity($this->server))->hydrate(['id' => $scope]);
+            if ($this->server->getScopeStorage()->get($scope) !== null) {
+                $result[] = (new ScopeEntity($this->server))->hydrate(['id' => $scope]);
+            }
         }
 
         return $result;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function create($ownerType, $ownerId, $clientId, $clientRedirectUri = null) {
         $sessionId = OauthSession::find()
             ->select('id')
@@ -93,19 +72,17 @@ class SessionStorage extends AbstractStorage implements SessionInterface {
         return $sessionId;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function associateScope(OriginalSessionEntity $session, ScopeEntity $scope) {
         $this->getSessionModel($session->getId())->getScopes()->add($scope->getId());
     }
 
     private function getSessionModel(string $sessionId) : OauthSession {
-        if (!isset($this->cache[$sessionId])) {
-            $this->cache[$sessionId] = OauthSession::findOne($sessionId);
+        $session = OauthSession::findOne($sessionId);
+        if ($session === null) {
+            throw new ErrorException('Cannot find oauth session');
         }
 
-        return $this->cache[$sessionId];
+        return $session;
     }
 
     private function hydrate(OauthSession $sessionModel) {

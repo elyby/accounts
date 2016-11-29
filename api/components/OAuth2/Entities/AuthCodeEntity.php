@@ -22,4 +22,8 @@ class AuthCodeEntity extends \League\OAuth2\Server\Entity\AuthCodeEntity {
         return $this;
     }
 
+    public function setSessionId(string $sessionId) {
+        $this->sessionId = $sessionId;
+    }
+
 }

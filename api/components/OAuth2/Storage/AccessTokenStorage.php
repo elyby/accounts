@@ -2,87 +2,66 @@
 namespace api\components\OAuth2\Storage;
 
 use api\components\OAuth2\Entities\AccessTokenEntity;
-use common\models\OauthAccessToken;
+use common\components\Redis\Key;
+use common\components\Redis\Set;
 use League\OAuth2\Server\Entity\AccessTokenEntity as OriginalAccessTokenEntity;
 use League\OAuth2\Server\Entity\ScopeEntity;
 use League\OAuth2\Server\Storage\AbstractStorage;
 use League\OAuth2\Server\Storage\AccessTokenInterface;
-use yii\db\Exception;
+use yii\helpers\Json;
 
 class AccessTokenStorage extends AbstractStorage implements AccessTokenInterface {
 
-    private $cache = [];
+    public $dataTable = 'oauth_access_tokens';
 
-    /**
-     * @param string $token
-     * @return OauthAccessToken|null
-     */
-    private function getTokenModel($token) {
-        if (!isset($this->cache[$token])) {
-            $this->cache[$token] = OauthAccessToken::findOne($token);
-        }
-
-        return $this->cache[$token];
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function get($token) {
-        $model = $this->getTokenModel($token);
-        if ($model === null) {
-            return null;
-        }
-
-        /** @var SessionStorage $sessionStorage */
-        $sessionStorage = $this->server->getSessionStorage();
+        $result = Json::decode((new Key($this->dataTable, $token))->getValue());
 
         $token = new AccessTokenEntity($this->server);
-        $token->setId($model->access_token);
-        $token->setExpireTime($model->expire_time);
-        $token->setSession($sessionStorage->getById($model->session_id));
+        $token->setId($result['id']);
+        $token->setExpireTime($result['expire_time']);
+        $token->setSessionId($result['session_id']);
 
         return $token;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getScopes(OriginalAccessTokenEntity $token) {
+        $scopes = $this->scopes($token->getId());
         $entities = [];
-        foreach($this->getTokenModel($token->getId())->getScopes() as $scope) {
-            $entities[] = (new ScopeEntity($this->server))->hydrate(['id' => $scope]);
+        foreach($scopes as $scope) {
+            if ($this->server->getScopeStorage()->get($scope) !== null) {
+                $entities[] = (new ScopeEntity($this->server))->hydrate(['id' => $scope]);
+            }
         }
 
         return $entities;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function create($token, $expireTime, $sessionId) {
-        $model = new OauthAccessToken();
-        $model->access_token = $token;
-        $model->expire_time = $expireTime;
-        $model->session_id = $sessionId;
+        $payload = Json::encode([
+            'id' => $token,
+            'expire_time' => $expireTime,
+            'session_id' => $sessionId,
+        ]);
 
-        if (!$model->save()) {
-            throw new Exception('Cannot save ' . OauthAccessToken::class . ' model.');
-        }
+        $this->key($token)->setValue($payload)->expireAt($expireTime);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function associateScope(OriginalAccessTokenEntity $token, ScopeEntity $scope) {
-        $this->getTokenModel($token->getId())->getScopes()->add($scope->getId());
+        $this->scopes($token->getId())->add($scope->getId())->expireAt($token->getExpireTime());
     }
 
-    /**
-     * @inheritdoc
-     */
     public function delete(OriginalAccessTokenEntity $token) {
-        $this->getTokenModel($token->getId())->delete();
+        $this->key($token->getId())->delete();
+        $this->scopes($token->getId())->delete();
+    }
+
+    private function key(string $token) : Key {
+        return new Key($this->dataTable, $token);
+    }
+
+    private function scopes(string $token) : Set {
+        return new Set($this->dataTable, $token, 'scopes');
     }
 
 }

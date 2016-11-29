@@ -15,6 +15,7 @@ use yii\db\ActiveRecord;
  *
  * Отношения:
  * @property OauthSession $session
+ * @deprecated
  */
 class OauthAccessToken extends ActiveRecord {
 

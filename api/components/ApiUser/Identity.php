@@ -10,9 +10,9 @@ use yii\web\IdentityInterface;
 use yii\web\UnauthorizedHttpException;
 
 /**
- * @property Account $account
- * @property OauthClient $client
- * @property OauthSession $session
+ * @property Account          $account
+ * @property OauthClient      $client
+ * @property OauthSession     $session
  * @property OauthAccessToken $accessToken
  */
 class Identity implements IdentityInterface {

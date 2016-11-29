@@ -2,6 +2,7 @@
 namespace common\models;
 
 use common\components\Redis\Set;
+use Yii;
 use yii\db\ActiveRecord;
 
 /**
@@ -46,6 +47,14 @@ class OauthSession extends ActiveRecord {
         }
 
         $this->getScopes()->delete();
+        /** @var \api\components\OAuth2\Storage\RefreshTokenStorage $refreshTokensStorage */
+        $refreshTokensStorage = Yii::$app->oauth->getAuthServer()->getRefreshTokenStorage();
+        $refreshTokensSet = $refreshTokensStorage->sessionHash($this->id);
+        foreach ($refreshTokensSet->members() as $refreshTokenId) {
+            $refreshTokensStorage->delete($refreshTokensStorage->get($refreshTokenId));
+        }
+
+        $refreshTokensSet->delete();
 
         return true;
     }

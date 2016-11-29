@@ -24,7 +24,7 @@ class Key {
     }
 
     public function setValue($value) {
-        $this->getRedis()->set($this->key, json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+        $this->getRedis()->set($this->key, $value);
         return $this;
     }
 
@@ -37,8 +37,13 @@ class Key {
         return (bool)$this->getRedis()->exists($this->key);
     }
 
-    public function expire($ttl) {
+    public function expire(int $ttl) {
         $this->getRedis()->expire($this->key, $ttl);
+        return $this;
+    }
+
+    public function expireAt(int $unixTimestamp) {
+        $this->getRedis()->expireat($this->key, $unixTimestamp);
         return $this;
     }
 
