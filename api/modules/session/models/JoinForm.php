@@ -128,7 +128,7 @@ class JoinForm extends Model {
             $account = $accessModel->account;
         }
 
-        /** @var MinecraftAccessKey|\common\models\OauthAccessToken $accessModel */
+        /** @var MinecraftAccessKey|\api\components\OAuth2\Entities\AccessTokenEntity $accessModel */
         if ($accessModel->isExpired()) {
             Session::error("User with access_token = '{$accessToken}' failed join by expired access_token.");
             throw new ForbiddenOperationException('Expired access_token.');

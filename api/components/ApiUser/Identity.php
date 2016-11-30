@@ -1,24 +1,25 @@
 <?php
 namespace api\components\ApiUser;
 
+use api\components\OAuth2\Entities\AccessTokenEntity;
 use common\models\Account;
-use common\models\OauthAccessToken;
 use common\models\OauthClient;
 use common\models\OauthSession;
+use Yii;
 use yii\base\NotSupportedException;
 use yii\web\IdentityInterface;
 use yii\web\UnauthorizedHttpException;
 
 /**
- * @property Account          $account
- * @property OauthClient      $client
- * @property OauthSession     $session
- * @property OauthAccessToken $accessToken
+ * @property Account           $account
+ * @property OauthClient       $client
+ * @property OauthSession      $session
+ * @property AccessTokenEntity $accessToken
  */
 class Identity implements IdentityInterface {
 
     /**
-     * @var OauthAccessToken
+     * @var AccessTokenEntity
      */
     private $_accessToken;
 
@@ -26,8 +27,7 @@ class Identity implements IdentityInterface {
      * @inheritdoc
      */
     public static function findIdentityByAccessToken($token, $type = null) {
-        /** @var OauthAccessToken|null $model */
-        $model = OauthAccessToken::findOne($token);
+        $model = Yii::$app->oauth->getAuthServer()->getAccessTokenStorage()->get($token);
         if ($model === null) {
             throw new UnauthorizedHttpException('Incorrect token');
         } elseif ($model->isExpired()) {
@@ -37,7 +37,7 @@ class Identity implements IdentityInterface {
         return new static($model);
     }
 
-    private function __construct(OauthAccessToken $accessToken) {
+    private function __construct(AccessTokenEntity $accessToken) {
         $this->_accessToken = $accessToken;
     }
 
@@ -50,20 +50,20 @@ class Identity implements IdentityInterface {
     }
 
     public function getSession() : OauthSession {
-        return $this->_accessToken->session;
+        return OauthSession::findOne($this->_accessToken->getSessionId());
     }
 
-    public function getAccessToken() : OauthAccessToken {
+    public function getAccessToken() : AccessTokenEntity {
         return $this->_accessToken;
     }
 
     /**
-     * Этот метод используется для получения пользователя, к которому привязаны права.
+     * Этот метод используется для получения токена, к которому привязаны права.
      * У нас права привязываются к токенам, так что возвращаем именно его id.
      * @inheritdoc
      */
     public function getId() {
-        return $this->_accessToken->access_token;
+        return $this->_accessToken->getId();
     }
 
     public function getAuthKey() {
