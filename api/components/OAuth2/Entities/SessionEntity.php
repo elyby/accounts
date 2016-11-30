@@ -1,7 +1,7 @@
 <?php
-namespace common\components\oauth\Entity;
+namespace api\components\OAuth2\Entities;
 
-use League\OAuth2\Server\Entity\ClientEntity;
+use League\OAuth2\Server\Entity\ClientEntity as OriginalClientEntity;
 use League\OAuth2\Server\Entity\EntityTrait;
 
 class SessionEntity extends \League\OAuth2\Server\Entity\SessionEntity {
@@ -13,15 +13,15 @@ class SessionEntity extends \League\OAuth2\Server\Entity\SessionEntity {
         return $this->clientId;
     }
 
-    /**
-     * @inheritdoc
-     * @return static
-     */
-    public function associateClient(ClientEntity $client) {
+    public function associateClient(OriginalClientEntity $client) {
         parent::associateClient($client);
         $this->clientId = $client->getId();
 
         return $this;
+    }
+
+    public function setClientId(string $clientId) {
+        $this->clientId = $clientId;
     }
 
 }

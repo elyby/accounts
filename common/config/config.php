@@ -3,7 +3,7 @@ return [
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'components' => [
         'cache' => [
-            'class' => yii\redis\Cache::class,
+            'class' => common\components\Redis\Cache::class,
             'redis' => 'redis',
         ],
         'db' => [
@@ -24,7 +24,7 @@ return [
             'passwordHashStrategy' => 'password_hash',
         ],
         'redis' => [
-            'class' => yii\redis\Connection::class,
+            'class' => common\components\Redis\Connection::class,
             'hostname' => 'redis',
             'password' => null,
             'port' => 6379,

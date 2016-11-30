@@ -1,8 +1,8 @@
 <?php
-namespace common\components\oauth\Storage\Yii2;
+namespace api\components\OAuth2\Storage;
 
-use common\components\oauth\Entity\AuthCodeEntity;
-use common\components\oauth\Entity\SessionEntity;
+use api\components\OAuth2\Entities\AuthCodeEntity;
+use api\components\OAuth2\Entities\SessionEntity;
 use common\models\OauthSession;
 use ErrorException;
 use League\OAuth2\Server\Entity\AccessTokenEntity as OriginalAccessTokenEntity;
@@ -11,85 +11,41 @@ use League\OAuth2\Server\Entity\ScopeEntity;
 use League\OAuth2\Server\Entity\SessionEntity as OriginalSessionEntity;
 use League\OAuth2\Server\Storage\AbstractStorage;
 use League\OAuth2\Server\Storage\SessionInterface;
-use yii\db\ActiveQuery;
 use yii\db\Exception;
 
 class SessionStorage extends AbstractStorage implements SessionInterface {
-
-    private $cache = [];
-
-    /**
-     * @param string $sessionId
-     * @return OauthSession|null
-     */
-    private function getSessionModel($sessionId) {
-        if (!isset($this->cache[$sessionId])) {
-            $this->cache[$sessionId] = OauthSession::findOne($sessionId);
-        }
-
-        return $this->cache[$sessionId];
-    }
-
-    private function hydrateEntity($sessionModel) {
-        if (!$sessionModel instanceof OauthSession) {
-            return null;
-        }
-
-        return (new SessionEntity($this->server))->hydrate([
-            'id' => $sessionModel->id,
-            'client_id' => $sessionModel->client_id,
-        ])->setOwner($sessionModel->owner_type, $sessionModel->owner_id);
-    }
 
     /**
      * @param string $sessionId
      * @return SessionEntity|null
      */
-    public function getSession($sessionId) {
-        return $this->hydrateEntity($this->getSessionModel($sessionId));
+    public function getById($sessionId) {
+        return $this->hydrate($this->getSessionModel($sessionId));
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getByAccessToken(OriginalAccessTokenEntity $accessToken) {
-        /** @var OauthSession|null $model */
-        $model = OauthSession::find()->innerJoinWith([
-            'accessTokens' => function(ActiveQuery $query) use ($accessToken) {
-                $query->andWhere(['access_token' => $accessToken->getId()]);
-            },
-        ])->one();
-
-        return $this->hydrateEntity($model);
+        throw new ErrorException('This method is not implemented and should not be used');
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getByAuthCode(OriginalAuthCodeEntity $authCode) {
         if (!$authCode instanceof AuthCodeEntity) {
             throw new ErrorException('This module assumes that $authCode typeof ' . AuthCodeEntity::class);
         }
 
-        return $this->getSession($authCode->getSessionId());
+        return $this->getById($authCode->getSessionId());
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getScopes(OriginalSessionEntity $session) {
         $result = [];
         foreach ($this->getSessionModel($session->getId())->getScopes() as $scope) {
-            // TODO: нужно проверить все выданные скоупы на их существование
-            $result[] = (new ScopeEntity($this->server))->hydrate(['id' => $scope]);
+            if ($this->server->getScopeStorage()->get($scope) !== null) {
+                $result[] = (new ScopeEntity($this->server))->hydrate(['id' => $scope]);
+            }
         }
 
         return $result;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function create($ownerType, $ownerId, $clientId, $clientRedirectUri = null) {
         $sessionId = OauthSession::find()
             ->select('id')
@@ -116,11 +72,26 @@ class SessionStorage extends AbstractStorage implements SessionInterface {
         return $sessionId;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function associateScope(OriginalSessionEntity $session, ScopeEntity $scope) {
         $this->getSessionModel($session->getId())->getScopes()->add($scope->getId());
+    }
+
+    private function getSessionModel(string $sessionId) : OauthSession {
+        $session = OauthSession::findOne($sessionId);
+        if ($session === null) {
+            throw new ErrorException('Cannot find oauth session');
+        }
+
+        return $session;
+    }
+
+    private function hydrate(OauthSession $sessionModel) {
+        $entity = new SessionEntity($this->server);
+        $entity->setId($sessionModel->id);
+        $entity->setClientId($sessionModel->client_id);
+        $entity->setOwner($sessionModel->owner_type, $sessionModel->owner_id);
+
+        return $entity;
     }
 
 }

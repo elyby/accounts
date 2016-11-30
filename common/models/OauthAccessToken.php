@@ -1,7 +1,7 @@
 <?php
 namespace common\models;
 
-use common\components\redis\Set;
+use common\components\Redis\Set;
 use yii\db\ActiveRecord;
 
 /**
@@ -15,6 +15,7 @@ use yii\db\ActiveRecord;
  *
  * Отношения:
  * @property OauthSession $session
+ * @deprecated
  */
 class OauthAccessToken extends ActiveRecord {
 
