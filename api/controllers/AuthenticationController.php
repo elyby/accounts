@@ -53,7 +53,7 @@ class AuthenticationController extends Controller {
         if (($result = $model->login()) === false) {
             $data = [
                 'success' => false,
-                'errors' => $this->normalizeModelErrors($model->getErrors()),
+                'errors' => $model->getFirstErrors(),
             ];
 
             if (ArrayHelper::getValue($data['errors'], 'login') === E::ACCOUNT_NOT_ACTIVATED) {
@@ -83,7 +83,7 @@ class AuthenticationController extends Controller {
         if ($model->forgotPassword() === false) {
             $data = [
                 'success' => false,
-                'errors' => $this->normalizeModelErrors($model->getErrors()),
+                'errors' => $model->getFirstErrors(),
             ];
 
             if (ArrayHelper::getValue($data['errors'], 'login') === E::RECENTLY_SENT_MESSAGE) {
@@ -119,7 +119,7 @@ class AuthenticationController extends Controller {
         if (($result = $model->recoverPassword()) === false) {
             return [
                 'success' => false,
-                'errors' => $this->normalizeModelErrors($model->getErrors()),
+                'errors' => $model->getFirstErrors(),
             ];
         }
 
@@ -134,7 +134,7 @@ class AuthenticationController extends Controller {
         if (($result = $model->renew()) === false) {
             return [
                 'success' => false,
-                'errors' => $this->normalizeModelErrors($model->getErrors()),
+                'errors' => $model->getFirstErrors(),
             ];
         }
 

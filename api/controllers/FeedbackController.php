@@ -27,7 +27,7 @@ class FeedbackController extends Controller {
         if (!$model->sendMessage()) {
             return [
                 'success' => false,
-                'errors' => $this->normalizeModelErrors($model->getErrors()),
+                'errors' => $model->getFirstErrors(),
             ];
         }
 

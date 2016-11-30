@@ -1,7 +1,6 @@
 <?php
 namespace api\controllers;
 
-use api\traits\ApiNormalize;
 use Yii;
 use yii\filters\auth\HttpBearerAuth;
 
@@ -12,7 +11,6 @@ use yii\filters\auth\HttpBearerAuth;
  * @mixin \yii\filters\auth\CompositeAuth
  */
 class Controller extends \yii\rest\Controller {
-    use ApiNormalize;
 
     public function behaviors() {
         $parentBehaviors = parent::behaviors();
@@ -22,10 +20,11 @@ class Controller extends \yii\rest\Controller {
             'user' => Yii::$app->getUser(),
         ];
 
-        // xml нам не понадобится
-        unset($parentBehaviors['contentNegotiator']['formats']['application/xml']);
-        // rate limiter здесь не применяется
-        unset($parentBehaviors['rateLimiter']);
+        // xml и rate limiter нам не понадобятся
+        unset(
+            $parentBehaviors['contentNegotiator']['formats']['application/xml'],
+            $parentBehaviors['rateLimiter']
+        );
 
         return $parentBehaviors;
     }

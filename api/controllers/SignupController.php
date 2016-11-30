@@ -43,7 +43,7 @@ class SignupController extends Controller {
         if (!$model->signup()) {
             return [
                 'success' => false,
-                'errors' => $this->normalizeModelErrors($model->getErrors()),
+                'errors' => $model->getFirstErrors(),
             ];
         }
 
@@ -58,7 +58,7 @@ class SignupController extends Controller {
         if (!$model->sendRepeatMessage()) {
             $response = [
                 'success' => false,
-                'errors' => $this->normalizeModelErrors($model->getErrors()),
+                'errors' => $model->getFirstErrors(),
             ];
 
             if (ArrayHelper::getValue($response['errors'], 'email') === E::RECENTLY_SENT_MESSAGE) {
@@ -83,7 +83,7 @@ class SignupController extends Controller {
         if (!($result = $model->confirm())) {
             return [
                 'success' => false,
-                'errors' => $this->normalizeModelErrors($model->getErrors()),
+                'errors' => $model->getFirstErrors(),
             ];
         }
 
