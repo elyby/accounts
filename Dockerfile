@@ -11,7 +11,7 @@ RUN chmod 400 ~/.ssh/id_rsa \
  && eval $(ssh-agent -s) \
  && ssh-add /root/.ssh/id_rsa \
  && touch /root/.ssh/known_hosts \
- && ssh-keyscan gitlab.com >> /root/.ssh/known_hosts
+ && ssh-keyscan gitlab.com gitlab.ely.by >> /root/.ssh/known_hosts
 
 # Копируем composer.json в родительскую директорию, которая не будет синкаться с хостом через
 # volume на dev окружении. В entrypoint эта папка будет скопирована обратно.
