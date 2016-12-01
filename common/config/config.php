@@ -22,7 +22,8 @@ return [
         ],
         'sentry' => [
             'class' => mito\sentry\SentryComponent::class,
-            'dsn' => 'https://9f37c63079e24f35b585ab61dd7ee068:b501bfc8d9fc49ccadbf16731705b222@sentry.ely.by/3',
+            'enabled' => !empty(getenv('SENTRY_DSN')),
+            'dsn' => getenv('SENTRY_DSN'),
             'environment' => YII_ENV_DEV ? 'development' : 'production',
             'jsNotifier' => false,
             'client' => [
