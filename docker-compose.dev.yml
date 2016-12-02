@@ -13,7 +13,7 @@ services:
         env_file: .env
 
     web:
-        build: ./docker/nginx
+        image: registry.ely.by/elyby/accounts-nginx:latest
         volumes_from:
             - app
         links:
