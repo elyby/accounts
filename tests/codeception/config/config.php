@@ -10,25 +10,8 @@ return [
         ],
     ],
     'components' => [
-        'db' => [
-            'dsn' => 'mysql:host=testdb;dbname=ely_accounts_test',
-            'username' => 'ely_accounts_tester',
-            'password' => 'ely_accounts_tester_password',
-        ],
-        'mailer' => [
-            'useFileTransport' => true,
-        ],
         'urlManager' => [
             'showScriptName' => true,
-        ],
-        'redis' => [
-            'hostname' => 'testredis',
-        ],
-        'amqp' => [
-            'host' => 'testrabbit',
-            'user' => 'ely-accounts-tester',
-            'password' => 'tester-password',
-            'vhost' => '/account.ely.by/tests',
         ],
         'security' => [
             // Для тестов нам не сильно важна безопасность, а вот время прохождения тестов значительно сокращается
