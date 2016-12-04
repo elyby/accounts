@@ -9,7 +9,6 @@ services:
         depends_on:
             - testdb
             - testredis
-            - testrabbit
         volumes:
             - ./..:/var/www/html
         environment:
@@ -22,11 +21,6 @@ services:
             DB_PASSWORD: "ely_accounts_tester_password"
             # Redis config
             REDIS_HOST: "testredis"
-            # RabbitMQ config
-            RABBITMQ_HOST: "testrabbit"
-            RABBITMQ_USER: "ely-accounts-tester"
-            RABBITMQ_PASS: "tester-password"
-            RABBITMQ_VHOST: "/account.ely.by/tests"
             # Это я потом, когда-нибудь, уберу
             XDEBUG_CONFIG: "remote_host=10.254.254.254"
             PHP_IDE_CONFIG: "serverName=docker"
@@ -45,11 +39,3 @@ services:
     testredis:
         container_name: accountelyby_testredis
         image: redis:3.0-alpine
-
-    testrabbit:
-        container_name: accountelyby_testrabbit
-        image: rabbitmq:3.6
-        environment:
-            RABBITMQ_DEFAULT_USER: "ely-accounts-tester"
-            RABBITMQ_DEFAULT_PASS: "tester-password"
-            RABBITMQ_DEFAULT_VHOST: "/account.ely.by/tests"
