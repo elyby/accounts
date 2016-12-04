@@ -18,9 +18,8 @@ class ConfirmNewEmailFormTest extends TestCase {
     }
 
     public function testChangeEmail() {
-        $accountId = $this->tester->grabFixture('accounts', 'account-with-change-email-finish-state')['id'];
         /** @var Account $account */
-        $account = Account::findOne($accountId);
+        $account = Account::findOne($this->getAccountId());
         $newEmailConfirmationFixture = $this->tester->grabFixture('emailActivations', 'newEmailConfirmation');
         $model = new ConfirmNewEmailForm($account, [
             'key' => $newEmailConfirmationFixture['key'],
@@ -32,6 +31,23 @@ class ConfirmNewEmailFormTest extends TestCase {
         ]));
         $data = unserialize($newEmailConfirmationFixture['_data']);
         $this->assertEquals($data['newEmail'], $account->email);
+        $this->tester->canSeeAmqpMessageIsCreated('events');
+    }
+
+    public function testCreateTask() {
+        /** @var Account $account */
+        $account = Account::findOne($this->getAccountId());
+        $model = new ConfirmNewEmailForm($account);
+        $model->createTask(1, 'test1@ely.by', 'test@ely.by');
+        $message = $this->tester->grabLastSentAmqpMessage('events');
+        $body = json_decode($message->getBody(), true);
+        $this->assertEquals(1, $body['accountId']);
+        $this->assertEquals('test1@ely.by', $body['newEmail']);
+        $this->assertEquals('test@ely.by', $body['oldEmail']);
+    }
+
+    private function getAccountId() {
+        return $this->tester->grabFixture('accounts', 'account-with-change-email-finish-state')['id'];
     }
 
 }

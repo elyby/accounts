@@ -4,6 +4,7 @@ modules:
         - Filesystem
         - Yii2
         - tests\codeception\common\_support\FixtureHelper
+        - tests\codeception\common\_support\amqp\Helper
         - Redis
         - Asserts
         - REST:
@@ -11,8 +12,8 @@ modules:
     config:
         Yii2:
             configFile: '../config/api/functional.php'
-            cleanup: true
+            cleanup: false
         Redis:
-            host: testredis
+            host: "%REDIS_HOST%"
             port: 6379
             database: 0

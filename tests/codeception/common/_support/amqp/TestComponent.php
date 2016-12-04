@@ -1,10 +1,16 @@
 <?php
-namespace tests\codeception\common\_support;
+namespace tests\codeception\common\_support\amqp;
 
 use common\components\RabbitMQ\Component;
 use PhpAmqpLib\Connection\AbstractConnection;
 
-class RabbitMQComponent extends Component {
+class TestComponent extends Component {
+
+    private $sentMessages = [];
+
+    public function init() {
+        \yii\base\Component::init();
+    }
 
     public function getConnection() {
         /** @noinspection MagicMethodsValidityInspection */
@@ -27,7 +33,26 @@ class RabbitMQComponent extends Component {
     }
 
     public function sendToExchange($exchangeName, $routingKey, $message, $exchangeArgs = [], $publishArgs = []) {
-        // ничего не делаем
+        $this->sentMessages[$exchangeName][] = $this->prepareMessage($message);
+    }
+
+    /**
+     * @param string|null $exchangeName
+     * @return \PhpAmqpLib\Message\AMQPMessage[]
+     */
+    public function getSentMessages(string $exchangeName = null) : array {
+        if ($exchangeName !== null) {
+            return $this->sentMessages[$exchangeName] ?? [];
+        } else {
+            $messages = [];
+            foreach($this->sentMessages as $exchangeGroup) {
+                foreach ($exchangeGroup as $message) {
+                    $messages[] = $message;
+                }
+            }
+
+            return $messages;
+        }
     }
 
 }

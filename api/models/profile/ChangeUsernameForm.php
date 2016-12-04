@@ -28,15 +28,19 @@ class ChangeUsernameForm extends ApiForm {
         ];
     }
 
-    public function change() {
+    public function change() : bool {
         if (!$this->validate()) {
             return false;
         }
 
-        $transaction = Yii::$app->db->beginTransaction();
         $account = $this->getAccount();
-        $oldNickname = $account->username;
+        if ($this->username === $account->username) {
+            return true;
+        }
+
+        $transaction = Yii::$app->db->beginTransaction();
         try {
+            $oldNickname = $account->username;
             $account->username = $this->username;
             if (!$account->save()) {
                 throw new ErrorException('Cannot save account model with new username');
