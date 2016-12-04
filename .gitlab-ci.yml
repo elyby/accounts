@@ -28,8 +28,8 @@ test:frontend:
             - frontend/node_modules
     script:
         - cd frontend
-        - npm i --silent
-        - npm run test
+        - npm i --silent > /dev/null
+        - npm run test --silent
 
 build:production:
     image: docker:latest
