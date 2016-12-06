@@ -4,6 +4,7 @@ stages:
     - release
 
 variables:
+    DOCKER_DRIVER: aufs
     CONTAINER_IMAGE: "registry.ely.by/elyby/accounts"
 
 test:backend:
