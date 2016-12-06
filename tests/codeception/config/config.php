@@ -17,5 +17,8 @@ return [
             // Для тестов нам не сильно важна безопасность, а вот время прохождения тестов значительно сокращается
             'passwordHashCost' => 4,
         ],
+        'amqp' => [
+            'class' => tests\codeception\common\_support\amqp\TestComponent::class,
+        ],
     ],
 ];

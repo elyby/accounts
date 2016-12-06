@@ -4,20 +4,8 @@ namespace tests\codeception\common\_support\amqp;
 use Codeception\Exception\ModuleException;
 use Codeception\Module;
 use Codeception\Module\Yii2;
-use Codeception\TestInterface;
 
 class Helper extends Module {
-
-    public function _before(TestInterface $test) {
-        /** @var \Codeception\Lib\Connector\Yii2 $connector */
-        $connector = $this->getYii2()->client;
-        $app = $connector->getApplication();
-        $app->set('amqp', [
-            'class' => TestComponent::class,
-        ]);
-
-        parent::_before($test);
-    }
 
     /**
      * Checks that message is created.
