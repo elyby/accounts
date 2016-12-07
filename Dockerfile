@@ -1,4 +1,4 @@
-FROM registry.ely.by/elyby/accounts-php:1.1.2
+FROM registry.ely.by/elyby/accounts-php:1.2.0
 
 # Вносим конфигурации для крона и воркеров
 COPY docker/cron/* /etc/cron.d/
@@ -32,7 +32,7 @@ COPY ./frontend/scripts /var/www/frontend/scripts
 COPY ./frontend/webpack-utils /var/www/frontend/webpack-utils
 
 RUN cd ../frontend \
- && npm install \
+ && npm install --quiet --depth -1 \
  && cd -
 
 # Удаляем ключи из production контейнера на всякий случай
@@ -46,7 +46,7 @@ RUN mkdir -p api/runtime api/web/assets console/runtime \
  # Билдим фронт
  && cd frontend \
  && ln -s /var/www/frontend/node_modules $PWD/node_modules \
- && npm run build \
+ && npm run build:quite --quiet \
  && rm node_modules \
  # Копируем билд наружу, чтобы его не затёрло volume в dev режиме
  && cp -r ./dist /var/www/dist \

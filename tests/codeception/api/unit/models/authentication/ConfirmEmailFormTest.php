@@ -25,9 +25,15 @@ class ConfirmEmailFormTest extends TestCase {
         $this->assertInstanceOf(AccountSession::class, $result->getSession(), 'session was generated');
         $activationExists = EmailActivation::find()->andWhere(['key' => $fixture['key']])->exists();
         $this->assertFalse($activationExists, 'email activation key is not exist');
-        /** @var Account $user */
-        $user = Account::findOne($fixture['account_id']);
-        $this->assertEquals(Account::STATUS_ACTIVE, $user->status, 'user status changed to active');
+        /** @var Account $account */
+        $account = Account::findOne($fixture['account_id']);
+        $this->assertEquals(Account::STATUS_ACTIVE, $account->status, 'user status changed to active');
+
+        $message = $this->tester->grabLastSentAmqpMessage('events');
+        $body = json_decode($message->getBody(), true);
+        $this->assertEquals($account->id, $body['accountId']);
+        $this->assertEquals($account->username, $body['newUsername']);
+        $this->assertNull($body['oldUsername']);
     }
 
     private function createModel($key) {

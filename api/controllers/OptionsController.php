@@ -1,6 +1,7 @@
 <?php
 namespace api\controllers;
 
+use api\filters\NginxCache;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -10,6 +11,12 @@ class OptionsController extends Controller {
         return ArrayHelper::merge(parent::behaviors(), [
             'authenticator' => [
                 'except' => ['index'],
+            ],
+            'nginxCache' => [
+                'class' => NginxCache::class,
+                'rules' => [
+                    'index' => 3600, // 1h
+                ],
             ],
         ]);
     }
