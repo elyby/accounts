@@ -6,3 +6,4 @@ modules:
     config:
         Yii2:
             configFile: '../config/console/unit.php'
+            cleanup: false

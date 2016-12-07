@@ -35,6 +35,7 @@ class ChangeUsernameFormTest extends TestCase {
         $this->assertTrue($model->change());
         $this->assertEquals('my_new_nickname', Account::findOne($this->getAccountId())->username);
         $this->assertInstanceOf(UsernameHistory::class, UsernameHistory::findOne(['username' => 'my_new_nickname']));
+        $this->tester->canSeeAmqpMessageIsCreated('events');
     }
 
     public function testChangeWithoutChange() {
@@ -49,7 +50,8 @@ class ChangeUsernameFormTest extends TestCase {
             'AND',
             'username' => $username,
             ['>=', 'applied_in', $callTime],
-        ]), 'no new UsernameHistory record, if we don\'t change nickname');
+        ]), 'no new UsernameHistory record, if we don\'t change username');
+        $this->tester->cantSeeAmqpMessageIsCreated('events');
     }
 
     public function testChangeCase() {
@@ -65,13 +67,17 @@ class ChangeUsernameFormTest extends TestCase {
             UsernameHistory::findOne(['username' => $newUsername]),
             'username should change, if we change case of some letters'
         );
+        $this->tester->canSeeAmqpMessageIsCreated('events');
     }
 
     public function testCreateTask() {
         $model = new ChangeUsernameForm();
-        $model->createEventTask('1', 'test1', 'test');
-        // TODO: у меня пока нет идей о том, чтобы это как-то успешно протестировать, увы
-        // но по крайней мере можно убедиться, что оно не падает где-то на этом шаге
+        $model->createEventTask(1, 'test1', 'test');
+        $message = $this->tester->grabLastSentAmqpMessage('events');
+        $body = json_decode($message->getBody(), true);
+        $this->assertEquals(1, $body['accountId']);
+        $this->assertEquals('test1', $body['newUsername']);
+        $this->assertEquals('test', $body['oldUsername']);
     }
 
     private function getAccountId() {

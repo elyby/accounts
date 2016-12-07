@@ -1,5 +1,6 @@
 namespace: tests\codeception\common
 actor: Tester
+params: [env]
 paths:
     tests: .
     log: _output

@@ -9,18 +9,21 @@ services:
         depends_on:
             - testdb
             - testredis
-            - testrabbit
         volumes:
-            - ./codeception/_output:/var/www/html/tests/codeception/_output
-            - ./codeception/api/_output:/var/www/html/tests/codeception/api/_output
-            - ./codeception/common/_output:/var/www/html/tests/codeception/common/_output
-            - ./codeception/console/_output:/var/www/html/tests/codeception/console/_output
+            - ./..:/var/www/html
         environment:
-            - YII_DEBUG=true
-            - YII_ENV=test
+            YII_DEBUG: "true"
+            YII_ENV: "test"
+            # DB config
+            DB_HOST: "testdb"
+            DB_DATABASE: "ely_accounts_test"
+            DB_USER: "ely_accounts_tester"
+            DB_PASSWORD: "ely_accounts_tester_password"
+            # Redis config
+            REDIS_HOST: "testredis"
             # Это я потом, когда-нибудь, уберу
-            - XDEBUG_CONFIG=remote_host=10.254.254.254
-            - PHP_IDE_CONFIG=serverName=docker
+            XDEBUG_CONFIG: "remote_host=10.254.254.254"
+            PHP_IDE_CONFIG: "serverName=docker"
 
     testdb:
         container_name: accountelyby_testdb
@@ -36,11 +39,3 @@ services:
     testredis:
         container_name: accountelyby_testredis
         image: redis:3.0-alpine
-
-    testrabbit:
-        container_name: accountelyby_testrabbit
-        image: rabbitmq:3.6
-        environment:
-            RABBITMQ_DEFAULT_USER: "ely-accounts-tester"
-            RABBITMQ_DEFAULT_PASS: "tester-password"
-            RABBITMQ_DEFAULT_VHOST: "/account.ely.by/tests"
