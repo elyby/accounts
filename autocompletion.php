@@ -21,6 +21,7 @@ class Yii extends \yii\BaseYii {
  * @property \common\components\RabbitMQ\Component $amqp
  * @property \GuzzleHttp\Client $guzzle
  * @property \common\components\EmailRenderer $emailRenderer
+ * @property \mito\sentry\Component $sentry
  */
 abstract class BaseApplication extends yii\base\Application {
 }

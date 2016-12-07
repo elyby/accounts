@@ -1,5 +1,6 @@
 <?php
 return [
+    'version' => '1.1.3-dev',
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'components' => [
         'cache' => [
@@ -35,11 +36,10 @@ return [
             ],
         ],
         'sentry' => [
-            'class' => mito\sentry\Component::class,
+            'class' => common\components\Sentry\Component::class,
             'enabled' => !empty(getenv('SENTRY_DSN')),
             'dsn' => getenv('SENTRY_DSN'),
             'environment' => YII_ENV_DEV ? 'development' : 'production',
-            'jsNotifier' => false,
             'client' => [
                 'curl_method' => 'async',
             ],
