@@ -15,7 +15,7 @@
     "minimum-stability": "stable",
     "require": {
         "php": "^7.0.6",
-        "yiisoft/yii2": "2.0.9",
+        "yiisoft/yii2": "2.0.10",
         "yiisoft/yii2-swiftmailer": "*",
         "ramsey/uuid": "^3.5.0",
         "league/oauth2-server": "dev-improvements#b9277ccd664dcb80a766b73674d21de686cb9dda",
