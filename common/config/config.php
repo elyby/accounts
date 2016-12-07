@@ -35,7 +35,7 @@ return [
             ],
         ],
         'sentry' => [
-            'class' => mito\sentry\SentryComponent::class,
+            'class' => mito\sentry\Component::class,
             'enabled' => !empty(getenv('SENTRY_DSN')),
             'dsn' => getenv('SENTRY_DSN'),
             'environment' => YII_ENV_DEV ? 'development' : 'production',

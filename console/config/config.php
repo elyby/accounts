@@ -14,7 +14,7 @@ return [
         'log' => [
             'targets' => [
                 [
-                    'class' => mito\sentry\SentryTarget::class,
+                    'class' => mito\sentry\Target::class,
                     'levels' => ['error', 'warning'],
                 ],
                 [

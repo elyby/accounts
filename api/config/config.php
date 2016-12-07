@@ -22,7 +22,7 @@ return [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
                 [
-                    'class' => mito\sentry\SentryTarget::class,
+                    'class' => mito\sentry\Target::class,
                     'levels' => ['error', 'warning'],
                     'except' => [
                         'legacy-authserver',
