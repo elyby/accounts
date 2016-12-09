@@ -12,7 +12,8 @@ class ScopeStorage extends AbstractStorage implements ScopeInterface {
      * @inheritdoc
      */
     public function get($scope, $grantType = null, $clientId = null) {
-        if (!in_array($scope, OauthScope::getScopes(), true)) {
+        $scopes = $grantType === 'authorization_code' ? OauthScope::getPublicScopes() : OauthScope::getScopes();
+        if (!in_array($scope, $scopes, true)) {
             return null;
         }
 
