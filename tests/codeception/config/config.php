@@ -20,5 +20,8 @@ return [
         'amqp' => [
             'class' => tests\codeception\common\_support\amqp\TestComponent::class,
         ],
+        'sentry' => [
+            'enabled' => false,
+        ],
     ],
 ];

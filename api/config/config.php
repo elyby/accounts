@@ -22,6 +22,17 @@ return [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
                 [
+                    'class' => mito\sentry\Target::class,
+                    'levels' => ['error', 'warning'],
+                    'except' => [
+                        'legacy-authserver',
+                        'session',
+                        'yii\web\HttpException:*',
+                        'api\modules\session\exceptions\SessionServerException:*',
+                        'api\modules\authserver\exceptions\AuthserverException:*',
+                    ],
+                ],
+                [
                     'class' => yii\log\FileTarget::class,
                     'levels' => ['error', 'warning'],
                     'except' => [

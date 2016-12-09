@@ -14,6 +14,10 @@ return [
         'log' => [
             'targets' => [
                 [
+                    'class' => mito\sentry\Target::class,
+                    'levels' => ['error', 'warning'],
+                ],
+                [
                     'class' => yii\log\FileTarget::class,
                     'levels' => ['error', 'warning'],
                 ],
