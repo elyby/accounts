@@ -17,16 +17,12 @@ class OauthController extends Controller {
     public function behaviors() {
         return ArrayHelper::merge(parent::behaviors(), [
             'authenticator' => [
-                'except' => ['validate', 'token'],
+                'only' => ['complete'],
             ],
             'access' => [
                 'class' => AccessControl::class,
+                'only' => ['complete'],
                 'rules' => [
-                    [
-                        'actions' => ['validate', 'token'],
-                        'allow' => true,
-                        'roles' => ['?'],
-                    ],
                     [
                         'class' => ActiveUserRule::class,
                         'actions' => ['complete'],
