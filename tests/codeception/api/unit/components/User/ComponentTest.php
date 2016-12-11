@@ -16,7 +16,6 @@ use tests\codeception\common\_support\ProtectedCaller;
 use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\AccountSessionFixture;
 use Yii;
-use yii\web\HeaderCollection;
 use yii\web\Request;
 
 class ComponentTest extends TestCase {
@@ -24,7 +23,7 @@ class ComponentTest extends TestCase {
     use ProtectedCaller;
 
     /**
-     * @var Component
+     * @var Component|\PHPUnit_Framework_MockObject_MockObject
      */
     private $component;
 
@@ -38,6 +37,46 @@ class ComponentTest extends TestCase {
             'accounts' => AccountFixture::class,
             'sessions' => AccountSessionFixture::class,
         ];
+    }
+
+    public function testGetIdentity() {
+        $this->specify('getIdentity should return null, if not authorization header', function() {
+            $this->mockAuthorizationHeader(null);
+            $this->assertNull($this->component->getIdentity());
+        });
+
+        $this->specify('getIdentity should return null, if passed bearer token don\'t return any account', function() {
+            $this->mockAuthorizationHeader('some-auth');
+            /** @var Component|\PHPUnit_Framework_MockObject_MockObject $component */
+            $component = $this->getMockBuilder(Component::class)
+                ->setMethods(['loginByAccessToken'])
+                ->setConstructorArgs([$this->getComponentArguments()])
+                ->getMock();
+
+            $component
+                ->expects($this->once())
+                ->method('loginByAccessToken')
+                ->willReturn(null);
+
+            $this->assertNull($component->getIdentity());
+        });
+
+        $this->specify('getIdentity should return identity from loginByAccessToken method', function() {
+            $identity = new AccountIdentity();
+            $this->mockAuthorizationHeader('some-auth');
+            /** @var Component|\PHPUnit_Framework_MockObject_MockObject $component */
+            $component = $this->getMockBuilder(Component::class)
+                ->setMethods(['loginByAccessToken'])
+                ->setConstructorArgs([$this->getComponentArguments()])
+                ->getMock();
+
+            $component
+                ->expects($this->once())
+                ->method('loginByAccessToken')
+                ->willReturn($identity);
+
+            $this->assertEquals($identity, $component->getIdentity());
+        });
     }
 
     public function testLogin() {
@@ -117,30 +156,9 @@ class ComponentTest extends TestCase {
             $component
                 ->expects($this->any())
                 ->method('getIsGuest')
-                ->will($this->returnValue(false));
+                ->willReturn(false);
 
-            /** @var HeaderCollection|\PHPUnit_Framework_MockObject_MockObject $headersCollection */
-            $headersCollection = $this->getMockBuilder(HeaderCollection::class)
-                ->setMethods(['get'])
-                ->getMock();
-
-            $headersCollection
-                ->expects($this->any())
-                ->method('get')
-                ->with($this->equalTo('Authorization'))
-                ->will($this->returnValue('Bearer ' . $result->getJwt()));
-
-            /** @var Request|\PHPUnit_Framework_MockObject_MockObject $request */
-            $request = $this->getMockBuilder(Request::class)
-                ->setMethods(['getHeaders'])
-                ->getMock();
-
-            $request
-                ->expects($this->any())
-                ->method('getHeaders')
-                ->will($this->returnValue($headersCollection));
-
-            Yii::$app->set('request', $request);
+            $this->mockAuthorizationHeader($result->getJwt());
 
             $session = $component->getActiveSession();
             expect($session)->isInstanceOf(AccountSession::class);
@@ -201,6 +219,17 @@ class ComponentTest extends TestCase {
         Yii::$app->set('request', $request);
 
         return $request;
+    }
+
+    /**
+     * @param string $bearerToken
+     */
+    private function mockAuthorizationHeader($bearerToken = null) {
+        if ($bearerToken !== null) {
+            $bearerToken = 'Bearer ' . $bearerToken;
+        }
+
+        Yii::$app->request->headers->set('Authorization', $bearerToken);
     }
 
     private function getComponentArguments() {

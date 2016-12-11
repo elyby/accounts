@@ -23,7 +23,7 @@ use yii\web\User as YiiUserComponent;
  * @property AccountSession|null $activeSession
  * @property AccountIdentity|null $identity
  *
- * @method AccountIdentity|null getIdentity($autoRenew = true)
+ * @method AccountIdentity|null loginByAccessToken($token, $type = null)
  */
 class Component extends YiiUserComponent {
 
@@ -39,11 +39,31 @@ class Component extends YiiUserComponent {
 
     public $sessionTimeout = 'P7D';
 
+    private $_identity;
+
     public function init() {
         parent::init();
         if (!$this->secret) {
             throw new InvalidConfigException('secret must be specified');
         }
+    }
+
+    /**
+     * @param bool $autoRenew
+     * @return null|AccountIdentity
+     */
+    public function getIdentity($autoRenew = true) {
+        $result = parent::getIdentity($autoRenew);
+        if ($result === null && $this->_identity !== false) {
+            $bearer = $this->getBearerToken();
+            if ($bearer !== null) {
+                $result = $this->loginByAccessToken($bearer);
+            }
+
+            $this->_identity = $result ?: false;
+        }
+
+        return $result;
     }
 
     /**
@@ -149,14 +169,9 @@ class Component extends YiiUserComponent {
             return null;
         }
 
-        $authHeader = Yii::$app->request->getHeaders()->get('Authorization');
-        if ($authHeader === null || !preg_match('/^Bearer\s+(.*?)$/', $authHeader, $matches)) {
-            return null;
-        }
-
-        $token = $matches[1];
+        $bearer = $this->getBearerToken();
         try {
-            $token = $this->parseToken($token);
+            $token = $this->parseToken($bearer);
         } catch (VerificationException $e) {
             return null;
         }
@@ -201,6 +216,18 @@ class Component extends YiiUserComponent {
             new Claim\Expiration($currentTime->add(new DateInterval($this->expirationTimeout))),
             new Claim\JwtId($identity->getId()),
         ];
+    }
+
+    /**
+     * @return ?string
+     */
+    private function getBearerToken() {
+        $authHeader = Yii::$app->request->getHeaders()->get('Authorization');
+        if ($authHeader === null || !preg_match('/^Bearer\s+(.*?)$/', $authHeader, $matches)) {
+            return null;
+        }
+
+        return $matches[1];
     }
 
 }
