@@ -17,13 +17,14 @@ class AuthenticationController extends Controller {
     public function behaviors() {
         return ArrayHelper::merge(parent::behaviors(), [
             'authenticator' => [
-                'except' => ['login', 'forgot-password', 'recover-password', 'refresh-token'],
+                'only' => ['logout'],
             ],
             'access' => [
                 'class' => AccessControl::class,
+                'except' => ['refresh-token'],
                 'rules' => [
                     [
-                        'actions' => ['login', 'forgot-password', 'recover-password', 'refresh-token'],
+                        'actions' => ['login', 'forgot-password', 'recover-password'],
                         'allow' => true,
                         'roles' => ['?'],
                     ],

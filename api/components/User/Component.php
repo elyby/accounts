@@ -110,7 +110,7 @@ class Component extends YiiUserComponent {
         return $result;
     }
 
-    public function renew(AccountSession $session) {
+    public function renew(AccountSession $session): RenewResult {
         $account = $session->account;
         $transaction = Yii::$app->db->beginTransaction();
         try {
