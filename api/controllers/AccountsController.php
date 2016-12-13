@@ -79,7 +79,7 @@ class AccountsController extends Controller {
         if (!$model->changePassword()) {
             return [
                 'success' => false,
-                'errors' => $this->normalizeModelErrors($model->getErrors()),
+                'errors' => $model->getFirstErrors(),
             ];
         }
 
@@ -94,7 +94,7 @@ class AccountsController extends Controller {
         if (!$model->change()) {
             return [
                 'success' => false,
-                'errors' => $this->normalizeModelErrors($model->getErrors()),
+                'errors' => $model->getFirstErrors(),
             ];
         }
 
@@ -110,7 +110,7 @@ class AccountsController extends Controller {
         if (!$model->sendCurrentEmailConfirmation()) {
             $data = [
                 'success' => false,
-                'errors' => $this->normalizeModelErrors($model->getErrors()),
+                'errors' => $model->getFirstErrors(),
             ];
 
             if (ArrayHelper::getValue($data['errors'], 'email') === E::RECENTLY_SENT_MESSAGE) {
@@ -136,7 +136,7 @@ class AccountsController extends Controller {
         if (!$model->sendNewEmailConfirmation()) {
             return [
                 'success' => false,
-                'errors' => $this->normalizeModelErrors($model->getErrors()),
+                'errors' => $model->getFirstErrors(),
             ];
         }
 
@@ -152,7 +152,7 @@ class AccountsController extends Controller {
         if (!$model->changeEmail()) {
             return [
                 'success' => false,
-                'errors' => $this->normalizeModelErrors($model->getErrors()),
+                'errors' => $model->getFirstErrors(),
             ];
         }
 
@@ -171,7 +171,7 @@ class AccountsController extends Controller {
         if (!$model->applyLanguage()) {
             return [
                 'success' => false,
-                'errors' => $this->normalizeModelErrors($model->getErrors()),
+                'errors' => $model->getFirstErrors(),
             ];
         }
 
@@ -187,7 +187,7 @@ class AccountsController extends Controller {
         if (!$model->agreeWithLatestRules()) {
             return [
                 'success' => false,
-                'errors' => $this->normalizeModelErrors($model->getErrors()),
+                'errors' => $model->getFirstErrors(),
             ];
         }
 

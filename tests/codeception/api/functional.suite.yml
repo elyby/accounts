@@ -4,23 +4,16 @@ modules:
         - Filesystem
         - Yii2
         - tests\codeception\common\_support\FixtureHelper
+        - tests\codeception\common\_support\amqp\Helper
         - Redis
-        - AMQP
         - Asserts
         - REST:
             depends: Yii2
     config:
         Yii2:
             configFile: '../config/api/functional.php'
-            cleanup: true
+            cleanup: false
         Redis:
-            host: testredis
+            host: "%REDIS_HOST%"
             port: 6379
             database: 0
-        AMQP:
-            host: testrabbit
-            port: 5672
-            username: 'ely-accounts-tester'
-            password: 'tester-password'
-            vhost: '/account.ely.by/tests'
-            queues: ['account-operations']

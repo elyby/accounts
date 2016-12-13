@@ -4,21 +4,40 @@ stages:
     - release
 
 variables:
-    CONTAINER_IMAGE: registry.ely.by/elyby/accounts
+    DOCKER_DRIVER: aufs
+    CONTAINER_IMAGE: "registry.ely.by/elyby/accounts"
 
 test:backend:
-    image: jonaskello/docker-and-compose:1.12.1-1.8.0
+    image: docker:latest
     services:
-        - docker:1.12.1-dind
+        - mariadb:10.0
+        - redis:3.0-alpine
+    variables:
+        # mariadb config
+        MYSQL_RANDOM_ROOT_PASSWORD: "true"
+        MYSQL_DATABASE: "ely_accounts_test"
+        MYSQL_USER: "ely_accounts_tester"
+        MYSQL_PASSWORD: "ely_accounts_tester_password"
     stage: test
     before_script:
         - docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
         - echo "$SSH_PRIVATE_KEY" > id_rsa
-        - docker-compose -f tests/docker-compose.yml build --pull testphp
-    after_script:
-        - docker-compose -f tests/docker-compose.yml down -v
     script:
-        - docker-compose -f tests/docker-compose.yml run --rm testphp ./vendor/bin/codecept run -c tests
+        - export TEMP_DEV_IMAGE="${CONTAINER_IMAGE}:ci-${CI_BUILD_ID}"
+        - docker build --pull -f Dockerfile-dev -t $TEMP_DEV_IMAGE .
+        - >
+            docker run --rm
+            --add-host=mariadb:`getent hosts mariadb | awk '{ print $1 ; exit }'`
+            --add-host=redis:`getent hosts redis | awk '{ print $1 ; exit }'`
+            -e YII_DEBUG="true"
+            -e YII_ENV="test"
+            -e DB_HOST="mariadb"
+            -e DB_DATABASE="ely_accounts_test"
+            -e DB_USER="ely_accounts_tester"
+            -e DB_PASSWORD="ely_accounts_tester_password"
+            -e REDIS_HOST="redis"
+            $TEMP_DEV_IMAGE
+            php vendor/bin/codecept run -c tests
 
 test:frontend:
     image: node:5.12
@@ -28,8 +47,8 @@ test:frontend:
             - frontend/node_modules
     script:
         - cd frontend
-        - npm i --silent
-        - npm run test
+        - npm i --silent > /dev/null
+        - npm run test --silent
 
 build:production:
     image: docker:latest

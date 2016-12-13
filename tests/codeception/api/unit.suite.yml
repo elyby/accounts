@@ -3,6 +3,8 @@ modules:
     enabled:
         - Yii2:
             part: [orm, email, fixtures]
+        - tests\codeception\common\_support\amqp\Helper
     config:
         Yii2:
             configFile: '../config/api/unit.php'
+            cleanup: false

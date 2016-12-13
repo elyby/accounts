@@ -1,7 +1,6 @@
 <?php
 namespace tests\codeception\common\fixtures;
 
-use common\models\OauthScope;
 use common\models\OauthSession;
 use yii\test\ActiveFixture;
 

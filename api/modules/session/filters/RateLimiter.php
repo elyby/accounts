@@ -25,6 +25,7 @@ class RateLimiter extends \yii\filters\RateLimiter {
 
     /**
      * @inheritdoc
+     * @throws TooManyRequestsHttpException
      */
     public function beforeAction($action) {
         $this->checkRateLimit(
@@ -39,6 +40,7 @@ class RateLimiter extends \yii\filters\RateLimiter {
 
     /**
      * @inheritdoc
+     * @throws TooManyRequestsHttpException
      */
     public function checkRateLimit($user, $request, $response, $action) {
         if (parse_url($request->getHostInfo(), PHP_URL_HOST) === $this->authserverDomain) {
@@ -54,7 +56,7 @@ class RateLimiter extends \yii\filters\RateLimiter {
         $key = $this->buildKey($ip);
 
         $redis = $this->getRedis();
-        $countRequests = intval($redis->executeCommand('INCR', [$key]));
+        $countRequests = (int)$redis->incr($key);
         if ($countRequests === 1) {
             $redis->executeCommand('EXPIRE', [$key, $this->limitTime]);
         }
@@ -65,7 +67,7 @@ class RateLimiter extends \yii\filters\RateLimiter {
     }
 
     /**
-     * @return \yii\redis\Connection
+     * @return \common\components\Redis\Connection
      */
     public function getRedis() {
         return Yii::$app->redis;

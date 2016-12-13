@@ -1,7 +1,7 @@
 <?php
 $params = array_merge(
-    require(__DIR__ . '/../../common/config/params.php'),
-    require(__DIR__ . '/params.php')
+    require __DIR__ . '/../../common/config/params.php',
+    require __DIR__ . '/params.php'
 );
 
 return [
@@ -21,6 +21,17 @@ return [
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
+                [
+                    'class' => mito\sentry\Target::class,
+                    'levels' => ['error', 'warning'],
+                    'except' => [
+                        'legacy-authserver',
+                        'session',
+                        'yii\web\HttpException:*',
+                        'api\modules\session\exceptions\SessionServerException:*',
+                        'api\modules\authserver\exceptions\AuthserverException:*',
+                    ],
+                ],
                 [
                     'class' => yii\log\FileTarget::class,
                     'levels' => ['error', 'warning'],
@@ -63,8 +74,12 @@ return [
             'format' => yii\web\Response::FORMAT_JSON,
         ],
         'oauth' => [
-            'class' => common\components\oauth\Component::class,
+            'class' => api\components\OAuth2\Component::class,
             'grantTypes' => ['authorization_code'],
+            'grantMap' => [
+                'authorization_code' => api\components\OAuth2\Grants\AuthCodeGrant::class,
+                'refresh_token' => api\components\OAuth2\Grants\RefreshTokenGrant::class,
+            ],
         ],
         'errorHandler' => [
             'class' => api\components\ErrorHandler::class,

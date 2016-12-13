@@ -1,22 +1,23 @@
 <?php
 namespace common\models;
 
-use common\components\redis\Set;
+use common\components\Redis\Set;
+use Yii;
+use yii\base\ErrorException;
 use yii\db\ActiveRecord;
 
 /**
  * Поля:
- * @property integer            $id
- * @property string             $owner_type
- * @property string             $owner_id
- * @property string             $client_id
- * @property string             $client_redirect_uri
+ * @property integer     $id
+ * @property string      $owner_type
+ * @property string      $owner_id
+ * @property string      $client_id
+ * @property string      $client_redirect_uri
  *
  * Отношения
- * @property OauthAccessToken[] $accessTokens
- * @property OauthClient        $client
- * @property Account            $account
- * @property Set                $scopes
+ * @property OauthClient $client
+ * @property Account     $account
+ * @property Set         $scopes
  */
 class OauthSession extends ActiveRecord {
 
@@ -25,7 +26,7 @@ class OauthSession extends ActiveRecord {
     }
 
     public function getAccessTokens() {
-        return $this->hasMany(OauthAccessToken::class, ['session_id' => 'id']);
+        throw new ErrorException('This method is possible, but not implemented');
     }
 
     public function getClient() {
@@ -46,6 +47,14 @@ class OauthSession extends ActiveRecord {
         }
 
         $this->getScopes()->delete();
+        /** @var \api\components\OAuth2\Storage\RefreshTokenStorage $refreshTokensStorage */
+        $refreshTokensStorage = Yii::$app->oauth->getAuthServer()->getRefreshTokenStorage();
+        $refreshTokensSet = $refreshTokensStorage->sessionHash($this->id);
+        foreach ($refreshTokensSet->members() as $refreshTokenId) {
+            $refreshTokensStorage->delete($refreshTokensStorage->get($refreshTokenId));
+        }
+
+        $refreshTokensSet->delete();
 
         return true;
     }

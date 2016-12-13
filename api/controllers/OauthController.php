@@ -2,13 +2,12 @@
 namespace api\controllers;
 
 use api\filters\ActiveUserRule;
-use common\components\oauth\Exception\AcceptRequiredException;
-use common\components\oauth\Exception\AccessDeniedException;
+use api\components\OAuth2\Exception\AcceptRequiredException;
+use api\components\OAuth2\Exception\AccessDeniedException;
 use common\models\Account;
 use common\models\OauthClient;
 use common\models\OauthScope;
 use League\OAuth2\Server\Exception\OAuthException;
-use League\OAuth2\Server\Grant\RefreshTokenGrant;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
@@ -18,16 +17,12 @@ class OauthController extends Controller {
     public function behaviors() {
         return ArrayHelper::merge(parent::behaviors(), [
             'authenticator' => [
-                'except' => ['validate', 'token'],
+                'only' => ['complete'],
             ],
             'access' => [
                 'class' => AccessControl::class,
+                'only' => ['complete'],
                 'rules' => [
-                    [
-                        'actions' => ['validate', 'token'],
-                        'allow' => true,
-                        'roles' => ['?'],
-                    ],
                     [
                         'class' => ActiveUserRule::class,
                         'actions' => ['complete'],
@@ -186,7 +181,7 @@ class OauthController extends Controller {
             }
 
             $scopes = $codeModel->getScopes();
-            if (array_search(OauthScope::OFFLINE_ACCESS, array_keys($scopes)) === false) {
+            if (array_search(OauthScope::OFFLINE_ACCESS, array_keys($scopes), true) === false) {
                 return;
             }
         } elseif ($grantType === 'refresh_token') {
@@ -195,7 +190,10 @@ class OauthController extends Controller {
             return;
         }
 
-        $this->getServer()->addGrantType(new RefreshTokenGrant());
+        $grantClass = Yii::$app->oauth->grantMap['refresh_token'];
+        $grant = new $grantClass;
+
+        $this->getServer()->addGrantType($grant);
     }
 
     /**
