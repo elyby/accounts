@@ -7,6 +7,7 @@ use common\models\Account;
 use common\models\amqp\AccountBanned;
 use PhpAmqpLib\Message\AMQPMessage;
 use Yii;
+use yii\base\ErrorException;
 
 class BlockForm extends ApiForm {
 
@@ -27,7 +28,7 @@ class BlockForm extends ApiForm {
      *
      * @var string
      */
-    public $message;
+    public $message = '';
 
     /**
      * @var Account
@@ -50,7 +51,9 @@ class BlockForm extends ApiForm {
 
         $account = $this->account;
         $account->status = Account::STATUS_BANNED;
-        $account->save();
+        if (!$account->save()) {
+            throw new ErrorException('Cannot ban account');
+        }
 
         $this->createTask();
 
