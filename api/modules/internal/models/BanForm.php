@@ -2,6 +2,7 @@
 namespace api\modules\internal\models;
 
 use api\models\base\ApiForm;
+use api\modules\internal\helpers\Error as E;
 use common\helpers\Amqp;
 use common\models\Account;
 use common\models\amqp\AccountBanned;
@@ -9,14 +10,14 @@ use PhpAmqpLib\Message\AMQPMessage;
 use Yii;
 use yii\base\ErrorException;
 
-class BlockForm extends ApiForm {
+class BanForm extends ApiForm {
 
-    const DURATION_FOREVER = -1;
+    public const DURATION_FOREVER = -1;
 
     /**
      * Нереализованный функционал блокировки аккаунта на определённый период времени.
      * Сейчас установка этого параметра ничего не даст, аккаунт будет заблокирован навечно,
-     * но по задумке, здесь необходимо передать количество секунд, на которое будет
+     * но, по задумке, здесь можно передать количество секунд, на которое будет
      * заблокирован аккаунт пользователя.
      *
      * @var int
@@ -35,10 +36,11 @@ class BlockForm extends ApiForm {
      */
     private $account;
 
-    public function rules() {
+    public function rules(): array {
         return [
             [['duration'], 'integer', 'min' => self::DURATION_FOREVER],
             [['message'], 'string'],
+            [['account'], 'validateAccountActivity'],
         ];
     }
 
@@ -46,7 +48,17 @@ class BlockForm extends ApiForm {
         return $this->account;
     }
 
+    public function validateAccountActivity() {
+        if ($this->account->status === Account::STATUS_BANNED) {
+            $this->addError('account', E::ACCOUNT_ALREADY_BANNED);
+        }
+    }
+
     public function ban(): bool {
+        if (!$this->validate()) {
+            return false;
+        }
+
         $transaction = Yii::$app->db->beginTransaction();
 
         $account = $this->account;
@@ -62,7 +74,7 @@ class BlockForm extends ApiForm {
         return true;
     }
 
-    public function createTask() {
+    public function createTask(): void {
         $model = new AccountBanned();
         $model->accountId = $this->account->id;
         $model->duration = $this->duration;

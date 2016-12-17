@@ -7,7 +7,7 @@ $params = array_merge(
 return [
     'id' => 'accounts-site-api',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log', 'authserver'],
+    'bootstrap' => ['log', 'authserver', 'internal'],
     'controllerNamespace' => 'api\controllers',
     'params' => $params,
     'components' => [
@@ -75,10 +75,11 @@ return [
         ],
         'oauth' => [
             'class' => api\components\OAuth2\Component::class,
-            'grantTypes' => ['authorization_code'],
+            'grantTypes' => ['authorization_code', 'client_credentials'],
             'grantMap' => [
                 'authorization_code' => api\components\OAuth2\Grants\AuthCodeGrant::class,
                 'refresh_token' => api\components\OAuth2\Grants\RefreshTokenGrant::class,
+                'client_credentials' => api\components\OAuth2\Grants\ClientCredentialsGrant::class,
             ],
         ],
         'errorHandler' => [
@@ -95,6 +96,9 @@ return [
         ],
         'mojang' => [
             'class' => api\modules\mojang\Module::class,
+        ],
+        'internal' => [
+            'class' => api\modules\internal\Module::class,
         ],
     ],
 ];

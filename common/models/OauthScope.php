@@ -4,32 +4,33 @@ namespace common\models;
 use common\components\Annotations\Reader;
 use ReflectionClass;
 use Yii;
-use yii\helpers\ArrayHelper;
 
 class OauthScope {
 
+    /**
+     * @owner user
+     */
     const OFFLINE_ACCESS = 'offline_access';
+    /**
+     * @owner user
+     */
     const MINECRAFT_SERVER_SESSION = 'minecraft_server_session';
+    /**
+     * @owner user
+     */
     const ACCOUNT_INFO = 'account_info';
+    /**
+     * @owner user
+     */
     const ACCOUNT_EMAIL = 'account_email';
-
-    /** @internal */
+    /**
+     * @internal
+     * @owner machine
+     */
     const ACCOUNT_BLOCK = 'account_block';
 
-    public static function getScopes(): array {
-        return ArrayHelper::getColumn(static::queryScopes(), 'value');
-    }
-
-    public static function getPublicScopes(): array {
-        return ArrayHelper::getColumn(array_filter(static::queryScopes(), function($value) {
-            return !isset($value['internal']);
-        }), 'value');
-    }
-
-    public static function getInternalScopes(): array {
-        return ArrayHelper::getColumn(array_filter(static::queryScopes(), function($value) {
-            return isset($value['internal']);
-        }), 'value');
+    public static function find(): OauthScopeQuery {
+        return new OauthScopeQuery(static::queryScopes());
     }
 
     private static function queryScopes(): array {
@@ -43,12 +44,12 @@ class OauthScope {
             foreach ($constants as $constName => $value) {
                 $annotations = $reader->getConstantAnnotations(static::class, $constName);
                 $isInternal = $annotations->get('internal', false);
+                $owner = $annotations->get('owner', 'user');
                 $keyValue = [
                     'value' => $value,
+                    'internal' => $isInternal,
+                    'owner' => $owner,
                 ];
-                if ($isInternal) {
-                    $keyValue['internal'] = true;
-                }
                 $scopes[$constName] = $keyValue;
             }
 

@@ -3,6 +3,8 @@ namespace api\components\OAuth2\Entities;
 
 class ClientEntity extends \League\OAuth2\Server\Entity\ClientEntity {
 
+    private $isTrusted;
+
     public function setId(string $id) {
         $this->id = $id;
     }
@@ -17,6 +19,14 @@ class ClientEntity extends \League\OAuth2\Server\Entity\ClientEntity {
 
     public function setRedirectUri($redirectUri) {
         $this->redirectUri = $redirectUri;
+    }
+
+    public function setIsTrusted(bool $isTrusted) {
+        $this->isTrusted = $isTrusted;
+    }
+
+    public function isTrusted(): bool {
+        return $this->isTrusted;
     }
 
 }

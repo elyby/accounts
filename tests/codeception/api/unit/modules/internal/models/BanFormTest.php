@@ -1,11 +1,26 @@
 <?php
 namespace tests\codeception\api\unit\modules\internal\models;
 
-use api\modules\internal\models\BlockForm;
+use api\modules\internal\helpers\Error as E;
+use api\modules\internal\models\BanForm;
 use common\models\Account;
 use tests\codeception\api\unit\TestCase;
 
-class BlockFormTest extends TestCase {
+class BanFormTest extends TestCase {
+
+    public function testValidateAccountActivity() {
+        $account = new Account();
+        $account->status = Account::STATUS_ACTIVE;
+        $form = new BanForm($account);
+        $form->validateAccountActivity();
+        $this->assertEmpty($form->getErrors('account'));
+
+        $account = new Account();
+        $account->status = Account::STATUS_BANNED;
+        $form = new BanForm($account);
+        $form->validateAccountActivity();
+        $this->assertEquals([E::ACCOUNT_ALREADY_BANNED], $form->getErrors('account'));
+    }
 
     public function testBan() {
         /** @var Account|\PHPUnit_Framework_MockObject_MockObject $account */
@@ -17,7 +32,7 @@ class BlockFormTest extends TestCase {
             ->method('save')
             ->willReturn(true);
 
-        $model = new BlockForm($account);
+        $model = new BanForm($account);
         $this->assertTrue($model->ban());
         $this->assertEquals(Account::STATUS_BANNED, $account->status);
         $this->tester->canSeeAmqpMessageIsCreated('events');
@@ -27,14 +42,14 @@ class BlockFormTest extends TestCase {
         $account = new Account();
         $account->id = 3;
 
-        $model = new BlockForm($account);
+        $model = new BanForm($account);
         $model->createTask();
         $message = json_decode($this->tester->grabLastSentAmqpMessage('events')->body, true);
         $this->assertSame(3, $message['accountId']);
         $this->assertSame(-1, $message['duration']);
         $this->assertSame('', $message['message']);
 
-        $model = new BlockForm($account);
+        $model = new BanForm($account);
         $model->duration = 123;
         $model->message = 'test';
         $model->createTask();
