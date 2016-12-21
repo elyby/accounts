@@ -25,7 +25,7 @@
         "ely/yii2-tempmail-validator": "~1.0.0",
         "emarref/jwt": "~1.0.3",
         "ely/amqp-controller": "dev-master#d7f8cdbc66c45e477c9c7d5d509bc0c1b11fd3ec",
-        "ely/email-renderer": "dev-master#38a148cd5081147acc31125ddc49966b149f65cf",
+        "ely/email-renderer": "dev-master#ef1cb3f7a13196524b97ca5aa0a2d5867f2d9207",
         "predis/predis": "^1.0",
         "mito/yii2-sentry": "dev-fix_init#27f00805cb906f73b2c6f8181c1c655decb9be70"
     },
