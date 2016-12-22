@@ -2,26 +2,30 @@
 namespace api\models\authentication;
 
 use api\models\AccountIdentity;
-use api\models\base\KeyConfirmationForm;
+use api\models\base\ApiForm;
+use api\validators\EmailActivationKeyValidator;
 use common\helpers\Error as E;
 use common\models\EmailActivation;
 use common\validators\PasswordValidator;
 use Yii;
 use yii\base\ErrorException;
 
-class RecoverPasswordForm extends KeyConfirmationForm {
+class RecoverPasswordForm extends ApiForm {
+
+    public $key;
 
     public $newPassword;
 
     public $newRePassword;
 
     public function rules() {
-        return array_merge(parent::rules(), [
+        return [
+            ['key', EmailActivationKeyValidator::class, 'type' => EmailActivation::TYPE_FORGOT_PASSWORD_KEY],
             ['newPassword', 'required', 'message' => E::NEW_PASSWORD_REQUIRED],
             ['newRePassword', 'required', 'message' => E::NEW_RE_PASSWORD_REQUIRED],
             ['newPassword', PasswordValidator::class],
             ['newRePassword', 'validatePasswordAndRePasswordMatch'],
-        ]);
+        ];
     }
 
     public function validatePasswordAndRePasswordMatch($attribute) {
@@ -32,46 +36,32 @@ class RecoverPasswordForm extends KeyConfirmationForm {
         }
     }
 
+    /**
+     * @return \api\components\User\LoginResult|bool
+     * @throws ErrorException
+     */
     public function recoverPassword() {
         if (!$this->validate()) {
             return false;
         }
 
-        $confirmModel = $this->getActivationCodeModel();
-        if ($confirmModel->type !== EmailActivation::TYPE_FORGOT_PASSWORD_KEY) {
-            $confirmModel->delete();
-            // TODO: вот где-то здесь нужно ещё попутно сгенерировать соответствующую ошибку
-            return false;
-        }
-
         $transaction = Yii::$app->db->beginTransaction();
-        try {
-            $account = $confirmModel->account;
-            $account->password = $this->newPassword;
-            if (!$confirmModel->delete()) {
-                throw new ErrorException('Unable remove activation key.');
-            }
 
-            if (!$account->save(false)) {
-                throw new ErrorException('Unable activate user account.');
-            }
-
-            $transaction->commit();
-        } catch (ErrorException $e) {
-            $transaction->rollBack();
-            if (YII_DEBUG) {
-                throw $e;
-            } else {
-                return false;
-            }
+        /** @var \common\models\confirmations\ForgotPassword $confirmModel */
+        $confirmModel = $this->key;
+        $account = $confirmModel->account;
+        $account->password = $this->newPassword;
+        if (!$confirmModel->delete()) {
+            throw new ErrorException('Unable remove activation key.');
         }
 
-        // TODO: ещё было бы неплохо уведомить пользователя о том, что его пароль изменился
+        if (!$account->save(false)) {
+            throw new ErrorException('Unable activate user account.');
+        }
 
-        /** @var \api\components\User\Component $component */
-        $component = Yii::$app->user;
+        $transaction->commit();
 
-        return $component->login(new AccountIdentity($account->attributes), false);
+        return Yii::$app->user->login(new AccountIdentity($account->attributes), false);
     }
 
 }

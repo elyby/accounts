@@ -22,6 +22,8 @@ class EmailActivationKeyValidator extends Validator {
 
     public $expired = E::KEY_EXPIRE;
 
+    public $skipOnEmpty = false;
+
     public function validateAttribute($model, $attribute) {
         $value = $model->$attribute;
         if (empty($value)) {
