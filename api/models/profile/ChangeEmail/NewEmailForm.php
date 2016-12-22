@@ -1,17 +1,19 @@
 <?php
 namespace api\models\profile\ChangeEmail;
 
-use api\models\base\KeyConfirmationForm;
+use api\models\base\ApiForm;
+use api\validators\EmailActivationKeyValidator;
 use common\models\Account;
 use common\models\confirmations\NewEmailConfirmation;
 use common\models\EmailActivation;
 use common\validators\EmailValidator;
 use Yii;
 use yii\base\ErrorException;
-use yii\base\Exception;
 use yii\base\InvalidConfigException;
 
-class NewEmailForm extends KeyConfirmationForm {
+class NewEmailForm extends ApiForm {
+
+    public $key;
 
     public $email;
 
@@ -20,39 +22,32 @@ class NewEmailForm extends KeyConfirmationForm {
      */
     private $account;
 
-    public function __construct(Account $account, array $config = []) {
-        $this->account = $account;
-        parent::__construct($config);
-    }
-
     public function rules() {
-        return array_merge(parent::rules(), [
+        return [
+            ['key', EmailActivationKeyValidator::class, 'type' => EmailActivation::TYPE_CURRENT_EMAIL_CONFIRMATION],
             ['email', EmailValidator::class],
-        ]);
+        ];
     }
 
-    public function getAccount() : Account {
+    public function getAccount(): Account {
         return $this->account;
     }
 
-    public function sendNewEmailConfirmation() {
+    public function sendNewEmailConfirmation(): bool {
         if (!$this->validate()) {
             return false;
         }
 
         $transaction = Yii::$app->db->beginTransaction();
-        try {
-            $previousActivation = $this->getActivationCodeModel();
-            $previousActivation->delete();
 
-            $activation = $this->createCode();
-            $this->sendCode($activation);
+        /** @var \common\models\confirmations\CurrentEmailConfirmation $previousActivation */
+        $previousActivation = $this->key;
+        $previousActivation->delete();
 
-            $transaction->commit();
-        } catch (Exception $e) {
-            $transaction->rollBack();
-            throw $e;
-        }
+        $activation = $this->createCode();
+        $this->sendCode($activation);
+
+        $transaction->commit();
 
         return true;
     }
@@ -96,6 +91,11 @@ class NewEmailForm extends KeyConfirmationForm {
         if (!$message->send()) {
             throw new ErrorException('Unable send email with activation code.');
         }
+    }
+
+    public function __construct(Account $account, array $config = []) {
+        $this->account = $account;
+        parent::__construct($config);
     }
 
 }

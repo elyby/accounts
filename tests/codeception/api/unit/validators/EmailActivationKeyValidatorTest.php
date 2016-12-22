@@ -3,71 +3,80 @@ namespace codeception\api\unit\validators;
 
 use api\validators\EmailActivationKeyValidator;
 use Codeception\Specify;
+use common\helpers\Error as E;
 use common\models\confirmations\ForgotPassword;
 use common\models\EmailActivation;
 use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\_support\ProtectedCaller;
 use tests\codeception\common\fixtures\EmailActivationFixture;
+use yii\base\Model;
 
 class EmailActivationKeyValidatorTest extends TestCase {
     use Specify;
     use ProtectedCaller;
 
-    public function _fixtures() {
-        return [
-            'emailActivations' => EmailActivationFixture::class,
-        ];
+    public function testValidateAttribute() {
+        /** @var Model $model */
+        $model = new class extends Model {
+            public $key;
+        };
+
+        /** @var EmailActivationKeyValidator|\PHPUnit_Framework_MockObject_MockObject $validator */
+        $validator = $this->getMockBuilder(EmailActivationKeyValidator::class)
+            ->setMethods(['findEmailActivationModel'])
+            ->getMock();
+
+        $expiredActivation = new ForgotPassword();
+        $expiredActivation->created_at = time() - $expiredActivation->expirationTimeout - 10;
+
+        $validActivation = new EmailActivation();
+
+        $validator->expects($this->exactly(3))
+            ->method('findEmailActivationModel')
+            ->willReturnOnConsecutiveCalls(null, $expiredActivation, $validActivation);
+
+        $validator->validateAttribute($model, 'key');
+        $this->assertEquals([E::KEY_REQUIRED], $model->getErrors('key'));
+        $this->assertNull($model->key);
+
+        $model->clearErrors();
+        $model->key = 'original value';
+        $validator->validateAttribute($model, 'key');
+        $this->assertEquals([E::KEY_NOT_EXISTS], $model->getErrors('key'));
+        $this->assertEquals('original value', $model->key);
+
+        $model->clearErrors();
+        $validator->validateAttribute($model, 'key');
+        $this->assertEquals([E::KEY_EXPIRE], $model->getErrors('key'));
+        $this->assertEquals('original value', $model->key);
+
+        $model->clearErrors();
+        $validator->validateAttribute($model, 'key');
+        $this->assertEmpty($model->getErrors('key'));
+        $this->assertEquals($validActivation, $model->key);
     }
 
     public function testFindEmailActivationModel() {
-        $this->specify('get EmailActivation model for exists key', function() {
-            $key = $this->tester->grabFixture('emailActivations', 'freshRegistrationConfirmation')['key'];
-            $model = new EmailActivationKeyValidator();
-            /** @var EmailActivation $result */
-            $result = $this->callProtected($model, 'findEmailActivationModel', $key);
-            expect($result)->isInstanceOf(EmailActivation::class);
-            expect($result->key)->equals($key);
-        });
+        $this->tester->haveFixtures(['emailActivations' => EmailActivationFixture::class]);
 
-        $this->specify('get null model for exists key', function() {
-            $model = new EmailActivationKeyValidator();
-            expect($this->callProtected($model, 'findEmailActivationModel', 'invalid-key'))->null();
-        });
-    }
+        $key = $this->tester->grabFixture('emailActivations', 'freshRegistrationConfirmation')['key'];
+        $model = new EmailActivationKeyValidator();
+        /** @var EmailActivation $result */
+        $result = $this->callProtected($model, 'findEmailActivationModel', $key);
+        $this->assertInstanceOf(EmailActivation::class, $result, 'valid key without specifying type must return model');
+        $this->assertEquals($key, $result->key);
 
-    public function testValidateValue() {
-        $this->specify('get error.key_not_exists with validation wrong key', function () {
-            /** @var EmailActivationKeyValidator $model */
-            $model = new class extends EmailActivationKeyValidator {
-                public function findEmailActivationModel($key) {
-                    return null;
-                }
-            };
-            expect($this->callProtected($model, 'validateValue', null))->equals([$model->notExist, []]);
-        });
+        /** @var EmailActivation $result */
+        $result = $this->callProtected($model, 'findEmailActivationModel', $key, 0);
+        $this->assertInstanceOf(EmailActivation::class, $result, 'valid key with valid type must return model');
 
-        $this->specify('get error.key_expire if we use old key', function () {
-            /** @var EmailActivationKeyValidator $model */
-            $model = new class extends EmailActivationKeyValidator {
-                public function findEmailActivationModel($key) {
-                    $codeModel = new ForgotPassword();
-                    $codeModel->created_at = time() - $codeModel->expirationTimeout - 10;
+        /** @var EmailActivation $result */
+        $result = $this->callProtected($model, 'findEmailActivationModel', $key, 1);
+        $this->assertNull($result, 'valid key, but invalid type must return null');
 
-                    return $codeModel;
-                }
-            };
-            expect($this->callProtected($model, 'validateValue', null))->equals([$model->expired, []]);
-        });
-
-        $this->specify('no errors, if model exists and not expired', function () {
-            /** @var EmailActivationKeyValidator $model */
-            $model = new class extends EmailActivationKeyValidator {
-                public function findEmailActivationModel($key) {
-                    return new EmailActivation();
-                }
-            };
-            expect($this->callProtected($model, 'validateValue', null))->null();
-        });
+        $model = new EmailActivationKeyValidator();
+        $result = $this->callProtected($model, 'findEmailActivationModel', 'invalid-key');
+        $this->assertNull($result, 'invalid key must return null');
     }
 
 }
