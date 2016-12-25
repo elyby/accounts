@@ -1,59 +1,59 @@
 <?php
 namespace api\models\profile\ChangeEmail;
 
-use api\models\base\KeyConfirmationForm;
+use api\models\base\ApiForm;
+use api\validators\EmailActivationKeyValidator;
 use common\helpers\Amqp;
 use common\models\Account;
 use common\models\amqp\EmailChanged;
-use Exception;
+use common\models\EmailActivation;
 use PhpAmqpLib\Message\AMQPMessage;
 use Yii;
 use yii\base\ErrorException;
 
-class ConfirmNewEmailForm extends KeyConfirmationForm {
+class ConfirmNewEmailForm extends ApiForm {
+
+    public $key;
 
     /**
      * @var Account
      */
     private $account;
 
-    public function __construct(Account $account, array $config = []) {
-        $this->account = $account;
-        parent::__construct($config);
+    public function rules() {
+        return [
+            ['key', EmailActivationKeyValidator::class, 'type' => EmailActivation::TYPE_NEW_EMAIL_CONFIRMATION],
+        ];
     }
 
     /**
      * @return Account
      */
-    public function getAccount() : Account {
+    public function getAccount(): Account {
         return $this->account;
     }
 
-    public function changeEmail() : bool {
+    public function changeEmail(): bool {
         if (!$this->validate()) {
             return false;
         }
 
         $transaction = Yii::$app->db->beginTransaction();
-        try {
-            /** @var \common\models\confirmations\NewEmailConfirmation $activation */
-            $activation = $this->getActivationCodeModel();
-            $activation->delete();
 
-            $account = $this->getAccount();
-            $oldEmail = $account->email;
-            $account->email = $activation->newEmail;
-            if (!$account->save()) {
-                throw new ErrorException('Cannot save new account email value');
-            }
+        /** @var \common\models\confirmations\NewEmailConfirmation $activation */
+        $activation = $this->key;
+        $activation->delete();
 
-            $this->createTask($account->id, $account->email, $oldEmail);
-
-            $transaction->commit();
-        } catch (Exception $e) {
-            $transaction->rollBack();
-            throw $e;
+        $account = $this->getAccount();
+        $oldEmail = $account->email;
+        $account->email = $activation->newEmail;
+        if (!$account->save()) {
+            throw new ErrorException('Cannot save new account email value');
         }
+
+        $this->createTask($account->id, $account->email, $oldEmail);
+
+        $transaction->commit();
 
         return true;
     }
@@ -75,6 +75,11 @@ class ConfirmNewEmailForm extends KeyConfirmationForm {
         ]);
 
         Amqp::sendToEventsExchange('accounts.email-changed', $message);
+    }
+
+    public function __construct(Account $account, array $config = []) {
+        $this->account = $account;
+        parent::__construct($config);
     }
 
 }

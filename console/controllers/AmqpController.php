@@ -2,13 +2,18 @@
 namespace console\controllers;
 
 use Ely\Amqp\ControllerTrait;
+use PhpAmqpLib\Message\AMQPMessage;
 use Yii;
 use yii\console\Controller;
+use yii\db\Exception as YiiDbException;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Inflector;
+use yii\helpers\StringHelper;
 
 abstract class AmqpController extends Controller {
-    use ControllerTrait;
+    use ControllerTrait {
+        callback as _callback;
+    }
 
     public final function actionIndex() {
         $this->start();
@@ -16,6 +21,26 @@ abstract class AmqpController extends Controller {
 
     public function getRoutesMap() {
         return [];
+    }
+
+    /**
+     * Переопределяем метод callback, чтобы избержать логгирования в консоль ошибок,
+     * связанных с обвалом того или иного соединения. Это нормально, PHP рождён умирать,
+     * а не работать 24/7 в качестве демона.
+     *
+     * @param AMQPMessage $msg
+     * @throws YiiDbException
+     */
+    public function callback(AMQPMessage $msg) {
+        try {
+            $this->_callback($msg);
+        } catch (YiiDbException $e) {
+            if (StringHelper::startsWith($e->getMessage(), 'Error while sending QUERY packet')) {
+                exit(self::EXIT_CODE_ERROR);
+            }
+
+            throw $e;
+        }
     }
 
     /**

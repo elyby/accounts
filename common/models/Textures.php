@@ -4,6 +4,8 @@ namespace common\models;
 use common\components\SkinSystem\Api as SkinSystemApi;
 use DateInterval;
 use DateTime;
+use GuzzleHttp\Exception\RequestException;
+use Yii;
 
 class Textures {
 
@@ -57,9 +59,20 @@ class Textures {
         }
     }
 
-    public function getTextures() {
-        $api = new SkinSystemApi();
-        return $api->textures($this->account->username);
+    public function getTextures(): array {
+        try {
+            $textures = $this->getSkinsystemApi()->textures($this->account->username);
+        } catch (RequestException $e) {
+            Yii::warning('Cannot get textures from skinsystem.ely.by. Exception message is ' . $e->getMessage());
+            $textures = [
+                'SKIN' => [
+                    'url' => 'http://skins.minecraft.net/MinecraftSkins/' . $this->account->username . '.png',
+                    'hash' => md5(uniqid('random, please', true)),
+                ],
+            ];
+        }
+
+        return $textures;
     }
 
     public static function encrypt(array $data) {
@@ -68,6 +81,10 @@ class Textures {
 
     public static function decrypt($string, $assoc = true) {
         return json_decode(base64_decode($string), $assoc);
+    }
+
+    protected function getSkinsystemApi(): SkinSystemApi {
+        return new SkinSystemApi();
     }
 
 }
