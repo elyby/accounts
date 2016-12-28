@@ -73,15 +73,6 @@ return [
         'response' => [
             'format' => yii\web\Response::FORMAT_JSON,
         ],
-        'oauth' => [
-            'class' => api\components\OAuth2\Component::class,
-            'grantTypes' => ['authorization_code', 'client_credentials'],
-            'grantMap' => [
-                'authorization_code' => api\components\OAuth2\Grants\AuthCodeGrant::class,
-                'refresh_token' => api\components\OAuth2\Grants\RefreshTokenGrant::class,
-                'client_credentials' => api\components\OAuth2\Grants\ClientCredentialsGrant::class,
-            ],
-        ],
         'errorHandler' => [
             'class' => api\components\ErrorHandler::class,
         ],

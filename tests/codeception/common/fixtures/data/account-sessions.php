@@ -16,4 +16,12 @@ return [
         'created_at' => time(),
         'last_refreshed_at' => time(),
     ],
+    'banned-user-session' => [
+        'id' => 3,
+        'account_id' => 10,
+        'refresh_token' => 'Af7fIuV6eL61tRUHn40yhmDRXN1OQxKR',
+        'last_used_ip' => ip2long('182.123.234.123'),
+        'created_at' => time(),
+        'last_refreshed_at' => time(),
+    ],
 ];
