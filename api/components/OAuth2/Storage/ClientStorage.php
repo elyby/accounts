@@ -74,6 +74,7 @@ class ClientStorage extends AbstractStorage implements ClientInterface {
         $entity->setId($model->id);
         $entity->setName($model->name);
         $entity->setSecret($model->secret);
+        $entity->setIsTrusted($model->is_trusted);
         $entity->setRedirectUri($model->redirect_uri);
 
         return $entity;

@@ -29,10 +29,11 @@ use const common\LATEST_RULES_VERSION;
  * @property string  $profileLink ссылка на профиль на Ely без поддержки static url (только для записи)
  *
  * Отношения:
- * @property EmailActivation[] $emailActivations
- * @property OauthSession[]    $oauthSessions
- * @property UsernameHistory[] $usernameHistory
- * @property AccountSession[]  $sessions
+ * @property EmailActivation[]    $emailActivations
+ * @property OauthSession[]       $oauthSessions
+ * @property UsernameHistory[]    $usernameHistory
+ * @property AccountSession[]     $sessions
+ * @property MinecraftAccessKey[] $minecraftAccessKeys
  *
  * Поведения:
  * @mixin TimestampBehavior
@@ -99,7 +100,7 @@ class Account extends ActiveRecord {
     }
 
     public function getOauthSessions() {
-        return $this->hasMany(OauthSession::class, ['owner_id' => 'id']);
+        return $this->hasMany(OauthSession::class, ['owner_id' => 'id'])->andWhere(['owner_type' => 'user']);
     }
 
     public function getUsernameHistory() {
@@ -108,6 +109,10 @@ class Account extends ActiveRecord {
 
     public function getSessions() {
         return $this->hasMany(AccountSession::class, ['account_id' => 'id']);
+    }
+
+    public function getMinecraftAccessKeys() {
+        return $this->hasMany(MinecraftAccessKey::class, ['account_id' => 'id']);
     }
 
     /**

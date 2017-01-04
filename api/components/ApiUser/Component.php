@@ -6,8 +6,8 @@ use yii\web\User as YiiUserComponent;
 /**
  * @property Identity|null $identity
  *
- * @method Identity|null getIdentity()
- * @method Identity|null loginByAccessToken(string $token, $type = null)
+ * @method Identity|null getIdentity($autoRenew = true)
+ * @method Identity|null loginByAccessToken($token, $type = null)
  */
 class Component extends YiiUserComponent {
 

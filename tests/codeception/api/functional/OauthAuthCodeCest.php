@@ -281,6 +281,21 @@ class OauthAuthCodeCest {
             'statusCode' => 400,
         ]);
         $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
+
+        $I->wantTo('check behavior on request internal scope');
+        $this->route->$action($this->buildQueryParams('ely', 'http://ely.by', 'code', [
+            S::MINECRAFT_SERVER_SESSION,
+            S::ACCOUNT_BLOCK,
+        ]));
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseIsJson();
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+            'error' => 'invalid_scope',
+            'parameter' => S::ACCOUNT_BLOCK,
+            'statusCode' => 400,
+        ]);
+        $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
     }
 
 }
