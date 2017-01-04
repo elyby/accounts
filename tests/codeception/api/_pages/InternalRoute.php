@@ -13,4 +13,9 @@ class InternalRoute extends BasePage {
         $this->actor->sendPOST($this->getUrl());
     }
 
+    public function pardon($accountId) {
+        $this->route = '/internal/accounts/' . $accountId . '/ban';
+        $this->actor->sendDELETE($this->getUrl());
+    }
+
 }
