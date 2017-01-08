@@ -1,9 +1,10 @@
 <?php
 namespace tests\codeception\api;
 
+use api\components\User\LoginResult;
+use api\models\authentication\LoginForm;
 use Codeception\Actor;
 use InvalidArgumentException;
-use tests\codeception\api\_pages\AuthenticationRoute;
 
 /**
  * Inherited Methods
@@ -24,19 +25,22 @@ class FunctionalTester extends Actor {
     use _generated\FunctionalTesterActions;
 
     public function loggedInAsActiveAccount($login = null, $password = null) {
-        $route = new AuthenticationRoute($this);
-        if ($login === null) {
-            $route->login('Admin', 'password_0');
+        $form = new LoginForm();
+        if ($login === null && $password === null) {
+            $form->login = 'Admin';
+            $form->password = 'password_0';
         } elseif ($login !== null && $password !== null) {
-            $route->login($login, $password);
+            $form->login = $login;
+            $form->password = $password;
         } else {
             throw new InvalidArgumentException('login and password should be presented both.');
         }
 
-        $this->canSeeResponseIsJson();
-        $this->canSeeAuthCredentials(false);
-        $jwt = $this->grabDataFromResponseByJsonPath('$.access_token')[0];
-        $this->amBearerAuthenticated($jwt);
+        $result = $form->login();
+        $this->assertInstanceOf(LoginResult::class, $result);
+        if ($result !== false) {
+            $this->amBearerAuthenticated($result->getJwt());
+        }
     }
 
     public function notLoggedIn() {
