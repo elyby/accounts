@@ -54,4 +54,7 @@ final class Error {
     const SUBJECT_REQUIRED = 'error.subject_required';
     const MESSAGE_REQUIRED = 'error.message_required';
 
+    const OTP_TOKEN_REQUIRED = 'error.otp_token_required';
+    const OTP_TOKEN_INCORRECT = 'error.otp_token_incorrect';
+
 }

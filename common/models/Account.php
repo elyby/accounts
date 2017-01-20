@@ -20,6 +20,8 @@ use const common\LATEST_RULES_VERSION;
  * @property integer $status
  * @property integer $rules_agreement_version
  * @property string  $registration_ip
+ * @property string  $otp_secret
+ * @property integer $is_otp_enabled
  * @property integer $created_at
  * @property integer $updated_at
  * @property integer $password_changed_at

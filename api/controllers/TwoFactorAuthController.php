@@ -1,0 +1,37 @@
+<?php
+namespace api\controllers;
+
+use api\filters\ActiveUserRule;
+use api\models\profile\TwoFactorAuthForm;
+use Yii;
+use yii\filters\AccessControl;
+use yii\helpers\ArrayHelper;
+
+class TwoFactorAuthController extends Controller {
+
+    public $defaultAction = 'credentials';
+
+    public function behaviors() {
+        return ArrayHelper::merge(parent::behaviors(), [
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'class' => ActiveUserRule::class,
+                        'actions' => [
+                            'credentials',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+    }
+
+    public function actionCredentials() {
+        $account = Yii::$app->user->identity;
+        $model = new TwoFactorAuthForm($account);
+
+        return $model->getCredentials();
+    }
+
+}
