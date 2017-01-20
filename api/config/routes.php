@@ -7,6 +7,9 @@ return [
     '/accounts/change-email/submit-new-email' => 'accounts/change-email-submit-new-email',
     '/accounts/change-email/confirm-new-email' => 'accounts/change-email-confirm-new-email',
 
+    'POST /two-factor-auth' => 'two-factor-auth/activate',
+    'DELETE /two-factor-auth' => 'two-factor-auth/disable',
+
     '/oauth2/v1/<action>' => 'oauth/<action>',
 
     '/account/v1/info' => 'identity-info/index',

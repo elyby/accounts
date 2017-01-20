@@ -18,7 +18,7 @@ use yii\base\ErrorException;
 
 class TwoFactorAuthForm extends ApiForm {
 
-    const SCENARIO_ENABLE = 'enable';
+    const SCENARIO_ACTIVATE = 'enable';
     const SCENARIO_DISABLE = 'disable';
 
     public $token;
@@ -36,11 +36,13 @@ class TwoFactorAuthForm extends ApiForm {
     }
 
     public function rules() {
-        $on = [self::SCENARIO_ENABLE, self::SCENARIO_DISABLE];
+        $bothScenarios = [self::SCENARIO_ACTIVATE, self::SCENARIO_DISABLE];
         return [
-            ['token', 'required', 'message' => E::OTP_TOKEN_REQUIRED, 'on' => $on],
-            ['token', TotpValidator::class, 'account' => $this->account, 'window' => 30, 'on' => $on],
-            ['password', PasswordRequiredValidator::class, 'account' => $this->account, 'on' => $on],
+            ['account', 'validateOtpDisabled', 'on' => self::SCENARIO_ACTIVATE],
+            ['account', 'validateOtpEnabled', 'on' => self::SCENARIO_DISABLE],
+            ['token', 'required', 'message' => E::OTP_TOKEN_REQUIRED, 'on' => $bothScenarios],
+            ['token', TotpValidator::class, 'account' => $this->account, 'window' => 30, 'on' => $bothScenarios],
+            ['password', PasswordRequiredValidator::class, 'account' => $this->account, 'on' => $bothScenarios],
         ];
     }
 
@@ -56,6 +58,47 @@ class TwoFactorAuthForm extends ApiForm {
             'uri' => $provisioningUri,
             'secret' => $this->account->otp_secret,
         ];
+    }
+
+    public function activate(): bool {
+        if (!$this->validate()) {
+            return false;
+        }
+
+        $account = $this->account;
+        $account->is_otp_enabled = true;
+        if (!$account->save()) {
+            throw new ErrorException('Cannot enable otp for account');
+        }
+
+        return true;
+    }
+
+    public function disable(): bool {
+        if (!$this->validate()) {
+            return false;
+        }
+
+        $account = $this->account;
+        $account->is_otp_enabled = false;
+        $account->otp_secret = null;
+        if (!$account->save()) {
+            throw new ErrorException('Cannot disable otp for account');
+        }
+
+        return true;
+    }
+
+    public function validateOtpDisabled($attribute) {
+        if ($this->account->is_otp_enabled) {
+            $this->addError($attribute, E::OTP_ALREADY_ENABLED);
+        }
+    }
+
+    public function validateOtpEnabled($attribute) {
+        if (!$this->account->is_otp_enabled) {
+            $this->addError($attribute, E::OTP_NOT_ENABLED);
+        }
     }
 
     public function getAccount(): Account {

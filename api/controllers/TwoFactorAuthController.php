@@ -34,4 +34,34 @@ class TwoFactorAuthController extends Controller {
         return $model->getCredentials();
     }
 
+    public function actionActivate() {
+        $account = Yii::$app->user->identity;
+        $model = new TwoFactorAuthForm($account, ['scenario' => TwoFactorAuthForm::SCENARIO_ACTIVATE]);
+        if (!$model->activate()) {
+            return [
+                'success' => false,
+                'errors' => $model->getFirstErrors(),
+            ];
+        }
+
+        return [
+            'success' => true,
+        ];
+    }
+
+    public function actionDisable() {
+        $account = Yii::$app->user->identity;
+        $model = new TwoFactorAuthForm($account, ['scenario' => TwoFactorAuthForm::SCENARIO_DISABLE]);
+        if (!$model->disable()) {
+            return [
+                'success' => false,
+                'errors' => $model->getFirstErrors(),
+            ];
+        }
+
+        return [
+            'success' => true,
+        ];
+    }
+
 }

@@ -56,5 +56,7 @@ final class Error {
 
     const OTP_TOKEN_REQUIRED = 'error.otp_token_required';
     const OTP_TOKEN_INCORRECT = 'error.otp_token_incorrect';
+    const OTP_ALREADY_ENABLED = 'error.otp_already_enabled';
+    const OTP_NOT_ENABLED = 'error.otp_not_enabled';
 
 }
