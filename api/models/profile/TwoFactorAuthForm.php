@@ -61,7 +61,7 @@ class TwoFactorAuthForm extends ApiForm {
     }
 
     public function activate(): bool {
-        if (!$this->validate()) {
+        if ($this->scenario !== self::SCENARIO_ACTIVATE || !$this->validate()) {
             return false;
         }
 
@@ -75,7 +75,7 @@ class TwoFactorAuthForm extends ApiForm {
     }
 
     public function disable(): bool {
-        if (!$this->validate()) {
+        if ($this->scenario !== self::SCENARIO_DISABLE || !$this->validate()) {
             return false;
         }
 

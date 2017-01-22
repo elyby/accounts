@@ -2,7 +2,9 @@
 namespace tests\codeception\api\unit\models\profile;
 
 use api\models\profile\TwoFactorAuthForm;
+use common\helpers\Error as E;
 use common\models\Account;
+use OTPHP\TOTP;
 use tests\codeception\api\unit\TestCase;
 
 class TwoFactorAuthFormTest extends TestCase {
@@ -62,6 +64,102 @@ class TwoFactorAuthFormTest extends TestCase {
 
         $result = $model->getCredentials();
         $this->assertEquals('some valid totp secret value', $result['secret']);
+    }
+
+    public function testActivate() {
+        /** @var Account|\PHPUnit_Framework_MockObject_MockObject $account */
+        $account = $this->getMockBuilder(Account::class)
+            ->setMethods(['save'])
+            ->getMock();
+
+        $account->expects($this->once())
+            ->method('save')
+            ->willReturn(true);
+
+        $account->is_otp_enabled = false;
+        $account->otp_secret = 'mock secret';
+
+        /** @var TwoFactorAuthForm|\PHPUnit_Framework_MockObject_MockObject $model */
+        $model = $this->getMockBuilder(TwoFactorAuthForm::class)
+            ->setMethods(['validate'])
+            ->setConstructorArgs([$account, ['scenario' => TwoFactorAuthForm::SCENARIO_ACTIVATE]])
+            ->getMock();
+
+        $model->expects($this->once())
+            ->method('validate')
+            ->willReturn(true);
+
+        $this->assertTrue($model->activate());
+        $this->assertTrue($account->is_otp_enabled);
+    }
+
+    public function testDisable() {
+        /** @var Account|\PHPUnit_Framework_MockObject_MockObject $account */
+        $account = $this->getMockBuilder(Account::class)
+            ->setMethods(['save'])
+            ->getMock();
+
+        $account->expects($this->once())
+            ->method('save')
+            ->willReturn(true);
+
+        $account->is_otp_enabled = true;
+        $account->otp_secret = 'mock secret';
+
+        /** @var TwoFactorAuthForm|\PHPUnit_Framework_MockObject_MockObject $model */
+        $model = $this->getMockBuilder(TwoFactorAuthForm::class)
+            ->setMethods(['validate'])
+            ->setConstructorArgs([$account, ['scenario' => TwoFactorAuthForm::SCENARIO_DISABLE]])
+            ->getMock();
+
+        $model->expects($this->once())
+            ->method('validate')
+            ->willReturn(true);
+
+        $this->assertTrue($model->disable());
+        $this->assertNull($account->otp_secret);
+        $this->assertFalse($account->is_otp_enabled);
+    }
+
+    public function testValidateOtpDisabled() {
+        $account = new Account();
+        $account->is_otp_enabled = true;
+        $model = new TwoFactorAuthForm($account);
+        $model->validateOtpDisabled('account');
+        $this->assertEquals([E::OTP_ALREADY_ENABLED], $model->getErrors('account'));
+
+        $account = new Account();
+        $account->is_otp_enabled = false;
+        $model = new TwoFactorAuthForm($account);
+        $model->validateOtpDisabled('account');
+        $this->assertEmpty($model->getErrors('account'));
+    }
+
+    public function testValidateOtpEnabled() {
+        $account = new Account();
+        $account->is_otp_enabled = false;
+        $model = new TwoFactorAuthForm($account);
+        $model->validateOtpEnabled('account');
+        $this->assertEquals([E::OTP_NOT_ENABLED], $model->getErrors('account'));
+
+        $account = new Account();
+        $account->is_otp_enabled = true;
+        $model = new TwoFactorAuthForm($account);
+        $model->validateOtpEnabled('account');
+        $this->assertEmpty($model->getErrors('account'));
+    }
+
+    public function testGetTotp() {
+        $account = new Account();
+        $account->otp_secret = 'mock secret';
+        $account->email = 'check@this.email';
+
+        $model = new TwoFactorAuthForm($account);
+        $totp = $model->getTotp();
+        $this->assertInstanceOf(TOTP::class, $totp);
+        $this->assertEquals('check@this.email', $totp->getLabel());
+        $this->assertEquals('mock secret', $totp->getSecret());
+        $this->assertEquals('Ely.by', $totp->getIssuer());
     }
 
 }

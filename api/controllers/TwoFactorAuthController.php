@@ -17,14 +17,20 @@ class TwoFactorAuthController extends Controller {
                 'class' => AccessControl::class,
                 'rules' => [
                     [
+                        'allow' => true,
                         'class' => ActiveUserRule::class,
-                        'actions' => [
-                            'credentials',
-                        ],
                     ],
                 ],
             ],
         ]);
+    }
+
+    public function verbs() {
+        return [
+            'credentials' => ['GET'],
+            'activate' => ['POST'],
+            'disable' => ['DELETE'],
+        ];
     }
 
     public function actionCredentials() {
@@ -37,6 +43,7 @@ class TwoFactorAuthController extends Controller {
     public function actionActivate() {
         $account = Yii::$app->user->identity;
         $model = new TwoFactorAuthForm($account, ['scenario' => TwoFactorAuthForm::SCENARIO_ACTIVATE]);
+        $model->load(Yii::$app->request->post());
         if (!$model->activate()) {
             return [
                 'success' => false,
@@ -52,6 +59,7 @@ class TwoFactorAuthController extends Controller {
     public function actionDisable() {
         $account = Yii::$app->user->identity;
         $model = new TwoFactorAuthForm($account, ['scenario' => TwoFactorAuthForm::SCENARIO_DISABLE]);
+        $model->load(Yii::$app->request->getBodyParams());
         if (!$model->disable()) {
             return [
                 'success' => false,
