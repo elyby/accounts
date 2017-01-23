@@ -2,6 +2,7 @@
 namespace api\models\authentication;
 
 use api\models\base\ApiForm;
+use api\validators\TotpValidator;
 use common\helpers\Error as E;
 use api\traits\AccountFinder;
 use common\components\UserFriendlyRandomKey;
@@ -16,11 +17,16 @@ class ForgotPasswordForm extends ApiForm {
     use AccountFinder;
 
     public $login;
+    public $token;
 
     public function rules() {
         return [
             ['login', 'required', 'message' => E::LOGIN_REQUIRED],
             ['login', 'validateLogin'],
+            ['token', 'required', 'when' => function(self $model) {
+                return !$this->hasErrors() && $model->getAccount()->is_otp_enabled;
+            }, 'message' => E::OTP_TOKEN_REQUIRED],
+            ['token', 'validateTotpToken'],
             ['login', 'validateActivity'],
             ['login', 'validateFrequency'],
         ];
@@ -32,6 +38,20 @@ class ForgotPasswordForm extends ApiForm {
                 $this->addError($attribute, E::LOGIN_NOT_EXIST);
             }
         }
+    }
+
+    public function validateTotpToken($attribute) {
+        if ($this->hasErrors()) {
+            return;
+        }
+
+        $account = $this->getAccount();
+        if (!$account->is_otp_enabled) {
+            return;
+        }
+
+        $validator = new TotpValidator(['account' => $account]);
+        $validator->validateAttribute($this, $attribute);
     }
 
     public function validateActivity($attribute) {

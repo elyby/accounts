@@ -69,9 +69,7 @@ class LoginForm extends ApiForm {
         }
 
         $validator = new TotpValidator(['account' => $account]);
-        if (!$validator->validate($this->token, $error)) {
-            $this->addError($attribute, $error);
-        }
+        $validator->validateAttribute($this, $attribute);
     }
 
     public function validateActivity($attribute) {

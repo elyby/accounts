@@ -35,10 +35,11 @@ class AuthenticationRoute extends BasePage {
         $this->actor->sendPOST($this->getUrl());
     }
 
-    public function forgotPassword($login = '') {
+    public function forgotPassword($login = null, $token = null) {
         $this->route = ['authentication/forgot-password'];
         $this->actor->sendPOST($this->getUrl(), [
             'login' => $login,
+            'token' => $token,
         ]);
     }
 
