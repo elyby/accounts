@@ -29,6 +29,7 @@ class AccountsCurrentCest {
             'isActive' => true,
             'hasMojangUsernameCollision' => false,
             'shouldAcceptRules' => false,
+            'isOtpEnabled' => false,
         ]);
         $I->canSeeResponseJsonMatchesJsonPath('$.passwordChangedAt');
     }
