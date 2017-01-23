@@ -16,7 +16,7 @@ class AccountsCurrentCest {
     }
 
     public function testCurrent(FunctionalTester $I) {
-        $I->loggedInAsActiveAccount();
+        $I->amAuthenticated();
 
         $this->route->current();
         $I->canSeeResponseCodeIs(200);

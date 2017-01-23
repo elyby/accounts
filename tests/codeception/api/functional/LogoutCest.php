@@ -8,7 +8,7 @@ class LogoutCest {
     public function testLoginEmailOrUsername(FunctionalTester $I) {
         $route = new AuthenticationRoute($I);
 
-        $I->loggedInAsActiveAccount();
+        $I->amAuthenticated();
         $route->logout();
         $I->canSeeResponseContainsJson([
             'success' => true,

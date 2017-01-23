@@ -7,12 +7,12 @@ use tests\codeception\api\FunctionalTester;
 
 class AuthserverSteps extends FunctionalTester {
 
-    public function amAuthenticated() {
+    public function amAuthenticated(string $asUsername = 'admin', string $password = 'password_0') {
         $route = new AuthserverRoute($this);
         $clientToken = Uuid::uuid4()->toString();
         $route->authenticate([
-            'username' => 'admin',
-            'password' => 'password_0',
+            'username' => $asUsername,
+            'password' => $password,
             'clientToken' => $clientToken,
         ]);
 

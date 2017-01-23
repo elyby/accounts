@@ -16,7 +16,7 @@ class TwoFactorAuthCredentialsCest {
     }
 
     public function testGetCredentials(FunctionalTester $I) {
-        $I->loggedInAsActiveAccount();
+        $I->amAuthenticated();
         $this->route->credentials();
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();

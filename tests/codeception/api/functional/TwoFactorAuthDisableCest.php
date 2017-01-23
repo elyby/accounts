@@ -17,7 +17,7 @@ class TwoFactorAuthDisableCest {
     }
 
     public function testFails(FunctionalTester $I) {
-        $I->loggedInAsActiveAccount('AccountWithEnabledOtp', 'password_0');
+        $I->amAuthenticated('AccountWithEnabledOtp');
 
         $this->route->disable();
         $I->canSeeResponseContainsJson([
@@ -37,7 +37,7 @@ class TwoFactorAuthDisableCest {
             ],
         ]);
 
-        $I->loggedInAsActiveAccount('AccountWithOtpSecret', 'password_0');
+        $I->amAuthenticated('AccountWithOtpSecret');
         $this->route->disable('123456', 'invalid_password');
         $I->canSeeResponseContainsJson([
             'success' => false,
@@ -48,7 +48,7 @@ class TwoFactorAuthDisableCest {
     }
 
     public function testSuccessEnable(FunctionalTester $I) {
-        $I->loggedInAsActiveAccount('AccountWithEnabledOtp', 'password_0');
+        $I->amAuthenticated('AccountWithEnabledOtp');
         $totp = new TOTP(null, 'secret-secret-secret');
         $this->route->disable($totp->now(), 'password_0');
         $I->canSeeResponseCodeIs(200);

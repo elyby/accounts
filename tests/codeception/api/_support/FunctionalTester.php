@@ -1,10 +1,10 @@
 <?php
 namespace tests\codeception\api;
 
-use api\components\User\LoginResult;
-use api\models\authentication\LoginForm;
+use api\models\AccountIdentity;
 use Codeception\Actor;
 use InvalidArgumentException;
+use Yii;
 
 /**
  * Inherited Methods
@@ -24,23 +24,15 @@ use InvalidArgumentException;
 class FunctionalTester extends Actor {
     use _generated\FunctionalTesterActions;
 
-    public function loggedInAsActiveAccount($login = null, $password = null) {
-        $form = new LoginForm();
-        if ($login === null && $password === null) {
-            $form->login = 'Admin';
-            $form->password = 'password_0';
-        } elseif ($login !== null && $password !== null) {
-            $form->login = $login;
-            $form->password = $password;
-        } else {
-            throw new InvalidArgumentException('login and password should be presented both.');
+    public function amAuthenticated(string $asUsername = 'admin') {
+        /** @var AccountIdentity $account */
+        $account = AccountIdentity::findOne(['username' => $asUsername]);
+        if ($account === null) {
+            throw new InvalidArgumentException("Cannot find account for username \"$asUsername\"");
         }
 
-        $result = $form->login();
-        $this->assertInstanceOf(LoginResult::class, $result);
-        if ($result !== false) {
-            $this->amBearerAuthenticated($result->getJwt());
-        }
+        $result = Yii::$app->user->login($account);
+        $this->amBearerAuthenticated($result->getJwt());
     }
 
     public function notLoggedIn() {

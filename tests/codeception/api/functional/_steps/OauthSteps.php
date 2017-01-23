@@ -9,7 +9,7 @@ class OauthSteps extends FunctionalTester {
 
     public function getAuthCode(array $permissions = []) {
         // TODO: по идее можно напрямую сделать запись в базу, что ускорит процесс тестирования
-        $this->loggedInAsActiveAccount();
+        $this->amAuthenticated();
         $route = new OauthRoute($this);
         $route->complete([
             'client_id' => 'ely',

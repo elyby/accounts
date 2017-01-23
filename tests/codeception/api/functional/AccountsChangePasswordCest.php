@@ -27,7 +27,7 @@ class AccountsChangePasswordCest {
 
     public function testChangePassword(FunctionalTester $I) {
         $I->wantTo('change my password');
-        $I->loggedInAsActiveAccount();
+        $I->amAuthenticated();
 
         $this->route->changePassword('password_0', 'new-password', 'new-password');
         $I->canSeeResponseCodeIs(200);
