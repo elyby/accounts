@@ -3,6 +3,7 @@ namespace api\models\authentication;
 
 use api\models\AccountIdentity;
 use api\models\base\ApiForm;
+use api\validators\TotpValidator;
 use common\helpers\Error as E;
 use api\traits\AccountFinder;
 use common\models\Account;
@@ -16,6 +17,7 @@ class LoginForm extends ApiForm {
 
     public $login;
     public $password;
+    public $token;
     public $rememberMe = false;
 
     public function rules() {
@@ -27,6 +29,11 @@ class LoginForm extends ApiForm {
                 return !$model->hasErrors();
             }, 'message' => E::PASSWORD_REQUIRED],
             ['password', 'validatePassword'],
+
+            ['token', 'required', 'when' => function(self $model) {
+                return !$model->hasErrors() && $model->getAccount()->is_otp_enabled;
+            }, 'message' => E::OTP_TOKEN_REQUIRED],
+            ['token', 'validateTotpToken'],
 
             ['login', 'validateActivity'],
 
@@ -48,6 +55,22 @@ class LoginForm extends ApiForm {
             if ($account === null || !$account->validatePassword($this->password)) {
                 $this->addError($attribute, E::PASSWORD_INCORRECT);
             }
+        }
+    }
+
+    public function validateTotpToken($attribute) {
+        if ($this->hasErrors()) {
+            return;
+        }
+
+        $account = $this->getAccount();
+        if (!$account->is_otp_enabled) {
+            return;
+        }
+
+        $validator = new TotpValidator(['account' => $account]);
+        if (!$validator->validate($this->token, $error)) {
+            $this->addError($attribute, $error);
         }
     }
 
