@@ -16,7 +16,7 @@ class AccountsAcceptRulesCest {
     }
 
     public function testCurrent(FunctionalTester $I) {
-        $I->loggedInAsActiveAccount('Veleyaba', 'password_0');
+        $I->amAuthenticated('Veleyaba');
         $this->route->acceptRules();
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();

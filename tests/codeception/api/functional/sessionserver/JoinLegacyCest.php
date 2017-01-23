@@ -21,7 +21,7 @@ class JoinLegacyCest {
 
     public function joinByLegacyAuthserver(AuthserverSteps $I) {
         $I->wantTo('join to server by legacy protocol, using legacy authserver access token');
-        list($accessToken) = $I->amAuthenticated();
+        [$accessToken] = $I->amAuthenticated();
         $this->route->joinLegacy([
             'sessionId' => $accessToken,
             'user' => 'Admin',
@@ -32,7 +32,7 @@ class JoinLegacyCest {
 
     public function joinByNewSessionFormat(AuthserverSteps $I) {
         $I->wantTo('join to server by legacy protocol with new launcher session format, using legacy authserver');
-        list($accessToken) = $I->amAuthenticated();
+        [$accessToken] = $I->amAuthenticated();
         $this->route->joinLegacy([
             'sessionId' => 'token:' . $accessToken . ':' . 'df936908-b2e1-544d-96f8-2977ec213022',
             'user' => 'Admin',

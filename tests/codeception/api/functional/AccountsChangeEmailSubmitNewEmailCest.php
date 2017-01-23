@@ -18,7 +18,7 @@ class AccountsChangeEmailSubmitNewEmailCest {
 
     public function testSubmitNewEmail(FunctionalTester $I) {
         $I->wantTo('submit new email');
-        $I->loggedInAsActiveAccount('ILLIMUNATI', 'password_0');
+        $I->amAuthenticated('ILLIMUNATI');
 
         $this->route->changeEmailSubmitNewEmail('H27HBDCHHAG2HGHGHS', 'my-new-email@ely.by');
         $I->canSeeResponseCodeIs(200);

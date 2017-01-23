@@ -26,7 +26,7 @@ class AccountsChangeUsernameCest {
 
     public function testChangeUsername(FunctionalTester $I) {
         $I->wantTo('change my nickname');
-        $I->loggedInAsActiveAccount();
+        $I->amAuthenticated();
 
         $this->route->changeUsername('password_0', 'bruce_wayne');
         $I->canSeeResponseCodeIs(200);
@@ -38,7 +38,7 @@ class AccountsChangeUsernameCest {
 
     public function testChangeUsernameNotAvailable(FunctionalTester $I) {
         $I->wantTo('see, that nickname "in use" is not available');
-        $I->loggedInAsActiveAccount();
+        $I->amAuthenticated();
 
         $this->route->changeUsername('password_0', 'Jon');
         $I->canSeeResponseCodeIs(200);

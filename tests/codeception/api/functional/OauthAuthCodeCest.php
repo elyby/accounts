@@ -51,7 +51,7 @@ class OauthAuthCodeCest {
     }
 
     public function testValidateWithDescriptionReplaceRequest(FunctionalTester $I) {
-        $I->loggedInAsActiveAccount();
+        $I->amAuthenticated();
         $I->wantTo('validate and get information with description replacement');
         $this->route->validate($this->buildQueryParams(
             'ely',
@@ -73,13 +73,13 @@ class OauthAuthCodeCest {
     }
 
     public function testCompleteValidationAction(FunctionalTester $I) {
-        $I->loggedInAsActiveAccount();
+        $I->amAuthenticated();
         $I->wantTo('validate all oAuth params on complete request');
         $this->testOauthParamsValidation($I, 'complete');
     }
 
     public function testCompleteActionOnWrongConditions(FunctionalTester $I) {
-        $I->loggedInAsActiveAccount();
+        $I->amAuthenticated();
 
         $I->wantTo('get accept_required if I don\'t require any scope, but this is first time request');
         $this->route->complete($this->buildQueryParams(
@@ -112,7 +112,7 @@ class OauthAuthCodeCest {
     }
 
     public function testCompleteActionSuccess(FunctionalTester $I) {
-        $I->loggedInAsActiveAccount();
+        $I->amAuthenticated();
         $I->wantTo('get auth code if I require some scope and pass accept field');
         $this->route->complete($this->buildQueryParams(
             'ely',
@@ -155,7 +155,7 @@ class OauthAuthCodeCest {
     }
 
     public function testAcceptRequiredOnNewScope(FunctionalTester $I) {
-        $I->loggedInAsActiveAccount();
+        $I->amAuthenticated();
         $I->wantTo('get accept_required if I have previous successful request, but now require some new scope');
         $this->route->complete($this->buildQueryParams(
             'ely',
@@ -179,7 +179,7 @@ class OauthAuthCodeCest {
     }
 
     public function testCompleteActionWithDismissState(FunctionalTester $I) {
-        $I->loggedInAsActiveAccount();
+        $I->amAuthenticated();
         $I->wantTo('get access_denied error if I pass accept in false state');
         $this->route->complete($this->buildQueryParams(
             'ely',

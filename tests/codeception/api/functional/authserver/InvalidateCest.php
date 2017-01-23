@@ -18,7 +18,7 @@ class InvalidateCest {
 
     public function invalidate(AuthserverSteps $I) {
         $I->wantTo('invalidate my token');
-        list($accessToken, $clientToken) = $I->amAuthenticated();
+        [$accessToken, $clientToken] = $I->amAuthenticated();
         $this->route->invalidate([
             'accessToken' => $accessToken,
             'clientToken' => $clientToken,

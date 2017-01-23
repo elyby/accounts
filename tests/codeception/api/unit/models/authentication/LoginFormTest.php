@@ -6,6 +6,7 @@ use api\models\AccountIdentity;
 use api\models\authentication\LoginForm;
 use Codeception\Specify;
 use common\models\Account;
+use OTPHP\TOTP;
 use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 
@@ -38,7 +39,7 @@ class LoginFormTest extends TestCase {
                 'account' => null,
             ]);
             $model->validateLogin('login');
-            expect($model->getErrors('login'))->equals(['error.login_not_exist']);
+            $this->assertEquals(['error.login_not_exist'], $model->getErrors('login'));
         });
 
         $this->specify('no errors if login exists', function () {
@@ -47,7 +48,7 @@ class LoginFormTest extends TestCase {
                 'account' => new AccountIdentity(),
             ]);
             $model->validateLogin('login');
-            expect($model->getErrors('login'))->isEmpty();
+            $this->assertEmpty($model->getErrors('login'));
         });
     }
 
@@ -58,7 +59,7 @@ class LoginFormTest extends TestCase {
                 'account' => new AccountIdentity(['password' => '12345678']),
             ]);
             $model->validatePassword('password');
-            expect($model->getErrors('password'))->equals(['error.password_incorrect']);
+            $this->assertEquals(['error.password_incorrect'], $model->getErrors('password'));
         });
 
         $this->specify('no errors if password valid', function () {
@@ -67,7 +68,35 @@ class LoginFormTest extends TestCase {
                 'account' => new AccountIdentity(['password' => '12345678']),
             ]);
             $model->validatePassword('password');
-            expect($model->getErrors('password'))->isEmpty();
+            $this->assertEmpty($model->getErrors('password'));
+        });
+    }
+
+    public function testValidateTotpToken() {
+        $account = new AccountIdentity(['password' => '12345678']);
+        $account->password = '12345678';
+        $account->is_otp_enabled = true;
+        $account->otp_secret = 'mock secret';
+
+        $this->specify('error.token_incorrect if totp invalid', function() use ($account) {
+            $model = $this->createModel([
+                'password' => '12345678',
+                'token' => '321123',
+                'account' => $account,
+            ]);
+            $model->validateTotpToken('token');
+            $this->assertEquals(['error.token_incorrect'], $model->getErrors('token'));
+        });
+
+        $totp = new TOTP(null, 'mock secret');
+        $this->specify('no errors if password valid', function() use ($account, $totp) {
+            $model = $this->createModel([
+                'password' => '12345678',
+                'token' => $totp->now(),
+                'account' => $account,
+            ]);
+            $model->validateTotpToken('token');
+            $this->assertEmpty($model->getErrors('token'));
         });
     }
 
@@ -77,7 +106,7 @@ class LoginFormTest extends TestCase {
                 'account' => new AccountIdentity(['status' => Account::STATUS_REGISTERED]),
             ]);
             $model->validateActivity('login');
-            expect($model->getErrors('login'))->equals(['error.account_not_activated']);
+            $this->assertEquals(['error.account_not_activated'], $model->getErrors('login'));
         });
 
         $this->specify('error.account_banned if account has banned status', function () {
@@ -85,7 +114,7 @@ class LoginFormTest extends TestCase {
                 'account' => new AccountIdentity(['status' => Account::STATUS_BANNED]),
             ]);
             $model->validateActivity('login');
-            expect($model->getErrors('login'))->equals(['error.account_banned']);
+            $this->assertEquals(['error.account_banned'], $model->getErrors('login'));
         });
 
         $this->specify('no errors if account active', function () {
@@ -93,36 +122,36 @@ class LoginFormTest extends TestCase {
                 'account' => new AccountIdentity(['status' => Account::STATUS_ACTIVE]),
             ]);
             $model->validateActivity('login');
-            expect($model->getErrors('login'))->isEmpty();
+            $this->assertEmpty($model->getErrors('login'));
         });
     }
 
     public function testLogin() {
-        $this->specify('user should be able to login with correct username and password', function () {
-            $model = $this->createModel([
-                'login' => 'erickskrauch',
+        $model = $this->createModel([
+            'login' => 'erickskrauch',
+            'password' => '12345678',
+            'account' => new AccountIdentity([
+                'username' => 'erickskrauch',
                 'password' => '12345678',
-                'account' => new AccountIdentity([
-                    'username' => 'erickskrauch',
-                    'password' => '12345678',
-                    'status' => Account::STATUS_ACTIVE,
-                ]),
-            ]);
-            expect('model should login user', $model->login())->isInstanceOf(LoginResult::class);
-            expect('error message should not be set', $model->errors)->isEmpty();
-        });
+                'status' => Account::STATUS_ACTIVE,
+            ]),
+        ]);
+        $this->assertInstanceOf(LoginResult::class, $model->login(), 'model should login user');
+        $this->assertEmpty($model->getErrors(), 'error message should not be set');
     }
 
     public function testLoginWithRehashing() {
-        $this->specify('user, that login using account with old pass hash strategy should update it automatically', function () {
-            $model = new LoginForm([
-                'login' => $this->tester->grabFixture('accounts', 'user-with-old-password-type')['username'],
-                'password' => '12345678',
-            ]);
-            expect($model->login())->isInstanceOf(LoginResult::class);
-            expect($model->errors)->isEmpty();
-            expect($model->getAccount()->password_hash_strategy)->equals(Account::PASS_HASH_STRATEGY_YII2);
-        });
+        $model = new LoginForm([
+            'login' => $this->tester->grabFixture('accounts', 'user-with-old-password-type')['username'],
+            'password' => '12345678',
+        ]);
+        $this->assertInstanceOf(LoginResult::class, $model->login());
+        $this->assertEmpty($model->getErrors());
+        $this->assertEquals(
+            Account::PASS_HASH_STRATEGY_YII2,
+            $model->getAccount()->password_hash_strategy,
+            'user, that login using account with old pass hash strategy should update it automatically'
+        );
     }
 
     /**

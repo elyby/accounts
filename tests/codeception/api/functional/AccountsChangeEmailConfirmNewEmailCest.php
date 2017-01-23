@@ -17,7 +17,7 @@ class AccountsChangeEmailConfirmNewEmailCest {
 
     public function testConfirmNewEmail(FunctionalTester $I) {
         $I->wantTo('change my email and get changed value');
-        $I->loggedInAsActiveAccount('CrafterGameplays', 'password_0');
+        $I->amAuthenticated('CrafterGameplays');
 
         $this->route->changeEmailConfirmNewEmail('H28HBDCHHAG2HGHGHS');
         $I->canSeeResponseCodeIs(200);

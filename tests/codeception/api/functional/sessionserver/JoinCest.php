@@ -21,7 +21,7 @@ class JoinCest {
 
     public function joinByLegacyAuthserver(AuthserverSteps $I) {
         $I->wantTo('join to server, using legacy authserver access token');
-        list($accessToken) = $I->amAuthenticated();
+        [$accessToken] = $I->amAuthenticated();
         $this->route->join([
             'accessToken' => $accessToken,
             'selectedProfile' => 'df936908-b2e1-544d-96f8-2977ec213022',
@@ -32,7 +32,7 @@ class JoinCest {
 
     public function joinByPassJsonInPost(AuthserverSteps $I) {
         $I->wantTo('join to server, passing data in body as encoded json');
-        list($accessToken) = $I->amAuthenticated();
+        [$accessToken] = $I->amAuthenticated();
         $this->route->join(json_encode([
             'accessToken' => $accessToken,
             'selectedProfile' => 'df936908-b2e1-544d-96f8-2977ec213022',

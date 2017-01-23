@@ -69,6 +69,7 @@ class AccountsController extends Controller {
             'passwordChangedAt' => $account->password_changed_at,
             'hasMojangUsernameCollision' => $account->hasMojangUsernameCollision(),
             'shouldAcceptRules' => !$account->isAgreedWithActualRules(),
+            'isOtpEnabled' => (bool)$account->is_otp_enabled,
         ];
     }
 

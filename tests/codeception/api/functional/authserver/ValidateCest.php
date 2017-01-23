@@ -18,7 +18,7 @@ class ValidateCest {
 
     public function validate(AuthserverSteps $I) {
         $I->wantTo('validate my accessToken');
-        list($accessToken) = $I->amAuthenticated();
+        [$accessToken] = $I->amAuthenticated();
         $this->route->validate([
             'accessToken' => $accessToken,
         ]);

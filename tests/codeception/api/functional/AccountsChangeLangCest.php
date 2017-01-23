@@ -18,7 +18,7 @@ class AccountsChangeLangCest {
 
     public function testSubmitNewEmail(FunctionalTester $I) {
         $I->wantTo('change my account language');
-        $I->loggedInAsActiveAccount();
+        $I->amAuthenticated();
 
         $this->route->changeLang('ru');
         $I->canSeeResponseCodeIs(200);
