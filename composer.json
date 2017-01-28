@@ -52,11 +52,11 @@
         },
         {
             "type": "git",
-            "url": "git@gitlab.com:elyby/amqp-controller.git"
+            "url": "git@gitlab.ely.by:elyby/amqp-controller.git"
         },
         {
             "type": "git",
-            "url": "git@gitlab.com:elyby/email-renderer.git"
+            "url": "git@gitlab.ely.by:elyby/email-renderer.git"
         },
         {
             "type": "git",
