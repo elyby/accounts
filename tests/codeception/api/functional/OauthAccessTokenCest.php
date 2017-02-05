@@ -16,12 +16,13 @@ class OauthAccessTokenCest {
         $this->route = new OauthRoute($I);
     }
 
-    public function testIssueTokenWithWrongArgs(FunctionalTester $I) {
+    public function testIssueTokenWithWrongArgs(OauthSteps $I) {
         $I->wantTo('check behavior on on request without any credentials');
         $this->route->issueToken();
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
             'error' => 'invalid_request',
+            'message' => 'The request is missing a required parameter, includes an invalid parameter value, includes a parameter more than once, or is otherwise malformed. Check the "grant_type" parameter.',
         ]);
 
         $I->wantTo('check behavior on passing invalid auth code');
@@ -34,6 +35,21 @@ class OauthAccessTokenCest {
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
             'error' => 'invalid_request',
+            'message' => 'The request is missing a required parameter, includes an invalid parameter value, includes a parameter more than once, or is otherwise malformed. Check the "code" parameter.',
+        ]);
+
+        $authCode = $I->getAuthCode();
+        $I->wantTo('check behavior on passing invalid redirect_uri');
+        $this->route->issueToken($this->buildParams(
+            $authCode,
+            'ely',
+            'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
+            'http://some-other.domain'
+        ));
+        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseContainsJson([
+            'error' => 'invalid_client',
+            'message' => 'Client authentication failed.',
         ]);
     }
 
