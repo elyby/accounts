@@ -16,6 +16,18 @@ class OauthRefreshTokenCest {
         $this->route = new OauthRoute($I);
     }
 
+    public function testInvalidRefreshToken(OauthSteps $I) {
+        $this->route->issueToken($this->buildParams(
+            'some-invalid-refresh-token',
+            'ely',
+            'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM'
+        ));
+        $I->canSeeResponseContainsJson([
+            'error' => 'invalid_request',
+            'message' => 'The refresh token is invalid.',
+        ]);
+    }
+
     public function testRefreshToken(OauthSteps $I) {
         $refreshToken = $I->getRefreshToken();
         $this->route->issueToken($this->buildParams(
