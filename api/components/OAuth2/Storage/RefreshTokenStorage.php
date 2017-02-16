@@ -18,6 +18,9 @@ class RefreshTokenStorage extends AbstractStorage implements RefreshTokenInterfa
 
     public function get($token) {
         $result = Json::decode((new Key($this->dataTable, $token))->getValue());
+        if ($result === null) {
+            return null;
+        }
 
         $entity = new RefreshTokenEntity($this->server);
         $entity->setId($result['id']);

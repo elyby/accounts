@@ -4,6 +4,7 @@ namespace codeception\api\unit\models\authentication;
 use api\models\authentication\ForgotPasswordForm;
 use Codeception\Specify;
 use common\models\EmailActivation;
+use OTPHP\TOTP;
 use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\EmailActivationFixture;
@@ -18,7 +19,7 @@ class ForgotPasswordFormTest extends TestCase {
         ];
     }
 
-    public function testValidateAccount() {
+    public function testValidateLogin() {
         $this->specify('error.login_not_exist if login is invalid', function() {
             $model = new ForgotPasswordForm(['login' => 'unexist']);
             $model->validateLogin('login');
@@ -30,6 +31,21 @@ class ForgotPasswordFormTest extends TestCase {
             $model->validateLogin('login');
             expect($model->getErrors('login'))->isEmpty();
         });
+    }
+
+    public function testValidateTotpToken() {
+        $model = new ForgotPasswordForm();
+        $model->login = 'AccountWithEnabledOtp';
+        $model->token = '123456';
+        $model->validateTotpToken('token');
+        $this->assertEquals(['error.token_incorrect'], $model->getErrors('token'));
+
+        $totp = new TOTP(null, 'secret-secret-secret');
+        $model = new ForgotPasswordForm();
+        $model->login = 'AccountWithEnabledOtp';
+        $model->token = $totp->now();
+        $model->validateTotpToken('token');
+        $this->assertEmpty($model->getErrors('token'));
     }
 
     public function testValidateActivity() {

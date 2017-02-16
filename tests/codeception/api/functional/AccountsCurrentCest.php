@@ -16,7 +16,7 @@ class AccountsCurrentCest {
     }
 
     public function testCurrent(FunctionalTester $I) {
-        $I->loggedInAsActiveAccount();
+        $I->amAuthenticated();
 
         $this->route->current();
         $I->canSeeResponseCodeIs(200);
@@ -29,6 +29,7 @@ class AccountsCurrentCest {
             'isActive' => true,
             'hasMojangUsernameCollision' => false,
             'shouldAcceptRules' => false,
+            'isOtpEnabled' => false,
         ]);
         $I->canSeeResponseJsonMatchesJsonPath('$.passwordChangedAt');
     }

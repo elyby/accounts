@@ -44,7 +44,7 @@ class HasJoinedLegacyCest {
             'user' => 'random-username',
             'serverId' => Uuid::uuid(),
         ]);
-        $I->seeResponseCodeIs(401);
+        $I->seeResponseCodeIs(200);
         $I->canSeeResponseEquals('NO');
     }
 

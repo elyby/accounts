@@ -7,7 +7,9 @@ use api\components\OAuth2\Exception\AccessDeniedException;
 use common\models\Account;
 use common\models\OauthClient;
 use common\models\OauthScope;
+use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Exception\OAuthException;
+use League\OAuth2\Server\Grant\AuthCodeGrant;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
@@ -274,17 +276,12 @@ class OauthController extends Controller {
         return $response;
     }
 
-    /**
-     * @return \League\OAuth2\Server\AuthorizationServer
-     */
-    private function getServer() {
+    private function getServer(): AuthorizationServer {
         return Yii::$app->oauth->authServer;
     }
 
-    /**
-     * @return \League\OAuth2\Server\Grant\AuthCodeGrant
-     */
-    private function getGrantType() {
+    private function getGrantType(): AuthCodeGrant {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->getServer()->getGrantType('authorization_code');
     }
 

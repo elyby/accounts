@@ -4,6 +4,7 @@ namespace codeception\console\unit\controllers;
 use common\components\Mojang\Api;
 use common\components\Mojang\exceptions\NoContentException;
 use common\components\Mojang\response\UsernameToUUIDResponse;
+use common\models\amqp\AccountBanned;
 use common\models\amqp\UsernameChanged;
 use common\models\MojangUsername;
 use console\controllers\AccountQueueController;
@@ -141,6 +142,24 @@ class AccountQueueControllerTest extends TestCase {
         $mojangUsername = MojangUsername::findOne($username);
         $this->assertInstanceOf(MojangUsername::class, $mojangUsername);
         $this->assertNotEquals($mojangInfo->uuid, $mojangUsername->uuid);
+    }
+
+    public function testRouteAccountBanned() {
+        /** @var \common\models\Account $bannedAccount */
+        $bannedAccount = $this->tester->grabFixture('accounts', 'banned-account');
+        $this->tester->haveFixtures([
+            'oauthSessions' => \tests\codeception\common\fixtures\OauthSessionFixture::class,
+            'minecraftAccessKeys' => \tests\codeception\common\fixtures\MinecraftAccessKeyFixture::class,
+            'authSessions' => \tests\codeception\common\fixtures\AccountSessionFixture::class,
+        ]);
+
+        $body = new AccountBanned();
+        $body->accountId = $bannedAccount->id;
+
+        $this->controller->routeAccountBanned($body);
+        $this->assertEmpty($bannedAccount->sessions);
+        $this->assertEmpty($bannedAccount->minecraftAccessKeys);
+        $this->assertEmpty($bannedAccount->oauthSessions);
     }
 
 }

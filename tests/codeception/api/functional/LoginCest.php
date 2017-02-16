@@ -1,6 +1,7 @@
 <?php
 namespace tests\codeception\api;
 
+use OTPHP\TOTP;
 use tests\codeception\api\_pages\AuthenticationRoute;
 
 class LoginCest {
@@ -103,6 +104,56 @@ class LoginCest {
         ]);
     }
 
+    public function testLoginToken(FunctionalTester $I) {
+        $route = new AuthenticationRoute($I);
+
+        $I->wantTo('see token don\'t have errors if email, username or token not set');
+        $route->login();
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+        ]);
+        $I->cantSeeResponseJsonMatchesJsonPath('$.errors.token');
+
+        $I->wantTo('see token don\'t have errors if username not exists in database');
+        $route->login('non-exist-username', 'random-password');
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+        ]);
+        $I->cantSeeResponseJsonMatchesJsonPath('$.errors.token');
+
+        $I->wantTo('see token don\'t has errors if email not exists in database');
+        $route->login('not-exist@user.com', 'random-password');
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+        ]);
+        $I->cantSeeResponseJsonMatchesJsonPath('$.errors.token');
+
+        $I->wantTo('see token don\'t has errors if email correct, but password wrong');
+        $route->login('not-exist@user.com', 'random-password');
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+        ]);
+        $I->cantSeeResponseJsonMatchesJsonPath('$.errors.token');
+
+        $I->wantTo('see error.token_required if username and password correct, but account have enable otp');
+        $route->login('AccountWithEnabledOtp', 'password_0');
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+            'errors' => [
+                'token' => 'error.token_required',
+            ],
+        ]);
+
+        $I->wantTo('see error.token_incorrect if username and password correct, but token wrong');
+        $route->login('AccountWithEnabledOtp', 'password_0', '123456');
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+            'errors' => [
+                'token' => 'error.token_incorrect',
+            ],
+        ]);
+    }
+
     public function testLoginByUsernameCorrect(FunctionalTester $I) {
         $route = new AuthenticationRoute($I);
 
@@ -149,6 +200,18 @@ class LoginCest {
         ]);
         $I->cantSeeResponseJsonMatchesJsonPath('$.errors');
         $I->canSeeAuthCredentials(true);
+    }
+
+    public function testLoginByAccountWithOtp(FunctionalTester $I) {
+        $route = new AuthenticationRoute($I);
+
+        $I->wantTo('login into account with enabled otp');
+        $route->login('AccountWithEnabledOtp', 'password_0', (new TOTP(null, 'secret-secret-secret'))->now());
+        $I->canSeeResponseContainsJson([
+            'success' => true,
+        ]);
+        $I->cantSeeResponseJsonMatchesJsonPath('$.errors');
+        $I->canSeeAuthCredentials(false);
     }
 
 }

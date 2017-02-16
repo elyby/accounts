@@ -3,12 +3,13 @@ namespace tests\codeception\api\functional\_steps;
 
 use common\models\OauthScope as S;
 use tests\codeception\api\_pages\OauthRoute;
+use tests\codeception\api\FunctionalTester;
 
-class OauthSteps extends \tests\codeception\api\FunctionalTester {
+class OauthSteps extends FunctionalTester {
 
     public function getAuthCode(array $permissions = []) {
-        // TODO: по идее можно напрямую сделать зпись в базу, что ускорит процесс тестирования
-        $this->loggedInAsActiveAccount();
+        // TODO: по идее можно напрямую сделать запись в базу, что ускорит процесс тестирования
+        $this->amAuthenticated();
         $route = new OauthRoute($this);
         $route->complete([
             'client_id' => 'ely',
@@ -31,7 +32,7 @@ class OauthSteps extends \tests\codeception\api\FunctionalTester {
     }
 
     public function getRefreshToken(array $permissions = []) {
-        // TODO: по идее можно напрямую сделать зпись в базу, что ускорит процесс тестирования
+        // TODO: по идее можно напрямую сделать запись в базу, что ускорит процесс тестирования
         $authCode = $this->getAuthCode(array_merge([S::OFFLINE_ACCESS], $permissions));
         $response = $this->issueToken($authCode);
 
@@ -49,6 +50,20 @@ class OauthSteps extends \tests\codeception\api\FunctionalTester {
         ]);
 
         return json_decode($this->grabResponse(), true);
+    }
+
+    public function getAccessTokenByClientCredentialsGrant(array $permissions = [], $useTrusted = true) {
+        $route = new OauthRoute($this);
+        $route->issueToken([
+            'client_id' => $useTrusted ? 'trusted-client' : 'default-client',
+            'client_secret' => $useTrusted ? 'tXBbyvMcyaOgHMOAXBpN2EC7uFoJAaL9' : 'AzWRy7ZjS1yRQUk2vRBDic8fprOKDB1W',
+            'grant_type' => 'client_credentials',
+            'scope' => implode(',', $permissions),
+        ]);
+
+        $response = json_decode($this->grabResponse(), true);
+
+        return $response['access_token'];
     }
 
 }

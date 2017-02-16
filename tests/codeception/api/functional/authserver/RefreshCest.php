@@ -18,7 +18,7 @@ class RefreshCest {
 
     public function refresh(AuthserverSteps $I) {
         $I->wantTo('refresh my accessToken');
-        list($accessToken, $clientToken) = $I->amAuthenticated();
+        [$accessToken, $clientToken] = $I->amAuthenticated();
         $this->route->refresh([
             'accessToken' => $accessToken,
             'clientToken' => $clientToken,

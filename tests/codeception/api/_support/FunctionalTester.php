@@ -1,9 +1,10 @@
 <?php
 namespace tests\codeception\api;
 
+use api\models\AccountIdentity;
 use Codeception\Actor;
 use InvalidArgumentException;
-use tests\codeception\api\_pages\AuthenticationRoute;
+use Yii;
 
 /**
  * Inherited Methods
@@ -23,20 +24,15 @@ use tests\codeception\api\_pages\AuthenticationRoute;
 class FunctionalTester extends Actor {
     use _generated\FunctionalTesterActions;
 
-    public function loggedInAsActiveAccount($login = null, $password = null) {
-        $route = new AuthenticationRoute($this);
-        if ($login === null) {
-            $route->login('Admin', 'password_0');
-        } elseif ($login !== null && $password !== null) {
-            $route->login($login, $password);
-        } else {
-            throw new InvalidArgumentException('login and password should be presented both.');
+    public function amAuthenticated(string $asUsername = 'admin') {
+        /** @var AccountIdentity $account */
+        $account = AccountIdentity::findOne(['username' => $asUsername]);
+        if ($account === null) {
+            throw new InvalidArgumentException("Cannot find account for username \"$asUsername\"");
         }
 
-        $this->canSeeResponseIsJson();
-        $this->canSeeAuthCredentials(false);
-        $jwt = $this->grabDataFromResponseByJsonPath('$.access_token')[0];
-        $this->amBearerAuthenticated($jwt);
+        $result = Yii::$app->user->login($account);
+        $this->amBearerAuthenticated($result->getJwt());
     }
 
     public function notLoggedIn() {

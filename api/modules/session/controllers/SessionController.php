@@ -89,15 +89,12 @@ class SessionController extends ApiController {
         $hasJoinedForm = new HasJoinedForm($protocol);
         try {
             $hasJoinedForm->hasJoined();
+        } catch (ForbiddenOperationException $e) {
+            return 'NO';
         } catch (SessionServerException $e) {
             Yii::$app->response->statusCode = $e->statusCode;
-            if ($e instanceof ForbiddenOperationException) {
-                $message = 'NO';
-            } else {
-                $message = $e->getMessage();
-            }
 
-            return $message;
+            return $e->getMessage();
         }
 
         return 'YES';

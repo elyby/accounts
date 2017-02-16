@@ -26,7 +26,8 @@ class Identity implements IdentityInterface {
     /**
      * @inheritdoc
      */
-    public static function findIdentityByAccessToken($token, $type = null) {
+    public static function findIdentityByAccessToken($token, $type = null): self {
+        /** @var AccessTokenEntity|null $model */
         $model = Yii::$app->oauth->getAuthServer()->getAccessTokenStorage()->get($token);
         if ($model === null) {
             throw new UnauthorizedHttpException('Incorrect token');
@@ -41,19 +42,19 @@ class Identity implements IdentityInterface {
         $this->_accessToken = $accessToken;
     }
 
-    public function getAccount() : Account {
+    public function getAccount(): Account {
         return $this->getSession()->account;
     }
 
-    public function getClient() : OauthClient {
+    public function getClient(): OauthClient {
         return $this->getSession()->client;
     }
 
-    public function getSession() : OauthSession {
+    public function getSession(): OauthSession {
         return OauthSession::findOne($this->_accessToken->getSessionId());
     }
 
-    public function getAccessToken() : AccessTokenEntity {
+    public function getAccessToken(): AccessTokenEntity {
         return $this->_accessToken;
     }
 
@@ -62,7 +63,7 @@ class Identity implements IdentityInterface {
      * У нас права привязываются к токенам, так что возвращаем именно его id.
      * @inheritdoc
      */
-    public function getId() {
+    public function getId(): string {
         return $this->_accessToken->getId();
     }
 

@@ -1,6 +1,6 @@
 <?php
 return [
-    'version' => '1.1.5',
+    'version' => '1.1.6',
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'components' => [
         'cache' => [
@@ -68,6 +68,15 @@ return [
         'emailRenderer' => [
             'class' => common\components\EmailRenderer::class,
             'basePath' => '/images/emails',
+        ],
+        'oauth' => [
+            'class' => api\components\OAuth2\Component::class,
+            'grantTypes' => ['authorization_code', 'client_credentials'],
+            'grantMap' => [
+                'authorization_code' => api\components\OAuth2\Grants\AuthCodeGrant::class,
+                'refresh_token' => api\components\OAuth2\Grants\RefreshTokenGrant::class,
+                'client_credentials' => api\components\OAuth2\Grants\ClientCredentialsGrant::class,
+            ],
         ],
     ],
     'aliases' => [

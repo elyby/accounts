@@ -16,12 +16,13 @@ class Yii extends \yii\BaseYii {
  * Class BaseApplication
  * Used for properties that are identical for both WebApplication and ConsoleApplication
  *
- * @property \yii\swiftmailer\Mailer $mailer
- * @property \common\components\Redis\Connection $redis
+ * @property \yii\swiftmailer\Mailer               $mailer
+ * @property \common\components\Redis\Connection   $redis
  * @property \common\components\RabbitMQ\Component $amqp
- * @property \GuzzleHttp\Client $guzzle
- * @property \common\components\EmailRenderer $emailRenderer
- * @property \mito\sentry\Component $sentry
+ * @property \GuzzleHttp\Client                    $guzzle
+ * @property \common\components\EmailRenderer      $emailRenderer
+ * @property \mito\sentry\Component                $sentry
+ * @property \api\components\OAuth2\Component      $oauth
  */
 abstract class BaseApplication extends yii\base\Application {
 }
@@ -33,7 +34,6 @@ abstract class BaseApplication extends yii\base\Application {
  * @property \api\components\User\Component      $user User component.
  * @property \api\components\ApiUser\Component   $apiUser Api User component.
  * @property \api\components\ReCaptcha\Component $reCaptcha
- * @property \api\components\OAuth2\Component    $oauth
  *
  * @method \api\components\User\Component getUser()
  */
