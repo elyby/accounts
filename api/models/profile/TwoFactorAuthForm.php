@@ -23,6 +23,8 @@ class TwoFactorAuthForm extends ApiForm {
 
     public $token;
 
+    public $timestamp;
+
     public $password;
 
     /**
@@ -38,10 +40,16 @@ class TwoFactorAuthForm extends ApiForm {
     public function rules() {
         $bothScenarios = [self::SCENARIO_ACTIVATE, self::SCENARIO_DISABLE];
         return [
+            ['timestamp', 'integer', 'on' => [self::SCENARIO_ACTIVATE]],
             ['account', 'validateOtpDisabled', 'on' => self::SCENARIO_ACTIVATE],
             ['account', 'validateOtpEnabled', 'on' => self::SCENARIO_DISABLE],
             ['token', 'required', 'message' => E::OTP_TOKEN_REQUIRED, 'on' => $bothScenarios],
-            ['token', TotpValidator::class, 'account' => $this->account, 'window' => 30, 'on' => $bothScenarios],
+            ['token', TotpValidator::class, 'on' => $bothScenarios,
+                'account' => $this->account,
+                'timestamp' => function() {
+                    return $this->timestamp;
+                },
+            ],
             ['password', PasswordRequiredValidator::class, 'account' => $this->account, 'on' => $bothScenarios],
         ];
     }
