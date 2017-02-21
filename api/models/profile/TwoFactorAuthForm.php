@@ -128,8 +128,17 @@ class TwoFactorAuthForm extends ApiForm {
         return $writer->writeString($content, Encoder::DEFAULT_BYTE_MODE_ECODING, ErrorCorrectionLevel::H);
     }
 
-    protected function setOtpSecret(): void {
-        $this->account->otp_secret = trim(Base32::encode(random_bytes(32)), '=');
+    /**
+     * otp_secret кодируется в Base32, т.к. после кодирования в результурющей строке нет символов,
+     * которые можно перепутать (1 и l, O и 0, и т.д.). Отрицательной стороной является то, что итоговая
+     * строка составляет 160% от исходной. Поэтому, генерируя исходный приватный ключ, мы должны обеспечить
+     * ему такую длину, чтобы 160% его длины было равно запрошенному значению
+     *
+     * @throws ErrorException
+     */
+    protected function setOtpSecret(int $length = 24): void {
+        $randomBytesLength = ceil($length / 1.6);
+        $this->account->otp_secret = substr(trim(Base32::encode(random_bytes($randomBytesLength)), '='), 0, $length);
         if (!$this->account->save()) {
             throw new ErrorException('Cannot set account otp_secret');
         }
