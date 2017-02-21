@@ -51,6 +51,7 @@ class ForgotPasswordForm extends ApiForm {
         }
 
         $validator = new TotpValidator(['account' => $account]);
+        $validator->window = 1;
         $validator->validateAttribute($this, $attribute);
     }
 
