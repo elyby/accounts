@@ -14,6 +14,7 @@ use common\components\Qr\ElyDecorator;
 use common\helpers\Error as E;
 use common\models\Account;
 use OTPHP\TOTP;
+use Yii;
 use yii\base\ErrorException;
 
 class TwoFactorAuthForm extends ApiForm {
@@ -73,11 +74,17 @@ class TwoFactorAuthForm extends ApiForm {
             return false;
         }
 
+        $transaction = Yii::$app->db->beginTransaction();
+
         $account = $this->account;
         $account->is_otp_enabled = true;
         if (!$account->save()) {
             throw new ErrorException('Cannot enable otp for account');
         }
+
+        Yii::$app->user->terminateSessions();
+
+        $transaction->commit();
 
         return true;
     }
@@ -142,6 +149,7 @@ class TwoFactorAuthForm extends ApiForm {
      * строка составляет 160% от исходной. Поэтому, генерируя исходный приватный ключ, мы должны обеспечить
      * ему такую длину, чтобы 160% его длины было равно запрошенному значению
      *
+     * @param int $length
      * @throws ErrorException
      */
     protected function setOtpSecret(int $length = 24): void {

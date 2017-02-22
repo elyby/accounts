@@ -97,7 +97,7 @@ class ChangePasswordFormTest extends TestCase {
     public function testChangePasswordWithLogout() {
         /** @var Component|\PHPUnit_Framework_MockObject_MockObject $component */
         $component = $this->getMockBuilder(Component::class)
-            ->setMethods(['getActiveSession'])
+            ->setMethods(['getActiveSession', 'terminateSessions'])
             ->setConstructorArgs([[
                 'identityClass' => AccountIdentity::class,
                 'enableSession' => false,
@@ -114,25 +114,22 @@ class ChangePasswordFormTest extends TestCase {
             ->method('getActiveSession')
             ->will($this->returnValue($session));
 
+        $component
+            ->expects($this->once())
+            ->method('terminateSessions');
+
         Yii::$app->set('user', $component);
 
-        $this->specify('change password with removing all session, except current', function() use ($session) {
-            /** @var Account $account */
-            $account = Account::findOne($this->tester->grabFixture('accounts', 'admin')['id']);
+        /** @var Account $account */
+        $account = $this->tester->grabFixture('accounts', 'admin');
+        $model = new ChangePasswordForm($account, [
+            'password' => 'password_0',
+            'newPassword' => 'my-new-password',
+            'newRePassword' => 'my-new-password',
+            'logoutAll' => true,
+        ]);
 
-            $model = new ChangePasswordForm($account, [
-                'password' => 'password_0',
-                'newPassword' => 'my-new-password',
-                'newRePassword' => 'my-new-password',
-                'logoutAll' => true,
-            ]);
-
-            expect($model->changePassword())->true();
-            /** @var AccountSession[] $sessions */
-            $sessions = $account->getSessions()->all();
-            expect(count($sessions))->equals(1);
-            expect($sessions[0]->id)->equals($session->id);
-        });
+        $this->assertTrue($model->changePassword());
     }
 
 }

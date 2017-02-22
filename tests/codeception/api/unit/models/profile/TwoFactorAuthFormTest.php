@@ -1,12 +1,15 @@
 <?php
 namespace tests\codeception\api\unit\models\profile;
 
+use api\components\User\Component;
+use api\models\AccountIdentity;
 use api\models\profile\TwoFactorAuthForm;
 use common\helpers\Error as E;
 use common\models\Account;
 use OTPHP\TOTP;
 use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\_support\ProtectedCaller;
+use Yii;
 
 class TwoFactorAuthFormTest extends TestCase {
     use ProtectedCaller;
@@ -69,6 +72,23 @@ class TwoFactorAuthFormTest extends TestCase {
     }
 
     public function testActivate() {
+        /** @var Component|\PHPUnit_Framework_MockObject_MockObject $component */
+        $component = $this->getMockBuilder(Component::class)
+            ->setMethods(['terminateSessions'])
+            ->setConstructorArgs([[
+                'identityClass' => AccountIdentity::class,
+                'enableSession' => false,
+                'loginUrl' => null,
+                'secret' => 'secret',
+            ]])
+            ->getMock();
+
+        $component
+            ->expects($this->once())
+            ->method('terminateSessions');
+
+        Yii::$app->set('user', $component);
+
         /** @var Account|\PHPUnit_Framework_MockObject_MockObject $account */
         $account = $this->getMockBuilder(Account::class)
             ->setMethods(['save'])
