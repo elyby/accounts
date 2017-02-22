@@ -57,15 +57,16 @@ class TotpValidator extends Validator {
     }
 
     private function getTimestamp(): ?int {
-        if ($this->timestamp === null) {
+        $timestamp = $this->timestamp;
+        if (is_callable($timestamp)) {
+            $timestamp = call_user_func($this->timestamp);
+        }
+
+        if ($timestamp === null) {
             return null;
         }
 
-        if (is_callable($this->timestamp)) {
-            return (int)call_user_func($this->timestamp);
-        }
-
-        return (int)$this->timestamp;
+        return (int)$timestamp;
     }
 
 }
