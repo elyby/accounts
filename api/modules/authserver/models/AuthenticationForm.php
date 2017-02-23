@@ -35,7 +35,10 @@ class AuthenticationForm extends Form {
         $loginForm->password = $this->password;
         if (!$loginForm->validate()) {
             $errors = $loginForm->getFirstErrors();
-            if (isset($errors['login'])) {
+            if (isset($errors['token'])) {
+                Authserver::error("User with login = '{$this->username}' protected by two factor auth.");
+                throw new ForbiddenOperationException('Account protected with two factor auth.');
+            } elseif (isset($errors['login'])) {
                 if ($errors['login'] === E::ACCOUNT_BANNED) {
                     Authserver::error("User with login = '{$this->username}' is banned");
                     throw new ForbiddenOperationException('This account has been suspended.');

@@ -38,6 +38,21 @@ class AuthorizationCest {
         $this->testSuccessResponse($I);
     }
 
+    public function byEmailWithEnabledTwoFactorAuth(FunctionalTester $I) {
+        $I->wantTo('get valid error by authenticate account with enabled two factor auth');
+        $this->route->authenticate([
+            'username' => 'otp@gmail.com',
+            'password' => 'password_0',
+            'clientToken' => Uuid::uuid4()->toString(),
+        ]);
+        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseIsJson();
+        $I->canSeeResponseContainsJson([
+            'error' => 'ForbiddenOperationException',
+            'errorMessage' => 'Account protected with two factor auth.',
+        ]);
+    }
+
     public function byEmailWithParamsAsJsonInPostBody(FunctionalTester $I) {
         $I->wantTo('authenticate by email and password, passing values as serialized string in post body');
         $this->route->authenticate(json_encode([
