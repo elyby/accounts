@@ -1,13 +1,18 @@
 <?php
 namespace tests\codeception\api\unit\models\profile;
 
+use api\components\User\Component;
+use api\models\AccountIdentity;
 use api\models\profile\TwoFactorAuthForm;
 use common\helpers\Error as E;
 use common\models\Account;
 use OTPHP\TOTP;
 use tests\codeception\api\unit\TestCase;
+use tests\codeception\common\_support\ProtectedCaller;
+use Yii;
 
 class TwoFactorAuthFormTest extends TestCase {
+    use ProtectedCaller;
 
     public function testGetCredentials() {
         /** @var Account|\PHPUnit_Framework_MockObject_MockObject $account */
@@ -67,6 +72,23 @@ class TwoFactorAuthFormTest extends TestCase {
     }
 
     public function testActivate() {
+        /** @var Component|\PHPUnit_Framework_MockObject_MockObject $component */
+        $component = $this->getMockBuilder(Component::class)
+            ->setMethods(['terminateSessions'])
+            ->setConstructorArgs([[
+                'identityClass' => AccountIdentity::class,
+                'enableSession' => false,
+                'loginUrl' => null,
+                'secret' => 'secret',
+            ]])
+            ->getMock();
+
+        $component
+            ->expects($this->once())
+            ->method('terminateSessions');
+
+        Yii::$app->set('user', $component);
+
         /** @var Account|\PHPUnit_Framework_MockObject_MockObject $account */
         $account = $this->getMockBuilder(Account::class)
             ->setMethods(['save'])
@@ -160,6 +182,25 @@ class TwoFactorAuthFormTest extends TestCase {
         $this->assertEquals('check@this.email', $totp->getLabel());
         $this->assertEquals('mock secret', $totp->getSecret());
         $this->assertEquals('Ely.by', $totp->getIssuer());
+    }
+
+    public function testSetOtpSecret() {
+        /** @var Account|\PHPUnit_Framework_MockObject_MockObject $account */
+        $account = $this->getMockBuilder(Account::class)
+            ->setMethods(['save'])
+            ->getMock();
+
+        $account->expects($this->exactly(2))
+            ->method('save')
+            ->willReturn(true);
+
+        $model = new TwoFactorAuthForm($account);
+        $this->callProtected($model, 'setOtpSecret');
+        $this->assertEquals(24, strlen($model->getAccount()->otp_secret));
+
+        $model = new TwoFactorAuthForm($account);
+        $this->callProtected($model, 'setOtpSecret', 25);
+        $this->assertEquals(25, strlen($model->getAccount()->otp_secret));
     }
 
 }

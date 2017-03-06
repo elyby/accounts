@@ -66,15 +66,7 @@ class ChangePasswordForm extends ApiForm {
         $account->setPassword($this->newPassword);
 
         if ($this->logoutAll) {
-            /** @var \api\components\User\Component $userComponent */
-            $userComponent = Yii::$app->user;
-            $sessions = $account->sessions;
-            $activeSession = $userComponent->getActiveSession();
-            foreach ($sessions as $session) {
-                if (!$activeSession || $activeSession->id !== $session->id) {
-                    $session->delete();
-                }
-            }
+            Yii::$app->user->terminateSessions();
         }
 
         if (!$account->save()) {

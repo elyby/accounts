@@ -15,6 +15,7 @@ use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\_support\ProtectedCaller;
 use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\AccountSessionFixture;
+use tests\codeception\common\fixtures\MinecraftAccessKeyFixture;
 use Yii;
 use yii\web\Request;
 
@@ -36,6 +37,7 @@ class ComponentTest extends TestCase {
         return [
             'accounts' => AccountFixture::class,
             'sessions' => AccountSessionFixture::class,
+            'minecraftSessions' => MinecraftAccessKeyFixture::class,
         ];
     }
 
@@ -164,6 +166,43 @@ class ComponentTest extends TestCase {
             expect($session)->isInstanceOf(AccountSession::class);
             expect($session->id)->equals($result->getSession()->id);
         });
+    }
+
+    public function testTerminateSessions() {
+        /** @var AccountSession $session */
+        $session = AccountSession::findOne($this->tester->grabFixture('sessions', 'admin2')['id']);
+
+        /** @var Component|\PHPUnit_Framework_MockObject_MockObject $component */
+        $component = $this->getMockBuilder(Component::class)
+            ->setMethods(['getActiveSession'])
+            ->setConstructorArgs([$this->getComponentArguments()])
+            ->getMock();
+
+        $component
+            ->expects($this->exactly(1))
+            ->method('getActiveSession')
+            ->willReturn($session);
+
+        /** @var AccountIdentity $identity */
+        $identity = AccountIdentity::findOne($this->tester->grabFixture('accounts', 'admin')['id']);
+        $component->login($identity, true);
+
+        $component->terminateSessions(0);
+        $this->assertNotEmpty($identity->getMinecraftAccessKeys()->all());
+        $this->assertNotEmpty($identity->getSessions()->all());
+
+        $component->terminateSessions(Component::TERMINATE_MINECRAFT_SESSIONS);
+        $this->assertEmpty($identity->getMinecraftAccessKeys()->all());
+        $this->assertNotEmpty($identity->getSessions()->all());
+
+        $component->terminateSessions(Component::TERMINATE_SITE_SESSIONS | Component::DO_NOT_TERMINATE_CURRENT_SESSION);
+        $sessions = $identity->getSessions()->all();
+        $this->assertEquals(1, count($sessions));
+        $this->assertTrue($sessions[0]->id === $session->id);
+
+        $component->terminateSessions(Component::TERMINATE_ALL);
+        $this->assertEmpty($identity->getSessions()->all());
+        $this->assertEmpty($identity->getMinecraftAccessKeys()->all());
     }
 
     public function testSerializeToken() {

@@ -27,6 +27,11 @@ use yii\web\User as YiiUserComponent;
  */
 class Component extends YiiUserComponent {
 
+    const TERMINATE_MINECRAFT_SESSIONS = 1;
+    const TERMINATE_SITE_SESSIONS = 2;
+    const DO_NOT_TERMINATE_CURRENT_SESSION = 4;
+    const TERMINATE_ALL = self::TERMINATE_MINECRAFT_SESSIONS | self::TERMINATE_SITE_SESSIONS;
+
     public $enableSession = false;
 
     public $loginUrl = null;
@@ -182,6 +187,24 @@ class Component extends YiiUserComponent {
         }
 
         return AccountSession::findOne($sessionId->getValue());
+    }
+
+    public function terminateSessions(int $mode = self::TERMINATE_ALL | self::DO_NOT_TERMINATE_CURRENT_SESSION): void {
+        $identity = $this->getIdentity();
+        $activeSession = ($mode & self::DO_NOT_TERMINATE_CURRENT_SESSION) ? $this->getActiveSession() : null;
+        if ($mode & self::TERMINATE_SITE_SESSIONS) {
+            foreach ($identity->sessions as $session) {
+                if ($activeSession === null || $activeSession->id !== $session->id) {
+                    $session->delete();
+                }
+            }
+        }
+
+        if ($mode & self::TERMINATE_MINECRAFT_SESSIONS) {
+            foreach ($identity->minecraftAccessKeys as $minecraftAccessKey) {
+                $minecraftAccessKey->delete();
+            }
+        }
     }
 
     public function getAlgorithm() : AlgorithmInterface {
