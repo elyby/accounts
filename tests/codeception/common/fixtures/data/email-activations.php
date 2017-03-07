@@ -37,4 +37,10 @@ return [
         '_data' => serialize(['newEmail' => 'my-new-email@ely.by']),
         'created_at' => time() - 10,
     ],
+    'deeplyExpiredConfirmation' => [
+        'key' => 'H29HBDCHHAG2HGHGHS',
+        'account_id' => 1,
+        'type' => \common\models\EmailActivation::TYPE_NEW_EMAIL_CONFIRMATION,
+        'created_at' => 1487695872,
+    ],
 ];
