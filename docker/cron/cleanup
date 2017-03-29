@@ -1,0 +1,2 @@
+# https://crontab.guru/every-day
+0 0 * * * root /usr/local/bin/php /var/www/html/yii cleanup/email-keys >/dev/null 2>&1

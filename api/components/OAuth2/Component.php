@@ -48,6 +48,7 @@ class Component extends \yii\base\Component {
             $authServer->setAuthCodeStorage(new AuthCodeStorage());
             $authServer->setRefreshTokenStorage(new RefreshTokenStorage());
             $authServer->setScopeDelimiter(',');
+            $authServer->setAccessTokenTTL(86400); // 1d
 
             $this->_authServer = $authServer;
 
