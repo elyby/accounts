@@ -18,4 +18,9 @@ class InternalRoute extends BasePage {
         $this->actor->sendDELETE($this->getUrl());
     }
 
+    public function info(string $param, string $value) {
+        $this->route = '/internal/accounts/info';
+        $this->actor->sendGET($this->getUrl(), [$param => $value]);
+    }
+
 }
