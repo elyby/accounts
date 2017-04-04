@@ -17,8 +17,8 @@ class CleanupController extends Controller {
             ];
         }
 
-        /** @var EmailActivation[] $expiredEmails */
-        $expiredEmails = $query->andWhere($conditions)->all();
+        /** @var \yii\db\BatchQueryResult|EmailActivation[] $expiredEmails */
+        $expiredEmails = $query->andWhere($conditions)->each();
         foreach ($expiredEmails as $email) {
             $email->delete();
         }
