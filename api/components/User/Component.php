@@ -24,6 +24,7 @@ use yii\web\User as YiiUserComponent;
  * @property AccountIdentity|null $identity
  *
  * @method AccountIdentity|null loginByAccessToken($token, $type = null)
+ * @method AccountIdentity|null getIdentity($autoRenew = true)
  */
 class Component extends YiiUserComponent {
 
@@ -44,31 +45,11 @@ class Component extends YiiUserComponent {
 
     public $sessionTimeout = 'P7D';
 
-    private $_identity;
-
     public function init() {
         parent::init();
         if (!$this->secret) {
             throw new InvalidConfigException('secret must be specified');
         }
-    }
-
-    /**
-     * @param bool $autoRenew
-     * @return null|AccountIdentity
-     */
-    public function getIdentity($autoRenew = true) {
-        $result = parent::getIdentity($autoRenew);
-        if ($result === null && $this->_identity !== false) {
-            $bearer = $this->getBearerToken();
-            if ($bearer !== null) {
-                $result = $this->loginByAccessToken($bearer);
-            }
-
-            $this->_identity = $result ?: false;
-        }
-
-        return $result;
     }
 
     /**

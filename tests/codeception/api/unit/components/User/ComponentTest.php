@@ -41,46 +41,6 @@ class ComponentTest extends TestCase {
         ];
     }
 
-    public function testGetIdentity() {
-        $this->specify('getIdentity should return null, if not authorization header', function() {
-            $this->mockAuthorizationHeader(null);
-            $this->assertNull($this->component->getIdentity());
-        });
-
-        $this->specify('getIdentity should return null, if passed bearer token don\'t return any account', function() {
-            $this->mockAuthorizationHeader('some-auth');
-            /** @var Component|\PHPUnit_Framework_MockObject_MockObject $component */
-            $component = $this->getMockBuilder(Component::class)
-                ->setMethods(['loginByAccessToken'])
-                ->setConstructorArgs([$this->getComponentArguments()])
-                ->getMock();
-
-            $component
-                ->expects($this->once())
-                ->method('loginByAccessToken')
-                ->willReturn(null);
-
-            $this->assertNull($component->getIdentity());
-        });
-
-        $this->specify('getIdentity should return identity from loginByAccessToken method', function() {
-            $identity = new AccountIdentity();
-            $this->mockAuthorizationHeader('some-auth');
-            /** @var Component|\PHPUnit_Framework_MockObject_MockObject $component */
-            $component = $this->getMockBuilder(Component::class)
-                ->setMethods(['loginByAccessToken'])
-                ->setConstructorArgs([$this->getComponentArguments()])
-                ->getMock();
-
-            $component
-                ->expects($this->once())
-                ->method('loginByAccessToken')
-                ->willReturn($identity);
-
-            $this->assertEquals($identity, $component->getIdentity());
-        });
-    }
-
     public function testLogin() {
         $this->mockRequest();
         $this->specify('success get LoginResult object without session value', function() {
