@@ -28,6 +28,11 @@ class OauthScope {
      * @owner machine
      */
     const ACCOUNT_BLOCK = 'account_block';
+    /**
+     * @internal
+     * @owner machine
+     */
+    const INTERNAL_ACCOUNT_INFO = 'internal_account_info';
 
     public static function find(): OauthScopeQuery {
         return new OauthScopeQuery(static::queryScopes());
