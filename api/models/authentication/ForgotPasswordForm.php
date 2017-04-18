@@ -1,6 +1,7 @@
 <?php
 namespace api\models\authentication;
 
+use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\base\ApiForm;
 use api\validators\TotpValidator;
 use common\helpers\Error as E;
@@ -16,11 +17,15 @@ use yii\base\InvalidConfigException;
 class ForgotPasswordForm extends ApiForm {
     use AccountFinder;
 
+    public $captcha;
+
     public $login;
+
     public $token;
 
     public function rules() {
         return [
+            ['captcha', ReCaptchaValidator::class],
             ['login', 'required', 'message' => E::LOGIN_REQUIRED],
             ['login', 'validateLogin'],
             ['token', 'required', 'when' => function(self $model) {

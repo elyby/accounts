@@ -1,6 +1,7 @@
 <?php
 namespace codeception\api\unit\models\authentication;
 
+use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\authentication\ForgotPasswordForm;
 use Codeception\Specify;
 use common\models\EmailActivation;
@@ -8,9 +9,19 @@ use OTPHP\TOTP;
 use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\EmailActivationFixture;
+use Yii;
 
 class ForgotPasswordFormTest extends TestCase {
     use Specify;
+
+    public function setUp() {
+        parent::setUp();
+        Yii::$container->set(ReCaptchaValidator::class, new class extends ReCaptchaValidator {
+            public function validateValue($value) {
+                return null;
+            }
+        });
+    }
 
     public function _fixtures() {
         return [
