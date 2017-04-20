@@ -1,6 +1,7 @@
 <?php
 namespace api\models\authentication;
 
+use api\emails\EmailHelper;
 use api\models\base\ApiForm;
 use api\validators\TotpValidator;
 use common\helpers\Error as E;
@@ -9,9 +10,7 @@ use common\components\UserFriendlyRandomKey;
 use common\models\Account;
 use common\models\confirmations\ForgotPassword;
 use common\models\EmailActivation;
-use Yii;
 use yii\base\ErrorException;
-use yii\base\InvalidConfigException;
 
 class ForgotPasswordForm extends ApiForm {
     use AccountFinder;
@@ -92,39 +91,9 @@ class ForgotPasswordForm extends ApiForm {
             throw new ErrorException('Cannot create email activation for forgot password form');
         }
 
-        $this->sendMail($emailActivation);
+        EmailHelper::forgotPassword($emailActivation);
 
         return true;
-    }
-
-    public function sendMail(EmailActivation $emailActivation) {
-        /** @var \yii\swiftmailer\Mailer $mailer */
-        $mailer = Yii::$app->mailer;
-        $fromEmail = Yii::$app->params['fromEmail'];
-        if (!$fromEmail) {
-            throw new InvalidConfigException('Please specify fromEmail app in app params');
-        }
-
-        $account = $emailActivation->account;
-        $htmlBody = Yii::$app->emailRenderer->getTemplate('forgotPassword')
-            ->setLocale($account->lang)
-            ->setParams([
-                'username' => $account->username,
-                'code' => $emailActivation->key,
-                'link' => Yii::$app->request->getHostInfo() . '/recover-password/' . $emailActivation->key,
-            ])
-            ->render();
-
-        /** @var \yii\swiftmailer\Message $message */
-        $message = $mailer->compose()
-            ->setHtmlBody($htmlBody)
-            ->setTo([$account->email => $account->username])
-            ->setFrom([$fromEmail => 'Ely.by Accounts'])
-            ->setSubject('Ely.by Account forgot password');
-
-        if (!$message->send()) {
-            throw new ErrorException('Unable send email with activation code.');
-        }
     }
 
     public function getLogin() {

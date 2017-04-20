@@ -2,6 +2,7 @@
 namespace api\models\authentication;
 
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
+use api\emails\EmailHelper;
 use api\models\base\ApiForm;
 use common\helpers\Error as E;
 use common\components\UserFriendlyRandomKey;
@@ -72,8 +73,7 @@ class RepeatAccountActivationForm extends ApiForm {
                 throw new ErrorException('Unable save email-activation model.');
             }
 
-            $regForm = new RegistrationForm();
-            $regForm->sendMail($activation, $account);
+            EmailHelper::registration($activation);
 
             $transaction->commit();
         } catch (ErrorException $e) {
