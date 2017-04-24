@@ -3,6 +3,7 @@ modules:
     enabled:
         - Yii2:
             part: [orm, email, fixtures]
+        - tests\codeception\common\_support\Mockery
     config:
         Yii2:
             configFile: '../config/console/unit.php'

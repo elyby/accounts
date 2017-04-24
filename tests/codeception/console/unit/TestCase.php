@@ -2,6 +2,7 @@
 namespace tests\codeception\console\unit;
 
 use Codeception\Test\Unit;
+use Mockery;
 
 class TestCase extends Unit {
 
@@ -19,6 +20,11 @@ class TestCase extends Unit {
      */
     public function _fixtures() {
         return [];
+    }
+
+    protected function tearDown() {
+        parent::tearDown();
+        Mockery::close();
     }
 
 }

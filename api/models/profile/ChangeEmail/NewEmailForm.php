@@ -1,6 +1,7 @@
 <?php
 namespace api\models\profile\ChangeEmail;
 
+use common\emails\EmailHelper;
 use api\models\base\ApiForm;
 use api\validators\EmailActivationKeyValidator;
 use common\models\Account;
@@ -9,7 +10,6 @@ use common\models\EmailActivation;
 use common\validators\EmailValidator;
 use Yii;
 use yii\base\ErrorException;
-use yii\base\InvalidConfigException;
 
 class NewEmailForm extends ApiForm {
 
@@ -45,7 +45,8 @@ class NewEmailForm extends ApiForm {
         $previousActivation->delete();
 
         $activation = $this->createCode();
-        $this->sendCode($activation);
+
+        EmailHelper::changeEmailConfirmNew($activation);
 
         $transaction->commit();
 
@@ -65,32 +66,6 @@ class NewEmailForm extends ApiForm {
         }
 
         return $emailActivation;
-    }
-
-    public function sendCode(EmailActivation $code) {
-        /** @var \yii\swiftmailer\Mailer $mailer */
-        $mailer = Yii::$app->mailer;
-        $fromEmail = Yii::$app->params['fromEmail'];
-        if (!$fromEmail) {
-            throw new InvalidConfigException('Please specify fromEmail app in app params');
-        }
-
-        $acceptor = $code->account;
-        /** @var \yii\swiftmailer\Message $message */
-        $message = $mailer->compose([
-            'html' => '@app/mails/new-email-confirmation-html',
-            'text' => '@app/mails/new-email-confirmation-text',
-        ], [
-            'key' => $code->key,
-            'account' => $acceptor,
-        ])
-            ->setTo([$this->email => $acceptor->username])
-            ->setFrom([$fromEmail => 'Ely.by Accounts'])
-            ->setSubject('Ely.by Account new E-mail confirmation');
-
-        if (!$message->send()) {
-            throw new ErrorException('Unable send email with activation code.');
-        }
     }
 
     public function __construct(Account $account, array $config = []) {
