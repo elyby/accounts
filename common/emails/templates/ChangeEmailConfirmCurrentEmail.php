@@ -21,8 +21,8 @@ class ChangeEmailConfirmCurrentEmail extends Template {
      */
     protected function getView() {
         return [
-            'html' => '@api/mails/current-email-confirmation-html',
-            'text' => '@api/mails/current-email-confirmation-text',
+            'html' => '@common/emails/views/current-email-confirmation-html',
+            'text' => '@common/emails/views/current-email-confirmation-text',
         ];
     }
 
