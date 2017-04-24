@@ -19,7 +19,7 @@ class ForgotPasswordEmail extends TemplateWithRenderer {
         return 'Ely.by Account forgot password';
     }
 
-    protected function getTemplateName(): string {
+    public function getTemplateName(): string {
         return 'forgotPassword';
     }
 

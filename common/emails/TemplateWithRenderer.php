@@ -40,7 +40,7 @@ abstract class TemplateWithRenderer extends Template {
      *
      * @return string
      */
-    abstract protected function getTemplateName(): string;
+    abstract public function getTemplateName(): string;
 
     protected final function getView() {
         return $this->getTemplateName();

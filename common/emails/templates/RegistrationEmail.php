@@ -19,7 +19,7 @@ class RegistrationEmail extends TemplateWithRenderer {
         return 'Ely.by Account registration';
     }
 
-    protected function getTemplateName(): string {
+    public function getTemplateName(): string {
         return 'register';
     }
 
