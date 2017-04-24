@@ -1,12 +1,12 @@
 <?php
-namespace api\emails;
+namespace common\emails;
 
-use api\emails\templates\ChangeEmailConfirmCurrentEmail;
-use api\emails\templates\ChangeEmailConfirmNewEmail;
-use api\emails\templates\ForgotPasswordEmail;
-use api\emails\templates\ForgotPasswordParams;
-use api\emails\templates\RegistrationEmail;
-use api\emails\templates\RegistrationEmailParams;
+use common\emails\templates\ChangeEmailConfirmCurrentEmail;
+use common\emails\templates\ChangeEmailConfirmNewEmail;
+use common\emails\templates\ForgotPasswordEmail;
+use common\emails\templates\ForgotPasswordParams;
+use common\emails\templates\RegistrationEmail;
+use common\emails\templates\RegistrationEmailParams;
 use common\models\Account;
 use common\models\confirmations\CurrentEmailConfirmation;
 use common\models\confirmations\ForgotPassword;

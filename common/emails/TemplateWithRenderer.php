@@ -1,5 +1,5 @@
 <?php
-namespace api\emails;
+namespace common\emails;
 
 use common\components\EmailRenderer;
 use Yii;

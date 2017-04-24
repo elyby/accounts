@@ -1,7 +1,7 @@
 <?php
-namespace api\emails\templates;
+namespace common\emails\templates;
 
-use api\emails\Template;
+use common\emails\Template;
 
 class ChangeEmailConfirmNewEmail extends Template {
 
@@ -24,8 +24,8 @@ class ChangeEmailConfirmNewEmail extends Template {
      */
     protected function getView() {
         return [
-            'html' => '@app/mails/new-email-confirmation-html',
-            'text' => '@app/mails/new-email-confirmation-text',
+            'html' => '@api/mails/new-email-confirmation-html',
+            'text' => '@api/mails/new-email-confirmation-text',
         ];
     }
 

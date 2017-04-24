@@ -1,7 +1,7 @@
 <?php
-namespace api\emails;
+namespace common\emails;
 
-use api\emails\exceptions\CannotSendEmailException;
+use common\emails\exceptions\CannotSendEmailException;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\mail\MailerInterface;

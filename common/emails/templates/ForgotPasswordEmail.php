@@ -1,26 +1,26 @@
 <?php
-namespace api\emails\templates;
+namespace common\emails\templates;
 
-use api\emails\TemplateWithRenderer;
+use common\emails\TemplateWithRenderer;
 
-class RegistrationEmail extends TemplateWithRenderer {
+class ForgotPasswordEmail extends TemplateWithRenderer {
 
     private $params;
 
     /**
      * @inheritdoc
      */
-    public function __construct($to, string $locale, RegistrationEmailParams $params) {
+    public function __construct($to, string $locale, ForgotPasswordParams $params) {
         TemplateWithRenderer::__construct($to, $locale);
         $this->params = $params;
     }
 
     public function getSubject(): string {
-        return 'Ely.by Account registration';
+        return 'Ely.by Account forgot password';
     }
 
     protected function getTemplateName(): string {
-        return 'register';
+        return 'forgotPassword';
     }
 
     public function getParams(): array {

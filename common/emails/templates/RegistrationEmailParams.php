@@ -1,7 +1,7 @@
 <?php
-namespace api\emails\templates;
+namespace common\emails\templates;
 
-class ForgotPasswordParams {
+class RegistrationEmailParams {
 
     private $username;
 

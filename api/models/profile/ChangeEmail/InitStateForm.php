@@ -1,7 +1,7 @@
 <?php
 namespace api\models\profile\ChangeEmail;
 
-use api\emails\EmailHelper;
+use common\emails\EmailHelper;
 use api\models\base\ApiForm;
 use api\validators\PasswordRequiredValidator;
 use common\helpers\Error as E;

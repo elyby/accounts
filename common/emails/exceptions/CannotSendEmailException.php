@@ -1,5 +1,5 @@
 <?php
-namespace api\emails\exceptions;
+namespace common\emails\exceptions;
 
 use Exception;
 
