@@ -2,12 +2,12 @@
 namespace api\models\authentication;
 
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
+use common\emails\EmailHelper;
 use api\models\base\ApiForm;
 use common\helpers\Error as E;
 use common\components\UserFriendlyRandomKey;
 use common\models\Account;
 use common\models\confirmations\RegistrationConfirmation;
-use common\models\EmailActivation;
 use common\models\UsernameHistory;
 use common\validators\EmailValidator;
 use common\validators\LanguageValidator;
@@ -17,7 +17,6 @@ use Exception;
 use Ramsey\Uuid\Uuid;
 use Yii;
 use yii\base\ErrorException;
-use yii\base\InvalidConfigException;
 use yii\helpers\ArrayHelper;
 use const common\LATEST_RULES_VERSION;
 
@@ -103,7 +102,7 @@ class RegistrationForm extends ApiForm {
                 throw new ErrorException('Cannot save username history record');
             }
 
-            $this->sendMail($emailActivation, $account);
+            EmailHelper::registration($emailActivation);
 
             $transaction->commit();
         } catch (Exception $e) {
@@ -112,37 +111,6 @@ class RegistrationForm extends ApiForm {
         }
 
         return $account;
-    }
-
-    // TODO: подумать, чтобы вынести этот метод в какую-то отдельную конструкцию, т.к. используется и внутри NewAccountActivationForm
-    public function sendMail(EmailActivation $emailActivation, Account $account) {
-        /** @var \yii\swiftmailer\Mailer $mailer */
-        $mailer = Yii::$app->mailer;
-        $fromEmail = Yii::$app->params['fromEmail'];
-
-        if (!$fromEmail) {
-            throw new InvalidConfigException('Please specify fromEmail app in app params');
-        }
-
-        $htmlBody = Yii::$app->emailRenderer->getTemplate('register')
-            ->setLocale($account->lang)
-            ->setParams([
-                'username' => $account->username,
-                'code' => $emailActivation->key,
-                'link' => Yii::$app->request->getHostInfo() . '/activation/' . $emailActivation->key,
-            ])
-            ->render();
-
-        /** @var \yii\swiftmailer\Message $message */
-        $message = $mailer->compose()
-            ->setHtmlBody($htmlBody)
-            ->setTo([$account->email => $account->username])
-            ->setFrom([$fromEmail => 'Ely.by Accounts'])
-            ->setSubject('Ely.by Account registration');
-
-        if (!$message->send()) {
-            throw new ErrorException('Unable send email with activation code.');
-        }
     }
 
     /**

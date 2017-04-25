@@ -42,7 +42,7 @@ class FeedbackForm extends ApiForm {
 
         $account = $this->getAccount();
         /** @var \yii\swiftmailer\Message $message */
-        $message = $mailer->compose('@app/mails/feedback', [
+        $message = $mailer->compose('@common/emails/views/feedback', [
             'model' => $this,
             'account' => $account,
         ]);
