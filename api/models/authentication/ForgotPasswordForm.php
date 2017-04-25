@@ -1,9 +1,10 @@
 <?php
 namespace api\models\authentication;
 
-use common\emails\EmailHelper;
+use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\base\ApiForm;
 use api\validators\TotpValidator;
+use common\emails\EmailHelper;
 use common\helpers\Error as E;
 use api\traits\AccountFinder;
 use common\components\UserFriendlyRandomKey;
@@ -15,11 +16,15 @@ use yii\base\ErrorException;
 class ForgotPasswordForm extends ApiForm {
     use AccountFinder;
 
+    public $captcha;
+
     public $login;
+
     public $token;
 
     public function rules() {
         return [
+            ['captcha', ReCaptchaValidator::class],
             ['login', 'required', 'message' => E::LOGIN_REQUIRED],
             ['login', 'validateLogin'],
             ['token', 'required', 'when' => function(self $model) {
