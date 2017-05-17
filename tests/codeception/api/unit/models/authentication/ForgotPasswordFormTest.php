@@ -5,6 +5,7 @@ use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\authentication\ForgotPasswordForm;
 use Codeception\Specify;
 use common\models\EmailActivation;
+use GuzzleHttp\ClientInterface;
 use OTPHP\TOTP;
 use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
@@ -16,7 +17,7 @@ class ForgotPasswordFormTest extends TestCase {
 
     public function setUp() {
         parent::setUp();
-        Yii::$container->set(ReCaptchaValidator::class, new class extends ReCaptchaValidator {
+        Yii::$container->set(ReCaptchaValidator::class, new class(mock(ClientInterface::class)) extends ReCaptchaValidator {
             public function validateValue($value) {
                 return null;
             }
@@ -31,17 +32,13 @@ class ForgotPasswordFormTest extends TestCase {
     }
 
     public function testValidateLogin() {
-        $this->specify('error.login_not_exist if login is invalid', function() {
-            $model = new ForgotPasswordForm(['login' => 'unexist']);
-            $model->validateLogin('login');
-            expect($model->getErrors('login'))->equals(['error.login_not_exist']);
-        });
+        $model = new ForgotPasswordForm(['login' => 'unexist']);
+        $model->validateLogin('login');
+        $this->assertEquals(['error.login_not_exist'], $model->getErrors('login'), 'error.login_not_exist if login is invalid');
 
-        $this->specify('empty errors if login is exists', function() {
-            $model = new ForgotPasswordForm(['login' => $this->tester->grabFixture('accounts', 'admin')['username']]);
-            $model->validateLogin('login');
-            expect($model->getErrors('login'))->isEmpty();
-        });
+        $model = new ForgotPasswordForm(['login' => $this->tester->grabFixture('accounts', 'admin')['username']]);
+        $model->validateLogin('login');
+        $this->assertEmpty($model->getErrors('login'), 'empty errors if login is exists');
     }
 
     public function testValidateTotpToken() {
@@ -60,77 +57,60 @@ class ForgotPasswordFormTest extends TestCase {
     }
 
     public function testValidateActivity() {
-        $this->specify('error.account_not_activated if account is not confirmed', function() {
-            $model = new ForgotPasswordForm([
-                'login' => $this->tester->grabFixture('accounts', 'not-activated-account')['username'],
-            ]);
-            $model->validateActivity('login');
-            expect($model->getErrors('login'))->equals(['error.account_not_activated']);
-        });
+        $model = new ForgotPasswordForm([
+            'login' => $this->tester->grabFixture('accounts', 'not-activated-account')['username'],
+        ]);
+        $model->validateActivity('login');
+        $this->assertEquals(['error.account_not_activated'], $model->getErrors('login'), 'expected error if account is not confirmed');
 
-        $this->specify('empty errors if login is exists', function() {
-            $model = new ForgotPasswordForm([
-                'login' => $this->tester->grabFixture('accounts', 'admin')['username'],
-            ]);
-            $model->validateLogin('login');
-            expect($model->getErrors('login'))->isEmpty();
-        });
+        $model = new ForgotPasswordForm([
+            'login' => $this->tester->grabFixture('accounts', 'admin')['username'],
+        ]);
+        $model->validateLogin('login');
+        $this->assertEmpty($model->getErrors('login'), 'empty errors if login is exists');
     }
 
     public function testValidateFrequency() {
-        $this->specify('error.account_not_activated if recently was message', function() {
-            $model = $this->createModel([
-                'login' => $this->tester->grabFixture('accounts', 'admin')['username'],
-                'key' => $this->tester->grabFixture('emailActivations', 'freshPasswordRecovery')['key'],
-            ]);
+        $model = $this->createModel([
+            'login' => $this->tester->grabFixture('accounts', 'admin')['username'],
+            'key' => $this->tester->grabFixture('emailActivations', 'freshPasswordRecovery')['key'],
+        ]);
+        $model->validateFrequency('login');
+        $this->assertEquals(['error.recently_sent_message'], $model->getErrors('login'), 'error.account_not_activated if recently was message');
 
-            $model->validateFrequency('login');
-            expect($model->getErrors('login'))->equals(['error.recently_sent_message']);
-        });
+        $model = $this->createModel([
+            'login' => $this->tester->grabFixture('accounts', 'admin')['username'],
+            'key' => $this->tester->grabFixture('emailActivations', 'oldPasswordRecovery')['key'],
+        ]);
+        $model->validateFrequency('login');
+        $this->assertEmpty($model->getErrors('login'), 'empty errors if email was sent a long time ago');
 
-        $this->specify('empty errors if email was sent a long time ago', function() {
-            $model = $this->createModel([
-                'login' => $this->tester->grabFixture('accounts', 'admin')['username'],
-                'key' => $this->tester->grabFixture('emailActivations', 'oldPasswordRecovery')['key'],
-            ]);
-
-            $model->validateFrequency('login');
-            expect($model->getErrors('login'))->isEmpty();
-        });
-
-        $this->specify('empty errors if previous confirmation model not founded', function() {
-            $model = $this->createModel([
-                'login' => $this->tester->grabFixture('accounts', 'admin')['username'],
-                'key' => 'invalid-key',
-            ]);
-
-            $model->validateFrequency('login');
-            expect($model->getErrors('login'))->isEmpty();
-        });
+        $model = $this->createModel([
+            'login' => $this->tester->grabFixture('accounts', 'admin')['username'],
+            'key' => 'invalid-key',
+        ]);
+        $model->validateFrequency('login');
+        $this->assertEmpty($model->getErrors('login'), 'empty errors if previous confirmation model not founded');
     }
 
     public function testForgotPassword() {
-        $this->specify('successfully send message with restore password key', function() {
-            $model = new ForgotPasswordForm(['login' => $this->tester->grabFixture('accounts', 'admin')['username']]);
-            expect($model->forgotPassword())->true();
-            expect($model->getEmailActivation())->notNull();
-            $this->tester->canSeeEmailIsSent(1);
-        });
+        $model = new ForgotPasswordForm(['login' => $this->tester->grabFixture('accounts', 'admin')['username']]);
+        $this->assertTrue($model->forgotPassword(), 'form should be successfully processed');
+        $this->assertInstanceOf(EmailActivation::class, $model->getEmailActivation(), 'getEmailActivation should return valid object instance');
+        $this->tester->canSeeEmailIsSent(1);
     }
 
     public function testForgotPasswordResend() {
-        $this->specify('successfully renew and send message with restore password key', function() {
-            $fixture = $this->tester->grabFixture('accounts', 'account-with-expired-forgot-password-message');
-            $model = new ForgotPasswordForm([
-                'login' => $fixture['username'],
-            ]);
-            $callTime = time();
-            expect($model->forgotPassword())->true();
-            $emailActivation = $model->getEmailActivation();
-            expect($emailActivation)->notNull();
-            expect($emailActivation->created_at)->greaterOrEquals($callTime);
-            $this->tester->canSeeEmailIsSent(1);
-        });
+        $fixture = $this->tester->grabFixture('accounts', 'account-with-expired-forgot-password-message');
+        $model = new ForgotPasswordForm([
+            'login' => $fixture['username'],
+        ]);
+        $callTime = time();
+        $this->assertTrue($model->forgotPassword(), 'form should be successfully processed');
+        $emailActivation = $model->getEmailActivation();
+        $this->assertInstanceOf(EmailActivation::class, $emailActivation);
+        $this->assertGreaterThanOrEqual($callTime, $emailActivation->created_at);
+        $this->tester->canSeeEmailIsSent(1);
     }
 
     /**

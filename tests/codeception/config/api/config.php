@@ -1,4 +1,7 @@
 <?php
+use api\components\ReCaptcha\Validator;
+use GuzzleHttp\Client;
+
 return [
     'components' => [
         'user' => [
@@ -16,5 +19,16 @@ return [
     ],
     'params' => [
         'authserverHost' => 'authserver.ely.by',
+    ],
+    'container' => [
+        'definitions' => [
+            Validator::class => function() {
+                return new class(new Client()) extends Validator {
+                    protected function validateValue($value) {
+                        return null;
+                    }
+                };
+            },
+        ],
     ],
 ];

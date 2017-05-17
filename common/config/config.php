@@ -79,6 +79,11 @@ return [
             ],
         ],
     ],
+    'container' => [
+        'definitions' => [
+            GuzzleHttp\ClientInterface::class => GuzzleHttp\Client::class,
+        ],
+    ],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',

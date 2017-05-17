@@ -2,14 +2,14 @@
 namespace api\components\ReCaptcha;
 
 use common\helpers\Error as E;
-use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\ClientInterface;
 use Yii;
 use yii\base\Exception;
-use yii\base\InvalidConfigException;
+use yii\di\Instance;
 
 class Validator extends \yii\validators\Validator {
 
-    const SITE_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
+    protected const SITE_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
 
     public $skipOnEmpty = false;
 
@@ -17,15 +17,21 @@ class Validator extends \yii\validators\Validator {
 
     public $requiredMessage = E::CAPTCHA_REQUIRED;
 
+    /**
+     * @var Component|string
+     */
+    public $component = 'reCaptcha';
+
+    private $client;
+
+    public function __construct(ClientInterface $client, array $config = []) {
+        parent::__construct($config);
+        $this->client = $client;
+    }
+
     public function init() {
         parent::init();
-        if ($this->getComponent() === null) {
-            throw new InvalidConfigException('Required "reCaptcha" component as instance of ' . Component::class . '.');
-        }
-
-        $this->when = function() {
-            return !YII_ENV_TEST;
-        };
+        $this->component = Instance::ensure($this->component, Component::class);
     }
 
     /**
@@ -36,9 +42,9 @@ class Validator extends \yii\validators\Validator {
             return [$this->requiredMessage, []];
         }
 
-        $response = $this->createClient()->post(self::SITE_VERIFY_URL, [
+        $response = $this->client->request('POST', self::SITE_VERIFY_URL, [
             'form_params' => [
-                'secret' => $this->getComponent()->secret,
+                'secret' => $this->component->secret,
                 'response' => $value,
                 'remoteip' => Yii::$app->getRequest()->getUserIP(),
             ],
@@ -50,17 +56,6 @@ class Validator extends \yii\validators\Validator {
         }
 
         return $data['success'] ? null : [$this->message, []];
-    }
-
-    /**
-     * @return Component
-     */
-    protected function getComponent() {
-        return Yii::$app->reCaptcha;
-    }
-
-    protected function createClient() {
-        return new GuzzleClient();
     }
 
 }
