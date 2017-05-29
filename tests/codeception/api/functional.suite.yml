@@ -12,8 +12,9 @@ modules:
     config:
         Yii2:
             configFile: '../config/api/functional.php'
-            cleanup: false
+            cleanup: true
         Redis:
             host: "%REDIS_HOST%"
             port: 6379
             database: 0
+            cleanupBefore: 'test'
