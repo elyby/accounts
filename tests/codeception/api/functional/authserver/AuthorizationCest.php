@@ -38,6 +38,17 @@ class AuthorizationCest {
         $this->testSuccessResponse($I);
     }
 
+    public function byNamePassedViaPOSTBody(FunctionalTester $I) {
+        $I->wantTo('authenticate by username and password sent via post body');
+        $this->route->authenticate(json_encode([
+            'username' => 'admin',
+            'password' => 'password_0',
+            'clientToken' => Uuid::uuid4()->toString(),
+        ]));
+
+        $this->testSuccessResponse($I);
+    }
+
     public function byEmailWithEnabledTwoFactorAuth(FunctionalTester $I) {
         $I->wantTo('get valid error by authenticate account with enabled two factor auth');
         $this->route->authenticate([

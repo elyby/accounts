@@ -86,10 +86,7 @@ class ApiController extends Controller {
     public function actionUuidsByUsernames() {
         $usernames = Yii::$app->request->post();
         if (empty($usernames)) {
-            $usernames = json_decode(Yii::$app->request->getRawBody());
-            if (empty($usernames)) {
-                return $this->illegalArgumentResponse('Passed array of profile names is an invalid JSON string.');
-            }
+            return $this->illegalArgumentResponse('Passed array of profile names is an invalid JSON string.');
         }
 
         $usernames = array_unique($usernames);

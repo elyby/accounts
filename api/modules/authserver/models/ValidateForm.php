@@ -1,11 +1,12 @@
 <?php
 namespace api\modules\authserver\models;
 
+use api\models\base\ApiForm;
 use api\modules\authserver\exceptions\ForbiddenOperationException;
 use api\modules\authserver\validators\RequiredValidator;
 use common\models\MinecraftAccessKey;
 
-class ValidateForm extends Form {
+class ValidateForm extends ApiForm {
 
     public $accessToken;
 

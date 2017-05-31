@@ -2,6 +2,7 @@
 namespace api\modules\authserver\models;
 
 use api\models\authentication\LoginForm;
+use api\models\base\ApiForm;
 use api\modules\authserver\exceptions\ForbiddenOperationException;
 use api\modules\authserver\Module as Authserver;
 use api\modules\authserver\validators\RequiredValidator;
@@ -9,7 +10,7 @@ use common\helpers\Error as E;
 use common\models\Account;
 use common\models\MinecraftAccessKey;
 
-class AuthenticationForm extends Form {
+class AuthenticationForm extends ApiForm {
 
     public $username;
     public $password;
