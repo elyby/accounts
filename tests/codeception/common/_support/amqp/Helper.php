@@ -28,12 +28,9 @@ class Helper extends Module {
             return;
         }
 
-        // TODO: заменить на assertCount() после релиза Codeception 2.2.7
-        // https://github.com/Codeception/Codeception/pull/3802
-        /** @noinspection PhpUnitTestsInspection */
-        $this->assertEquals(
+        $this->assertCount(
             $num,
-            count($this->grabSentAmqpMessages($exchange)),
+            $this->grabSentAmqpMessages($exchange),
             'number of created messages is equal to ' . $num
         );
     }

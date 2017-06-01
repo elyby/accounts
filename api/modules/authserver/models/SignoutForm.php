@@ -2,13 +2,14 @@
 namespace api\modules\authserver\models;
 
 use api\models\authentication\LoginForm;
+use api\models\base\ApiForm;
 use api\modules\authserver\exceptions\ForbiddenOperationException;
 use api\modules\authserver\validators\RequiredValidator;
 use common\helpers\Error as E;
 use common\models\MinecraftAccessKey;
 use Yii;
 
-class SignoutForm extends Form {
+class SignoutForm extends ApiForm {
 
     public $username;
     public $password;

@@ -1,12 +1,13 @@
 <?php
 namespace api\modules\authserver\models;
 
+use api\models\base\ApiForm;
 use api\modules\authserver\exceptions\ForbiddenOperationException;
 use api\modules\authserver\validators\RequiredValidator;
 use common\models\Account;
 use common\models\MinecraftAccessKey;
 
-class RefreshTokenForm extends Form {
+class RefreshTokenForm extends ApiForm {
 
     public $accessToken;
     public $clientToken;

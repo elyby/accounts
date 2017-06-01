@@ -3,6 +3,7 @@ namespace api\modules\authserver\controllers;
 
 use api\controllers\Controller;
 use api\modules\authserver\models;
+use Yii;
 
 class AuthenticationController extends Controller {
 
@@ -25,21 +26,21 @@ class AuthenticationController extends Controller {
 
     public function actionAuthenticate() {
         $model = new models\AuthenticationForm();
-        $model->loadByPost();
+        $model->load(Yii::$app->request->post());
 
         return $model->authenticate()->getResponseData(true);
     }
 
     public function actionRefresh() {
         $model = new models\RefreshTokenForm();
-        $model->loadByPost();
+        $model->load(Yii::$app->request->post());
 
         return $model->refresh()->getResponseData(false);
     }
 
     public function actionValidate() {
         $model = new models\ValidateForm();
-        $model->loadByPost();
+        $model->load(Yii::$app->request->post());
         $model->validateToken();
         // В случае успеха ожидается пустой ответ. В случае ошибки же бросается исключение,
         // которое обработает ErrorHandler
@@ -47,7 +48,7 @@ class AuthenticationController extends Controller {
 
     public function actionSignout() {
         $model = new models\SignoutForm();
-        $model->loadByPost();
+        $model->load(Yii::$app->request->post());
         $model->signout();
         // В случае успеха ожидается пустой ответ. В случае ошибки же бросается исключение,
         // которое обработает ErrorHandler
@@ -55,7 +56,7 @@ class AuthenticationController extends Controller {
 
     public function actionInvalidate() {
         $model = new models\InvalidateForm();
-        $model->loadByPost();
+        $model->load(Yii::$app->request->post());
         $model->invalidateToken();
         // В случае успеха ожидается пустой ответ. В случае ошибки же бросается исключение,
         // которое обработает ErrorHandler

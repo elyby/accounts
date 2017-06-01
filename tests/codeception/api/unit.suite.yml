@@ -8,4 +8,4 @@ modules:
     config:
         Yii2:
             configFile: '../config/api/unit.php'
-            cleanup: false
+            cleanup: true

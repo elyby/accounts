@@ -98,17 +98,6 @@ class UsernamesToUuidsCest {
         ]);
     }
 
-    public function passWrongPostBody(FunctionalTester $I) {
-        $I->wantTo('get specific response when pass invalid json string');
-        $this->route->uuidsByUsernames('wrong-json');
-        $I->canSeeResponseCodeIs(400);
-        $I->canSeeResponseIsJson();
-        $I->canSeeResponseContainsJson([
-            'error' => 'IllegalArgumentException',
-            'errorMessage' => 'Passed array of profile names is an invalid JSON string.',
-        ]);
-    }
-
     private function validateFewValidUsernames(FunctionalTester $I) {
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
