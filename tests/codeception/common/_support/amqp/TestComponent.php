@@ -43,16 +43,16 @@ class TestComponent extends Component {
     public function getSentMessages(string $exchangeName = null) : array {
         if ($exchangeName !== null) {
             return $this->sentMessages[$exchangeName] ?? [];
-        } else {
-            $messages = [];
-            foreach($this->sentMessages as $exchangeGroup) {
-                foreach ($exchangeGroup as $message) {
-                    $messages[] = $message;
-                }
-            }
-
-            return $messages;
         }
+
+        $messages = [];
+        foreach($this->sentMessages as $exchangeGroup) {
+            foreach ($exchangeGroup as $message) {
+                $messages[] = $message;
+            }
+        }
+
+        return $messages;
     }
 
 }

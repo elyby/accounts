@@ -1,10 +1,11 @@
 <?php
 namespace api\modules\authserver\models;
 
+use api\models\base\ApiForm;
 use api\modules\authserver\validators\RequiredValidator;
 use common\models\MinecraftAccessKey;
 
-class InvalidateForm extends Form {
+class InvalidateForm extends ApiForm {
 
     public $accessToken;
     public $clientToken;

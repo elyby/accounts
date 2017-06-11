@@ -35,11 +35,6 @@ class SessionController extends ApiController {
         Yii::$app->response->format = Response::FORMAT_JSON;
 
         $data = Yii::$app->request->post();
-        if (empty($data)) {
-            // TODO: помнится у Yii2 есть механизм парсинга данных входящего запроса. Лучше будет сделать это там
-            $data = json_decode(Yii::$app->request->getRawBody(), true);
-        }
-
         $protocol = new ModernJoin($data['accessToken'] ?? '', $data['selectedProfile'] ?? '', $data['serverId'] ?? '');
         $joinForm = new JoinForm($protocol);
         $joinForm->join();

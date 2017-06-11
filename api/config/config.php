@@ -61,6 +61,9 @@ return [
         ],
         'request' => [
             'baseUrl' => '/api',
+            'parsers' => [
+                '*' => api\request\RequestParser::class,
+            ],
         ],
         'urlManager' => [
             'enablePrettyUrl' => true,

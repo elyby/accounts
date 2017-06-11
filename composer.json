@@ -25,7 +25,7 @@
         "ely/yii2-tempmail-validator": "~1.0.0",
         "emarref/jwt": "~1.0.3",
         "ely/amqp-controller": "dev-master#d7f8cdbc66c45e477c9c7d5d509bc0c1b11fd3ec",
-        "ely/email-renderer": "dev-master#d66ec82d2ebae59986ad5e009ae0c951d1cfcccb",
+        "ely/email-renderer": "dev-master#ecc044a00c87059be54bfbd0ed3b516383e3dcd5",
         "predis/predis": "^1.0",
         "mito/yii2-sentry": "^1.0",
         "minime/annotations": "~3.0",
@@ -37,10 +37,13 @@
         "yiisoft/yii2-debug": "*",
         "yiisoft/yii2-faker": "*",
         "flow/jsonpath": "^0.3.1",
-        "codeception/codeception": "~2.2.4",
+        "phpunit/phpunit": "^5.7",
+        "codeception/codeception": "~2.3",
         "codeception/specify": "*",
         "codeception/verify": "*",
-        "phploc/phploc": "^3.0.1"
+        "phploc/phploc": "^3.0.1",
+        "mockery/mockery": "1.0.0-alpha1",
+        "php-mock/php-mock-mockery": "dev-mockery-1.0.0#03956ed4b34ae25bc20a0677500f4f4b416f976c"
     },
     "config": {
         "process-timeout": 1800
@@ -61,6 +64,10 @@
         {
             "type": "git",
             "url": "git@gitlab.ely.by:elyby/oauth2-server.git"
+        },
+        {
+            "type": "git",
+            "url": "git@github.com:erickskrauch/php-mock-mockery.git"
         }
     ],
     "scripts": {

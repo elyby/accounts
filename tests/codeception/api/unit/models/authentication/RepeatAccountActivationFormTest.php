@@ -5,6 +5,7 @@ use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\authentication\RepeatAccountActivationForm;
 use Codeception\Specify;
 use common\models\EmailActivation;
+use GuzzleHttp\ClientInterface;
 use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\EmailActivationFixture;
@@ -15,7 +16,7 @@ class RepeatAccountActivationFormTest extends TestCase {
 
     public function setUp() {
         parent::setUp();
-        Yii::$container->set(ReCaptchaValidator::class, new class extends ReCaptchaValidator {
+        Yii::$container->set(ReCaptchaValidator::class, new class(mock(ClientInterface::class)) extends ReCaptchaValidator {
             public function validateValue($value) {
                 return null;
             }

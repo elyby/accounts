@@ -4,7 +4,8 @@ modules:
         - Yii2:
             part: [orm, email, fixtures]
         - tests\codeception\common\_support\amqp\Helper
+        - tests\codeception\common\_support\Mockery
     config:
         Yii2:
             configFile: '../config/api/unit.php'
-            cleanup: false
+            cleanup: true

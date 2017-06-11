@@ -7,6 +7,7 @@ use Codeception\Specify;
 use common\models\Account;
 use common\models\EmailActivation;
 use common\models\UsernameHistory;
+use GuzzleHttp\ClientInterface;
 use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use Yii;
@@ -19,7 +20,7 @@ class RegistrationFormTest extends TestCase {
     public function setUp() {
         parent::setUp();
         $this->mockRequest();
-        Yii::$container->set(ReCaptchaValidator::class, new class extends ReCaptchaValidator {
+        Yii::$container->set(ReCaptchaValidator::class, new class(mock(ClientInterface::class)) extends ReCaptchaValidator {
             public function validateValue($value) {
                 return null;
             }
@@ -96,19 +97,26 @@ class RegistrationFormTest extends TestCase {
             'username' => 'some_username',
             'email' => 'some_email@example.com',
         ])->exists(), 'user model exists in database');
-        $this->assertTrue(EmailActivation::find()->andWhere([
-            'account_id' => $account->id,
-            'type' => EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION,
-        ])->exists(), 'email activation code exists in database');
+        /** @var EmailActivation $activation */
+        $activation = EmailActivation::find()
+            ->andWhere([
+                'account_id' => $account->id,
+                'type' => EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION,
+            ])
+            ->one();
+        $this->assertInstanceOf(EmailActivation::class, $activation, 'email activation code exists in database');
         $this->assertTrue(UsernameHistory::find()->andWhere([
             'username' => $account->username,
             'account_id' => $account->id,
             'applied_in' => $account->created_at,
         ])->exists(), 'username history record exists in database');
         $this->tester->canSeeEmailIsSent(1);
+        /** @var \yii\swiftmailer\Message $email */
+        $email = $this->tester->grabSentEmails()[0];
+        $body = $email->getSwiftMessage()->getBody();
+        $this->assertContains($activation->key, $body);
+        $this->assertContains('/activation/' . $activation->key, $body);
     }
-
-    // TODO: там в самой форме есть метод sendMail(), который рано или поздно должен переехать. К нему нужны будут тоже тесты
 
     private function mockRequest($ip = '88.225.20.236') {
         $request = $this->getMockBuilder(Request::class)

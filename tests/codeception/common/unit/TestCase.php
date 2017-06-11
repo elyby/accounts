@@ -1,6 +1,8 @@
 <?php
 namespace tests\codeception\common\unit;
 
+use Mockery;
+
 class TestCase extends \Codeception\Test\Unit  {
 
     /**
@@ -17,6 +19,11 @@ class TestCase extends \Codeception\Test\Unit  {
      */
     public function _fixtures() {
         return [];
+    }
+
+    protected function tearDown() {
+        parent::tearDown();
+        Mockery::close();
     }
 
 }
