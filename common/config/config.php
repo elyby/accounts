@@ -1,6 +1,6 @@
 <?php
 return [
-    'version' => '1.1.13-dev',
+    'version' => '1.1.13',
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'components' => [
         'cache' => [
@@ -77,11 +77,6 @@ return [
                 'refresh_token' => api\components\OAuth2\Grants\RefreshTokenGrant::class,
                 'client_credentials' => api\components\OAuth2\Grants\ClientCredentialsGrant::class,
             ],
-        ],
-    ],
-    'container' => [
-        'definitions' => [
-            GuzzleHttp\ClientInterface::class => GuzzleHttp\Client::class,
         ],
     ],
     'aliases' => [
