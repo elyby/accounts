@@ -12,7 +12,7 @@ class RegistrationEmailParams {
     public function __construct(string $username, string $code, string $link) {
         $this->username = $username;
         $this->code = $code;
-        $this->link = $code;
+        $this->link = $link;
     }
 
     public function getUsername(): string {

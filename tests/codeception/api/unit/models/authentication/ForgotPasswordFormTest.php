@@ -96,8 +96,14 @@ class ForgotPasswordFormTest extends TestCase {
     public function testForgotPassword() {
         $model = new ForgotPasswordForm(['login' => $this->tester->grabFixture('accounts', 'admin')['username']]);
         $this->assertTrue($model->forgotPassword(), 'form should be successfully processed');
-        $this->assertInstanceOf(EmailActivation::class, $model->getEmailActivation(), 'getEmailActivation should return valid object instance');
+        $activation = $model->getEmailActivation();
+        $this->assertInstanceOf(EmailActivation::class, $activation, 'getEmailActivation should return valid object instance');
         $this->tester->canSeeEmailIsSent(1);
+        /** @var \yii\swiftmailer\Message $email */
+        $email = $this->tester->grabSentEmails()[0];
+        $body = $email->getSwiftMessage()->getBody();
+        $this->assertContains($activation->key, $body);
+        $this->assertContains('/recover-password/' . $activation->key, $body);
     }
 
     public function testForgotPasswordResend() {
