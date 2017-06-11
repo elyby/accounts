@@ -6,6 +6,11 @@ use yii\console\Controller;
 
 class CleanupController extends Controller {
 
+    public function actionTest() {
+        $validator = \Yii::createObject(\api\components\ReCaptcha\Validator::class);
+        var_dump($validator);
+    }
+
     public function actionEmailKeys() {
         $query = EmailActivation::find();
         $conditions = ['OR'];
