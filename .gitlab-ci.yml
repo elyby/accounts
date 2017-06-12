@@ -49,6 +49,7 @@ test:frontend:
         - cd frontend
         - npm i --silent > /dev/null
         - npm run lint --silent
+        - npm run flow --silent
         - npm run test --silent
 
 build:production:
