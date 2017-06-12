@@ -1,10 +1,11 @@
 <?php
-namespace tests\codeception\api;
+namespace tests\codeception\api\oauth;
 
 use common\models\OauthScope as S;
 use tests\codeception\api\_pages\OauthRoute;
+use tests\codeception\api\FunctionalTester;
 
-class OauthAuthCodeCest {
+class AuthCodeCest {
 
     /**
      * @var OauthRoute
