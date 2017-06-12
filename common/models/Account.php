@@ -5,6 +5,7 @@ use common\components\UserPass;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use const common\LATEST_RULES_VERSION;
 
@@ -101,7 +102,7 @@ class Account extends ActiveRecord {
         return $this->hasMany(EmailActivation::class, ['account_id' => 'id']);
     }
 
-    public function getOauthSessions() {
+    public function getOauthSessions(): ActiveQuery {
         return $this->hasMany(OauthSession::class, ['owner_id' => 'id'])->andWhere(['owner_type' => 'user']);
     }
 
