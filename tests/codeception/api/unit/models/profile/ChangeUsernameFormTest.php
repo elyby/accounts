@@ -23,12 +23,11 @@ class ChangeUsernameFormTest extends TestCase {
 
     public function setUp() {
         parent::setUp();
-        $account = AccountIdentity::findOne($this->getAccountId());
-        Yii::$app->user->setIdentity($account);
+        Yii::$app->user->setIdentity($this->getAccount());
     }
 
     public function testChange() {
-        $model = new ChangeUsernameForm([
+        $model = new ChangeUsernameForm($this->getAccount(), [
             'password' => 'password_0',
             'username' => 'my_new_nickname',
         ]);
@@ -39,8 +38,9 @@ class ChangeUsernameFormTest extends TestCase {
     }
 
     public function testChangeWithoutChange() {
-        $username = $this->tester->grabFixture('accounts', 'admin')['username'];
-        $model = new ChangeUsernameForm([
+        $account = $this->getAccount();
+        $username = $account->username;
+        $model = new ChangeUsernameForm($account, [
             'password' => 'password_0',
             'username' => $username,
         ]);
@@ -56,7 +56,7 @@ class ChangeUsernameFormTest extends TestCase {
 
     public function testChangeCase() {
         $newUsername = mb_strtoupper($this->tester->grabFixture('accounts', 'admin')['username']);
-        $model = new ChangeUsernameForm([
+        $model = new ChangeUsernameForm($this->getAccount(), [
             'password' => 'password_0',
             'username' => $newUsername,
         ]);
@@ -71,7 +71,7 @@ class ChangeUsernameFormTest extends TestCase {
     }
 
     public function testCreateTask() {
-        $model = new ChangeUsernameForm();
+        $model = new ChangeUsernameForm($this->getAccount());
         $model->createEventTask(1, 'test1', 'test');
         $message = $this->tester->grabLastSentAmqpMessage('events');
         $body = json_decode($message->getBody(), true);
@@ -80,8 +80,12 @@ class ChangeUsernameFormTest extends TestCase {
         $this->assertEquals('test', $body['oldUsername']);
     }
 
+    private function getAccount(): AccountIdentity {
+        return AccountIdentity::findOne($this->getAccountId());
+    }
+
     private function getAccountId() {
-        return $this->tester->grabFixture('accounts', 'admin')['id'];
+        return $this->tester->grabFixture('accounts', 'admin')->id;
     }
 
 }

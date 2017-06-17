@@ -1,10 +1,10 @@
 <?php
 namespace api\models\profile;
 
-use api\models\AccountIdentity;
 use api\models\base\ApiForm;
 use api\validators\PasswordRequiredValidator;
 use common\helpers\Amqp;
+use common\models\Account;
 use common\models\amqp\UsernameChanged;
 use common\models\UsernameHistory;
 use common\validators\UsernameValidator;
@@ -19,21 +19,31 @@ class ChangeUsernameForm extends ApiForm {
 
     public $password;
 
-    public function rules() {
+    /**
+     * @var Account
+     */
+    private $account;
+
+    public function __construct(Account $account, array $config = []) {
+        parent::__construct($config);
+        $this->account = $account;
+    }
+
+    public function rules(): array {
         return [
             ['username', UsernameValidator::class, 'accountCallback' => function() {
-                return $this->getAccount()->id;
+                return $this->account->id;
             }],
             ['password', PasswordRequiredValidator::class],
         ];
     }
 
-    public function change() : bool {
+    public function change(): bool {
         if (!$this->validate()) {
             return false;
         }
 
-        $account = $this->getAccount();
+        $account = $this->account;
         if ($this->username === $account->username) {
             return true;
         }
@@ -83,10 +93,6 @@ class ChangeUsernameForm extends ApiForm {
         ]);
 
         Amqp::sendToEventsExchange('accounts.username-changed', $message);
-    }
-
-    protected function getAccount() : AccountIdentity {
-        return Yii::$app->user->identity;
     }
 
 }

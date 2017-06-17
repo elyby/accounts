@@ -90,7 +90,8 @@ class AccountsController extends Controller {
     }
 
     public function actionChangeUsername() {
-        $model = new ChangeUsernameForm();
+        $account = Yii::$app->user->identity;
+        $model = new ChangeUsernameForm($account);
         $model->load(Yii::$app->request->post());
         if (!$model->change()) {
             return [
