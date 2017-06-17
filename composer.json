@@ -9,7 +9,7 @@
         "yiisoft/yii2": "2.0.12",
         "yiisoft/yii2-swiftmailer": "*",
         "ramsey/uuid": "^3.5.0",
-        "league/oauth2-server": "dev-improvements#fbaa9b0bd3d8050235ba7dde90f731764122bc20",
+        "league/oauth2-server": "^4.1",
         "yiisoft/yii2-redis": "~2.0.0",
         "guzzlehttp/guzzle": "^6.0.0",
         "php-amqplib/php-amqplib": "^2.6.2",
@@ -50,10 +50,6 @@
         {
             "type": "git",
             "url": "git@gitlab.ely.by:elyby/email-renderer.git"
-        },
-        {
-            "type": "git",
-            "url": "git@gitlab.ely.by:elyby/oauth2-server.git"
         },
         {
             "type": "git",

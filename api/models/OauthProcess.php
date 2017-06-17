@@ -3,13 +3,13 @@ namespace api\models;
 
 use api\components\OAuth2\Exception\AcceptRequiredException;
 use api\components\OAuth2\Exception\AccessDeniedException;
+use api\components\OAuth2\Grants\AuthCodeGrant;
+use api\components\OAuth2\Grants\AuthorizeParams;
 use common\models\Account;
 use common\models\OauthClient;
-use common\models\OauthScope;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Exception\InvalidGrantException;
 use League\OAuth2\Server\Exception\OAuthException;
-use League\OAuth2\Server\Grant\AuthCodeGrant;
 use League\OAuth2\Server\Grant\GrantTypeInterface;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -45,14 +45,13 @@ class OauthProcess {
     public function validate(): array {
         try {
             $authParams = $this->getAuthorizationCodeGrant()->checkAuthorizeParams();
-            /** @var \League\OAuth2\Server\Entity\ClientEntity $client */
-            $client = $authParams['client'];
+            $client = $authParams->getClient();
             /** @var \common\models\OauthClient $clientModel */
             $clientModel = OauthClient::findOne($client->getId());
             $response = $this->buildSuccessResponse(
                 Yii::$app->request->getQueryParams(),
                 $clientModel,
-                $authParams['scopes']
+                $authParams->getScopes()
             );
         } catch (OAuthException $e) {
             $response = $this->buildErrorResponse($e);
@@ -85,10 +84,8 @@ class OauthProcess {
             $grant = $this->getAuthorizationCodeGrant();
             $authParams = $grant->checkAuthorizeParams();
             $account = Yii::$app->user->identity;
-            /** @var \League\OAuth2\Server\Entity\ClientEntity $client */
-            $client = $authParams['client'];
             /** @var \common\models\OauthClient $clientModel */
-            $clientModel = OauthClient::findOne($client->getId());
+            $clientModel = OauthClient::findOne($authParams->getClient()->getId());
 
             if (!$this->canAutoApprove($account, $clientModel, $authParams)) {
                 $isAccept = Yii::$app->request->post('accept');
@@ -97,7 +94,7 @@ class OauthProcess {
                 }
 
                 if (!$isAccept) {
-                    throw new AccessDeniedException($authParams['redirect_uri']);
+                    throw new AccessDeniedException($authParams->getRedirectUri());
                 }
             }
 
@@ -135,7 +132,6 @@ class OauthProcess {
      * @return array
      */
     public function getToken(): array {
-        $this->attachRefreshTokenGrantIfNeeded();
         try {
             $response = $this->server->issueAccessToken();
         } catch (OAuthException $e) {
@@ -150,65 +146,25 @@ class OauthProcess {
     }
 
     /**
-     * Этот метод нужен за тем, что \League\OAuth2\Server\AuthorizationServer не предоставляет
-     * метода для проверки, можно ли выдавать refresh_token для пришедшего токена. Он просто
-     * выдаёт refresh_token, если этот grant присутствует в конфигурации сервера. Так что чтобы
-     * как-то решить эту проблему, мы не включаем RefreshTokenGrant в базовую конфигурацию сервера,
-     * а подключаем его только в том случае, если у auth_token есть право на рефреш или если это
-     * и есть запрос на refresh токена.
-     */
-    private function attachRefreshTokenGrantIfNeeded(): void {
-        if ($this->server->hasGrantType('refresh_token')) {
-            return;
-        }
-
-        $grantType = Yii::$app->request->post('grant_type');
-        if ($grantType === 'authorization_code' && Yii::$app->request->post('code')) {
-            $authCode = Yii::$app->request->post('code');
-            $codeModel = $this->server->getAuthCodeStorage()->get($authCode);
-            if ($codeModel === null) {
-                return;
-            }
-
-            $scopes = $codeModel->getScopes();
-            if (!array_key_exists(OauthScope::OFFLINE_ACCESS, $scopes)) {
-                return;
-            }
-        } elseif ($grantType === 'refresh_token') {
-            // Это валидный кейс
-        } else {
-            return;
-        }
-
-        $grantClass = Yii::$app->oauth->grantMap['refresh_token'];
-        /** @var \League\OAuth2\Server\Grant\RefreshTokenGrant $grant */
-        $grant = new $grantClass;
-
-        $this->server->addGrantType($grant);
-    }
-
-    /**
      * Метод проверяет, может ли текущий пользователь быть автоматически авторизован
      * для указанного клиента без запроса доступа к необходимому списку прав
      *
-     * @param Account     $account
+     * @param Account $account
      * @param OauthClient $client
-     * @param array       $oauthParams
+     * @param AuthorizeParams $oauthParams
      *
      * @return bool
      */
-    private function canAutoApprove(Account $account, OauthClient $client, array $oauthParams): bool {
+    private function canAutoApprove(Account $account, OauthClient $client, AuthorizeParams $oauthParams): bool {
         if ($client->is_trusted) {
             return true;
         }
 
-        /** @var \League\OAuth2\Server\Entity\ScopeEntity[] $scopes */
-        $scopes = $oauthParams['scopes'];
         /** @var \common\models\OauthSession|null $session */
         $session = $account->getOauthSessions()->andWhere(['client_id' => $client->id])->one();
         if ($session !== null) {
             $existScopes = $session->getScopes()->members();
-            if (empty(array_diff(array_keys($scopes), $existScopes))) {
+            if (empty(array_diff(array_keys($oauthParams->getScopes()), $existScopes))) {
                 return true;
             }
         }
@@ -216,11 +172,18 @@ class OauthProcess {
         return false;
     }
 
-    private function buildSuccessResponse(array $params, OauthClient $client, array $scopes): array {
+    /**
+     * @param array $queryParams
+     * @param OauthClient $client
+     * @param \api\components\OAuth2\Entities\ScopeEntity[] $scopes
+     *
+     * @return array
+     */
+    private function buildSuccessResponse(array $queryParams, OauthClient $client, array $scopes): array {
         return [
             'success' => true,
             // Возвращаем только те ключи, которые имеют реальное отношение к oAuth параметрам
-            'oAuth' => array_intersect_key($params, array_flip([
+            'oAuth' => array_intersect_key($queryParams, array_flip([
                 'client_id',
                 'redirect_uri',
                 'response_type',
@@ -230,7 +193,7 @@ class OauthProcess {
             'client' => [
                 'id' => $client->id,
                 'name' => $client->name,
-                'description' => ArrayHelper::getValue($params, 'description', $client->description),
+                'description' => ArrayHelper::getValue($queryParams, 'description', $client->description),
             ],
             'session' => [
                 'scopes' => array_keys($scopes),
