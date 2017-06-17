@@ -43,7 +43,7 @@ class ConfirmEmailForm extends ApiForm {
             throw new ErrorException('Unable activate user account.');
         }
 
-        $changeUsernameForm = new ChangeUsernameForm();
+        $changeUsernameForm = new ChangeUsernameForm($account);
         $changeUsernameForm->createEventTask($account->id, $account->username, null);
 
         $transaction->commit();
