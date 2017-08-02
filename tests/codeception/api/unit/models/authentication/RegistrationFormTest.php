@@ -10,6 +10,8 @@ use common\models\UsernameHistory;
 use GuzzleHttp\ClientInterface;
 use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
+use tests\codeception\common\fixtures\EmailActivationFixture;
+use tests\codeception\common\fixtures\UsernameHistoryFixture;
 use Yii;
 use yii\web\Request;
 use const common\LATEST_RULES_VERSION;
@@ -30,6 +32,8 @@ class RegistrationFormTest extends TestCase {
     public function _fixtures() {
         return [
             'accounts' => AccountFixture::class,
+            'emailActivations' => EmailActivationFixture::class,
+            'usernameHistory' => UsernameHistoryFixture::class,
         ];
     }
 
