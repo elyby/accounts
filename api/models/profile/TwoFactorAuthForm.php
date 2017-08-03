@@ -63,7 +63,7 @@ class TwoFactorAuthForm extends ApiForm {
         $provisioningUri = $this->getTotp()->getProvisioningUri();
 
         return [
-            'qr' => 'data:image/svg+xml,' . htmlspecialchars(trim($this->drawQrCode($provisioningUri))),
+            'qr' => 'data:image/svg+xml,' . trim($this->drawQrCode($provisioningUri)),
             'uri' => $provisioningUri,
             'secret' => $this->account->otp_secret,
         ];

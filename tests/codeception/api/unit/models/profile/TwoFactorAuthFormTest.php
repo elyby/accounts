@@ -44,7 +44,7 @@ class TwoFactorAuthFormTest extends TestCase {
         $this->assertArrayHasKey('secret', $result);
         $this->assertNotNull($account->otp_secret);
         $this->assertEquals($account->otp_secret, $result['secret']);
-        $this->assertEquals('data:image/svg+xml,&lt;_/&gt;', $result['qr']);
+        $this->assertEquals('data:image/svg+xml,<_/>', $result['qr']);
 
         /** @var Account|\PHPUnit_Framework_MockObject_MockObject $account */
         $account = $this->getMockBuilder(Account::class)
