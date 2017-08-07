@@ -38,7 +38,7 @@ class TwoFactorAuthForm extends ApiForm {
         parent::__construct($config);
     }
 
-    public function rules() {
+    public function rules(): array {
         $bothScenarios = [self::SCENARIO_ACTIVATE, self::SCENARIO_DISABLE];
         return [
             ['timestamp', 'integer', 'on' => [self::SCENARIO_ACTIVATE]],
@@ -132,10 +132,8 @@ class TwoFactorAuthForm extends ApiForm {
 
     public function drawQrCode(string $content): string {
         $renderer = new Svg();
-        $renderer->setHeight(256);
-        $renderer->setWidth(256);
-        $renderer->setForegroundColor(new Rgb(32, 126, 92));
         $renderer->setMargin(0);
+        $renderer->setForegroundColor(new Rgb(32, 126, 92));
         $renderer->addDecorator(new ElyDecorator());
 
         $writer = new Writer($renderer);
