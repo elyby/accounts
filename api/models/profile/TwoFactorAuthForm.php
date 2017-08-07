@@ -131,6 +131,8 @@ class TwoFactorAuthForm extends ApiForm {
     }
 
     public function drawQrCode(string $content): string {
+        $content = $this->forceMinimalQrContentLength($content);
+
         $renderer = new Svg();
         $renderer->setMargin(0);
         $renderer->setForegroundColor(new Rgb(32, 126, 92));
@@ -156,6 +158,22 @@ class TwoFactorAuthForm extends ApiForm {
         if (!$this->account->save()) {
             throw new ErrorException('Cannot set account otp_secret');
         }
+    }
+
+    /**
+     * В используемой либе для рендеринга QR кода нет возможности указать QR code version.
+     * http://www.qrcode.com/en/about/version.html
+     * По какой-то причине 7 и 8 версии не читаются вовсе, с логотипом или без.
+     * Поэтому нужно иначально привести строку к длинне 9 версии (91), добавляя к концу
+     * строки необходимое количество символов "#". Этот символ используется, т.к. нашим
+     * контентом является ссылка и чтобы не вводить лишние параметры мы помечаем добавочную
+     * часть как хеш часть и все программы для чтения QR кодов продолжают свою работу.
+     *
+     * @param string $content
+     * @return string
+     */
+    private function forceMinimalQrContentLength(string $content): string {
+        return str_pad($content, 91, '#');
     }
 
 }
