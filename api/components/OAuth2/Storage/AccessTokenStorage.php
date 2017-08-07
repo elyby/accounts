@@ -16,6 +16,9 @@ class AccessTokenStorage extends AbstractStorage implements AccessTokenInterface
 
     public function get($token) {
         $result = Json::decode((new Key($this->dataTable, $token))->getValue());
+        if ($result === null) {
+            return null;
+        }
 
         $token = new AccessTokenEntity($this->server);
         $token->setId($result['id']);
