@@ -4,6 +4,7 @@ namespace api\validators;
 use common\helpers\Error as E;
 use common\models\Account;
 use OTPHP\TOTP;
+use RangeException;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\validators\Validator;
@@ -48,8 +49,12 @@ class TotpValidator extends Validator {
     }
 
     protected function validateValue($value) {
-        $totp = new TOTP(null, $this->account->otp_secret);
-        if (!$totp->verify((string)$value, $this->getTimestamp(), $this->window)) {
+        try {
+            $totp = TOTP::create($this->account->otp_secret);
+            if (!$totp->verify((string)$value, $this->getTimestamp(), $this->window)) {
+                return [E::OTP_TOKEN_INCORRECT, []];
+            }
+        } catch (RangeException $e) {
             return [E::OTP_TOKEN_INCORRECT, []];
         }
 

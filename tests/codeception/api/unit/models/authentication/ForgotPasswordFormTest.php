@@ -48,7 +48,7 @@ class ForgotPasswordFormTest extends TestCase {
         $model->validateTotpToken('token');
         $this->assertEquals(['error.token_incorrect'], $model->getErrors('token'));
 
-        $totp = new TOTP(null, 'secret-secret-secret');
+        $totp = TOTP::create('BBBB');
         $model = new ForgotPasswordForm();
         $model->login = 'AccountWithEnabledOtp';
         $model->token = $totp->now();

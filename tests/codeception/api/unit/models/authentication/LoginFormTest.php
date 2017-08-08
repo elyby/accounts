@@ -76,7 +76,7 @@ class LoginFormTest extends TestCase {
         $account = new AccountIdentity(['password' => '12345678']);
         $account->password = '12345678';
         $account->is_otp_enabled = true;
-        $account->otp_secret = 'mock secret';
+        $account->otp_secret = 'AAAA';
 
         $this->specify('error.token_incorrect if totp invalid', function() use ($account) {
             $model = $this->createModel([
@@ -88,7 +88,7 @@ class LoginFormTest extends TestCase {
             $this->assertEquals(['error.token_incorrect'], $model->getErrors('token'));
         });
 
-        $totp = new TOTP(null, 'mock secret');
+        $totp = TOTP::create($account->otp_secret);
         $this->specify('no errors if password valid', function() use ($account, $totp) {
             $model = $this->createModel([
                 'password' => '12345678',

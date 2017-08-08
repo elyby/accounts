@@ -197,10 +197,12 @@ class TwoFactorAuthFormTest extends TestCase {
         $model = new TwoFactorAuthForm($account);
         $this->callProtected($model, 'setOtpSecret');
         $this->assertEquals(24, strlen($model->getAccount()->otp_secret));
+        $this->assertSame(strtoupper($model->getAccount()->otp_secret), $model->getAccount()->otp_secret);
 
         $model = new TwoFactorAuthForm($account);
         $this->callProtected($model, 'setOtpSecret', 25);
         $this->assertEquals(25, strlen($model->getAccount()->otp_secret));
+        $this->assertSame(strtoupper($model->getAccount()->otp_secret), $model->getAccount()->otp_secret);
     }
 
 }

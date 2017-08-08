@@ -49,7 +49,7 @@ class TwoFactorAuthDisableCest {
 
     public function testSuccessEnable(FunctionalTester $I) {
         $I->amAuthenticated('AccountWithEnabledOtp');
-        $totp = new TOTP(null, 'secret-secret-secret');
+        $totp = TOTP::create('BBBB');
         $this->route->disable($totp->now(), 'password_0');
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();

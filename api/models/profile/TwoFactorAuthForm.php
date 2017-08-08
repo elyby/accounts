@@ -9,11 +9,11 @@ use BaconQrCode\Encoder\Encoder;
 use BaconQrCode\Renderer\Color\Rgb;
 use BaconQrCode\Renderer\Image\Svg;
 use BaconQrCode\Writer;
-use Base32\Base32;
 use common\components\Qr\ElyDecorator;
 use common\helpers\Error as E;
 use common\models\Account;
 use OTPHP\TOTP;
+use ParagonIE\ConstantTime\Encoding;
 use Yii;
 use yii\base\ErrorException;
 
@@ -124,7 +124,8 @@ class TwoFactorAuthForm extends ApiForm {
      * @return TOTP
      */
     public function getTotp(): TOTP {
-        $totp = new TOTP($this->account->email, $this->account->otp_secret);
+        $totp = TOTP::create($this->account->otp_secret);
+        $totp->setLabel($this->account->email);
         $totp->setIssuer('Ely.by');
 
         return $totp;
@@ -154,7 +155,8 @@ class TwoFactorAuthForm extends ApiForm {
      */
     protected function setOtpSecret(int $length = 24): void {
         $randomBytesLength = ceil($length / 1.6);
-        $this->account->otp_secret = substr(trim(Base32::encode(random_bytes($randomBytesLength)), '='), 0, $length);
+        $randomBase32 = trim(Encoding::base32EncodeUpper(random_bytes($randomBytesLength)), '=');
+        $this->account->otp_secret = substr($randomBase32, 0, $length);
         if (!$this->account->save()) {
             throw new ErrorException('Cannot set account otp_secret');
         }

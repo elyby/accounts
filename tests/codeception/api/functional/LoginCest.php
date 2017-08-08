@@ -206,7 +206,7 @@ class LoginCest {
         $route = new AuthenticationRoute($I);
 
         $I->wantTo('login into account with enabled otp');
-        $route->login('AccountWithEnabledOtp', 'password_0', (new TOTP(null, 'secret-secret-secret'))->now());
+        $route->login('AccountWithEnabledOtp', 'password_0', (TOTP::create('BBBB'))->now());
         $I->canSeeResponseContainsJson([
             'success' => true,
         ]);

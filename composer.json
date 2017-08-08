@@ -20,9 +20,10 @@
         "predis/predis": "^1.0",
         "mito/yii2-sentry": "^1.0",
         "minime/annotations": "~3.0",
-        "spomky-labs/otphp": "8.3.1",
+        "spomky-labs/otphp": "^9.0.2",
         "bacon/bacon-qr-code": "^1.0",
-        "roave/security-advisories": "dev-master"
+        "roave/security-advisories": "dev-master",
+        "paragonie/constant_time_encoding": "^2.0"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",
