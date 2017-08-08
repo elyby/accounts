@@ -9,3 +9,4 @@ modules:
         Yii2:
             configFile: '../config/api/unit.php'
             cleanup: true
+            transaction: false

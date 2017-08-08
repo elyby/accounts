@@ -8,3 +8,4 @@ modules:
         Yii2:
             configFile: '../config/console/unit.php'
             cleanup: true
+            transaction: false

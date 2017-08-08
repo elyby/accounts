@@ -40,7 +40,7 @@ test:backend:
             php vendor/bin/codecept run -c tests
 
 test:frontend:
-    image: node:5.12
+    image: node:8.2.1
     stage: test
     cache:
         paths:

@@ -9,11 +9,11 @@ use BaconQrCode\Encoder\Encoder;
 use BaconQrCode\Renderer\Color\Rgb;
 use BaconQrCode\Renderer\Image\Svg;
 use BaconQrCode\Writer;
-use Base32\Base32;
 use common\components\Qr\ElyDecorator;
 use common\helpers\Error as E;
 use common\models\Account;
 use OTPHP\TOTP;
+use ParagonIE\ConstantTime\Encoding;
 use Yii;
 use yii\base\ErrorException;
 
@@ -38,7 +38,7 @@ class TwoFactorAuthForm extends ApiForm {
         parent::__construct($config);
     }
 
-    public function rules() {
+    public function rules(): array {
         $bothScenarios = [self::SCENARIO_ACTIVATE, self::SCENARIO_DISABLE];
         return [
             ['timestamp', 'integer', 'on' => [self::SCENARIO_ACTIVATE]],
@@ -63,7 +63,7 @@ class TwoFactorAuthForm extends ApiForm {
         $provisioningUri = $this->getTotp()->getProvisioningUri();
 
         return [
-            'qr' => base64_encode($this->drawQrCode($provisioningUri)),
+            'qr' => 'data:image/svg+xml,' . trim($this->drawQrCode($provisioningUri)),
             'uri' => $provisioningUri,
             'secret' => $this->account->otp_secret,
         ];
@@ -124,18 +124,19 @@ class TwoFactorAuthForm extends ApiForm {
      * @return TOTP
      */
     public function getTotp(): TOTP {
-        $totp = new TOTP($this->account->email, $this->account->otp_secret);
+        $totp = TOTP::create($this->account->otp_secret);
+        $totp->setLabel($this->account->email);
         $totp->setIssuer('Ely.by');
 
         return $totp;
     }
 
     public function drawQrCode(string $content): string {
+        $content = $this->forceMinimalQrContentLength($content);
+
         $renderer = new Svg();
-        $renderer->setHeight(256);
-        $renderer->setWidth(256);
-        $renderer->setForegroundColor(new Rgb(32, 126, 92));
         $renderer->setMargin(0);
+        $renderer->setForegroundColor(new Rgb(32, 126, 92));
         $renderer->addDecorator(new ElyDecorator());
 
         $writer = new Writer($renderer);
@@ -154,10 +155,27 @@ class TwoFactorAuthForm extends ApiForm {
      */
     protected function setOtpSecret(int $length = 24): void {
         $randomBytesLength = ceil($length / 1.6);
-        $this->account->otp_secret = substr(trim(Base32::encode(random_bytes($randomBytesLength)), '='), 0, $length);
+        $randomBase32 = trim(Encoding::base32EncodeUpper(random_bytes($randomBytesLength)), '=');
+        $this->account->otp_secret = substr($randomBase32, 0, $length);
         if (!$this->account->save()) {
             throw new ErrorException('Cannot set account otp_secret');
         }
+    }
+
+    /**
+     * В используемой либе для рендеринга QR кода нет возможности указать QR code version.
+     * http://www.qrcode.com/en/about/version.html
+     * По какой-то причине 7 и 8 версии не читаются вовсе, с логотипом или без.
+     * Поэтому нужно иначально привести строку к длинне 9 версии (91), добавляя к концу
+     * строки необходимое количество символов "#". Этот символ используется, т.к. нашим
+     * контентом является ссылка и чтобы не вводить лишние параметры мы помечаем добавочную
+     * часть как хеш часть и все программы для чтения QR кодов продолжают свою работу.
+     *
+     * @param string $content
+     * @return string
+     */
+    private function forceMinimalQrContentLength(string $content): string {
+        return str_pad($content, 91, '#');
     }
 
 }

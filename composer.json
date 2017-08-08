@@ -1,21 +1,12 @@
 {
-    "name": "yiisoft/yii2-app-advanced",
-    "description": "Yii 2 Advanced Project Template",
-    "keywords": ["yii2", "framework", "advanced", "project template"],
-    "homepage": "http://www.yiiframework.com/",
+    "name": "elyby/accounts",
+    "description": "Authentication service for Ely.by",
+    "homepage": "https://account.ely.by",
     "type": "project",
-    "license": "BSD-3-Clause",
-    "support": {
-        "issues": "https://github.com/yiisoft/yii2/issues?state=open",
-        "forum": "http://www.yiiframework.com/forum/",
-        "wiki": "http://www.yiiframework.com/wiki/",
-        "irc": "irc://irc.freenode.net/yii",
-        "source": "https://github.com/yiisoft/yii2"
-    },
     "minimum-stability": "stable",
     "require": {
         "php": "^7.1",
-        "yiisoft/yii2": "2.0.11.2",
+        "yiisoft/yii2": "2.0.12",
         "yiisoft/yii2-swiftmailer": "*",
         "ramsey/uuid": "^3.5.0",
         "league/oauth2-server": "dev-improvements#fbaa9b0bd3d8050235ba7dde90f731764122bc20",
@@ -29,8 +20,10 @@
         "predis/predis": "^1.0",
         "mito/yii2-sentry": "^1.0",
         "minime/annotations": "~3.0",
-        "spomky-labs/otphp": "8.3.1",
-        "bacon/bacon-qr-code": "^1.0"
+        "spomky-labs/otphp": "^9.0.2",
+        "bacon/bacon-qr-code": "^1.0",
+        "roave/security-advisories": "dev-master",
+        "paragonie/constant_time_encoding": "^2.0"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",
@@ -38,15 +31,12 @@
         "yiisoft/yii2-faker": "*",
         "flow/jsonpath": "^0.3.1",
         "phpunit/phpunit": "^5.7",
-        "codeception/codeception": "~2.3",
+        "codeception/codeception": "2.3.4",
         "codeception/specify": "*",
         "codeception/verify": "*",
         "phploc/phploc": "^3.0.1",
         "mockery/mockery": "1.0.0-alpha1",
         "php-mock/php-mock-mockery": "dev-mockery-1.0.0#03956ed4b34ae25bc20a0677500f4f4b416f976c"
-    },
-    "config": {
-        "process-timeout": 1800
     },
     "repositories": [
         {

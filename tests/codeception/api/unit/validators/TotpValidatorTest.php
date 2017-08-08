@@ -13,8 +13,8 @@ class TotpValidatorTest extends TestCase {
 
     public function testValidateValue() {
         $account = new Account();
-        $account->otp_secret = 'some secret';
-        $controlTotp = new TOTP(null, $account->otp_secret);
+        $account->otp_secret = 'AAAA';
+        $controlTotp = TOTP::create($account->otp_secret);
 
         $validator = new TotpValidator(['account' => $account]);
 

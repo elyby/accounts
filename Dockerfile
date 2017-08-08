@@ -1,4 +1,4 @@
-FROM registry.ely.by/elyby/accounts-php:1.3.0
+FROM registry.ely.by/elyby/accounts-php:1.4.0
 
 # Вносим конфигурации для крона и воркеров
 COPY docker/cron/* /etc/cron.d/
@@ -46,7 +46,7 @@ RUN mkdir -p api/runtime api/web/assets console/runtime \
  # Билдим фронт
  && cd frontend \
  && ln -s /var/www/frontend/node_modules $PWD/node_modules \
- && npm run build:quite --quiet \
+ && npm run build:quiet \
  && rm node_modules \
  # Копируем билд наружу, чтобы его не затёрло volume в dev режиме
  && cp -r ./dist /var/www/dist \

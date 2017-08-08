@@ -35,7 +35,7 @@ class TwoFactorAuthFormTest extends TestCase {
 
         $model->expects($this->once())
             ->method('drawQrCode')
-            ->willReturn('this is qr code, trust me');
+            ->willReturn('<_/>');
 
         $result = $model->getCredentials();
         $this->assertTrue(is_array($result));
@@ -44,7 +44,7 @@ class TwoFactorAuthFormTest extends TestCase {
         $this->assertArrayHasKey('secret', $result);
         $this->assertNotNull($account->otp_secret);
         $this->assertEquals($account->otp_secret, $result['secret']);
-        $this->assertEquals(base64_encode('this is qr code, trust me'), $result['qr']);
+        $this->assertEquals('data:image/svg+xml,<_/>', $result['qr']);
 
         /** @var Account|\PHPUnit_Framework_MockObject_MockObject $account */
         $account = $this->getMockBuilder(Account::class)
@@ -197,10 +197,12 @@ class TwoFactorAuthFormTest extends TestCase {
         $model = new TwoFactorAuthForm($account);
         $this->callProtected($model, 'setOtpSecret');
         $this->assertEquals(24, strlen($model->getAccount()->otp_secret));
+        $this->assertSame(strtoupper($model->getAccount()->otp_secret), $model->getAccount()->otp_secret);
 
         $model = new TwoFactorAuthForm($account);
         $this->callProtected($model, 'setOtpSecret', 25);
         $this->assertEquals(25, strlen($model->getAccount()->otp_secret));
+        $this->assertSame(strtoupper($model->getAccount()->otp_secret), $model->getAccount()->otp_secret);
     }
 
 }

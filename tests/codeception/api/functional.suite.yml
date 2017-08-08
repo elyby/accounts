@@ -13,6 +13,7 @@ modules:
         Yii2:
             configFile: '../config/api/functional.php'
             cleanup: true
+            transaction: false
         Redis:
             host: "%REDIS_HOST%"
             port: 6379

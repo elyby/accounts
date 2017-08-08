@@ -49,7 +49,7 @@ class TwoFactorAuthEnableCest {
 
     public function testSuccessEnable(FunctionalTester $I) {
         $I->amAuthenticated('AccountWithOtpSecret');
-        $totp = new TOTP(null, 'some otp secret value');
+        $totp = TOTP::create('AAAA');
         $this->route->enable($totp->now(), 'password_0');
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();

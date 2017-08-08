@@ -74,7 +74,7 @@ class ForgotPasswordCest {
 
     public function testForgotPasswordByAccountWithOtp(FunctionalTester $I) {
         $I->wantTo('create new password recover request by passing username and otp token');
-        $totp = new TOTP(null, 'secret-secret-secret');
+        $totp = TOTP::create('BBBB');
         $this->route->forgotPassword('AccountWithEnabledOtp', $totp->now());
         $this->assertSuccessResponse($I, true);
     }
