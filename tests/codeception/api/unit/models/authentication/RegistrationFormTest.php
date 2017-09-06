@@ -8,6 +8,7 @@ use common\models\Account;
 use common\models\EmailActivation;
 use common\models\UsernameHistory;
 use GuzzleHttp\ClientInterface;
+use ReflectionClass;
 use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\EmailActivationFixture;

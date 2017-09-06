@@ -23,7 +23,7 @@ class TwoFactorAuthEnableCest {
         $I->canSeeResponseContainsJson([
             'success' => false,
             'errors' => [
-                'token' => 'error.token_required',
+                'totp' => 'error.totp_required',
                 'password' => 'error.password_required',
             ],
         ]);
@@ -32,7 +32,7 @@ class TwoFactorAuthEnableCest {
         $I->canSeeResponseContainsJson([
             'success' => false,
             'errors' => [
-                'token' => 'error.token_incorrect',
+                'totp' => 'error.totp_incorrect',
                 'password' => 'error.password_incorrect',
             ],
         ]);

@@ -19,13 +19,13 @@ class TotpValidatorTest extends TestCase {
         $validator = new TotpValidator(['account' => $account]);
 
         $result = $this->callProtected($validator, 'validateValue', 123456);
-        $this->assertEquals([E::OTP_TOKEN_INCORRECT, []], $result);
+        $this->assertEquals([E::TOTP_INCORRECT, []], $result);
 
         $result = $this->callProtected($validator, 'validateValue', $controlTotp->now());
         $this->assertNull($result);
 
         $result = $this->callProtected($validator, 'validateValue', $controlTotp->at(time() - 31));
-        $this->assertEquals([E::OTP_TOKEN_INCORRECT, []], $result);
+        $this->assertEquals([E::TOTP_INCORRECT, []], $result);
 
         $validator->window = 2;
         $result = $this->callProtected($validator, 'validateValue', $controlTotp->at(time() - 31));
@@ -34,7 +34,7 @@ class TotpValidatorTest extends TestCase {
         $at = time() - 400;
         $validator->timestamp = $at;
         $result = $this->callProtected($validator, 'validateValue', $controlTotp->now());
-        $this->assertEquals([E::OTP_TOKEN_INCORRECT, []], $result);
+        $this->assertEquals([E::TOTP_INCORRECT, []], $result);
 
         $result = $this->callProtected($validator, 'validateValue', $controlTotp->at($at));
         $this->assertNull($result);

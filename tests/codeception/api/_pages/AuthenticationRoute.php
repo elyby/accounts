@@ -24,7 +24,7 @@ class AuthenticationRoute extends BasePage {
         if ((is_bool($rememberMeOrToken) && $rememberMeOrToken) || $rememberMe) {
             $params['rememberMe'] = 1;
         } elseif ($rememberMeOrToken !== null) {
-            $params['token'] = $rememberMeOrToken;
+            $params['totp'] = $rememberMeOrToken;
         }
 
         $this->actor->sendPOST($this->getUrl(), $params);
@@ -39,7 +39,7 @@ class AuthenticationRoute extends BasePage {
         $this->route = ['authentication/forgot-password'];
         $this->actor->sendPOST($this->getUrl(), [
             'login' => $login,
-            'token' => $token,
+            'totp' => $token,
         ]);
     }
 

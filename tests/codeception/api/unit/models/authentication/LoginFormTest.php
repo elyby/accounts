@@ -72,31 +72,31 @@ class LoginFormTest extends TestCase {
         });
     }
 
-    public function testValidateTotpToken() {
+    public function testValidateTotp() {
         $account = new AccountIdentity(['password' => '12345678']);
         $account->password = '12345678';
         $account->is_otp_enabled = true;
         $account->otp_secret = 'AAAA';
 
-        $this->specify('error.token_incorrect if totp invalid', function() use ($account) {
+        $this->specify('error.totp_incorrect if totp invalid', function() use ($account) {
             $model = $this->createModel([
                 'password' => '12345678',
-                'token' => '321123',
+                'totp' => '321123',
                 'account' => $account,
             ]);
-            $model->validateTotpToken('token');
-            $this->assertEquals(['error.token_incorrect'], $model->getErrors('token'));
+            $model->validateTotp('totp');
+            $this->assertEquals(['error.totp_incorrect'], $model->getErrors('totp'));
         });
 
         $totp = TOTP::create($account->otp_secret);
         $this->specify('no errors if password valid', function() use ($account, $totp) {
             $model = $this->createModel([
                 'password' => '12345678',
-                'token' => $totp->now(),
+                'totp' => $totp->now(),
                 'account' => $account,
             ]);
-            $model->validateTotpToken('token');
-            $this->assertEmpty($model->getErrors('token'));
+            $model->validateTotp('totp');
+            $this->assertEmpty($model->getErrors('totp'));
         });
     }
 

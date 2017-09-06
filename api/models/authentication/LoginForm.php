@@ -17,10 +17,10 @@ class LoginForm extends ApiForm {
 
     public $login;
     public $password;
-    public $token;
+    public $totp;
     public $rememberMe = false;
 
-    public function rules() {
+    public function rules(): array {
         return [
             ['login', 'required', 'message' => E::LOGIN_REQUIRED],
             ['login', 'validateLogin'],
@@ -30,10 +30,10 @@ class LoginForm extends ApiForm {
             }, 'message' => E::PASSWORD_REQUIRED],
             ['password', 'validatePassword'],
 
-            ['token', 'required', 'when' => function(self $model) {
+            ['totp', 'required', 'when' => function(self $model) {
                 return !$model->hasErrors() && $model->getAccount()->is_otp_enabled;
-            }, 'message' => E::OTP_TOKEN_REQUIRED],
-            ['token', 'validateTotpToken'],
+            }, 'message' => E::TOTP_REQUIRED],
+            ['totp', 'validateTotp'],
 
             ['login', 'validateActivity'],
 
@@ -58,7 +58,7 @@ class LoginForm extends ApiForm {
         }
     }
 
-    public function validateTotpToken($attribute) {
+    public function validateTotp($attribute) {
         if ($this->hasErrors()) {
             return;
         }

@@ -14,16 +14,16 @@ class TwoFactorAuthRoute extends BasePage {
         $this->actor->sendGET($this->getUrl());
     }
 
-    public function enable($token = null, $password = null) {
+    public function enable($totp = null, $password = null) {
         $this->actor->sendPOST($this->getUrl(), [
-            'token' => $token,
+            'totp' => $totp,
             'password' => $password,
         ]);
     }
 
-    public function disable($token = null, $password = null) {
+    public function disable($totp = null, $password = null) {
         $this->actor->sendDELETE($this->getUrl(), [
-            'token' => $token,
+            'totp' => $totp,
             'password' => $password,
         ]);
     }
