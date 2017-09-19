@@ -1,7 +1,7 @@
 <?php
 namespace tests\codeception\api\functional\sessionserver;
 
-use common\models\OauthScope as S;
+use common\rbac\Permissions as P;
 use Faker\Provider\Uuid;
 use tests\codeception\api\_pages\SessionServerRoute;
 use tests\codeception\api\functional\_steps\AuthserverSteps;
@@ -43,7 +43,7 @@ class JoinLegacyCest {
 
     public function joinByOauth2Token(OauthSteps $I) {
         $I->wantTo('join to server using modern oAuth2 generated token with new launcher session format');
-        $accessToken = $I->getAccessToken([S::MINECRAFT_SERVER_SESSION]);
+        $accessToken = $I->getAccessToken([P::MINECRAFT_SERVER_SESSION]);
         $this->route->joinLegacy([
             'sessionId' => 'token:' . $accessToken . ':' . 'df936908-b2e1-544d-96f8-2977ec213022',
             'user' => 'Admin',
@@ -74,7 +74,7 @@ class JoinLegacyCest {
 
     public function joinWithAccessTokenWithoutMinecraftPermission(OauthSteps $I) {
         $I->wantTo('join to some server with wrong accessToken');
-        $accessToken = $I->getAccessToken([S::ACCOUNT_INFO]);
+        $accessToken = $I->getAccessToken(['account_info']);
         $this->route->joinLegacy([
             'sessionId' => 'token:' . $accessToken . ':' . 'df936908-b2e1-544d-96f8-2977ec213022',
             'user' => 'Admin',

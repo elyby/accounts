@@ -1,7 +1,6 @@
 <?php
 namespace codeception\api\functional;
 
-use common\models\OauthScope as S;
 use tests\codeception\api\_pages\IdentityInfoRoute;
 use tests\codeception\api\functional\_steps\OauthSteps;
 use tests\codeception\api\FunctionalTester;
@@ -30,7 +29,7 @@ class IdentityInfoCest {
     }
 
     public function testGetInfo(OauthSteps $I) {
-        $accessToken = $I->getAccessToken([S::ACCOUNT_INFO]);
+        $accessToken = $I->getAccessToken(['account_info']);
         $I->amBearerAuthenticated($accessToken);
         $this->route->info();
         $I->canSeeResponseCodeIs(200);
@@ -47,7 +46,7 @@ class IdentityInfoCest {
     }
 
     public function testGetInfoWithEmail(OauthSteps $I) {
-        $accessToken = $I->getAccessToken([S::ACCOUNT_INFO, S::ACCOUNT_EMAIL]);
+        $accessToken = $I->getAccessToken(['account_info', 'account_email']);
         $I->amBearerAuthenticated($accessToken);
         $this->route->info();
         $I->canSeeResponseCodeIs(200);

@@ -17,7 +17,7 @@ class AccountsAcceptRulesCest {
 
     public function testCurrent(FunctionalTester $I) {
         $I->amAuthenticated('Veleyaba');
-        $this->route->acceptRules();
+        $this->route->acceptRules(9);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([

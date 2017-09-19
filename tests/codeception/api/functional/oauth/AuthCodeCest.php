@@ -1,7 +1,7 @@
 <?php
 namespace tests\codeception\api\oauth;
 
-use common\models\OauthScope as S;
+use common\rbac\Permissions as P;
 use tests\codeception\api\_pages\OauthRoute;
 use tests\codeception\api\FunctionalTester;
 
@@ -24,7 +24,7 @@ class AuthCodeCest {
             'ely',
             'http://ely.by',
             'code',
-            [S::MINECRAFT_SERVER_SESSION],
+            [P::MINECRAFT_SERVER_SESSION],
             'test-state'
         ));
         $I->canSeeResponseCodeIs(200);
@@ -101,7 +101,7 @@ class AuthCodeCest {
             'ely',
             'http://ely.by',
             'code',
-            [S::MINECRAFT_SERVER_SESSION]
+            [P::MINECRAFT_SERVER_SESSION]
         ));
         $I->canSeeResponseCodeIs(401);
         $I->canSeeResponseContainsJson([
@@ -119,7 +119,7 @@ class AuthCodeCest {
             'ely',
             'http://ely.by',
             'code',
-            [S::MINECRAFT_SERVER_SESSION]
+            [P::MINECRAFT_SERVER_SESSION]
         ), ['accept' => true]);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseContainsJson([
@@ -146,7 +146,7 @@ class AuthCodeCest {
             'ely',
             'http://ely.by',
             'code',
-            [S::MINECRAFT_SERVER_SESSION]
+            [P::MINECRAFT_SERVER_SESSION]
         ));
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseContainsJson([
@@ -162,13 +162,13 @@ class AuthCodeCest {
             'ely',
             'http://ely.by',
             'code',
-            [S::MINECRAFT_SERVER_SESSION]
+            [P::MINECRAFT_SERVER_SESSION]
         ), ['accept' => true]);
         $this->route->complete($this->buildQueryParams(
             'ely',
             'http://ely.by',
             'code',
-            [S::MINECRAFT_SERVER_SESSION, S::ACCOUNT_INFO]
+            [P::MINECRAFT_SERVER_SESSION, 'account_info']
         ));
         $I->canSeeResponseCodeIs(401);
         $I->canSeeResponseContainsJson([
@@ -186,7 +186,7 @@ class AuthCodeCest {
             'ely',
             'http://ely.by',
             'code',
-            [S::MINECRAFT_SERVER_SESSION]
+            [P::MINECRAFT_SERVER_SESSION]
         ), ['accept' => false]);
         $I->canSeeResponseCodeIs(401);
         $I->canSeeResponseContainsJson([
@@ -270,7 +270,7 @@ class AuthCodeCest {
 
         $I->wantTo('check behavior on some invalid scopes');
         $this->route->$action($this->buildQueryParams('ely', 'http://ely.by', 'code', [
-            S::MINECRAFT_SERVER_SESSION,
+            P::MINECRAFT_SERVER_SESSION,
             'some_wrong_scope',
         ]));
         $I->canSeeResponseCodeIs(400);
@@ -285,15 +285,15 @@ class AuthCodeCest {
 
         $I->wantTo('check behavior on request internal scope');
         $this->route->$action($this->buildQueryParams('ely', 'http://ely.by', 'code', [
-            S::MINECRAFT_SERVER_SESSION,
-            S::ACCOUNT_BLOCK,
+            P::MINECRAFT_SERVER_SESSION,
+            P::BLOCK_ACCOUNT,
         ]));
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
             'success' => false,
             'error' => 'invalid_scope',
-            'parameter' => S::ACCOUNT_BLOCK,
+            'parameter' => P::BLOCK_ACCOUNT,
             'statusCode' => 400,
         ]);
         $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');

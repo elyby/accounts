@@ -15,9 +15,6 @@ return [
             'class' => api\components\User\Component::class,
             'secret' => getenv('JWT_USER_SECRET'),
         ],
-        'apiUser' => [
-            'class' => api\components\ApiUser\Component::class,
-        ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
@@ -85,14 +82,9 @@ return [
             'class' => api\modules\authserver\Module::class,
             'host' => $params['authserverHost'],
         ],
-        'session' => [
-            'class' => api\modules\session\Module::class,
-        ],
-        'mojang' => [
-            'class' => api\modules\mojang\Module::class,
-        ],
-        'internal' => [
-            'class' => api\modules\internal\Module::class,
-        ],
+        'session' => api\modules\session\Module::class,
+        'mojang' => api\modules\mojang\Module::class,
+        'internal' => api\modules\internal\Module::class,
+        'accounts' => api\modules\accounts\Module::class,
     ],
 ];

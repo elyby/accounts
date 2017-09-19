@@ -11,6 +11,7 @@ services:
             - testredis
         volumes:
             - ./..:/var/www/html
+            - ./.bash_history:/root/.bash_history
         environment:
             YII_DEBUG: "true"
             YII_ENV: "test"

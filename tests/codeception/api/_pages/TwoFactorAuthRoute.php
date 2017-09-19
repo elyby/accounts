@@ -8,24 +8,29 @@ use yii\codeception\BasePage;
  */
 class TwoFactorAuthRoute extends BasePage {
 
-    public $route = '/two-factor-auth';
-
-    public function credentials() {
+    public function credentials(int $accountId) {
+        $this->setRoute($accountId);
         $this->actor->sendGET($this->getUrl());
     }
 
-    public function enable($totp = null, $password = null) {
+    public function enable(int $accountId, $totp = null, $password = null) {
+        $this->setRoute($accountId);
         $this->actor->sendPOST($this->getUrl(), [
             'totp' => $totp,
             'password' => $password,
         ]);
     }
 
-    public function disable($totp = null, $password = null) {
+    public function disable(int $accountId, $totp = null, $password = null) {
+        $this->setRoute($accountId);
         $this->actor->sendDELETE($this->getUrl(), [
             'totp' => $totp,
             'password' => $password,
         ]);
+    }
+
+    private function setRoute(int $accountId) {
+        $this->route = "/v1/accounts/{$accountId}/two-factor-auth";
     }
 
 }

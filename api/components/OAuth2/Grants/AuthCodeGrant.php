@@ -6,7 +6,7 @@ use api\components\OAuth2\Entities\AuthCodeEntity;
 use api\components\OAuth2\Entities\ClientEntity;
 use api\components\OAuth2\Entities\RefreshTokenEntity;
 use api\components\OAuth2\Entities\SessionEntity;
-use common\models\OauthScope;
+use api\components\OAuth2\Storage\ScopeStorage;
 use League\OAuth2\Server\Entity\AuthCodeEntity as BaseAuthCodeEntity;
 use League\OAuth2\Server\Entity\ClientEntity as BaseClientEntity;
 use League\OAuth2\Server\Event\ClientAuthenticationFailedEvent;
@@ -178,7 +178,7 @@ class AuthCodeGrant extends AbstractGrant {
 
         // Generate the access token
         $accessToken = new AccessTokenEntity($this->server);
-        $accessToken->setId(SecureKey::generate()); // TODO: generate code based on permissions
+        $accessToken->setId(SecureKey::generate());
         $accessToken->setExpireTime($this->getAccessTokenTTL() + time());
 
         foreach ($authCodeScopes as $authCodeScope) {
@@ -194,7 +194,7 @@ class AuthCodeGrant extends AbstractGrant {
         $this->server->getTokenType()->setParam('expires_in', $this->getAccessTokenTTL());
 
         // Выдаём refresh_token, если запрошен offline_access
-        if (isset($accessToken->getScopes()[OauthScope::OFFLINE_ACCESS])) {
+        if (isset($accessToken->getScopes()[ScopeStorage::OFFLINE_ACCESS])) {
             /** @var RefreshTokenGrant $refreshTokenGrant */
             $refreshTokenGrant = $this->server->getGrantType('refresh_token');
             $refreshToken = new RefreshTokenEntity($this->server);
@@ -223,12 +223,12 @@ class AuthCodeGrant extends AbstractGrant {
      * Так что оборачиваем функцию разбора скоупов, заменяя пробелы на запятые.
      *
      * @param string       $scopeParam
-     * @param ClientEntity $client
+     * @param BaseClientEntity $client
      * @param string $redirectUri
      *
      * @return \League\OAuth2\Server\Entity\ScopeEntity[]
      */
-    public function validateScopes($scopeParam = '', ClientEntity $client, $redirectUri = null) {
+    public function validateScopes($scopeParam = '', BaseClientEntity $client, $redirectUri = null) {
         $scopes = str_replace(' ', $this->server->getScopeDelimiter(), $scopeParam);
         return parent::validateScopes($scopes, $client, $redirectUri);
     }

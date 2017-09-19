@@ -10,7 +10,7 @@ use yii\web\Response;
 
 class ApiController extends Controller {
 
-    public function behaviors() {
+    public function behaviors(): array {
         $behaviors = parent::behaviors();
         unset($behaviors['authenticator']);
 

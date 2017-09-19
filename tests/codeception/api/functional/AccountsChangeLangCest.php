@@ -1,7 +1,6 @@
 <?php
 namespace tests\codeception\api\functional;
 
-use Codeception\Specify;
 use tests\codeception\api\_pages\AccountsRoute;
 use tests\codeception\api\FunctionalTester;
 
@@ -18,9 +17,9 @@ class AccountsChangeLangCest {
 
     public function testSubmitNewEmail(FunctionalTester $I) {
         $I->wantTo('change my account language');
-        $I->amAuthenticated();
+        $id = $I->amAuthenticated();
 
-        $this->route->changeLang('ru');
+        $this->route->changeLanguage($id, 'ru');
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([

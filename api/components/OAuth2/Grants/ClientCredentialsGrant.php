@@ -18,14 +18,12 @@ class ClientCredentialsGrant extends AbstractGrant {
      * @throws \League\OAuth2\Server\Exception\OAuthException
      */
     public function completeFlow(): array {
-        // Get the required params
         $clientId = $this->server->getRequest()->request->get('client_id', $this->server->getRequest()->getUser());
         if ($clientId === null) {
             throw new Exception\InvalidRequestException('client_id');
         }
 
-        $clientSecret = $this->server->getRequest()->request->get('client_secret',
-            $this->server->getRequest()->getPassword());
+        $clientSecret = $this->server->getRequest()->request->get('client_secret');
         if ($clientSecret === null) {
             throw new Exception\InvalidRequestException('client_secret');
         }
@@ -74,12 +72,12 @@ class ClientCredentialsGrant extends AbstractGrant {
      * Так что оборачиваем функцию разбора скоупов, заменяя пробелы на запятые.
      *
      * @param string       $scopeParam
-     * @param ClientEntity $client
+     * @param BaseClientEntity $client
      * @param string $redirectUri
      *
      * @return \League\OAuth2\Server\Entity\ScopeEntity[]
      */
-    public function validateScopes($scopeParam = '', ClientEntity $client, $redirectUri = null) {
+    public function validateScopes($scopeParam = '', BaseClientEntity $client, $redirectUri = null) {
         $scopes = str_replace(' ', $this->server->getScopeDelimiter(), $scopeParam);
         return parent::validateScopes($scopes, $client, $redirectUri);
     }

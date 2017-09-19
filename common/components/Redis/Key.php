@@ -6,46 +6,7 @@ use Yii;
 
 class Key {
 
-    protected $key;
-
-    /**
-     * @return Connection
-     */
-    public function getRedis() {
-        return Yii::$app->redis;
-    }
-
-    public function getKey() : string {
-        return $this->key;
-    }
-
-    public function getValue() {
-        return $this->getRedis()->get($this->key);
-    }
-
-    public function setValue($value) {
-        $this->getRedis()->set($this->key, $value);
-        return $this;
-    }
-
-    public function delete() {
-        $this->getRedis()->del($this->key);
-        return $this;
-    }
-
-    public function exists() : bool {
-        return (bool)$this->getRedis()->exists($this->key);
-    }
-
-    public function expire(int $ttl) {
-        $this->getRedis()->expire($this->key, $ttl);
-        return $this;
-    }
-
-    public function expireAt(int $unixTimestamp) {
-        $this->getRedis()->expireat($this->key, $unixTimestamp);
-        return $this;
-    }
+    private $key;
 
     public function __construct(...$key) {
         if (empty($key)) {
@@ -55,7 +16,43 @@ class Key {
         $this->key = $this->buildKey($key);
     }
 
-    private function buildKey(array $parts) {
+    public function getRedis(): Connection {
+        return Yii::$app->redis;
+    }
+
+    public function getKey(): string {
+        return $this->key;
+    }
+
+    public function getValue() {
+        return $this->getRedis()->get($this->key);
+    }
+
+    public function setValue($value): self {
+        $this->getRedis()->set($this->key, $value);
+        return $this;
+    }
+
+    public function delete(): self {
+        $this->getRedis()->del([$this->getKey()]);
+        return $this;
+    }
+
+    public function exists(): bool {
+        return (bool)$this->getRedis()->exists($this->key);
+    }
+
+    public function expire(int $ttl): self {
+        $this->getRedis()->expire($this->key, $ttl);
+        return $this;
+    }
+
+    public function expireAt(int $unixTimestamp): self {
+        $this->getRedis()->expireat($this->key, $unixTimestamp);
+        return $this;
+    }
+
+    private function buildKey(array $parts): string {
         $keyParts = [];
         foreach($parts as $part) {
             $keyParts[] = str_replace('_', ':', $part);

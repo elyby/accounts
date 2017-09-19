@@ -1,7 +1,6 @@
 <?php
 namespace api\models\authentication;
 
-use api\models\AccountIdentity;
 use api\models\base\ApiForm;
 use api\validators\TotpValidator;
 use common\helpers\Error as E;
@@ -9,9 +8,6 @@ use api\traits\AccountFinder;
 use common\models\Account;
 use Yii;
 
-/**
- * @method AccountIdentity|null getAccount()
- */
 class LoginForm extends ApiForm {
     use AccountFinder;
 
@@ -86,12 +82,12 @@ class LoginForm extends ApiForm {
         }
     }
 
-    public function getLogin() {
+    public function getLogin(): string {
         return $this->login;
     }
 
     /**
-     * @return \api\components\User\LoginResult|bool
+     * @return \api\components\User\AuthenticationResult|bool
      */
     public function login() {
         if (!$this->validate()) {
@@ -104,11 +100,7 @@ class LoginForm extends ApiForm {
             $account->save();
         }
 
-        return Yii::$app->user->login($account, $this->rememberMe);
-    }
-
-    protected function getAccountClassName() {
-        return AccountIdentity::class;
+        return Yii::$app->user->createJwtAuthenticationToken($account, $this->rememberMe);
     }
 
 }

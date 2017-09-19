@@ -1,7 +1,7 @@
 <?php
 return [
     'version' => '1.1.18-dev',
-    'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
+    'vendorPath' => dirname(__DIR__, 2) . '/vendor',
     'components' => [
         'cache' => [
             'class' => common\components\Redis\Cache::class,
@@ -71,6 +71,11 @@ return [
         ],
         'oauth' => [
             'class' => api\components\OAuth2\Component::class,
+        ],
+        'authManager' => [
+            'class' => common\rbac\Manager::class,
+            'itemFile' => '@common/rbac/.generated/items.php',
+            'ruleFile' => '@common/rbac/.generated/rules.php',
         ],
     ],
     'container' => [

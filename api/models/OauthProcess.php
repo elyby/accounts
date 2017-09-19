@@ -83,7 +83,7 @@ class OauthProcess {
         try {
             $grant = $this->getAuthorizationCodeGrant();
             $authParams = $grant->checkAuthorizeParams();
-            $account = Yii::$app->user->identity;
+            $account = Yii::$app->user->identity->getAccount();
             /** @var \common\models\OauthClient $clientModel */
             $clientModel = OauthClient::findOne($authParams->getClient()->getId());
 

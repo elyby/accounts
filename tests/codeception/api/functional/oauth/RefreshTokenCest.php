@@ -1,7 +1,8 @@
 <?php
 namespace tests\codeception\api\oauth;
 
-use common\models\OauthScope as S;
+use api\components\OAuth2\Storage\ScopeStorage as S;
+use common\rbac\Permissions as P;
 use tests\codeception\api\_pages\OauthRoute;
 use tests\codeception\api\functional\_steps\OauthSteps;
 use tests\codeception\api\FunctionalTester;
@@ -40,23 +41,23 @@ class RefreshTokenCest {
     }
 
     public function testRefreshTokenWithSameScopes(OauthSteps $I) {
-        $refreshToken = $I->getRefreshToken([S::MINECRAFT_SERVER_SESSION]);
+        $refreshToken = $I->getRefreshToken([P::MINECRAFT_SERVER_SESSION]);
         $this->route->issueToken($this->buildParams(
             $refreshToken,
             'ely',
             'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
-            [S::MINECRAFT_SERVER_SESSION, S::OFFLINE_ACCESS]
+            [P::MINECRAFT_SERVER_SESSION, S::OFFLINE_ACCESS]
         ));
         $this->canSeeRefreshTokenSuccess($I);
     }
 
     public function testRefreshTokenTwice(OauthSteps $I) {
-        $refreshToken = $I->getRefreshToken([S::MINECRAFT_SERVER_SESSION]);
+        $refreshToken = $I->getRefreshToken([P::MINECRAFT_SERVER_SESSION]);
         $this->route->issueToken($this->buildParams(
             $refreshToken,
             'ely',
             'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
-            [S::MINECRAFT_SERVER_SESSION, S::OFFLINE_ACCESS]
+            [P::MINECRAFT_SERVER_SESSION, S::OFFLINE_ACCESS]
         ));
         $this->canSeeRefreshTokenSuccess($I);
 
@@ -64,18 +65,18 @@ class RefreshTokenCest {
             $refreshToken,
             'ely',
             'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
-            [S::MINECRAFT_SERVER_SESSION, S::OFFLINE_ACCESS]
+            [P::MINECRAFT_SERVER_SESSION, S::OFFLINE_ACCESS]
         ));
         $this->canSeeRefreshTokenSuccess($I);
     }
 
     public function testRefreshTokenWithNewScopes(OauthSteps $I) {
-        $refreshToken = $I->getRefreshToken([S::MINECRAFT_SERVER_SESSION]);
+        $refreshToken = $I->getRefreshToken([P::MINECRAFT_SERVER_SESSION]);
         $this->route->issueToken($this->buildParams(
             $refreshToken,
             'ely',
             'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
-            [S::MINECRAFT_SERVER_SESSION, S::OFFLINE_ACCESS, S::ACCOUNT_EMAIL]
+            [P::MINECRAFT_SERVER_SESSION, S::OFFLINE_ACCESS, 'account_email']
         ));
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();

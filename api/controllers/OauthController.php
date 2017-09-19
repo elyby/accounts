@@ -1,8 +1,8 @@
 <?php
 namespace api\controllers;
 
-use api\filters\ActiveUserRule;
 use api\models\OauthProcess;
+use common\rbac\Permissions as P;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
@@ -19,8 +19,14 @@ class OauthController extends Controller {
                 'only' => ['complete'],
                 'rules' => [
                     [
-                        'class' => ActiveUserRule::class,
+                        'allow' => true,
                         'actions' => ['complete'],
+                        'roles' => [P::COMPLETE_OAUTH_FLOW],
+                        'roleParams' => function() {
+                            return [
+                                'accountId' => Yii::$app->user->identity->getAccount()->id,
+                            ];
+                        },
                     ],
                 ],
             ],

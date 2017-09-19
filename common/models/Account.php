@@ -51,27 +51,18 @@ class Account extends ActiveRecord {
     const PASS_HASH_STRATEGY_OLD_ELY = 0;
     const PASS_HASH_STRATEGY_YII2 = 1;
 
-    public static function tableName() {
+    public static function tableName(): string {
         return '{{%accounts}}';
     }
 
-    public function behaviors() {
+    public function behaviors(): array {
         return [
             TimestampBehavior::class,
         ];
     }
 
-    /**
-     * Validates password
-     *
-     * @param string  $password password to validate
-     * @param integer $passwordHashStrategy
-     *
-     * @return bool if password provided is valid for current user
-     * @throws InvalidConfigException
-     */
-    public function validatePassword($password, $passwordHashStrategy = NULL) : bool {
-        if ($passwordHashStrategy === NULL) {
+    public function validatePassword(string $password, int $passwordHashStrategy = null): bool {
+        if ($passwordHashStrategy === null) {
             $passwordHashStrategy = $this->password_hash_strategy;
         }
 
@@ -88,17 +79,13 @@ class Account extends ActiveRecord {
         }
     }
 
-    /**
-     * @param string $password
-     * @throws InvalidConfigException
-     */
-    public function setPassword($password) {
+    public function setPassword(string $password): void {
         $this->password_hash_strategy = self::PASS_HASH_STRATEGY_YII2;
         $this->password_hash = Yii::$app->security->generatePasswordHash($password);
         $this->password_changed_at = time();
     }
 
-    public function getEmailActivations() {
+    public function getEmailActivations(): ActiveQuery {
         return $this->hasMany(EmailActivation::class, ['account_id' => 'id']);
     }
 
@@ -106,15 +93,15 @@ class Account extends ActiveRecord {
         return $this->hasMany(OauthSession::class, ['owner_id' => 'id'])->andWhere(['owner_type' => 'user']);
     }
 
-    public function getUsernameHistory() {
+    public function getUsernameHistory(): ActiveQuery {
         return $this->hasMany(UsernameHistory::class, ['account_id' => 'id']);
     }
 
-    public function getSessions() {
+    public function getSessions(): ActiveQuery {
         return $this->hasMany(AccountSession::class, ['account_id' => 'id']);
     }
 
-    public function getMinecraftAccessKeys() {
+    public function getMinecraftAccessKeys(): ActiveQuery {
         return $this->hasMany(MinecraftAccessKey::class, ['account_id' => 'id']);
     }
 
@@ -123,7 +110,7 @@ class Account extends ActiveRecord {
      *
      * @return bool
      */
-    public function hasMojangUsernameCollision() : bool {
+    public function hasMojangUsernameCollision(): bool {
         return MojangUsername::find()
             ->andWhere(['username' => $this->username])
             ->exists();
@@ -136,7 +123,7 @@ class Account extends ActiveRecord {
      *
      * @return string
      */
-    public function getProfileLink() : string {
+    public function getProfileLink(): string {
         return 'http://ely.by/u' . $this->id;
     }
 
@@ -148,15 +135,15 @@ class Account extends ActiveRecord {
      *
      * @return bool
      */
-    public function isAgreedWithActualRules() : bool {
+    public function isAgreedWithActualRules(): bool {
         return $this->rules_agreement_version === LATEST_RULES_VERSION;
     }
 
-    public function setRegistrationIp($ip) {
+    public function setRegistrationIp($ip): void {
         $this->registration_ip = $ip === null ? null : inet_pton($ip);
     }
 
-    public function getRegistrationIp() {
+    public function getRegistrationIp(): ?string {
         return $this->registration_ip === null ? null : inet_ntop($this->registration_ip);
     }
 

@@ -1,7 +1,6 @@
 <?php
 namespace tests\codeception\api\oauth;
 
-use common\models\OauthScope as S;
 use tests\codeception\api\_pages\OauthRoute;
 use tests\codeception\api\functional\_steps\OauthSteps;
 use tests\codeception\api\FunctionalTester;
@@ -72,7 +71,7 @@ class AccessTokenCest {
     }
 
     public function testIssueTokenWithRefreshToken(OauthSteps $I) {
-        $authCode = $I->getAuthCode([S::OFFLINE_ACCESS]);
+        $authCode = $I->getAuthCode(['offline_access']);
         $this->route->issueToken($this->buildParams(
             $authCode,
             'ely',

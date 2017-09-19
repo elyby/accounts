@@ -1,7 +1,6 @@
 <?php
 namespace tests\codeception\api\functional;
 
-use Codeception\Specify;
 use common\models\Account;
 use tests\codeception\api\_pages\AccountsRoute;
 use tests\codeception\api\_pages\AuthenticationRoute;
@@ -27,9 +26,9 @@ class AccountsChangePasswordCest {
 
     public function testChangePassword(FunctionalTester $I) {
         $I->wantTo('change my password');
-        $I->amAuthenticated();
+        $id = $I->amAuthenticated();
 
-        $this->route->changePassword('password_0', 'new-password', 'new-password');
+        $this->route->changePassword($id, 'password_0', 'new-password', 'new-password');
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([

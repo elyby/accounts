@@ -1,7 +1,6 @@
 <?php
 namespace tests\codeception\api\traits;
 
-use api\models\AccountIdentity;
 use api\traits\AccountFinder;
 use Codeception\Specify;
 use common\models\Account;
@@ -18,50 +17,27 @@ class AccountFinderTest extends TestCase {
     }
 
     public function testGetAccount() {
-        $this->specify('founded account for passed login data', function() {
-            $model = new AccountFinderTestTestClass();
-            /** @var Account $account */
-            $account = $this->tester->grabFixture('accounts', 'admin');
-            $model->login = $account->email;
-            $account = $model->getAccount();
-            expect($account)->isInstanceOf(Account::class);
-            expect($account->id)->equals($account->id);
-        });
+        $model = new AccountFinderTestTestClass();
+        /** @var Account $account */
+        $accountFixture = $this->tester->grabFixture('accounts', 'admin');
+        $model->login = $accountFixture->email;
+        $account = $model->getAccount();
+        $this->assertInstanceOf(Account::class, $account);
+        $this->assertSame($accountFixture->id, $account->id, 'founded account for passed login data');
 
-        $this->specify('founded account for passed login data with changed account model class name', function() {
-            /** @var AccountFinderTestTestClass $model */
-            $model = new class extends AccountFinderTestTestClass {
-                protected function getAccountClassName() {
-                    return AccountIdentity::class;
-                }
-            };
-            /** @var Account $account */
-            $account = $this->tester->grabFixture('accounts', 'admin');
-            $model->login = $account->email;
-            $account = $model->getAccount();
-            expect($account)->isInstanceOf(AccountIdentity::class);
-            expect($account->id)->equals($account->id);
-        });
-
-        $this->specify('null, if account not founded', function() {
-            $model = new AccountFinderTestTestClass();
-            $model->login = 'unexpected';
-            expect($account = $model->getAccount())->null();
-        });
+        $model = new AccountFinderTestTestClass();
+        $model->login = 'unexpected';
+        $this->assertNull($account = $model->getAccount(), 'null, if account can\'t be found');
     }
 
     public function testGetLoginAttribute() {
-        $this->specify('if login look like email value, then \'email\'', function() {
-            $model = new AccountFinderTestTestClass();
-            $model->login = 'erickskrauch@ely.by';
-            expect($model->getLoginAttribute())->equals('email');
-        });
+        $model = new AccountFinderTestTestClass();
+        $model->login = 'erickskrauch@ely.by';
+        $this->assertEquals('email', $model->getLoginAttribute(), 'if login look like email value, then \'email\'');
 
-        $this->specify('username in any other case', function() {
-            $model = new AccountFinderTestTestClass();
-            $model->login = 'erickskrauch';
-            expect($model->getLoginAttribute())->equals('username');
-        });
+        $model = new AccountFinderTestTestClass();
+        $model->login = 'erickskrauch';
+        $this->assertEquals('username', $model->getLoginAttribute(), 'username in any other case');
     }
 
 }
@@ -71,7 +47,7 @@ class AccountFinderTestTestClass {
 
     public $login;
 
-    public function getLogin() {
+    public function getLogin(): string {
         return $this->login;
     }
 

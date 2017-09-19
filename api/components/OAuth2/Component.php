@@ -2,9 +2,10 @@
 namespace api\components\OAuth2;
 
 use api\components\OAuth2\Storage;
-use api\components\OAuth2\Utils\KeyAlgorithm\UuidAlgorithm;
 use League\OAuth2\Server\AuthorizationServer;
-use League\OAuth2\Server\Util\SecureKey;
+use League\OAuth2\Server\Storage\AccessTokenInterface;
+use League\OAuth2\Server\Storage\RefreshTokenInterface;
+use League\OAuth2\Server\Storage\SessionInterface;
 use yii\base\Component as BaseComponent;
 
 /**
@@ -34,11 +35,21 @@ class Component extends BaseComponent {
             $authServer->addGrantType(new Grants\ClientCredentialsGrant());
 
             $this->_authServer = $authServer;
-
-            SecureKey::setAlgorithm(new UuidAlgorithm());
         }
 
         return $this->_authServer;
+    }
+
+    public function getAccessTokenStorage(): AccessTokenInterface {
+        return $this->getAuthServer()->getAccessTokenStorage();
+    }
+
+    public function getRefreshTokenStorage(): RefreshTokenInterface {
+        return $this->getAuthServer()->getRefreshTokenStorage();
+    }
+
+    public function getSessionStorage(): SessionInterface {
+        return $this->getAuthServer()->getSessionStorage();
     }
 
 }

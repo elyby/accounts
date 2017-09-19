@@ -1,7 +1,6 @@
 <?php
 namespace tests\codeception\api\oauth;
 
-use common\models\OauthScope as S;
 use tests\codeception\api\_pages\OauthRoute;
 use tests\codeception\api\functional\_steps\OauthSteps;
 use tests\codeception\api\FunctionalTester;
@@ -79,7 +78,7 @@ class ClientCredentialsCest {
         $this->route->issueToken($this->buildParams(
             'ely',
             'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
-            [S::ACCOUNT_BLOCK]
+            ['account_block']
         ));
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();
@@ -90,7 +89,7 @@ class ClientCredentialsCest {
         $this->route->issueToken($this->buildParams(
             'trusted-client',
             'tXBbyvMcyaOgHMOAXBpN2EC7uFoJAaL9',
-            [S::ACCOUNT_BLOCK]
+            ['account_block']
         ));
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();

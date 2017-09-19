@@ -8,13 +8,13 @@ use yii\codeception\BasePage;
  */
 class AccountsRoute extends BasePage {
 
-    public function current() {
-        $this->route = ['accounts/current'];
+    public function get(int $accountId) {
+        $this->route = "/v1/accounts/{$accountId}";
         $this->actor->sendGET($this->getUrl());
     }
 
-    public function changePassword($currentPassword = null, $newPassword = null, $newRePassword = null) {
-        $this->route = ['accounts/change-password'];
+    public function changePassword(int $accountId, $currentPassword = null, $newPassword = null, $newRePassword = null) {
+        $this->route = "/v1/accounts/{$accountId}/password";
         $this->actor->sendPOST($this->getUrl(), [
             'password' => $currentPassword,
             'newPassword' => $newPassword,
@@ -22,46 +22,56 @@ class AccountsRoute extends BasePage {
         ]);
     }
 
-    public function changeUsername($currentPassword = null, $newUsername = null) {
-        $this->route = ['accounts/change-username'];
+    public function changeUsername(int $accountId, $currentPassword = null, $newUsername = null) {
+        $this->route = "/v1/accounts/{$accountId}/username";
         $this->actor->sendPOST($this->getUrl(), [
             'password' => $currentPassword,
             'username' => $newUsername,
         ]);
     }
 
-    public function changeEmailInitialize($password = '') {
-        $this->route = ['accounts/change-email-initialize'];
+    public function changeEmailInitialize(int $accountId, $password = '') {
+        $this->route = "/v1/accounts/{$accountId}/email-verification";
         $this->actor->sendPOST($this->getUrl(), [
             'password' => $password,
         ]);
     }
 
-    public function changeEmailSubmitNewEmail($key = null, $email = null) {
-        $this->route = ['accounts/change-email-submit-new-email'];
+    public function changeEmailSubmitNewEmail(int $accountId, $key = null, $email = null) {
+        $this->route = "/v1/accounts/{$accountId}/new-email-verification";
         $this->actor->sendPOST($this->getUrl(), [
             'key' => $key,
             'email' => $email,
         ]);
     }
 
-    public function changeEmailConfirmNewEmail($key = null) {
-        $this->route = ['accounts/change-email-confirm-new-email'];
+    public function changeEmail(int $accountId, $key = null) {
+        $this->route = "/v1/accounts/{$accountId}/email";
         $this->actor->sendPOST($this->getUrl(), [
             'key' => $key,
         ]);
     }
 
-    public function changeLang($lang = null) {
-        $this->route = ['accounts/change-lang'];
+    public function changeLanguage(int $accountId, $lang = null) {
+        $this->route = "/v1/accounts/{$accountId}/language";
         $this->actor->sendPOST($this->getUrl(), [
             'lang' => $lang,
         ]);
     }
 
-    public function acceptRules() {
-        $this->route = ['accounts/accept-rules'];
+    public function acceptRules(int $accountId) {
+        $this->route = "/v1/accounts/{$accountId}/rules";
         $this->actor->sendPOST($this->getUrl());
+    }
+
+    public function ban(int $accountId) {
+        $this->route = "/v1/accounts/{$accountId}/ban";
+        $this->actor->sendPOST($this->getUrl());
+    }
+
+    public function pardon($accountId) {
+        $this->route = "/v1/accounts/{$accountId}/ban";
+        $this->actor->sendDELETE($this->getUrl());
     }
 
 }

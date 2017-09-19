@@ -17,9 +17,9 @@ class TwoFactorAuthDisableCest {
     }
 
     public function testFails(FunctionalTester $I) {
-        $I->amAuthenticated('AccountWithEnabledOtp');
+        $accountId = $I->amAuthenticated('AccountWithEnabledOtp');
 
-        $this->route->disable();
+        $this->route->disable($accountId);
         $I->canSeeResponseContainsJson([
             'success' => false,
             'errors' => [
@@ -28,7 +28,7 @@ class TwoFactorAuthDisableCest {
             ],
         ]);
 
-        $this->route->disable('123456', 'invalid_password');
+        $this->route->disable($accountId, '123456', 'invalid_password');
         $I->canSeeResponseContainsJson([
             'success' => false,
             'errors' => [
@@ -37,8 +37,8 @@ class TwoFactorAuthDisableCest {
             ],
         ]);
 
-        $I->amAuthenticated('AccountWithOtpSecret');
-        $this->route->disable('123456', 'invalid_password');
+        $accountId = $I->amAuthenticated('AccountWithOtpSecret');
+        $this->route->disable($accountId, '123456', 'invalid_password');
         $I->canSeeResponseContainsJson([
             'success' => false,
             'errors' => [
@@ -48,9 +48,9 @@ class TwoFactorAuthDisableCest {
     }
 
     public function testSuccessEnable(FunctionalTester $I) {
-        $I->amAuthenticated('AccountWithEnabledOtp');
+        $accountId = $I->amAuthenticated('AccountWithEnabledOtp');
         $totp = TOTP::create('BBBB');
-        $this->route->disable($totp->now(), 'password_0');
+        $this->route->disable($accountId, $totp->now(), 'password_0');
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([

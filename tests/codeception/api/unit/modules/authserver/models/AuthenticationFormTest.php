@@ -1,7 +1,6 @@
 <?php
 namespace codeception\api\unit\modules\authserver\models;
 
-use api\models\AccountIdentity;
 use api\models\authentication\LoginForm;
 use api\modules\authserver\models\AuthenticateData;
 use api\modules\authserver\models\AuthenticationForm;
@@ -117,7 +116,7 @@ class AuthenticationFormTest extends TestCase {
             ->setMethods(['getAccount'])
             ->getMock();
 
-        $account = new AccountIdentity();
+        $account = new Account();
         $account->username = 'dummy';
         $account->email = 'dummy@ely.by';
         $account->status = $status;

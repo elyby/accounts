@@ -19,7 +19,7 @@ class AccountsChangeEmailConfirmNewEmailCest {
         $I->wantTo('change my email and get changed value');
         $I->amAuthenticated('CrafterGameplays');
 
-        $this->route->changeEmailConfirmNewEmail('H28HBDCHHAG2HGHGHS');
+        $this->route->changeEmail(8, 'H28HBDCHHAG2HGHGHS');
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([

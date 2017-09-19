@@ -51,12 +51,12 @@ class RefreshTokenGrant extends AbstractGrant {
      * Так что оборачиваем функцию разбора скоупов, заменяя пробелы на запятые.
      *
      * @param string       $scopeParam
-     * @param ClientEntity $client
+     * @param BaseClientEntity $client
      * @param string $redirectUri
      *
      * @return \League\OAuth2\Server\Entity\ScopeEntity[]
      */
-    public function validateScopes($scopeParam = '', ClientEntity $client, $redirectUri = null) {
+    public function validateScopes($scopeParam = '', BaseClientEntity $client, $redirectUri = null) {
         $scopes = str_replace(' ', $this->server->getScopeDelimiter(), $scopeParam);
         return parent::validateScopes($scopes, $client, $redirectUri);
     }
@@ -143,7 +143,7 @@ class RefreshTokenGrant extends AbstractGrant {
 
         // Generate a new access token and assign it the correct sessions
         $newAccessToken = new AccessTokenEntity($this->server);
-        $newAccessToken->setId(SecureKey::generate()); // TODO: generate based on permissions
+        $newAccessToken->setId(SecureKey::generate());
         $newAccessToken->setExpireTime($this->getAccessTokenTTL() + time());
         $newAccessToken->setSession($session);
 

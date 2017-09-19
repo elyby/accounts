@@ -17,9 +17,9 @@ class AccountsChangeEmailInitializeCest {
 
     public function testChangeEmailInitialize(FunctionalTester $I) {
         $I->wantTo('send current email confirmation');
-        $I->amAuthenticated();
+        $id = $I->amAuthenticated();
 
-        $this->route->changeEmailInitialize('password_0');
+        $this->route->changeEmailInitialize($id, 'password_0');
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -29,9 +29,9 @@ class AccountsChangeEmailInitializeCest {
 
     public function testChangeEmailInitializeFrequencyError(FunctionalTester $I) {
         $I->wantTo('see change email request frequency error');
-        $I->amAuthenticated('ILLIMUNATI');
+        $id = $I->amAuthenticated('ILLIMUNATI');
 
-        $this->route->changeEmailInitialize('password_0');
+        $this->route->changeEmailInitialize($id, 'password_0');
         $I->canSeeResponseContainsJson([
             'success' => false,
             'errors' => [
