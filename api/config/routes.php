@@ -13,6 +13,18 @@ return [
     'DELETE /v1/accounts/<id:\d+>/ban' => 'accounts/default/pardon',
     '/v1/accounts/<id:\d+>/<action>' => 'accounts/default/<action>',
 
+    'GET /accounts/current' => 'accounts/default/get',
+    'POST /accounts/change-username' => 'accounts/default/username',
+    'POST /accounts/change-password' => 'accounts/default/password',
+    'POST /accounts/change-email/initialize' => 'accounts/default/email-verification',
+    'POST /accounts/change-email/submit-new-email' => 'accounts/default/new-email-verification',
+    'POST /accounts/change-email/confirm-new-email' => 'accounts/default/email',
+    'POST /accounts/accept-rules' => 'accounts/default/rules',
+    'GET /two-factor-auth' => 'accounts/default/get-two-factor-auth-credentials',
+    'POST /two-factor-auth' => 'accounts/default/enable-two-factor-auth',
+    'DELETE /two-factor-auth' => 'accounts/default/disable-two-factor-auth',
+    'POST /accounts/change-lang' => 'accounts/default/language',
+
     '/account/v1/info' => 'identity-info/index',
 
     '/minecraft/session/join' => 'session/session/join',

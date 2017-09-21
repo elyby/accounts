@@ -16,12 +16,23 @@ class DefaultController extends Controller {
 
     public function behaviors(): array {
         $paramsCallback = function() {
+            $id = Yii::$app->request->get('id');
+            if ($id === null) {
+                $identity = Yii::$app->user->getIdentity();
+                if ($identity !== null) {
+                    $account = $identity->getAccount();
+                    if ($account !== null) {
+                        $id = $account->id;
+                    }
+                }
+            }
+
             return [
-                'accountId' => Yii::$app->request->get('id'),
+                'accountId' => $id,
             ];
         };
 
-        return ArrayHelper::merge(Controller::behaviors(), [
+        return ArrayHelper::merge(parent::behaviors(), [
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
@@ -119,6 +130,18 @@ class DefaultController extends Controller {
 
     public function actionGetTwoFactorAuthCredentials(int $id): array {
         return (new TwoFactorAuthInfo($this->findAccount($id)))->getCredentials();
+    }
+
+    public function bindActionParams($action, $params) {
+        if (!isset($params['id'])) {
+            /** @noinspection NullPointerExceptionInspection */
+            $account = Yii::$app->user->getIdentity()->getAccount();
+            if ($account !== null) {
+                $params['id'] = $account->id;
+            }
+        }
+
+        return parent::bindActionParams($action, $params);
     }
 
     private function findAccount(int $id): Account {
