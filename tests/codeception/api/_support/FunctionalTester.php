@@ -1,8 +1,8 @@
 <?php
 namespace tests\codeception\api;
 
-use api\models\AccountIdentity;
 use Codeception\Actor;
+use common\models\Account;
 use InvalidArgumentException;
 use Yii;
 
@@ -25,14 +25,16 @@ class FunctionalTester extends Actor {
     use _generated\FunctionalTesterActions;
 
     public function amAuthenticated(string $asUsername = 'admin') {
-        /** @var AccountIdentity $account */
-        $account = AccountIdentity::findOne(['username' => $asUsername]);
+        /** @var Account $account */
+        $account = Account::findOne(['username' => $asUsername]);
         if ($account === null) {
             throw new InvalidArgumentException("Cannot find account for username \"$asUsername\"");
         }
 
-        $result = Yii::$app->user->login($account);
+        $result = Yii::$app->user->createJwtAuthenticationToken($account, false);
         $this->amBearerAuthenticated($result->getJwt());
+
+        return $account->id;
     }
 
     public function notLoggedIn() {

@@ -32,7 +32,7 @@ class RefreshTokenForm extends ApiForm {
     }
 
     /**
-     * @return \api\components\User\RenewResult|bool
+     * @return \api\components\User\AuthenticationResult|bool
      */
     public function renew() {
         if (!$this->validate()) {
@@ -42,7 +42,7 @@ class RefreshTokenForm extends ApiForm {
         /** @var \api\components\User\Component $component */
         $component = Yii::$app->user;
 
-        return $component->renew($this->getSession());
+        return $component->renewJwtAuthenticationToken($this->getSession());
     }
 
     /**

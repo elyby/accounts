@@ -1,9 +1,8 @@
 <?php
 namespace api\models\authentication;
 
-use api\models\AccountIdentity;
 use api\models\base\ApiForm;
-use api\models\profile\ChangeUsernameForm;
+use api\modules\accounts\models\ChangeUsernameForm;
 use api\validators\EmailActivationKeyValidator;
 use common\models\Account;
 use common\models\EmailActivation;
@@ -14,14 +13,14 @@ class ConfirmEmailForm extends ApiForm {
 
     public $key;
 
-    public function rules() {
+    public function rules(): array {
         return [
             ['key', EmailActivationKeyValidator::class, 'type' => EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION],
         ];
     }
 
     /**
-     * @return \api\components\User\LoginResult|bool
+     * @return \api\components\User\AuthenticationResult|bool
      * @throws ErrorException
      */
     public function confirm() {
@@ -43,12 +42,12 @@ class ConfirmEmailForm extends ApiForm {
             throw new ErrorException('Unable activate user account.');
         }
 
-        $changeUsernameForm = new ChangeUsernameForm();
+        $changeUsernameForm = new ChangeUsernameForm($account);
         $changeUsernameForm->createEventTask($account->id, $account->username, null);
 
         $transaction->commit();
 
-        return Yii::$app->user->login(new AccountIdentity($account->attributes), true);
+        return Yii::$app->user->createJwtAuthenticationToken($account, true);
     }
 
 }

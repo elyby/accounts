@@ -2,7 +2,7 @@
 namespace tests\codeception\api\unit\modules\internal\models;
 
 use api\modules\internal\helpers\Error as E;
-use api\modules\internal\models\PardonForm;
+use api\modules\accounts\models\PardonAccountForm;
 use common\models\Account;
 use tests\codeception\api\unit\TestCase;
 
@@ -11,13 +11,13 @@ class PardonFormTest extends TestCase {
     public function testValidateAccountBanned() {
         $account = new Account();
         $account->status = Account::STATUS_BANNED;
-        $form = new PardonForm($account);
+        $form = new PardonAccountForm($account);
         $form->validateAccountBanned();
         $this->assertEmpty($form->getErrors('account'));
 
         $account = new Account();
         $account->status = Account::STATUS_ACTIVE;
-        $form = new PardonForm($account);
+        $form = new PardonAccountForm($account);
         $form->validateAccountBanned();
         $this->assertEquals([E::ACCOUNT_NOT_BANNED], $form->getErrors('account'));
     }
@@ -33,8 +33,8 @@ class PardonFormTest extends TestCase {
             ->willReturn(true);
 
         $account->status = Account::STATUS_BANNED;
-        $model = new PardonForm($account);
-        $this->assertTrue($model->pardon());
+        $model = new PardonAccountForm($account);
+        $this->assertTrue($model->performAction());
         $this->assertEquals(Account::STATUS_ACTIVE, $account->status);
         $this->tester->canSeeAmqpMessageIsCreated('events');
     }
@@ -43,7 +43,7 @@ class PardonFormTest extends TestCase {
         $account = new Account();
         $account->id = 3;
 
-        $model = new PardonForm($account);
+        $model = new PardonAccountForm($account);
         $model->createTask();
         $message = json_decode($this->tester->grabLastSentAmqpMessage('events')->body, true);
         $this->assertSame(3, $message['accountId']);

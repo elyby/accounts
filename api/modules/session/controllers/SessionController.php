@@ -1,7 +1,7 @@
 <?php
 namespace api\modules\session\controllers;
 
-use api\controllers\ApiController;
+use api\controllers\Controller;
 use api\modules\session\exceptions\ForbiddenOperationException;
 use api\modules\session\exceptions\IllegalArgumentException;
 use api\modules\session\exceptions\SessionServerException;
@@ -17,9 +17,9 @@ use Ramsey\Uuid\Uuid;
 use Yii;
 use yii\web\Response;
 
-class SessionController extends ApiController {
+class SessionController extends Controller {
 
-    public function behaviors() {
+    public function behaviors(): array {
         $behaviors = parent::behaviors();
         unset($behaviors['authenticator']);
         $behaviors['rateLimiting'] = [

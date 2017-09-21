@@ -2,7 +2,7 @@
 namespace tests\codeception\api\models\authentication;
 
 use api\components\User\Component;
-use api\models\AccountIdentity;
+use api\components\User\Identity;
 use api\models\authentication\LogoutForm;
 use Codeception\Specify;
 use common\models\AccountSession;
@@ -59,7 +59,7 @@ class LogoutFormTest extends TestCase {
 
     private function getComponentArgs() {
         return [
-            'identityClass' => AccountIdentity::class,
+            'identityClass' => Identity::class,
             'enableSession' => false,
             'loginUrl' => null,
             'secret' => 'secret',

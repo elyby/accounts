@@ -17,24 +17,16 @@ class SessionModel {
         $this->serverId = $serverId;
     }
 
-    /**
-     * @param $username
-     * @param $serverId
-     *
-     * @return static|null
-     */
-    public static function find($username, $serverId) {
+    public static function find(string $username, string $serverId): ?self {
         $key = static::buildKey($username, $serverId);
         $result = Yii::$app->redis->executeCommand('GET', [$key]);
         if (!$result) {
-            /** @noinspection PhpIncompatibleReturnTypeInspection шторм что-то сума сходит, когда видит static */
             return null;
         }
 
         $data = json_decode($result, true);
-        $model = new static($data['username'], $data['serverId']);
 
-        return $model;
+        return new static($data['username'], $data['serverId']);
     }
 
     public function save() {
@@ -51,15 +43,11 @@ class SessionModel {
         return Yii::$app->redis->executeCommand('DEL', [static::buildKey($this->username, $this->serverId)]);
     }
 
-    /**
-     * @return Account|null
-     * TODO: после перехода на PHP 7.1 установить тип как ?Account
-     */
-    public function getAccount() {
+    public function getAccount(): ?Account {
         return Account::findOne(['username' => $this->username]);
     }
 
-    protected static function buildKey($username, $serverId) : string {
+    protected static function buildKey($username, $serverId): string {
         return md5('minecraft:join-server:' . mb_strtolower($username) . ':' . $serverId);
     }
 

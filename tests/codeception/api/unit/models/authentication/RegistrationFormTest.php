@@ -8,12 +8,13 @@ use common\models\Account;
 use common\models\EmailActivation;
 use common\models\UsernameHistory;
 use GuzzleHttp\ClientInterface;
-use ReflectionClass;
 use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\EmailActivationFixture;
 use tests\codeception\common\fixtures\UsernameHistoryFixture;
+use tests\codeception\common\helpers\Mock;
 use Yii;
+use yii\validators\EmailValidator;
 use yii\web\Request;
 use const common\LATEST_RULES_VERSION;
 
@@ -59,6 +60,7 @@ class RegistrationFormTest extends TestCase {
     }
 
     public function testSignup() {
+        Mock::func(EmailValidator::class, 'checkdnsrr')->andReturnTrue();
         $model = new RegistrationForm([
             'username' => 'some_username',
             'email' => 'some_email@example.com',
@@ -75,6 +77,7 @@ class RegistrationFormTest extends TestCase {
     }
 
     public function testSignupWithDefaultLanguage() {
+        Mock::func(EmailValidator::class, 'checkdnsrr')->andReturnTrue();
         $model = new RegistrationForm([
             'username' => 'some_username',
             'email' => 'some_email@example.com',

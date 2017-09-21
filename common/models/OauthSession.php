@@ -3,14 +3,15 @@ namespace common\models;
 
 use common\components\Redis\Set;
 use Yii;
-use yii\base\ErrorException;
+use yii\base\NotSupportedException;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
  * Поля:
  * @property integer     $id
- * @property string      $owner_type
- * @property string      $owner_id
+ * @property string      $owner_type содержит одну из констант OauthOwnerType
+ * @property string|null $owner_id
  * @property string      $client_id
  * @property string      $client_redirect_uri
  *
@@ -21,42 +22,50 @@ use yii\db\ActiveRecord;
  */
 class OauthSession extends ActiveRecord {
 
-    public static function tableName() {
+    public static function tableName(): string {
         return '{{%oauth_sessions}}';
     }
 
-    public function getAccessTokens() {
-        throw new ErrorException('This method is possible, but not implemented');
-    }
-
-    public function getClient() {
+    public function getClient(): ActiveQuery {
         return $this->hasOne(OauthClient::class, ['id' => 'client_id']);
     }
 
-    public function getAccount() {
+    public function getAccount(): ActiveQuery {
         return $this->hasOne(Account::class, ['id' => 'owner_id']);
     }
 
-    public function getScopes() {
+    public function getScopes(): Set {
         return new Set(static::getDb()->getSchema()->getRawTableName(static::tableName()), $this->id, 'scopes');
     }
 
-    public function beforeDelete() {
+    public function getAccessTokens() {
+        throw new NotSupportedException('This method is possible, but not implemented');
+    }
+
+    public function beforeDelete(): bool {
         if (!$result = parent::beforeDelete()) {
             return $result;
         }
 
-        $this->getScopes()->delete();
+        $this->clearScopes();
+        $this->removeRefreshToken();
+
+        return true;
+    }
+
+    public function removeRefreshToken(): void {
         /** @var \api\components\OAuth2\Storage\RefreshTokenStorage $refreshTokensStorage */
-        $refreshTokensStorage = Yii::$app->oauth->getAuthServer()->getRefreshTokenStorage();
+        $refreshTokensStorage = Yii::$app->oauth->getRefreshTokenStorage();
         $refreshTokensSet = $refreshTokensStorage->sessionHash($this->id);
         foreach ($refreshTokensSet->members() as $refreshTokenId) {
             $refreshTokensStorage->delete($refreshTokensStorage->get($refreshTokenId));
         }
 
         $refreshTokensSet->delete();
+    }
 
-        return true;
+    public function clearScopes(): void {
+        $this->getScopes()->delete();
     }
 
 }

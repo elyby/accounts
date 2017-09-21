@@ -3,8 +3,10 @@ namespace codeception\common\unit\validators;
 
 use common\validators\EmailValidator;
 use tests\codeception\common\fixtures\AccountFixture;
+use tests\codeception\common\helpers\Mock;
 use tests\codeception\common\unit\TestCase;
 use yii\base\Model;
+use yii\validators\EmailValidator as YiiEmailValidator;
 
 class EmailValidatorTest extends TestCase {
 
@@ -29,6 +31,7 @@ class EmailValidatorTest extends TestCase {
     }
 
     public function testValidateAttributeLength() {
+        Mock::func(YiiEmailValidator::class, 'checkdnsrr')->andReturnTrue();
         $model = $this->createModel(
             'emailemailemailemailemailemailemailemailemailemailemailemailemailemailemailemailemail' .
             'emailemailemailemailemailemailemailemailemailemailemailemailemailemailemailemailemail' .
@@ -44,6 +47,8 @@ class EmailValidatorTest extends TestCase {
     }
 
     public function testValidateAttributeEmail() {
+        Mock::func(YiiEmailValidator::class, 'checkdnsrr')->times(3)->andReturnValues([false, false, true]);
+
         $model = $this->createModel('non-email');
         $this->validator->validateAttribute($model, 'field');
         $this->assertEquals(['error.email_invalid'], $model->getErrors('field'));
@@ -58,6 +63,8 @@ class EmailValidatorTest extends TestCase {
     }
 
     public function testValidateAttributeTempmail() {
+        Mock::func(YiiEmailValidator::class, 'checkdnsrr')->times(2)->andReturnTrue();
+
         $model = $this->createModel('ibrpycwyjdnt@dropmail.me');
         $this->validator->validateAttribute($model, 'field');
         $this->assertEquals(['error.email_is_tempmail'], $model->getErrors('field'));
@@ -68,6 +75,8 @@ class EmailValidatorTest extends TestCase {
     }
 
     public function testValidateAttributeUnique() {
+        Mock::func(YiiEmailValidator::class, 'checkdnsrr')->times(3)->andReturnTrue();
+
         $this->tester->haveFixtures([
             'accounts' => AccountFixture::class,
         ]);

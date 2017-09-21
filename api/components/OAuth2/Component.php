@@ -1,71 +1,55 @@
 <?php
 namespace api\components\OAuth2;
 
-use api\components\OAuth2\Storage\AuthCodeStorage;
-use api\components\OAuth2\Storage\RefreshTokenStorage;
-use api\components\OAuth2\Storage\AccessTokenStorage;
-use api\components\OAuth2\Storage\ClientStorage;
-use api\components\OAuth2\Storage\ScopeStorage;
-use api\components\OAuth2\Storage\SessionStorage;
-use api\components\OAuth2\Utils\KeyAlgorithm\UuidAlgorithm;
+use api\components\OAuth2\Storage;
 use League\OAuth2\Server\AuthorizationServer;
-use League\OAuth2\Server\Grant;
-use League\OAuth2\Server\Util\SecureKey;
-use yii\base\InvalidConfigException;
+use League\OAuth2\Server\Storage\AccessTokenInterface;
+use League\OAuth2\Server\Storage\RefreshTokenInterface;
+use League\OAuth2\Server\Storage\SessionInterface;
+use yii\base\Component as BaseComponent;
 
 /**
  * @property AuthorizationServer $authServer
  */
-class Component extends \yii\base\Component {
+class Component extends BaseComponent {
 
     /**
      * @var AuthorizationServer
      */
     private $_authServer;
 
-    /**
-     * @var string[]
-     */
-    public $grantTypes = [];
-
-    /**
-     * @var array grant type => class
-     */
-    public $grantMap = [
-        'authorization_code' => Grant\AuthCodeGrant::class,
-        'client_credentials' => Grant\ClientCredentialsGrant::class,
-        'password'           => Grant\PasswordGrant::class,
-        'refresh_token'      => Grant\RefreshTokenGrant::class,
-    ];
-
-    public function getAuthServer() {
+    public function getAuthServer(): AuthorizationServer {
         if ($this->_authServer === null) {
             $authServer = new AuthorizationServer();
-            $authServer->setAccessTokenStorage(new AccessTokenStorage());
-            $authServer->setClientStorage(new ClientStorage());
-            $authServer->setScopeStorage(new ScopeStorage());
-            $authServer->setSessionStorage(new SessionStorage());
-            $authServer->setAuthCodeStorage(new AuthCodeStorage());
-            $authServer->setRefreshTokenStorage(new RefreshTokenStorage());
+            $authServer->setAccessTokenStorage(new Storage\AccessTokenStorage());
+            $authServer->setClientStorage(new Storage\ClientStorage());
+            $authServer->setScopeStorage(new Storage\ScopeStorage());
+            $authServer->setSessionStorage(new Storage\SessionStorage());
+            $authServer->setAuthCodeStorage(new Storage\AuthCodeStorage());
+            $authServer->setRefreshTokenStorage(new Storage\RefreshTokenStorage());
             $authServer->setScopeDelimiter(',');
             $authServer->setAccessTokenTTL(86400); // 1d
 
+            $authServer->addGrantType(new Grants\AuthCodeGrant());
+            $authServer->addGrantType(new Grants\RefreshTokenGrant());
+            $authServer->addGrantType(new Grants\ClientCredentialsGrant());
+
             $this->_authServer = $authServer;
-
-            foreach ($this->grantTypes as $grantType) {
-                if (!isset($this->grantMap[$grantType])) {
-                    throw new InvalidConfigException('Invalid grant type');
-                }
-
-                /** @var Grant\GrantTypeInterface $grant */
-                $grant = new $this->grantMap[$grantType]();
-                $this->_authServer->addGrantType($grant);
-            }
-
-            SecureKey::setAlgorithm(new UuidAlgorithm());
         }
 
         return $this->_authServer;
+    }
+
+    public function getAccessTokenStorage(): AccessTokenInterface {
+        return $this->getAuthServer()->getAccessTokenStorage();
+    }
+
+    public function getRefreshTokenStorage(): RefreshTokenInterface {
+        return $this->getAuthServer()->getRefreshTokenStorage();
+    }
+
+    public function getSessionStorage(): SessionInterface {
+        return $this->getAuthServer()->getSessionStorage();
     }
 
 }

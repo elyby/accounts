@@ -1,7 +1,6 @@
 <?php
 namespace tests\codeception\api\functional\internal;
 
-use common\models\OauthScope as S;
 use tests\codeception\api\_pages\InternalRoute;
 use tests\codeception\api\functional\_steps\OauthSteps;
 use tests\codeception\api\FunctionalTester;
@@ -18,7 +17,7 @@ class InfoCest {
     }
 
     public function testGetInfoById(OauthSteps $I) {
-        $accessToken = $I->getAccessTokenByClientCredentialsGrant([S::INTERNAL_ACCOUNT_INFO]);
+        $accessToken = $I->getAccessTokenByClientCredentialsGrant(['internal_account_info']);
         $I->amBearerAuthenticated($accessToken);
 
         $this->route->info('id', 1);
@@ -26,7 +25,7 @@ class InfoCest {
     }
 
     public function testGetInfoByUuid(OauthSteps $I) {
-        $accessToken = $I->getAccessTokenByClientCredentialsGrant([S::INTERNAL_ACCOUNT_INFO]);
+        $accessToken = $I->getAccessTokenByClientCredentialsGrant(['internal_account_info']);
         $I->amBearerAuthenticated($accessToken);
 
         $this->route->info('uuid', 'df936908-b2e1-544d-96f8-2977ec213022');
@@ -34,7 +33,7 @@ class InfoCest {
     }
 
     public function testGetInfoByUsername(OauthSteps $I) {
-        $accessToken = $I->getAccessTokenByClientCredentialsGrant([S::INTERNAL_ACCOUNT_INFO]);
+        $accessToken = $I->getAccessTokenByClientCredentialsGrant(['internal_account_info']);
         $I->amBearerAuthenticated($accessToken);
 
         $this->route->info('username', 'admin');
@@ -42,7 +41,7 @@ class InfoCest {
     }
 
     public function testInvalidParams(OauthSteps $I) {
-        $accessToken = $I->getAccessTokenByClientCredentialsGrant([S::INTERNAL_ACCOUNT_INFO]);
+        $accessToken = $I->getAccessTokenByClientCredentialsGrant(['internal_account_info']);
         $I->amBearerAuthenticated($accessToken);
 
         $this->route->info('', '');
@@ -50,7 +49,7 @@ class InfoCest {
     }
 
     public function testAccountNotFound(OauthSteps $I) {
-        $accessToken = $I->getAccessTokenByClientCredentialsGrant([S::INTERNAL_ACCOUNT_INFO]);
+        $accessToken = $I->getAccessTokenByClientCredentialsGrant(['internal_account_info']);
         $I->amBearerAuthenticated($accessToken);
 
         $this->route->info('username', 'this-user-not-exists');

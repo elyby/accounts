@@ -14,7 +14,7 @@ use yii\helpers\ArrayHelper;
 
 class AuthenticationController extends Controller {
 
-    public function behaviors() {
+    public function behaviors(): array {
         return ArrayHelper::merge(parent::behaviors(), [
             'authenticator' => [
                 'only' => ['logout'],
@@ -139,9 +139,12 @@ class AuthenticationController extends Controller {
             ];
         }
 
+        $response = $result->getAsResponse();
+        unset($response['refresh_token']);
+
         return array_merge([
             'success' => true,
-        ], $result->getAsResponse());
+        ], $response);
     }
 
 }

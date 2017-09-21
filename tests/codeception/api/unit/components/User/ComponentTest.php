@@ -2,14 +2,12 @@
 namespace codeception\api\unit\components\User;
 
 use api\components\User\Component;
-use api\components\User\LoginResult;
-use api\components\User\RenewResult;
-use api\models\AccountIdentity;
-use Codeception\Specify;
+use api\components\User\Identity;
+use api\components\User\AuthenticationResult;
+use common\models\Account;
 use common\models\AccountSession;
-use Emarref\Jwt\Algorithm\AlgorithmInterface;
-use Emarref\Jwt\Claim\ClaimInterface;
-use Emarref\Jwt\Claim\Expiration;
+use Emarref\Jwt\Claim;
+use Emarref\Jwt\Jwt;
 use Emarref\Jwt\Token;
 use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\_support\ProtectedCaller;
@@ -20,7 +18,6 @@ use Yii;
 use yii\web\Request;
 
 class ComponentTest extends TestCase {
-    use Specify;
     use ProtectedCaller;
 
     /**
@@ -30,7 +27,7 @@ class ComponentTest extends TestCase {
 
     public function _before() {
         parent::_before();
-        $this->component = new Component($this->getComponentArguments());
+        $this->component = new Component($this->getComponentConfig());
     }
 
     public function _fixtures() {
@@ -41,183 +38,140 @@ class ComponentTest extends TestCase {
         ];
     }
 
-    public function testLogin() {
+    public function testCreateJwtAuthenticationToken() {
         $this->mockRequest();
-        $this->specify('success get LoginResult object without session value', function() {
-            $account = new AccountIdentity(['id' => 1]);
-            $result = $this->component->login($account, false);
-            expect($result)->isInstanceOf(LoginResult::class);
-            expect($result->getSession())->null();
-            expect($result->getIdentity())->equals($account);
-            $jwt = $result->getJwt();
-            expect(is_string($jwt))->true();
-            $token = $this->component->parseToken($jwt);
-            $claim = $token->getPayload()->findClaimByName(Expiration::NAME);
-            // Токен выписывается на 7 дней, но мы проверим хотя бы на 2 суток
-            expect($claim->getValue())->greaterThan(time() + 60 * 60 * 24 * 2);
-        });
 
-        $this->specify('success get LoginResult object with session value if rememberMe is true', function() {
-            /** @var AccountIdentity $account */
-            $account = AccountIdentity::findOne($this->tester->grabFixture('accounts', 'admin')['id']);
-            $result = $this->component->login($account, true);
-            expect($result)->isInstanceOf(LoginResult::class);
-            expect($result->getSession())->isInstanceOf(AccountSession::class);
-            expect($result->getIdentity())->equals($account);
-            expect($result->getSession()->refresh())->true();
-            $jwt = $result->getJwt();
-            expect(is_string($jwt))->true();
-            $token = $this->component->parseToken($jwt);
-            $claim = $token->getPayload()->findClaimByName(Expiration::NAME);
-            // Токен выписывается на 1 час, т.к. в дальнейшем он будет рефрешиться
-            expect($claim->getValue())->lessOrEquals(time() + 3600);
-        });
+        $account = new Account(['id' => 1]);
+        $result = $this->component->createJwtAuthenticationToken($account, false);
+        $this->assertInstanceOf(AuthenticationResult::class, $result);
+        $this->assertNull($result->getSession());
+        $this->assertEquals($account, $result->getAccount());
+        $payloads = (new Jwt())->deserialize($result->getJwt())->getPayload();
+        /** @noinspection NullPointerExceptionInspection */
+        $this->assertEquals(time(), $payloads->findClaimByName(Claim\IssuedAt::NAME)->getValue(), '', 3);
+        /** @noinspection SummerTimeUnsafeTimeManipulationInspection */
+        /** @noinspection NullPointerExceptionInspection */
+        $this->assertEquals(time() + 60 * 60 * 24 * 7, $payloads->findClaimByName('exp')->getValue(), '', 3);
+        /** @noinspection NullPointerExceptionInspection */
+        $this->assertEquals('ely|1', $payloads->findClaimByName('sub')->getValue());
+        /** @noinspection NullPointerExceptionInspection */
+        $this->assertEquals('accounts_web_user', $payloads->findClaimByName('ely-scopes')->getValue());
+        $this->assertNull($payloads->findClaimByName('jti'));
+
+        /** @var Account $account */
+        $account = $this->tester->grabFixture('accounts', 'admin');
+        $result = $this->component->createJwtAuthenticationToken($account, true);
+        $this->assertInstanceOf(AuthenticationResult::class, $result);
+        $this->assertInstanceOf(AccountSession::class, $result->getSession());
+        $this->assertEquals($account, $result->getAccount());
+        /** @noinspection NullPointerExceptionInspection */
+        $this->assertTrue($result->getSession()->refresh());
+        $payloads = (new Jwt())->deserialize($result->getJwt())->getPayload();
+        /** @noinspection NullPointerExceptionInspection */
+        $this->assertEquals(time(), $payloads->findClaimByName(Claim\IssuedAt::NAME)->getValue(), '', 3);
+        /** @noinspection NullPointerExceptionInspection */
+        $this->assertEquals(time() + 3600, $payloads->findClaimByName('exp')->getValue(), '', 3);
+        /** @noinspection NullPointerExceptionInspection */
+        $this->assertEquals('ely|1', $payloads->findClaimByName('sub')->getValue());
+        /** @noinspection NullPointerExceptionInspection */
+        $this->assertEquals('accounts_web_user', $payloads->findClaimByName('ely-scopes')->getValue());
+        /** @noinspection NullPointerExceptionInspection */
+        $this->assertEquals($result->getSession()->id, $payloads->findClaimByName('jti')->getValue());
     }
 
-    public function testRenew() {
-        $this->specify('success get RenewResult object', function() {
-            $userIP = '192.168.0.1';
-            $this->mockRequest($userIP);
-            /** @var AccountSession $session */
-            $session = AccountSession::findOne($this->tester->grabFixture('sessions', 'admin')['id']);
-            $callTime = time();
-            $result = $this->component->renew($session);
-            expect($result)->isInstanceOf(RenewResult::class);
-            expect(is_string($result->getJwt()))->true();
-            expect($result->getIdentity()->getId())->equals($session->account_id);
-            $session->refresh();
-            expect($session->last_refreshed_at)->greaterOrEquals($callTime);
-            expect($session->getReadableIp())->equals($userIP);
-        });
+    public function testRenewJwtAuthenticationToken() {
+        $userIP = '192.168.0.1';
+        $this->mockRequest($userIP);
+        /** @var AccountSession $session */
+        $session = $this->tester->grabFixture('sessions', 'admin');
+        $result = $this->component->renewJwtAuthenticationToken($session);
+        $this->assertInstanceOf(AuthenticationResult::class, $result);
+        $this->assertEquals($session, $result->getSession());
+        $this->assertEquals($session->account_id, $result->getAccount()->id);
+        $session->refresh(); // reload data from db
+        $this->assertEquals(time(), $session->last_refreshed_at, '', 3);
+        $this->assertEquals($userIP, $session->getReadableIp());
+        $payloads = (new Jwt())->deserialize($result->getJwt())->getPayload();
+        /** @noinspection NullPointerExceptionInspection */
+        $this->assertEquals(time(), $payloads->findClaimByName(Claim\IssuedAt::NAME)->getValue(), '', 3);
+        /** @noinspection NullPointerExceptionInspection */
+        $this->assertEquals(time() + 3600, $payloads->findClaimByName('exp')->getValue(), '', 3);
+        /** @noinspection NullPointerExceptionInspection */
+        $this->assertEquals('ely|1', $payloads->findClaimByName('sub')->getValue());
+        /** @noinspection NullPointerExceptionInspection */
+        $this->assertEquals('accounts_web_user', $payloads->findClaimByName('ely-scopes')->getValue());
+        /** @noinspection NullPointerExceptionInspection */
+        $this->assertEquals($session->id, $payloads->findClaimByName('jti')->getValue(), 'session has not changed');
     }
 
     public function testParseToken() {
         $this->mockRequest();
-        $this->specify('success get RenewResult object', function() {
-            $identity = new AccountIdentity(['id' => 1]);
-            $token = $this->callProtected($this->component, 'createToken', $identity);
-            $jwt = $this->callProtected($this->component, 'serializeToken', $token);
-
-            expect($this->component->parseToken($jwt))->isInstanceOf(Token::class);
-        });
+        $token = $this->callProtected($this->component, 'createToken', new Account(['id' => 1]));
+        $jwt = $this->callProtected($this->component, 'serializeToken', $token);
+        $this->assertInstanceOf(Token::class, $this->component->parseToken($jwt), 'success get RenewResult object');
     }
 
     public function testGetActiveSession() {
-        $this->specify('get used account session', function() {
-            /** @var AccountIdentity $identity */
-            $identity = AccountIdentity::findOne($this->tester->grabFixture('accounts', 'admin')['id']);
-            $result = $this->component->login($identity, true);
-            $this->component->logout();
+        $account = $this->tester->grabFixture('accounts', 'admin');
+        $result = $this->component->createJwtAuthenticationToken($account, true);
+        $this->component->logout();
 
-            /** @var Component|\PHPUnit_Framework_MockObject_MockObject $component */
-            $component = $this->getMockBuilder(Component::class)
-                ->setMethods(['getIsGuest'])
-                ->setConstructorArgs([$this->getComponentArguments()])
-                ->getMock();
+        /** @var Component|\PHPUnit_Framework_MockObject_MockObject $component */
+        $component = $this->getMockBuilder(Component::class)
+            ->setMethods(['getIsGuest'])
+            ->setConstructorArgs([$this->getComponentConfig()])
+            ->getMock();
 
-            $component
-                ->expects($this->any())
-                ->method('getIsGuest')
-                ->willReturn(false);
+        $component
+            ->expects($this->any())
+            ->method('getIsGuest')
+            ->willReturn(false);
 
-            $this->mockAuthorizationHeader($result->getJwt());
+        $this->mockAuthorizationHeader($result->getJwt());
 
-            $session = $component->getActiveSession();
-            expect($session)->isInstanceOf(AccountSession::class);
-            expect($session->id)->equals($result->getSession()->id);
-        });
+        $session = $component->getActiveSession();
+        $this->assertInstanceOf(AccountSession::class, $session);
+        /** @noinspection NullPointerExceptionInspection */
+        $this->assertEquals($session->id, $result->getSession()->id);
     }
 
     public function testTerminateSessions() {
         /** @var AccountSession $session */
         $session = AccountSession::findOne($this->tester->grabFixture('sessions', 'admin2')['id']);
 
-        /** @var Component|\PHPUnit_Framework_MockObject_MockObject $component */
-        $component = $this->getMockBuilder(Component::class)
-            ->setMethods(['getActiveSession'])
-            ->setConstructorArgs([$this->getComponentArguments()])
-            ->getMock();
+        /** @var Component|\Mockery\MockInterface $component */
+        $component = mock(Component::class . '[getActiveSession]', [$this->getComponentConfig()])->shouldDeferMissing();
+        $component->shouldReceive('getActiveSession')->times(1)->andReturn($session);
 
-        $component
-            ->expects($this->exactly(1))
-            ->method('getActiveSession')
-            ->willReturn($session);
+        /** @var Account $account */
+        $account = $this->tester->grabFixture('accounts', 'admin');
+        $component->createJwtAuthenticationToken($account, true);
 
-        /** @var AccountIdentity $identity */
-        $identity = AccountIdentity::findOne($this->tester->grabFixture('accounts', 'admin')['id']);
-        $component->login($identity, true);
+        $component->terminateSessions($account, Component::KEEP_MINECRAFT_SESSIONS | Component::KEEP_SITE_SESSIONS);
+        $this->assertNotEmpty($account->getMinecraftAccessKeys()->all());
+        $this->assertNotEmpty($account->getSessions()->all());
 
-        $component->terminateSessions(0);
-        $this->assertNotEmpty($identity->getMinecraftAccessKeys()->all());
-        $this->assertNotEmpty($identity->getSessions()->all());
+        $component->terminateSessions($account, Component::KEEP_SITE_SESSIONS);
+        $this->assertEmpty($account->getMinecraftAccessKeys()->all());
+        $this->assertNotEmpty($account->getSessions()->all());
 
-        $component->terminateSessions(Component::TERMINATE_MINECRAFT_SESSIONS);
-        $this->assertEmpty($identity->getMinecraftAccessKeys()->all());
-        $this->assertNotEmpty($identity->getSessions()->all());
-
-        $component->terminateSessions(Component::TERMINATE_SITE_SESSIONS | Component::DO_NOT_TERMINATE_CURRENT_SESSION);
-        $sessions = $identity->getSessions()->all();
+        $component->terminateSessions($account, Component::KEEP_CURRENT_SESSION);
+        $sessions = $account->getSessions()->all();
         $this->assertEquals(1, count($sessions));
         $this->assertTrue($sessions[0]->id === $session->id);
 
-        $component->terminateSessions(Component::TERMINATE_ALL);
-        $this->assertEmpty($identity->getSessions()->all());
-        $this->assertEmpty($identity->getMinecraftAccessKeys()->all());
+        $component->terminateSessions($account);
+        $this->assertEmpty($account->getSessions()->all());
+        $this->assertEmpty($account->getMinecraftAccessKeys()->all());
     }
 
-    public function testSerializeToken() {
-        $this->specify('get string, contained jwt token', function() {
-            $token = new Token();
-            expect($this->callProtected($this->component, 'serializeToken', $token))
-                ->regExp('/^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+\/=]*$/');
-        });
-    }
-
-    public function testCreateToken() {
-        $this->specify('create token', function() {
-            expect($this->callProtected($this->component, 'createToken', new AccountIdentity(['id' => 1])))
-                ->isInstanceOf(Token::class);
-        });
-    }
-
-    public function testGetAlgorithm() {
-        $this->specify('get expected hash algorithm object', function() {
-            expect($this->component->getAlgorithm())->isInstanceOf(AlgorithmInterface::class);
-        });
-    }
-
-    public function testGetClaims() {
-        $this->specify('get expected array of claims', function() {
-            $claims = $this->callProtected($this->component, 'getClaims', new AccountIdentity(['id' => 1]));
-            expect(is_array($claims))->true();
-            expect('all array items should have valid type', array_filter($claims, function($claim) {
-                return !$claim instanceof ClaimInterface;
-            }))->isEmpty();
-        });
-    }
-
-    /**
-     * @param string $userIP
-     * @return \PHPUnit_Framework_MockObject_MockObject
-     */
     private function mockRequest($userIP = '127.0.0.1') {
-        $request = $this->getMockBuilder(Request::class)
-            ->setMethods(['getHostInfo', 'getUserIP'])
-            ->getMock();
-
-        $request
-            ->expects($this->any())
-            ->method('getHostInfo')
-            ->will($this->returnValue('http://localhost'));
-
-        $request
-            ->expects($this->any())
-            ->method('getUserIP')
-            ->will($this->returnValue($userIP));
+        /** @var Request|\Mockery\MockInterface $request */
+        $request = mock(Request::class . '[getHostInfo,getUserIP]')->shouldDeferMissing();
+        $request->shouldReceive('getHostInfo')->andReturn('http://localhost');
+        $request->shouldReceive('getUserIP')->andReturn($userIP);
 
         Yii::$app->set('request', $request);
-
-        return $request;
     }
 
     /**
@@ -231,9 +185,9 @@ class ComponentTest extends TestCase {
         Yii::$app->request->headers->set('Authorization', $bearerToken);
     }
 
-    private function getComponentArguments() {
+    private function getComponentConfig() {
         return [
-            'identityClass' => AccountIdentity::class,
+            'identityClass' => Identity::class,
             'enableSession' => false,
             'loginUrl' => null,
             'secret' => 'secret',

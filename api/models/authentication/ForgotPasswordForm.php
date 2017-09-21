@@ -101,7 +101,7 @@ class ForgotPasswordForm extends ApiForm {
         return true;
     }
 
-    public function getLogin() {
+    public function getLogin(): string {
         return $this->login;
     }
 

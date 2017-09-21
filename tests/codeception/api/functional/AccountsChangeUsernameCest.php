@@ -1,7 +1,6 @@
 <?php
 namespace tests\codeception\api\functional;
 
-use Codeception\Specify;
 use common\models\Account;
 use tests\codeception\api\_pages\AccountsRoute;
 use tests\codeception\api\FunctionalTester;
@@ -26,9 +25,9 @@ class AccountsChangeUsernameCest {
 
     public function testChangeUsername(FunctionalTester $I) {
         $I->wantTo('change my nickname');
-        $I->amAuthenticated();
+        $id = $I->amAuthenticated();
 
-        $this->route->changeUsername('password_0', 'bruce_wayne');
+        $this->route->changeUsername($id, 'password_0', 'bruce_wayne');
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -38,9 +37,9 @@ class AccountsChangeUsernameCest {
 
     public function testChangeUsernameNotAvailable(FunctionalTester $I) {
         $I->wantTo('see, that nickname "in use" is not available');
-        $I->amAuthenticated();
+        $id = $I->amAuthenticated();
 
-        $this->route->changeUsername('password_0', 'Jon');
+        $this->route->changeUsername($id, 'password_0', 'Jon');
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([

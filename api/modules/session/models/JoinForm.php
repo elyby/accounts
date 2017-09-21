@@ -7,10 +7,10 @@ use api\modules\session\models\protocols\JoinInterface;
 use api\modules\session\Module as Session;
 use api\modules\session\validators\RequiredValidator;
 use common\helpers\StringHelper;
-use common\models\OauthScope as S;
-use common\validators\UuidValidator;
+use common\rbac\Permissions as P;
 use common\models\Account;
 use common\models\MinecraftAccessKey;
+use Ramsey\Uuid\Uuid;
 use Yii;
 use yii\base\ErrorException;
 use yii\base\Model;
@@ -84,16 +84,7 @@ class JoinForm extends Model {
             return;
         }
 
-        if ($attribute === 'selectedProfile' && !StringHelper::isUuid($this->selectedProfile)) {
-            // Это нормально. Там может быть ник игрока, если это Legacy авторизация
-            return;
-        }
-
-        $validator = new UuidValidator();
-        $validator->allowNil = false;
-        $validator->validateAttribute($this, $attribute);
-
-        if ($this->hasErrors($attribute)) {
+        if ($this->$attribute === Uuid::NIL) {
             throw new IllegalArgumentException();
         }
     }
@@ -105,9 +96,17 @@ class JoinForm extends Model {
         $accessToken = $this->accessToken;
         /** @var MinecraftAccessKey|null $accessModel */
         $accessModel = MinecraftAccessKey::findOne($accessToken);
-        if ($accessModel === null) {
+        if ($accessModel !== null) {
+            /** @var MinecraftAccessKey|\api\components\OAuth2\Entities\AccessTokenEntity $accessModel */
+            if ($accessModel->isExpired()) {
+                Session::error("User with access_token = '{$accessToken}' failed join by expired access_token.");
+                throw new ForbiddenOperationException('Expired access_token.');
+            }
+
+            $account = $accessModel->account;
+        } else {
             try {
-                $identity = Yii::$app->apiUser->loginByAccessToken($accessToken);
+                $identity = Yii::$app->user->loginByAccessToken($accessToken);
             } catch (UnauthorizedHttpException $e) {
                 $identity = null;
             }
@@ -117,21 +116,12 @@ class JoinForm extends Model {
                 throw new ForbiddenOperationException('Invalid access_token.');
             }
 
-            if (!Yii::$app->apiUser->can(S::MINECRAFT_SERVER_SESSION)) {
+            if (!Yii::$app->user->can(P::MINECRAFT_SERVER_SESSION)) {
                 Session::error("User with access_token = '{$accessToken}' doesn't have enough scopes to make join.");
                 throw new ForbiddenOperationException('The token does not have required scope.');
             }
 
-            $accessModel = $identity->getAccessToken();
             $account = $identity->getAccount();
-        } else {
-            $account = $accessModel->account;
-        }
-
-        /** @var MinecraftAccessKey|\api\components\OAuth2\Entities\AccessTokenEntity $accessModel */
-        if ($accessModel->isExpired()) {
-            Session::error("User with access_token = '{$accessToken}' failed join by expired access_token.");
-            throw new ForbiddenOperationException('Expired access_token.');
         }
 
         $selectedProfile = $this->selectedProfile;
@@ -142,7 +132,9 @@ class JoinForm extends Model {
                 " but access_token issued to account with id = '{$account->uuid}'."
             );
             throw new ForbiddenOperationException('Wrong selected_profile.');
-        } elseif (!$isUuid && $account->username !== $selectedProfile) {
+        }
+
+        if (!$isUuid && $account->username !== $selectedProfile) {
             Session::error(
                 "User with access_token = '{$accessToken}' trying to join with identity = '{$selectedProfile}'," .
                 " but access_token issued to account with username = '{$account->username}'."
@@ -153,10 +145,7 @@ class JoinForm extends Model {
         $this->account = $account;
     }
 
-    /**
-     * @return Account|null
-     */
-    protected function getAccount() {
+    protected function getAccount(): Account {
         return $this->account;
     }
 

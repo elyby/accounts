@@ -1,7 +1,6 @@
 <?php
 namespace tests\codeception\api\functional;
 
-use Codeception\Specify;
 use tests\codeception\api\_pages\SignupRoute;
 use tests\codeception\api\FunctionalTester;
 
