@@ -2,6 +2,7 @@
 namespace console\controllers;
 
 use common\models\EmailActivation;
+use common\models\MinecraftAccessKey;
 use yii\console\Controller;
 
 class CleanupController extends Controller {
@@ -21,6 +22,19 @@ class CleanupController extends Controller {
         $expiredEmails = $query->andWhere($conditions)->each();
         foreach ($expiredEmails as $email) {
             $email->delete();
+        }
+
+        return self::EXIT_CODE_NORMAL;
+    }
+
+    public function actionMinecraftSessions() {
+        /** @var \yii\db\BatchQueryResult|MinecraftAccessKey[] $expiredMinecraftSessions */
+        $expiredMinecraftSessions = MinecraftAccessKey::find()
+            ->andWhere(['<', 'updated_at', time() - 1209600]) // 2 weeks
+            ->each();
+
+        foreach ($expiredMinecraftSessions as $minecraftSession) {
+            $minecraftSession->delete();
         }
 
         return self::EXIT_CODE_NORMAL;
