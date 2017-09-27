@@ -1,4 +1,4 @@
-FROM registry.ely.by/elyby/accounts-php:1.5.0
+FROM registry.ely.by/elyby/accounts-php:1.5.1
 
 # bootstrap скрипт для проекта
 COPY docker/php/bootstrap.sh /bootstrap.sh
