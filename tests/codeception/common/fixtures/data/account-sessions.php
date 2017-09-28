@@ -24,4 +24,20 @@ return [
         'created_at' => time(),
         'last_refreshed_at' => time(),
     ],
+    'very-expired-session' => [
+        'id' => 4,
+        'account_id' => 1,
+        'refresh_token' => 'dkzIbUdtVLU3LOotSofUU0BQTvClMqmiIGwVKz2VHXOENifj',
+        'last_used_ip' => ip2long('127.0.0.1'),
+        'created_at' => 1477414260,
+        'last_refreshed_at' => 1480092660,
+    ],
+    'not-refreshed-session' => [
+        'id' => 5,
+        'account_id' => 1,
+        'refresh_token' => 'NM9g7fZyn1o3F87BkDtRCQaHLuudDxyuup3ttyDRIjmwPPJx',
+        'last_used_ip' => ip2long('127.0.0.1'),
+        'created_at' => time() - 1814400, // 3 weeks
+        'last_refreshed_at' => time() - 1814400, // 3 weeks
+    ],
 ];

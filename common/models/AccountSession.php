@@ -3,6 +3,7 @@ namespace common\models;
 
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -22,32 +23,32 @@ use yii\db\ActiveRecord;
  */
 class AccountSession extends ActiveRecord {
 
-    public static function tableName() {
+    public static function tableName(): string {
         return '{{%accounts_sessions}}';
     }
 
-    public function behaviors() {
+    public function behaviors(): array {
         return [
             [
                 'class' => TimestampBehavior::class,
                 'updatedAtAttribute' => 'last_refreshed_at',
-            ]
+            ],
         ];
     }
 
-    public function getAccount() {
+    public function getAccount(): ActiveQuery {
         return $this->hasOne(Account::class, ['id' => 'account_id']);
     }
 
-    public function generateRefreshToken() {
+    public function generateRefreshToken(): void {
         $this->refresh_token = Yii::$app->security->generateRandomString(96);
     }
 
-    public function setIp($ip) {
+    public function setIp($ip): void {
         $this->last_used_ip = ip2long($ip);
     }
 
-    public function getReadableIp() {
+    public function getReadableIp(): string {
         return long2ip($this->last_used_ip);
     }
 
