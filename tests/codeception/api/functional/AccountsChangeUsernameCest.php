@@ -3,6 +3,7 @@ namespace tests\codeception\api\functional;
 
 use common\models\Account;
 use tests\codeception\api\_pages\AccountsRoute;
+use tests\codeception\api\functional\_steps\OauthSteps;
 use tests\codeception\api\FunctionalTester;
 
 class AccountsChangeUsernameCest {
@@ -28,11 +29,7 @@ class AccountsChangeUsernameCest {
         $id = $I->amAuthenticated();
 
         $this->route->changeUsername($id, 'password_0', 'bruce_wayne');
-        $I->canSeeResponseCodeIs(200);
-        $I->canSeeResponseIsJson();
-        $I->canSeeResponseContainsJson([
-            'success' => true,
-        ]);
+        $this->assertSuccessResponse($I);
     }
 
     public function testChangeUsernameNotAvailable(FunctionalTester $I) {
@@ -47,6 +44,25 @@ class AccountsChangeUsernameCest {
             'errors' => [
                 'username' => 'error.username_not_available',
             ],
+        ]);
+    }
+
+    public function testChangeUsernameInternal(OauthSteps $I) {
+        $accessToken = $I->getAccessTokenByClientCredentialsGrant(['change_account_username', 'escape_identity_verification']);
+        $I->amBearerAuthenticated($accessToken);
+
+        $this->route->changeUsername(1, null, 'im_batman');
+        $this->assertSuccessResponse($I);
+    }
+
+    /**
+     * @param FunctionalTester $I
+     */
+    private function assertSuccessResponse(FunctionalTester $I): void {
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseIsJson();
+        $I->canSeeResponseContainsJson([
+            'success' => true,
         ]);
     }
 

@@ -4,6 +4,7 @@ namespace tests\codeception\api\functional;
 use common\models\Account;
 use tests\codeception\api\_pages\AccountsRoute;
 use tests\codeception\api\_pages\AuthenticationRoute;
+use tests\codeception\api\functional\_steps\OauthSteps;
 use tests\codeception\api\FunctionalTester;
 
 class AccountsChangePasswordCest {
@@ -29,17 +30,29 @@ class AccountsChangePasswordCest {
         $id = $I->amAuthenticated();
 
         $this->route->changePassword($id, 'password_0', 'new-password', 'new-password');
-        $I->canSeeResponseCodeIs(200);
-        $I->canSeeResponseIsJson();
-        $I->canSeeResponseContainsJson([
-            'success' => true,
-        ]);
+        $this->assertSuccessResponse($I);
 
         $I->notLoggedIn();
 
         $loginRoute = new AuthenticationRoute($I);
         $loginRoute->login('Admin', 'new-password');
         $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseContainsJson([
+            'success' => true,
+        ]);
+    }
+
+    public function testChangePasswordInternal(OauthSteps $I) {
+        $accessToken = $I->getAccessTokenByClientCredentialsGrant(['change_account_password', 'escape_identity_verification']);
+        $I->amBearerAuthenticated($accessToken);
+
+        $this->route->changePassword(1, null, 'new-password-1', 'new-password-1');
+        $this->assertSuccessResponse($I);
+    }
+
+    private function assertSuccessResponse(FunctionalTester $I): void {
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
             'success' => true,
         ]);

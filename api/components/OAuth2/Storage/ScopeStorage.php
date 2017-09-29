@@ -30,6 +30,8 @@ class ScopeStorage extends AbstractStorage implements ScopeInterface {
     ];
 
     private const CLIENT_CREDENTIALS_PERMISSIONS_INTERNAL = [
+        P::CHANGE_ACCOUNT_USERNAME,
+        P::CHANGE_ACCOUNT_PASSWORD,
         P::BLOCK_ACCOUNT,
         P::OBTAIN_EXTENDED_ACCOUNT_INFO,
         P::ESCAPE_IDENTITY_VERIFICATION,
