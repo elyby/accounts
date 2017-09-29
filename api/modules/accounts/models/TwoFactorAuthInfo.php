@@ -42,20 +42,12 @@ class TwoFactorAuthInfo extends BaseAccountForm {
     }
 
     /**
-     * otp_secret кодируется в Base32, т.к. после кодирования в результурющей строке нет символов,
-     * которые можно перепутать (1 и l, O и 0, и т.д.). Отрицательной стороной является то, что итоговая
-     * строка составляет 160% от исходной. Поэтому, генерируя исходный приватный ключ, мы должны обеспечить
-     * ему такую длину, чтобы 160% его длины было равно запрошенному значению
-     *
      * @param int $length
-     *
      * @throws ThisShouldNotHappenException
      */
     private function setOtpSecret(int $length = 24): void {
         $account = $this->getAccount();
-        $randomBytesLength = ceil($length / 1.6);
-        $randomBase32 = trim(Base32::encodeUpper(random_bytes($randomBytesLength)), '=');
-        $account->otp_secret = substr($randomBase32, 0, $length);
+        $account->otp_secret = $this->generateOtpSecret($length);
         if (!$account->save()) {
             throw new ThisShouldNotHappenException('Cannot set account otp_secret');
         }
@@ -75,6 +67,29 @@ class TwoFactorAuthInfo extends BaseAccountForm {
      */
     private function forceMinimalQrContentLength(string $content): string {
         return str_pad($content, 91, '#');
+    }
+
+    /**
+     * otp_secret кодируется в Base32, но после кодирования в результурющей строке есть символы,
+     * которые можно перепутать (1 и l, O и 0, и т.д.). Т.к. целевая строка не предназначена для
+     * обратной расшифровки, то мы можем безжалостно их удалить. Итоговая строка составляет 160%
+     * от исходной. Поэтому, генерируя исходные случайные байты, мы должны обеспечить такую длину,
+     * чтобы 160% её было равно запрошенному значению.
+     *
+     * @param int $length
+     * @return string
+     */
+    private function generateOtpSecret(int $length): string {
+        $randomBytesLength = ceil($length / 1.6);
+        $result = '';
+        while (strlen($result) < $length) {
+            $encoded = Base32::encodeUpper(random_bytes($randomBytesLength));
+            $encoded = trim($encoded, '=');
+            $encoded = str_replace(['I', 'L', 'O', 'U', '1', '0'], '', $encoded);
+            $result .= $encoded;
+        }
+
+        return substr($result, 0, $length);
     }
 
 }
