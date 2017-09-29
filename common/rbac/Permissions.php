@@ -28,4 +28,7 @@ final class Permissions {
     public const OBTAIN_ACCOUNT_EMAIL = 'obtain_account_email';
     public const OBTAIN_EXTENDED_ACCOUNT_INFO = 'obtain_account_extended_info';
 
+    // Service permissions
+    public const ESCAPE_IDENTITY_VERIFICATION = 'escape_identity_verification';
+
 }

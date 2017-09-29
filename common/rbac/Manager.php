@@ -19,6 +19,10 @@ class Manager extends PhpManager {
      */
     public function getAssignments($accessToken): array {
         $identity = Yii::$app->user->findIdentityByAccessToken($accessToken);
+        if ($identity === null) {
+            return [];
+        }
+
         /** @noinspection NullPointerExceptionInspection */
         $permissions = $identity->getAssignedPermissions();
         if (empty($permissions)) {

@@ -45,6 +45,8 @@ class RbacController extends Controller {
         $permManageOwnTwoFactorAuth = $this->createPermission(P::MANAGE_OWN_TWO_FACTOR_AUTH, AccountOwner::class);
         $permMinecraftServerSession = $this->createPermission(P::MINECRAFT_SERVER_SESSION);
 
+        $permEscapeIdentityVerification = $this->createPermission(P::ESCAPE_IDENTITY_VERIFICATION);
+
         $roleAccountsWebUser = $this->createRole(R::ACCOUNTS_WEB_USER);
 
         $authManager->addChild($permObtainOwnAccountInfo, $permObtainAccountInfo);

@@ -58,7 +58,11 @@ class Component extends YiiUserComponent {
         }
     }
 
-    public function findIdentityByAccessToken(string $accessToken): ?IdentityInterface {
+    public function findIdentityByAccessToken($accessToken): ?IdentityInterface {
+        if ($accessToken === null) {
+            return null;
+        }
+
         /** @var \api\components\User\IdentityInterface|string $identityClass */
         $identityClass = $this->identityClass;
         try {

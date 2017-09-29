@@ -32,6 +32,7 @@ class ScopeStorage extends AbstractStorage implements ScopeInterface {
     private const CLIENT_CREDENTIALS_PERMISSIONS_INTERNAL = [
         P::BLOCK_ACCOUNT,
         P::OBTAIN_EXTENDED_ACCOUNT_INFO,
+        P::ESCAPE_IDENTITY_VERIFICATION,
     ];
 
     /**
@@ -55,6 +56,7 @@ class ScopeStorage extends AbstractStorage implements ScopeInterface {
                 $client = $this->server->getClientStorage()->get($clientId);
                 Assert::that($client)->isInstanceOf(ClientEntity::class);
 
+                /** @noinspection NullPointerExceptionInspection */
                 $isTrusted = $client->isTrusted();
             }
 
