@@ -13,7 +13,7 @@
         "yiisoft/yii2-redis": "~2.0.0",
         "guzzlehttp/guzzle": "^6.0.0",
         "php-amqplib/php-amqplib": "^2.6.2",
-        "ely/yii2-tempmail-validator": "~1.0.0",
+        "ely/yii2-tempmail-validator": "^2.0",
         "emarref/jwt": "~1.0.3",
         "ely/amqp-controller": "dev-master#d7f8cdbc66c45e477c9c7d5d509bc0c1b11fd3ec",
         "ely/email-renderer": "dev-master#9458ef44bbee0186acc8417fd2f0839789d13db4",
