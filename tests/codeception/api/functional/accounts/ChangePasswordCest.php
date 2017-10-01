@@ -1,5 +1,5 @@
 <?php
-namespace tests\codeception\api\functional;
+namespace tests\codeception\api\functional\accounts;
 
 use common\models\Account;
 use tests\codeception\api\_pages\AccountsRoute;
@@ -7,7 +7,7 @@ use tests\codeception\api\_pages\AuthenticationRoute;
 use tests\codeception\api\functional\_steps\OauthSteps;
 use tests\codeception\api\FunctionalTester;
 
-class AccountsChangePasswordCest {
+class ChangePasswordCest {
 
     /**
      * @var AccountsRoute

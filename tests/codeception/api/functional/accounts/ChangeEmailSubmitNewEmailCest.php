@@ -1,12 +1,12 @@
 <?php
-namespace tests\codeception\api\functional;
+namespace tests\codeception\api\functional\accounts;
 
 use tests\codeception\api\_pages\AccountsRoute;
 use tests\codeception\api\FunctionalTester;
 use tests\codeception\common\helpers\Mock;
 use yii\validators\EmailValidator;
 
-class AccountsChangeEmailSubmitNewEmailCest {
+class ChangeEmailSubmitNewEmailCest {
 
     /**
      * @var AccountsRoute

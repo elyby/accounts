@@ -1,10 +1,10 @@
 <?php
-namespace tests\codeception\api\functional;
+namespace tests\codeception\api\functional\accounts;
 
 use tests\codeception\api\_pages\AccountsRoute;
 use tests\codeception\api\FunctionalTester;
 
-class AccountsTwoFactorAuthCredentialsCest {
+class TwoFactorAuthCredentialsCest {
 
     /**
      * @var AccountsRoute

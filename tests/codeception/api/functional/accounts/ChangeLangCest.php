@@ -1,10 +1,10 @@
 <?php
-namespace tests\codeception\api\functional;
+namespace tests\codeception\api\functional\accounts;
 
 use tests\codeception\api\_pages\AccountsRoute;
 use tests\codeception\api\FunctionalTester;
 
-class AccountsChangeEmailConfirmNewEmailCest {
+class ChangeLangCest {
 
     /**
      * @var AccountsRoute
@@ -15,18 +15,15 @@ class AccountsChangeEmailConfirmNewEmailCest {
         $this->route = new AccountsRoute($I);
     }
 
-    public function testConfirmNewEmail(FunctionalTester $I) {
-        $I->wantTo('change my email and get changed value');
-        $I->amAuthenticated('CrafterGameplays');
+    public function testSubmitNewEmail(FunctionalTester $I) {
+        $I->wantTo('change my account language');
+        $id = $I->amAuthenticated();
 
-        $this->route->changeEmail(8, 'H28HBDCHHAG2HGHGHS');
+        $this->route->changeLanguage($id, 'ru');
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
             'success' => true,
-            'data' => [
-                'email' => 'my-new-email@ely.by',
-            ],
         ]);
     }
 

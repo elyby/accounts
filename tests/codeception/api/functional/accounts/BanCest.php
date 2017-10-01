@@ -1,12 +1,12 @@
 <?php
-namespace tests\codeception\api\functional;
+namespace tests\codeception\api\functional\accounts;
 
 use common\rbac\Permissions as P;
 use tests\codeception\api\_pages\AccountsRoute;
 use tests\codeception\api\functional\_steps\OauthSteps;
 use tests\codeception\api\FunctionalTester;
 
-class AccountsBanCest {
+class BanCest {
 
     /**
      * @var AccountsRoute
