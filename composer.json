@@ -26,7 +26,6 @@
         "webmozart/assert": "^1.2.0"
     },
     "require-dev": {
-        "yiisoft/yii2-codeception": "*",
         "yiisoft/yii2-debug": "*",
         "yiisoft/yii2-faker": "*",
         "flow/jsonpath": "^0.3.1",

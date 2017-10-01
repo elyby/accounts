@@ -6,7 +6,7 @@ use tests\codeception\api\_pages\AccountsRoute;
 use tests\codeception\api\functional\_steps\OauthSteps;
 use tests\codeception\api\FunctionalTester;
 
-class AccountBanCest {
+class AccountsPardonCest {
 
     /**
      * @var AccountsRoute
@@ -17,11 +17,11 @@ class AccountBanCest {
         $this->route = new AccountsRoute($I);
     }
 
-    public function testBanAccount(OauthSteps $I) {
+    public function testPardonAccount(OauthSteps $I) {
         $accessToken = $I->getAccessTokenByClientCredentialsGrant([P::BLOCK_ACCOUNT]);
         $I->amBearerAuthenticated($accessToken);
 
-        $this->route->ban(1);
+        $this->route->pardon(10);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -29,17 +29,17 @@ class AccountBanCest {
         ]);
     }
 
-    public function testBanBannedAccount(OauthSteps $I) {
+    public function testPardonNotBannedAccount(OauthSteps $I) {
         $accessToken = $I->getAccessTokenByClientCredentialsGrant([P::BLOCK_ACCOUNT]);
         $I->amBearerAuthenticated($accessToken);
 
-        $this->route->ban(10);
+        $this->route->pardon(1);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
             'success' => false,
             'errors' => [
-                'account' => 'error.account_already_banned',
+                'account' => 'error.account_not_banned',
             ],
         ]);
     }

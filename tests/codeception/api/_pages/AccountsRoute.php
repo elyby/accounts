@@ -1,21 +1,14 @@
 <?php
 namespace tests\codeception\api\_pages;
 
-use yii\codeception\BasePage;
-
-/**
- * @property \tests\codeception\api\FunctionalTester $actor
- */
 class AccountsRoute extends BasePage {
 
     public function get(int $accountId) {
-        $this->route = "/v1/accounts/{$accountId}";
-        $this->actor->sendGET($this->getUrl());
+        $this->getActor()->sendGET("/v1/accounts/{$accountId}");
     }
 
     public function changePassword(int $accountId, $currentPassword = null, $newPassword = null, $newRePassword = null) {
-        $this->route = "/v1/accounts/{$accountId}/password";
-        $this->actor->sendPOST($this->getUrl(), [
+        $this->getActor()->sendPOST("/v1/accounts/{$accountId}/password", [
             'password' => $currentPassword,
             'newPassword' => $newPassword,
             'newRePassword' => $newRePassword,
@@ -23,55 +16,65 @@ class AccountsRoute extends BasePage {
     }
 
     public function changeUsername(int $accountId, $currentPassword = null, $newUsername = null) {
-        $this->route = "/v1/accounts/{$accountId}/username";
-        $this->actor->sendPOST($this->getUrl(), [
+        $this->getActor()->sendPOST("/v1/accounts/{$accountId}/username", [
             'password' => $currentPassword,
             'username' => $newUsername,
         ]);
     }
 
     public function changeEmailInitialize(int $accountId, $password = '') {
-        $this->route = "/v1/accounts/{$accountId}/email-verification";
-        $this->actor->sendPOST($this->getUrl(), [
+        $this->getActor()->sendPOST("/v1/accounts/{$accountId}/email-verification", [
             'password' => $password,
         ]);
     }
 
     public function changeEmailSubmitNewEmail(int $accountId, $key = null, $email = null) {
-        $this->route = "/v1/accounts/{$accountId}/new-email-verification";
-        $this->actor->sendPOST($this->getUrl(), [
+        $this->getActor()->sendPOST("/v1/accounts/{$accountId}/new-email-verification", [
             'key' => $key,
             'email' => $email,
         ]);
     }
 
     public function changeEmail(int $accountId, $key = null) {
-        $this->route = "/v1/accounts/{$accountId}/email";
-        $this->actor->sendPOST($this->getUrl(), [
+        $this->getActor()->sendPOST("/v1/accounts/{$accountId}/email", [
             'key' => $key,
         ]);
     }
 
     public function changeLanguage(int $accountId, $lang = null) {
-        $this->route = "/v1/accounts/{$accountId}/language";
-        $this->actor->sendPOST($this->getUrl(), [
+        $this->getActor()->sendPOST("/v1/accounts/{$accountId}/language", [
             'lang' => $lang,
         ]);
     }
 
     public function acceptRules(int $accountId) {
-        $this->route = "/v1/accounts/{$accountId}/rules";
-        $this->actor->sendPOST($this->getUrl());
+        $this->getActor()->sendPOST("/v1/accounts/{$accountId}/rules");
+    }
+
+    public function getTwoFactorAuthCredentials(int $accountId) {
+        $this->getActor()->sendGET("/v1/accounts/{$accountId}/two-factor-auth");
+    }
+
+    public function enableTwoFactorAuth(int $accountId, $totp = null, $password = null) {
+        $this->getActor()->sendPOST("/v1/accounts/{$accountId}/two-factor-auth", [
+            'totp' => $totp,
+            'password' => $password,
+        ]);
+    }
+
+    public function disableTwoFactorAuth(int $accountId, $totp = null, $password = null) {
+        $this->getActor()->sendDELETE("/v1/accounts/{$accountId}/two-factor-auth", [
+            'totp' => $totp,
+            'password' => $password,
+        ]);
     }
 
     public function ban(int $accountId) {
-        $this->route = "/v1/accounts/{$accountId}/ban";
-        $this->actor->sendPOST($this->getUrl());
+        $this->getActor()->sendPOST("/v1/accounts/{$accountId}/ban");
     }
 
-    public function pardon($accountId) {
-        $this->route = "/v1/accounts/{$accountId}/ban";
-        $this->actor->sendDELETE($this->getUrl());
+    public function pardon(int $accountId) {
+        $this->getActor()->sendDELETE("/v1/accounts/{$accountId}/ban");
     }
 
 }

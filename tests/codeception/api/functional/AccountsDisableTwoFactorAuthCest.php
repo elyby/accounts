@@ -2,24 +2,24 @@
 namespace tests\codeception\api\functional;
 
 use OTPHP\TOTP;
-use tests\codeception\api\_pages\TwoFactorAuthRoute;
+use tests\codeception\api\_pages\AccountsRoute;
 use tests\codeception\api\FunctionalTester;
 
-class TwoFactorAuthEnableCest {
+class AccountsDisableTwoFactorAuthCest {
 
     /**
-     * @var TwoFactorAuthRoute
+     * @var AccountsRoute
      */
     private $route;
 
     public function _before(FunctionalTester $I) {
-        $this->route = new TwoFactorAuthRoute($I);
+        $this->route = new AccountsRoute($I);
     }
 
     public function testFails(FunctionalTester $I) {
-        $accountId = $I->amAuthenticated('AccountWithOtpSecret');
+        $accountId = $I->amAuthenticated('AccountWithEnabledOtp');
 
-        $this->route->enable($accountId);
+        $this->route->disableTwoFactorAuth($accountId);
         $I->canSeeResponseContainsJson([
             'success' => false,
             'errors' => [
@@ -28,7 +28,7 @@ class TwoFactorAuthEnableCest {
             ],
         ]);
 
-        $this->route->enable($accountId, '123456', 'invalid_password');
+        $this->route->disableTwoFactorAuth($accountId, '123456', 'invalid_password');
         $I->canSeeResponseContainsJson([
             'success' => false,
             'errors' => [
@@ -37,20 +37,20 @@ class TwoFactorAuthEnableCest {
             ],
         ]);
 
-        $accountId = $I->amAuthenticated('AccountWithEnabledOtp');
-        $this->route->enable($accountId, '123456', 'invalid_password');
+        $accountId = $I->amAuthenticated('AccountWithOtpSecret');
+        $this->route->disableTwoFactorAuth($accountId, '123456', 'invalid_password');
         $I->canSeeResponseContainsJson([
             'success' => false,
             'errors' => [
-                'account' => 'error.otp_already_enabled',
+                'account' => 'error.otp_not_enabled',
             ],
         ]);
     }
 
     public function testSuccessEnable(FunctionalTester $I) {
-        $accountId = $I->amAuthenticated('AccountWithOtpSecret');
-        $totp = TOTP::create('AAAA');
-        $this->route->enable($accountId, $totp->now(), 'password_0');
+        $accountId = $I->amAuthenticated('AccountWithEnabledOtp');
+        $totp = TOTP::create('BBBB');
+        $this->route->disableTwoFactorAuth($accountId, $totp->now(), 'password_0');
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([

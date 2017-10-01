@@ -10,6 +10,7 @@ modules:
         - Asserts
         - REST:
             depends: Yii2
+            url: /api
     config:
         Yii2:
             configFile: '../config/api/functional.php'

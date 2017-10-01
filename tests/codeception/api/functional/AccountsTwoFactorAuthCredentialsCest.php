@@ -1,23 +1,23 @@
 <?php
 namespace tests\codeception\api\functional;
 
-use tests\codeception\api\_pages\TwoFactorAuthRoute;
+use tests\codeception\api\_pages\AccountsRoute;
 use tests\codeception\api\FunctionalTester;
 
-class TwoFactorAuthCredentialsCest {
+class AccountsTwoFactorAuthCredentialsCest {
 
     /**
-     * @var TwoFactorAuthRoute
+     * @var AccountsRoute
      */
     private $route;
 
     public function _before(FunctionalTester $I) {
-        $this->route = new TwoFactorAuthRoute($I);
+        $this->route = new AccountsRoute($I);
     }
 
     public function testGetCredentials(FunctionalTester $I) {
         $accountId = $I->amAuthenticated();
-        $this->route->credentials($accountId);
+        $this->route->getTwoFactorAuthCredentials($accountId);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseJsonMatchesJsonPath('$.secret');
