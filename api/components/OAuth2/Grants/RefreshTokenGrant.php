@@ -3,6 +3,7 @@ namespace api\components\OAuth2\Grants;
 
 use api\components\OAuth2\Entities\AccessTokenEntity;
 use api\components\OAuth2\Entities\RefreshTokenEntity;
+use api\components\OAuth2\Utils\Scopes;
 use ErrorException;
 use League\OAuth2\Server\Entity\AccessTokenEntity as BaseAccessTokenEntity;
 use League\OAuth2\Server\Entity\ClientEntity as BaseClientEntity;
@@ -48,7 +49,7 @@ class RefreshTokenGrant extends AbstractGrant {
 
     /**
      * По стандарту OAuth2 scopes должны разделяться пробелом, а не запятой. Косяк.
-     * Так что оборачиваем функцию разбора скоупов, заменяя пробелы на запятые.
+     * Так что оборачиваем функцию разбора скоупов, заменяя запятые на пробелы.
      *
      * @param string       $scopeParam
      * @param BaseClientEntity $client
@@ -57,8 +58,7 @@ class RefreshTokenGrant extends AbstractGrant {
      * @return \League\OAuth2\Server\Entity\ScopeEntity[]
      */
     public function validateScopes($scopeParam = '', BaseClientEntity $client, $redirectUri = null) {
-        $scopes = str_replace(' ', $this->server->getScopeDelimiter(), $scopeParam);
-        return parent::validateScopes($scopes, $client, $redirectUri);
+        return parent::validateScopes(Scopes::format($scopeParam), $client, $redirectUri);
     }
 
     /**

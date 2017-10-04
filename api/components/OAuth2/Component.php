@@ -27,7 +27,6 @@ class Component extends BaseComponent {
             $authServer->setSessionStorage(new Storage\SessionStorage());
             $authServer->setAuthCodeStorage(new Storage\AuthCodeStorage());
             $authServer->setRefreshTokenStorage(new Storage\RefreshTokenStorage());
-            $authServer->setScopeDelimiter(',');
             $authServer->setAccessTokenTTL(86400); // 1d
 
             $authServer->addGrantType(new Grants\AuthCodeGrant());
