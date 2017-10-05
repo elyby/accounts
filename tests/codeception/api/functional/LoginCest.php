@@ -107,49 +107,49 @@ class LoginCest {
     public function testLoginToken(FunctionalTester $I) {
         $route = new AuthenticationRoute($I);
 
-        $I->wantTo('see token don\'t have errors if email, username or token not set');
+        $I->wantTo('see totp don\'t have errors if email, username or totp not set');
         $route->login();
         $I->canSeeResponseContainsJson([
             'success' => false,
         ]);
-        $I->cantSeeResponseJsonMatchesJsonPath('$.errors.token');
+        $I->cantSeeResponseJsonMatchesJsonPath('$.errors.totp');
 
-        $I->wantTo('see token don\'t have errors if username not exists in database');
+        $I->wantTo('see totp don\'t have errors if username not exists in database');
         $route->login('non-exist-username', 'random-password');
         $I->canSeeResponseContainsJson([
             'success' => false,
         ]);
-        $I->cantSeeResponseJsonMatchesJsonPath('$.errors.token');
+        $I->cantSeeResponseJsonMatchesJsonPath('$.errors.totp');
 
-        $I->wantTo('see token don\'t has errors if email not exists in database');
+        $I->wantTo('see totp don\'t has errors if email not exists in database');
         $route->login('not-exist@user.com', 'random-password');
         $I->canSeeResponseContainsJson([
             'success' => false,
         ]);
-        $I->cantSeeResponseJsonMatchesJsonPath('$.errors.token');
+        $I->cantSeeResponseJsonMatchesJsonPath('$.errors.totp');
 
-        $I->wantTo('see token don\'t has errors if email correct, but password wrong');
+        $I->wantTo('see totp don\'t has errors if email correct, but password wrong');
         $route->login('not-exist@user.com', 'random-password');
         $I->canSeeResponseContainsJson([
             'success' => false,
         ]);
-        $I->cantSeeResponseJsonMatchesJsonPath('$.errors.token');
+        $I->cantSeeResponseJsonMatchesJsonPath('$.errors.totp');
 
-        $I->wantTo('see error.token_required if username and password correct, but account have enable otp');
+        $I->wantTo('see error.totp_required if username and password correct, but account have enable otp');
         $route->login('AccountWithEnabledOtp', 'password_0');
         $I->canSeeResponseContainsJson([
             'success' => false,
             'errors' => [
-                'token' => 'error.token_required',
+                'totp' => 'error.totp_required',
             ],
         ]);
 
-        $I->wantTo('see error.token_incorrect if username and password correct, but token wrong');
+        $I->wantTo('see error.totp_incorrect if username and password correct, but totp wrong');
         $route->login('AccountWithEnabledOtp', 'password_0', '123456');
         $I->canSeeResponseContainsJson([
             'success' => false,
             'errors' => [
-                'token' => 'error.token_incorrect',
+                'totp' => 'error.totp_incorrect',
             ],
         ]);
     }

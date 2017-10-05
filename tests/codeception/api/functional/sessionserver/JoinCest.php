@@ -1,7 +1,7 @@
 <?php
 namespace tests\codeception\api\functional\sessionserver;
 
-use common\models\OauthScope as S;
+use common\rbac\Permissions as P;
 use Faker\Provider\Uuid;
 use tests\codeception\api\_pages\SessionServerRoute;
 use tests\codeception\api\functional\_steps\AuthserverSteps;
@@ -43,7 +43,7 @@ class JoinCest {
 
     public function joinByOauth2Token(OauthSteps $I) {
         $I->wantTo('join to server, using modern oAuth2 generated token');
-        $accessToken = $I->getAccessToken([S::MINECRAFT_SERVER_SESSION]);
+        $accessToken = $I->getAccessToken([P::MINECRAFT_SERVER_SESSION]);
         $this->route->join([
             'accessToken' => $accessToken,
             'selectedProfile' => 'df936908-b2e1-544d-96f8-2977ec213022',
@@ -54,7 +54,7 @@ class JoinCest {
 
     public function joinByModernOauth2TokenWithoutPermission(OauthSteps $I) {
         $I->wantTo('join to server, using moder oAuth2 generated token, but without minecraft auth permission');
-        $accessToken = $I->getAccessToken([S::ACCOUNT_INFO, S::ACCOUNT_EMAIL]);
+        $accessToken = $I->getAccessToken(['account_info', 'account_email']);
         $this->route->join([
             'accessToken' => $accessToken,
             'selectedProfile' => 'df936908-b2e1-544d-96f8-2977ec213022',

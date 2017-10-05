@@ -1,7 +1,6 @@
 <?php
 namespace api\models\authentication;
 
-use api\models\AccountIdentity;
 use api\models\base\ApiForm;
 use api\validators\EmailActivationKeyValidator;
 use common\helpers\Error as E;
@@ -37,7 +36,7 @@ class RecoverPasswordForm extends ApiForm {
     }
 
     /**
-     * @return \api\components\User\LoginResult|bool
+     * @return \api\components\User\AuthenticationResult|bool
      * @throws ErrorException
      */
     public function recoverPassword() {
@@ -61,7 +60,7 @@ class RecoverPasswordForm extends ApiForm {
 
         $transaction->commit();
 
-        return Yii::$app->user->login(new AccountIdentity($account->attributes), false);
+        return Yii::$app->user->createJwtAuthenticationToken($account, false);
     }
 
 }

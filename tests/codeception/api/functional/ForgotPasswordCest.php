@@ -39,7 +39,7 @@ class ForgotPasswordCest {
         $I->canSeeResponseContainsJson([
             'success' => false,
             'errors' => [
-                'token' => 'error.token_required',
+                'totp' => 'error.totp_required',
             ],
         ]);
 
@@ -47,7 +47,7 @@ class ForgotPasswordCest {
         $I->canSeeResponseContainsJson([
             'success' => false,
             'errors' => [
-                'token' => 'error.token_required',
+                'totp' => 'error.totp_required',
             ],
         ]);
 
@@ -55,7 +55,7 @@ class ForgotPasswordCest {
         $I->canSeeResponseContainsJson([
             'success' => false,
             'errors' => [
-                'token' => 'error.token_incorrect',
+                'totp' => 'error.totp_incorrect',
             ],
         ]);
     }
@@ -73,7 +73,7 @@ class ForgotPasswordCest {
     }
 
     public function testForgotPasswordByAccountWithOtp(FunctionalTester $I) {
-        $I->wantTo('create new password recover request by passing username and otp token');
+        $I->wantTo('create new password recover request by passing username and otp totp');
         $totp = TOTP::create('BBBB');
         $this->route->forgotPassword('AccountWithEnabledOtp', $totp->now());
         $this->assertSuccessResponse($I, true);

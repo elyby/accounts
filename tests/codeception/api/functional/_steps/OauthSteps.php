@@ -1,14 +1,13 @@
 <?php
 namespace tests\codeception\api\functional\_steps;
 
-use common\models\OauthScope as S;
+use api\components\OAuth2\Storage\ScopeStorage as S;
 use tests\codeception\api\_pages\OauthRoute;
 use tests\codeception\api\FunctionalTester;
 
 class OauthSteps extends FunctionalTester {
 
     public function getAuthCode(array $permissions = []) {
-        // TODO: по идее можно напрямую сделать запись в базу, что ускорит процесс тестирования
         $this->amAuthenticated();
         $route = new OauthRoute($this);
         $route->complete([
@@ -32,7 +31,6 @@ class OauthSteps extends FunctionalTester {
     }
 
     public function getRefreshToken(array $permissions = []) {
-        // TODO: по идее можно напрямую сделать запись в базу, что ускорит процесс тестирования
         $authCode = $this->getAuthCode(array_merge([S::OFFLINE_ACCESS], $permissions));
         $response = $this->issueToken($authCode);
 

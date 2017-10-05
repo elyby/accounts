@@ -18,7 +18,7 @@ class HasJoinedForm extends Model {
         parent::__construct($config);
     }
 
-    public function hasJoined() : Account {
+    public function hasJoined(): Account {
         if (!$this->protocol->validate()) {
             throw new IllegalArgumentException();
         }

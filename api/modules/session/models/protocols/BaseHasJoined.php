@@ -1,31 +1,30 @@
 <?php
 namespace api\modules\session\models\protocols;
 
-use yii\validators\RequiredValidator;
-
 abstract class BaseHasJoined implements HasJoinedInterface {
 
     private $username;
     private $serverId;
 
     public function __construct(string $username, string $serverId) {
-        $this->username = $username;
-        $this->serverId = $serverId;
+        $this->username = trim($username);
+        $this->serverId = trim($serverId);
     }
 
-    public function getUsername() : string {
+    public function getUsername(): string {
         return $this->username;
     }
 
-    public function getServerId() : string {
+    public function getServerId(): string {
         return $this->serverId;
     }
 
-    public function validate() : bool {
-        $validator = new RequiredValidator();
+    public function validate(): bool {
+        return !$this->isEmpty($this->username) && !$this->isEmpty($this->serverId);
+    }
 
-        return $validator->validate($this->username)
-            && $validator->validate($this->serverId);
+    private function isEmpty($value): bool {
+        return $value === null || $value === '';
     }
 
 }

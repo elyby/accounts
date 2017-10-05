@@ -1,15 +1,16 @@
 <?php
 namespace tests\codeception\api\functional\_steps;
 
-use common\models\OauthScope as S;
+use common\rbac\Permissions as P;
 use Faker\Provider\Uuid;
 use tests\codeception\api\_pages\SessionServerRoute;
+use tests\codeception\api\FunctionalTester;
 
-class SessionServerSteps extends \tests\codeception\api\FunctionalTester {
+class SessionServerSteps extends FunctionalTester {
 
     public function amJoined($byLegacy = false) {
         $oauthSteps = new OauthSteps($this->scenario);
-        $accessToken = $oauthSteps->getAccessToken([S::MINECRAFT_SERVER_SESSION]);
+        $accessToken = $oauthSteps->getAccessToken([P::MINECRAFT_SERVER_SESSION]);
         $route = new SessionServerRoute($this);
         $serverId = Uuid::uuid();
         $username = 'Admin';

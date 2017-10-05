@@ -12,7 +12,7 @@ use yii\filters\auth\HttpBearerAuth;
  */
 class Controller extends \yii\rest\Controller {
 
-    public function behaviors() {
+    public function behaviors(): array {
         $parentBehaviors = parent::behaviors();
         // Добавляем авторизатор для входа по jwt токенам
         $parentBehaviors['authenticator'] = [

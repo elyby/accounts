@@ -1,7 +1,7 @@
 <?php
 namespace codeception\api\unit\models\authentication;
 
-use api\components\User\RenewResult;
+use api\components\User\AuthenticationResult;
 use api\models\authentication\RefreshTokenForm;
 use Codeception\Specify;
 use common\models\AccountSession;
@@ -26,7 +26,7 @@ class RefreshTokenFormTest extends TestCase {
                 }
             };
             $model->validateRefreshToken();
-            expect($model->getErrors('refresh_token'))->equals(['error.refresh_token_not_exist']);
+            $this->assertEquals(['error.refresh_token_not_exist'], $model->getErrors('refresh_token'));
         });
 
         $this->specify('no errors if token exists', function() {
@@ -37,14 +37,14 @@ class RefreshTokenFormTest extends TestCase {
                 }
             };
             $model->validateRefreshToken();
-            expect($model->getErrors('refresh_token'))->isEmpty();
+            $this->assertEmpty($model->getErrors('refresh_token'));
         });
     }
 
     public function testRenew() {
         $model = new RefreshTokenForm();
         $model->refresh_token = $this->tester->grabFixture('sessions', 'admin')['refresh_token'];
-        $this->assertInstanceOf(RenewResult::class, $model->renew());
+        $this->assertInstanceOf(AuthenticationResult::class, $model->renew());
     }
 
 }

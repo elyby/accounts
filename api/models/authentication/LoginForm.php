@@ -1,7 +1,6 @@
 <?php
 namespace api\models\authentication;
 
-use api\models\AccountIdentity;
 use api\models\base\ApiForm;
 use api\validators\TotpValidator;
 use common\helpers\Error as E;
@@ -9,18 +8,15 @@ use api\traits\AccountFinder;
 use common\models\Account;
 use Yii;
 
-/**
- * @method AccountIdentity|null getAccount()
- */
 class LoginForm extends ApiForm {
     use AccountFinder;
 
     public $login;
     public $password;
-    public $token;
+    public $totp;
     public $rememberMe = false;
 
-    public function rules() {
+    public function rules(): array {
         return [
             ['login', 'required', 'message' => E::LOGIN_REQUIRED],
             ['login', 'validateLogin'],
@@ -30,10 +26,10 @@ class LoginForm extends ApiForm {
             }, 'message' => E::PASSWORD_REQUIRED],
             ['password', 'validatePassword'],
 
-            ['token', 'required', 'when' => function(self $model) {
+            ['totp', 'required', 'when' => function(self $model) {
                 return !$model->hasErrors() && $model->getAccount()->is_otp_enabled;
-            }, 'message' => E::OTP_TOKEN_REQUIRED],
-            ['token', 'validateTotpToken'],
+            }, 'message' => E::TOTP_REQUIRED],
+            ['totp', 'validateTotp'],
 
             ['login', 'validateActivity'],
 
@@ -58,7 +54,7 @@ class LoginForm extends ApiForm {
         }
     }
 
-    public function validateTotpToken($attribute) {
+    public function validateTotp($attribute) {
         if ($this->hasErrors()) {
             return;
         }
@@ -86,12 +82,12 @@ class LoginForm extends ApiForm {
         }
     }
 
-    public function getLogin() {
+    public function getLogin(): string {
         return $this->login;
     }
 
     /**
-     * @return \api\components\User\LoginResult|bool
+     * @return \api\components\User\AuthenticationResult|bool
      */
     public function login() {
         if (!$this->validate()) {
@@ -104,11 +100,7 @@ class LoginForm extends ApiForm {
             $account->save();
         }
 
-        return Yii::$app->user->login($account, $this->rememberMe);
-    }
-
-    protected function getAccountClassName() {
-        return AccountIdentity::class;
+        return Yii::$app->user->createJwtAuthenticationToken($account, $this->rememberMe);
     }
 
 }

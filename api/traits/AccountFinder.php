@@ -7,29 +7,18 @@ trait AccountFinder {
 
     private $account;
 
-    public abstract function getLogin();
+    public abstract function getLogin(): string;
 
-    /**
-     * @return Account|null
-     */
-    public function getAccount() {
+    public function getAccount(): ?Account {
         if ($this->account === null) {
-            $className = $this->getAccountClassName();
-            $this->account = $className::findOne([$this->getLoginAttribute() => $this->getLogin()]);
+            $this->account = Account::findOne([$this->getLoginAttribute() => $this->getLogin()]);
         }
 
         return $this->account;
     }
 
-    public function getLoginAttribute() {
+    public function getLoginAttribute(): string {
         return strpos($this->getLogin(), '@') ? 'email' : 'username';
-    }
-
-    /**
-     * @return Account|string
-     */
-    protected function getAccountClassName() {
-        return Account::class;
     }
 
 }

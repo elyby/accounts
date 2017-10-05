@@ -11,7 +11,7 @@ use yii\helpers\ArrayHelper;
 
 class SignupController extends Controller {
 
-    public function behaviors() {
+    public function behaviors(): array {
         return ArrayHelper::merge(parent::behaviors(), [
             'authenticator' => [
                 'except' => ['index', 'repeat-message', 'confirm'],

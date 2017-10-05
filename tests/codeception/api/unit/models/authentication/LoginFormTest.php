@@ -1,8 +1,7 @@
 <?php
 namespace tests\codeception\api\models\authentication;
 
-use api\components\User\LoginResult;
-use api\models\AccountIdentity;
+use api\components\User\AuthenticationResult;
 use api\models\authentication\LoginForm;
 use Codeception\Specify;
 use common\models\Account;
@@ -45,7 +44,7 @@ class LoginFormTest extends TestCase {
         $this->specify('no errors if login exists', function () {
             $model = $this->createModel([
                 'login' => 'mr-test',
-                'account' => new AccountIdentity(),
+                'account' => new Account(),
             ]);
             $model->validateLogin('login');
             $this->assertEmpty($model->getErrors('login'));
@@ -56,7 +55,7 @@ class LoginFormTest extends TestCase {
         $this->specify('error.password_incorrect if password invalid', function () {
             $model = $this->createModel([
                 'password' => '87654321',
-                'account' => new AccountIdentity(['password' => '12345678']),
+                'account' => new Account(['password' => '12345678']),
             ]);
             $model->validatePassword('password');
             $this->assertEquals(['error.password_incorrect'], $model->getErrors('password'));
@@ -65,45 +64,45 @@ class LoginFormTest extends TestCase {
         $this->specify('no errors if password valid', function () {
             $model = $this->createModel([
                 'password' => '12345678',
-                'account' => new AccountIdentity(['password' => '12345678']),
+                'account' => new Account(['password' => '12345678']),
             ]);
             $model->validatePassword('password');
             $this->assertEmpty($model->getErrors('password'));
         });
     }
 
-    public function testValidateTotpToken() {
-        $account = new AccountIdentity(['password' => '12345678']);
+    public function testValidateTotp() {
+        $account = new Account(['password' => '12345678']);
         $account->password = '12345678';
         $account->is_otp_enabled = true;
         $account->otp_secret = 'AAAA';
 
-        $this->specify('error.token_incorrect if totp invalid', function() use ($account) {
+        $this->specify('error.totp_incorrect if totp invalid', function() use ($account) {
             $model = $this->createModel([
                 'password' => '12345678',
-                'token' => '321123',
+                'totp' => '321123',
                 'account' => $account,
             ]);
-            $model->validateTotpToken('token');
-            $this->assertEquals(['error.token_incorrect'], $model->getErrors('token'));
+            $model->validateTotp('totp');
+            $this->assertEquals(['error.totp_incorrect'], $model->getErrors('totp'));
         });
 
         $totp = TOTP::create($account->otp_secret);
         $this->specify('no errors if password valid', function() use ($account, $totp) {
             $model = $this->createModel([
                 'password' => '12345678',
-                'token' => $totp->now(),
+                'totp' => $totp->now(),
                 'account' => $account,
             ]);
-            $model->validateTotpToken('token');
-            $this->assertEmpty($model->getErrors('token'));
+            $model->validateTotp('totp');
+            $this->assertEmpty($model->getErrors('totp'));
         });
     }
 
     public function testValidateActivity() {
         $this->specify('error.account_not_activated if account in not activated state', function () {
             $model = $this->createModel([
-                'account' => new AccountIdentity(['status' => Account::STATUS_REGISTERED]),
+                'account' => new Account(['status' => Account::STATUS_REGISTERED]),
             ]);
             $model->validateActivity('login');
             $this->assertEquals(['error.account_not_activated'], $model->getErrors('login'));
@@ -111,7 +110,7 @@ class LoginFormTest extends TestCase {
 
         $this->specify('error.account_banned if account has banned status', function () {
             $model = $this->createModel([
-                'account' => new AccountIdentity(['status' => Account::STATUS_BANNED]),
+                'account' => new Account(['status' => Account::STATUS_BANNED]),
             ]);
             $model->validateActivity('login');
             $this->assertEquals(['error.account_banned'], $model->getErrors('login'));
@@ -119,7 +118,7 @@ class LoginFormTest extends TestCase {
 
         $this->specify('no errors if account active', function () {
             $model = $this->createModel([
-                'account' => new AccountIdentity(['status' => Account::STATUS_ACTIVE]),
+                'account' => new Account(['status' => Account::STATUS_ACTIVE]),
             ]);
             $model->validateActivity('login');
             $this->assertEmpty($model->getErrors('login'));
@@ -130,13 +129,13 @@ class LoginFormTest extends TestCase {
         $model = $this->createModel([
             'login' => 'erickskrauch',
             'password' => '12345678',
-            'account' => new AccountIdentity([
+            'account' => new Account([
                 'username' => 'erickskrauch',
                 'password' => '12345678',
                 'status' => Account::STATUS_ACTIVE,
             ]),
         ]);
-        $this->assertInstanceOf(LoginResult::class, $model->login(), 'model should login user');
+        $this->assertInstanceOf(AuthenticationResult::class, $model->login(), 'model should login user');
         $this->assertEmpty($model->getErrors(), 'error message should not be set');
     }
 
@@ -145,7 +144,7 @@ class LoginFormTest extends TestCase {
             'login' => $this->tester->grabFixture('accounts', 'user-with-old-password-type')['username'],
             'password' => '12345678',
         ]);
-        $this->assertInstanceOf(LoginResult::class, $model->login());
+        $this->assertInstanceOf(AuthenticationResult::class, $model->login());
         $this->assertEmpty($model->getErrors());
         $this->assertEquals(
             Account::PASS_HASH_STRATEGY_YII2,
@@ -166,7 +165,7 @@ class LoginFormTest extends TestCase {
                 $this->_account = $value;
             }
 
-            public function getAccount() {
+            public function getAccount(): ?Account {
                 return $this->_account;
             }
         };

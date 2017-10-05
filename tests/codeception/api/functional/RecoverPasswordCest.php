@@ -21,7 +21,7 @@ class RecoverPasswordCest {
         $jwt = $I->grabDataFromResponseByJsonPath('$.access_token')[0];
         $I->amBearerAuthenticated($jwt);
         $accountRoute = new AccountsRoute($I);
-        $accountRoute->current();
+        $accountRoute->get(5);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->notLoggedIn();

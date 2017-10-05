@@ -1,5 +1,7 @@
-FROM registry.ely.by/elyby/accounts-php:1.4.0
+FROM registry.ely.by/elyby/accounts-php:1.5.1
 
+# bootstrap скрипт для проекта
+COPY docker/php/bootstrap.sh /bootstrap.sh
 # Вносим конфигурации для крона и воркеров
 COPY docker/cron/* /etc/cron.d/
 COPY docker/supervisor/* /etc/supervisor/conf.d/
@@ -11,7 +13,7 @@ RUN chmod 400 ~/.ssh/id_rsa \
  && eval $(ssh-agent -s) \
  && ssh-add /root/.ssh/id_rsa \
  && touch /root/.ssh/known_hosts \
- && ssh-keyscan gitlab.com gitlab.ely.by >> /root/.ssh/known_hosts
+ && ssh-keyscan github.com gitlab.ely.by >> /root/.ssh/known_hosts
 
 # Копируем composer.json в родительскую директорию, которая не будет синкаться с хостом через
 # volume на dev окружении. В entrypoint эта папка будет скопирована обратно.

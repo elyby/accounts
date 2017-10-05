@@ -1,56 +1,40 @@
 <?php
 namespace api\modules\internal\controllers;
 
-use api\components\ApiUser\AccessControl;
 use api\controllers\Controller;
-use api\modules\internal\models\BanForm;
-use api\modules\internal\models\PardonForm;
 use common\models\Account;
-use common\models\OauthScope as S;
-use Yii;
+use common\rbac\Permissions as P;
+use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 use yii\web\BadRequestHttpException;
 use yii\web\NotFoundHttpException;
 
 class AccountsController extends Controller {
 
-    public function behaviors() {
+    public function behaviors(): array {
         return ArrayHelper::merge(parent::behaviors(), [
-            'authenticator' => [
-                'user' => Yii::$app->apiUser,
-            ],
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['ban'],
-                        'allow' => true,
-                        'roles' => [S::ACCOUNT_BLOCK],
-                    ],
-                    [
                         'actions' => ['info'],
                         'allow' => true,
-                        'roles' => [S::INTERNAL_ACCOUNT_INFO],
+                        'roles' => [P::OBTAIN_EXTENDED_ACCOUNT_INFO],
+                        'roleParams' => function() {
+                            return [
+                                'accountId' => 0,
+                            ];
+                        },
                     ],
                 ],
             ],
         ]);
     }
 
-    public function verbs() {
+    public function verbs(): array {
         return [
-            'ban' => ['POST', 'DELETE'],
             'info' => ['GET'],
         ];
-    }
-
-    public function actionBan(int $accountId) {
-        $account = $this->findAccount($accountId);
-        if (Yii::$app->request->isPost) {
-            return $this->banAccount($account);
-        } else {
-            return $this->pardonAccount($account);
-        }
     }
 
     public function actionInfo(int $id = null, string $username = null, string $uuid = null) {
@@ -74,45 +58,6 @@ class AccountsController extends Controller {
             'email' => $account->email,
             'username' => $account->username,
         ];
-    }
-
-    private function banAccount(Account $account) {
-        $model = new BanForm($account);
-        $model->load(Yii::$app->request->post());
-        if (!$model->ban()) {
-            return [
-                'success' => false,
-                'errors' => $model->getFirstErrors(),
-            ];
-        }
-
-        return [
-            'success' => true,
-        ];
-    }
-
-    private function pardonAccount(Account $account) {
-        $model = new PardonForm($account);
-        $model->load(Yii::$app->request->post());
-        if (!$model->pardon()) {
-            return [
-                'success' => false,
-                'errors' => $model->getFirstErrors(),
-            ];
-        }
-
-        return [
-            'success' => true,
-        ];
-    }
-
-    private function findAccount(int $accountId): Account {
-        $account = Account::findOne($accountId);
-        if ($account === null) {
-            throw new NotFoundHttpException();
-        }
-
-        return $account;
     }
 
 }

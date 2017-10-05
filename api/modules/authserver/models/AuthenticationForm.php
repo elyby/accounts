@@ -36,7 +36,7 @@ class AuthenticationForm extends ApiForm {
         $loginForm->password = $this->password;
         if (!$loginForm->validate()) {
             $errors = $loginForm->getFirstErrors();
-            if (isset($errors['token'])) {
+            if (isset($errors['totp'])) {
                 Authserver::error("User with login = '{$this->username}' protected by two factor auth.");
                 throw new ForbiddenOperationException('Account protected with two factor auth.');
             } elseif (isset($errors['login'])) {

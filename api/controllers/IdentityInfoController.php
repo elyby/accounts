@@ -1,14 +1,15 @@
 <?php
 namespace api\controllers;
 
-use api\components\ApiUser\AccessControl;
-use common\models\OauthScope as S;
+use api\models\OauthAccountInfo;
+use common\rbac\Permissions as P;
 use Yii;
+use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 
-class IdentityInfoController extends ApiController {
+class IdentityInfoController extends Controller {
 
-    public function behaviors() {
+    public function behaviors(): array {
         return ArrayHelper::merge(parent::behaviors(), [
             'access' => [
                 'class' => AccessControl::class,
@@ -16,29 +17,22 @@ class IdentityInfoController extends ApiController {
                     [
                         'actions' => ['index'],
                         'allow' => true,
-                        'roles' => [S::ACCOUNT_INFO],
+                        'roles' => [P::OBTAIN_ACCOUNT_INFO],
+                        'roleParams' => function() {
+                            /** @noinspection NullPointerExceptionInspection */
+                            return [
+                                'accountId' => Yii::$app->user->getIdentity()->getAccount()->id,
+                            ];
+                        },
                     ],
                 ],
             ],
         ]);
     }
 
-    public function actionIndex() {
-        $account = Yii::$app->apiUser->getIdentity()->getAccount();
-        $response = [
-            'id' => $account->id,
-            'uuid' => $account->uuid,
-            'username' => $account->username,
-            'registeredAt' => $account->created_at,
-            'profileLink' => $account->getProfileLink(),
-            'preferredLanguage' => $account->lang,
-        ];
-
-        if (Yii::$app->apiUser->can(S::ACCOUNT_EMAIL)) {
-            $response['email'] = $account->email;
-        }
-
-        return $response;
+    public function actionIndex(): array {
+        /** @noinspection NullPointerExceptionInspection */
+        return (new OauthAccountInfo(Yii::$app->user->getIdentity()->getAccount()))->info();
     }
 
 }

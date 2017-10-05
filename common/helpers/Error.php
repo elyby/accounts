@@ -54,8 +54,9 @@ final class Error {
     const SUBJECT_REQUIRED = 'error.subject_required';
     const MESSAGE_REQUIRED = 'error.message_required';
 
-    const OTP_TOKEN_REQUIRED = 'error.token_required';
-    const OTP_TOKEN_INCORRECT = 'error.token_incorrect';
+    const TOTP_REQUIRED = 'error.totp_required';
+    const TOTP_INCORRECT = 'error.totp_incorrect';
+
     const OTP_ALREADY_ENABLED = 'error.otp_already_enabled';
     const OTP_NOT_ENABLED = 'error.otp_not_enabled';
 

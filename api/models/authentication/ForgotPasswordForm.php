@@ -20,17 +20,17 @@ class ForgotPasswordForm extends ApiForm {
 
     public $login;
 
-    public $token;
+    public $totp;
 
     public function rules() {
         return [
             ['captcha', ReCaptchaValidator::class],
             ['login', 'required', 'message' => E::LOGIN_REQUIRED],
             ['login', 'validateLogin'],
-            ['token', 'required', 'when' => function(self $model) {
+            ['totp', 'required', 'when' => function(self $model) {
                 return !$this->hasErrors() && $model->getAccount()->is_otp_enabled;
-            }, 'message' => E::OTP_TOKEN_REQUIRED],
-            ['token', 'validateTotpToken'],
+            }, 'message' => E::TOTP_REQUIRED],
+            ['totp', 'validateTotp'],
             ['login', 'validateActivity'],
             ['login', 'validateFrequency'],
         ];
@@ -44,7 +44,7 @@ class ForgotPasswordForm extends ApiForm {
         }
     }
 
-    public function validateTotpToken($attribute) {
+    public function validateTotp($attribute) {
         if ($this->hasErrors()) {
             return;
         }
@@ -101,7 +101,7 @@ class ForgotPasswordForm extends ApiForm {
         return true;
     }
 
-    public function getLogin() {
+    public function getLogin(): string {
         return $this->login;
     }
 

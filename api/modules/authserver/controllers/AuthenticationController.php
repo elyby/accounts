@@ -7,7 +7,7 @@ use Yii;
 
 class AuthenticationController extends Controller {
 
-    public function behaviors() {
+    public function behaviors(): array {
         $behaviors = parent::behaviors();
         unset($behaviors['authenticator']);
 

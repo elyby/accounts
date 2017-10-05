@@ -1,44 +1,64 @@
 <?php
 namespace api\components\OAuth2\Grants;
 
-use api\components\OAuth2\Entities;
+use api\components\OAuth2\Entities\AccessTokenEntity;
+use api\components\OAuth2\Entities\RefreshTokenEntity;
+use api\components\OAuth2\Utils\Scopes;
 use ErrorException;
-use League\OAuth2\Server\Entity\ClientEntity as OriginalClientEntity;
-use League\OAuth2\Server\Entity\ClientEntity;
-use League\OAuth2\Server\Entity\RefreshTokenEntity as OriginalRefreshTokenEntity;
-use League\OAuth2\Server\Event;
+use League\OAuth2\Server\Entity\AccessTokenEntity as BaseAccessTokenEntity;
+use League\OAuth2\Server\Entity\ClientEntity as BaseClientEntity;
+use League\OAuth2\Server\Entity\RefreshTokenEntity as BaseRefreshTokenEntity;
+use League\OAuth2\Server\Event\ClientAuthenticationFailedEvent;
 use League\OAuth2\Server\Exception;
+use League\OAuth2\Server\Grant\AbstractGrant;
 use League\OAuth2\Server\Util\SecureKey;
 
-class RefreshTokenGrant extends \League\OAuth2\Server\Grant\RefreshTokenGrant {
+class RefreshTokenGrant extends AbstractGrant {
 
-    public $refreshTokenRotate = false;
+    protected $identifier = 'refresh_token';
 
-    protected function createAccessTokenEntity() {
-        return new Entities\AccessTokenEntity($this->server);
+    protected $refreshTokenTTL = 604800;
+
+    protected $refreshTokenRotate = false;
+
+    protected $requireClientSecret = true;
+
+    public function setRefreshTokenTTL($refreshTokenTTL): void {
+        $this->refreshTokenTTL = $refreshTokenTTL;
     }
 
-    protected function createRefreshTokenEntity() {
-        return new Entities\RefreshTokenEntity($this->server);
+    public function getRefreshTokenTTL(): int {
+        return $this->refreshTokenTTL;
     }
 
-    protected function createSessionEntity() {
-        return new Entities\SessionEntity($this->server);
+    public function setRefreshTokenRotation(bool $refreshTokenRotate = true): void {
+        $this->refreshTokenRotate = $refreshTokenRotate;
+    }
+
+    public function shouldRotateRefreshTokens(): bool {
+        return $this->refreshTokenRotate;
+    }
+
+    public function setRequireClientSecret(string $required): void {
+        $this->requireClientSecret = $required;
+    }
+
+    public function shouldRequireClientSecret(): bool {
+        return $this->requireClientSecret;
     }
 
     /**
      * По стандарту OAuth2 scopes должны разделяться пробелом, а не запятой. Косяк.
-     * Так что оборачиваем функцию разбора скоупов, заменяя пробелы на запятые.
+     * Так что оборачиваем функцию разбора скоупов, заменяя запятые на пробелы.
      *
      * @param string       $scopeParam
-     * @param ClientEntity $client
+     * @param BaseClientEntity $client
      * @param string $redirectUri
      *
      * @return \League\OAuth2\Server\Entity\ScopeEntity[]
      */
-    public function validateScopes($scopeParam = '', ClientEntity $client, $redirectUri = null) {
-        $scopes = str_replace(' ', $this->server->getScopeDelimiter(), $scopeParam);
-        return parent::validateScopes($scopes, $client, $redirectUri);
+    public function validateScopes($scopeParam = '', BaseClientEntity $client, $redirectUri = null) {
+        return parent::validateScopes(Scopes::format($scopeParam), $client, $redirectUri);
     }
 
     /**
@@ -47,10 +67,11 @@ class RefreshTokenGrant extends \League\OAuth2\Server\Grant\RefreshTokenGrant {
      * Поэтому мы расширили логику RefreshTokenEntity и она теперь знает о сессии, в рамках которой была создана
      *
      * @inheritdoc
+     * @throws \League\OAuth2\Server\Exception\OAuthException
      */
-    public function completeFlow() {
+    public function completeFlow(): array {
         $clientId = $this->server->getRequest()->request->get('client_id', $this->server->getRequest()->getUser());
-        if (is_null($clientId)) {
+        if ($clientId === null) {
             throw new Exception\InvalidRequestException('client_id');
         }
 
@@ -58,31 +79,25 @@ class RefreshTokenGrant extends \League\OAuth2\Server\Grant\RefreshTokenGrant {
             'client_secret',
             $this->server->getRequest()->getPassword()
         );
-        if ($this->shouldRequireClientSecret() && is_null($clientSecret)) {
+        if ($clientSecret === null && $this->shouldRequireClientSecret()) {
             throw new Exception\InvalidRequestException('client_secret');
         }
 
         // Validate client ID and client secret
-        $client = $this->server->getClientStorage()->get(
-            $clientId,
-            $clientSecret,
-            null,
-            $this->getIdentifier()
-        );
-
-        if (($client instanceof OriginalClientEntity) === false) {
-            $this->server->getEventEmitter()->emit(new Event\ClientAuthenticationFailedEvent($this->server->getRequest()));
+        $client = $this->server->getClientStorage()->get($clientId, $clientSecret, null, $this->getIdentifier());
+        if (($client instanceof BaseClientEntity) === false) {
+            $this->server->getEventEmitter()->emit(new ClientAuthenticationFailedEvent($this->server->getRequest()));
             throw new Exception\InvalidClientException();
         }
 
-        $oldRefreshTokenParam = $this->server->getRequest()->request->get('refresh_token', null);
+        $oldRefreshTokenParam = $this->server->getRequest()->request->get('refresh_token');
         if ($oldRefreshTokenParam === null) {
             throw new Exception\InvalidRequestException('refresh_token');
         }
 
         // Validate refresh token
         $oldRefreshToken = $this->server->getRefreshTokenStorage()->get($oldRefreshTokenParam);
-        if (($oldRefreshToken instanceof OriginalRefreshTokenEntity) === false) {
+        if (($oldRefreshToken instanceof BaseRefreshTokenEntity) === false) {
             throw new Exception\InvalidRefreshException();
         }
 
@@ -91,14 +106,15 @@ class RefreshTokenGrant extends \League\OAuth2\Server\Grant\RefreshTokenGrant {
             throw new Exception\InvalidRefreshException();
         }
 
-        /** @var Entities\AccessTokenEntity|null $oldAccessToken */
+        /** @var AccessTokenEntity|null $oldAccessToken */
         $oldAccessToken = $oldRefreshToken->getAccessToken();
-        if ($oldAccessToken instanceof Entities\AccessTokenEntity) {
+        if ($oldAccessToken instanceof AccessTokenEntity) {
             // Get the scopes for the original session
             $session = $oldAccessToken->getSession();
         } else {
-            if (!$oldRefreshToken instanceof Entities\RefreshTokenEntity) {
-                throw new ErrorException('oldRefreshToken must be instance of ' . Entities\RefreshTokenEntity::class);
+            if (!$oldRefreshToken instanceof RefreshTokenEntity) {
+                /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
+                throw new ErrorException('oldRefreshToken must be instance of ' . RefreshTokenEntity::class);
             }
 
             $session = $oldRefreshToken->getSession();
@@ -126,7 +142,7 @@ class RefreshTokenGrant extends \League\OAuth2\Server\Grant\RefreshTokenGrant {
         }
 
         // Generate a new access token and assign it the correct sessions
-        $newAccessToken = $this->createAccessTokenEntity();
+        $newAccessToken = new AccessTokenEntity($this->server);
         $newAccessToken->setId(SecureKey::generate());
         $newAccessToken->setExpireTime($this->getAccessTokenTTL() + time());
         $newAccessToken->setSession($session);
@@ -136,7 +152,7 @@ class RefreshTokenGrant extends \League\OAuth2\Server\Grant\RefreshTokenGrant {
         }
 
         // Expire the old token and save the new one
-        ($oldAccessToken instanceof Entities\AccessTokenEntity) && $oldAccessToken->expire();
+        $oldAccessToken instanceof BaseAccessTokenEntity && $oldAccessToken->expire();
         $newAccessToken->save();
 
         $this->server->getTokenType()->setSession($session);
@@ -148,7 +164,7 @@ class RefreshTokenGrant extends \League\OAuth2\Server\Grant\RefreshTokenGrant {
             $oldRefreshToken->expire();
 
             // Generate a new refresh token
-            $newRefreshToken = $this->createRefreshTokenEntity();
+            $newRefreshToken = new RefreshTokenEntity($this->server);
             $newRefreshToken->setId(SecureKey::generate());
             $newRefreshToken->setExpireTime($this->getRefreshTokenTTL() + time());
             $newRefreshToken->setAccessToken($newAccessToken);

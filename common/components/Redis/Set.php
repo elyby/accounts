@@ -6,34 +6,34 @@ use IteratorAggregate;
 
 class Set extends Key implements IteratorAggregate {
 
-    public function add($value) {
-        $this->getRedis()->sadd($this->key, $value);
+    public function add($value): self {
+        $this->getRedis()->sadd($this->getKey(), $value);
         return $this;
     }
 
-    public function remove($value) {
-        $this->getRedis()->srem($this->key, $value);
+    public function remove($value): self {
+        $this->getRedis()->srem($this->getKey(), $value);
         return $this;
     }
 
-    public function members() {
-        return $this->getRedis()->smembers($this->key);
+    public function members(): array {
+        return $this->getRedis()->smembers($this->getKey());
     }
 
-    public function getValue() {
+    public function getValue(): array {
         return $this->members();
     }
 
-    public function exists(string $value = null) : bool {
+    public function exists(string $value = null): bool {
         if ($value === null) {
             return parent::exists();
-        } else {
-            return (bool)$this->getRedis()->sismember($this->key, $value);
         }
+
+        return (bool)$this->getRedis()->sismember($this->getKey(), $value);
     }
 
-    public function diff(array $sets) {
-        return $this->getRedis()->sdiff([$this->key, implode(' ', $sets)]);
+    public function diff(array $sets): array {
+        return $this->getRedis()->sdiff([$this->getKey(), implode(' ', $sets)]);
     }
 
     /**

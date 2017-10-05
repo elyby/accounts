@@ -5,10 +5,12 @@ modules:
         - Yii2
         - tests\codeception\common\_support\FixtureHelper
         - tests\codeception\common\_support\amqp\Helper
+        - tests\codeception\common\_support\Mockery
         - Redis
         - Asserts
         - REST:
             depends: Yii2
+            url: /api
     config:
         Yii2:
             configFile: '../config/api/functional.php'

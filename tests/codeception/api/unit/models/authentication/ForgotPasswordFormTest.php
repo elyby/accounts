@@ -41,19 +41,19 @@ class ForgotPasswordFormTest extends TestCase {
         $this->assertEmpty($model->getErrors('login'), 'empty errors if login is exists');
     }
 
-    public function testValidateTotpToken() {
+    public function testValidateTotp() {
         $model = new ForgotPasswordForm();
         $model->login = 'AccountWithEnabledOtp';
-        $model->token = '123456';
-        $model->validateTotpToken('token');
-        $this->assertEquals(['error.token_incorrect'], $model->getErrors('token'));
+        $model->totp = '123456';
+        $model->validateTotp('totp');
+        $this->assertEquals(['error.totp_incorrect'], $model->getErrors('totp'));
 
         $totp = TOTP::create('BBBB');
         $model = new ForgotPasswordForm();
         $model->login = 'AccountWithEnabledOtp';
-        $model->token = $totp->now();
-        $model->validateTotpToken('token');
-        $this->assertEmpty($model->getErrors('token'));
+        $model->totp = $totp->now();
+        $model->validateTotp('totp');
+        $this->assertEmpty($model->getErrors('totp'));
     }
 
     public function testValidateActivity() {

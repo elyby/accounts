@@ -52,10 +52,10 @@ class TotpValidator extends Validator {
         try {
             $totp = TOTP::create($this->account->otp_secret);
             if (!$totp->verify((string)$value, $this->getTimestamp(), $this->window)) {
-                return [E::OTP_TOKEN_INCORRECT, []];
+                return [E::TOTP_INCORRECT, []];
             }
         } catch (RangeException $e) {
-            return [E::OTP_TOKEN_INCORRECT, []];
+            return [E::TOTP_INCORRECT, []];
         }
 
         return null;

@@ -3,14 +3,27 @@
  * @var array $params
  */
 return [
-    '/accounts/change-email/initialize' => 'accounts/change-email-initialize',
-    '/accounts/change-email/submit-new-email' => 'accounts/change-email-submit-new-email',
-    '/accounts/change-email/confirm-new-email' => 'accounts/change-email-confirm-new-email',
-
-    'POST /two-factor-auth' => 'two-factor-auth/activate',
-    'DELETE /two-factor-auth' => 'two-factor-auth/disable',
-
     '/oauth2/v1/<action>' => 'oauth/<action>',
+
+    'GET /v1/accounts/<id:\d+>' => 'accounts/default/get',
+    'GET /v1/accounts/<id:\d+>/two-factor-auth' => 'accounts/default/get-two-factor-auth-credentials',
+    'POST /v1/accounts/<id:\d+>/two-factor-auth' => 'accounts/default/enable-two-factor-auth',
+    'DELETE /v1/accounts/<id:\d+>/two-factor-auth' => 'accounts/default/disable-two-factor-auth',
+    'POST /v1/accounts/<id:\d+>/ban' => 'accounts/default/ban',
+    'DELETE /v1/accounts/<id:\d+>/ban' => 'accounts/default/pardon',
+    '/v1/accounts/<id:\d+>/<action>' => 'accounts/default/<action>',
+
+    'GET /accounts/current' => 'accounts/default/get',
+    'POST /accounts/change-username' => 'accounts/default/username',
+    'POST /accounts/change-password' => 'accounts/default/password',
+    'POST /accounts/change-email/initialize' => 'accounts/default/email-verification',
+    'POST /accounts/change-email/submit-new-email' => 'accounts/default/new-email-verification',
+    'POST /accounts/change-email/confirm-new-email' => 'accounts/default/email',
+    'POST /accounts/accept-rules' => 'accounts/default/rules',
+    'GET /two-factor-auth' => 'accounts/default/get-two-factor-auth-credentials',
+    'POST /two-factor-auth' => 'accounts/default/enable-two-factor-auth',
+    'DELETE /two-factor-auth' => 'accounts/default/disable-two-factor-auth',
+    'POST /accounts/change-lang' => 'accounts/default/language',
 
     '/account/v1/info' => 'identity-info/index',
 

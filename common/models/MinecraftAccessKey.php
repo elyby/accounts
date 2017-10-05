@@ -31,11 +31,11 @@ class MinecraftAccessKey extends ActiveRecord {
 
     const LIFETIME = 172800; // Ключ актуален в течение 2 дней
 
-    public static function tableName() {
+    public static function tableName(): string {
         return '{{%minecraft_access_keys}}';
     }
 
-    public function behaviors() {
+    public function behaviors(): array {
         return [
             [
                 'class' => TimestampBehavior::class,
@@ -49,11 +49,11 @@ class MinecraftAccessKey extends ActiveRecord {
         ];
     }
 
-    public function getAccount() : ActiveQuery {
+    public function getAccount(): ActiveQuery {
         return $this->hasOne(Account::class, ['id' => 'account_id']);
     }
 
-    public function isExpired() : bool {
+    public function isExpired(): bool {
         return time() > $this->updated_at + self::LIFETIME;
     }
 

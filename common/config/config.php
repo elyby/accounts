@@ -1,7 +1,7 @@
 <?php
 return [
-    'version' => '1.1.17',
-    'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
+    'version' => '1.1.18',
+    'vendorPath' => dirname(__DIR__, 2) . '/vendor',
     'components' => [
         'cache' => [
             'class' => common\components\Redis\Cache::class,
@@ -71,12 +71,11 @@ return [
         ],
         'oauth' => [
             'class' => api\components\OAuth2\Component::class,
-            'grantTypes' => ['authorization_code', 'client_credentials'],
-            'grantMap' => [
-                'authorization_code' => api\components\OAuth2\Grants\AuthCodeGrant::class,
-                'refresh_token' => api\components\OAuth2\Grants\RefreshTokenGrant::class,
-                'client_credentials' => api\components\OAuth2\Grants\ClientCredentialsGrant::class,
-            ],
+        ],
+        'authManager' => [
+            'class' => common\rbac\Manager::class,
+            'itemFile' => '@common/rbac/.generated/items.php',
+            'ruleFile' => '@common/rbac/.generated/rules.php',
         ],
     ],
     'container' => [

@@ -1,67 +1,80 @@
 <?php
 namespace tests\codeception\api\_pages;
 
-use yii\codeception\BasePage;
-
-/**
- * @property \tests\codeception\api\FunctionalTester $actor
- */
 class AccountsRoute extends BasePage {
 
-    public function current() {
-        $this->route = ['accounts/current'];
-        $this->actor->sendGET($this->getUrl());
+    public function get(int $accountId) {
+        $this->getActor()->sendGET("/v1/accounts/{$accountId}");
     }
 
-    public function changePassword($currentPassword = null, $newPassword = null, $newRePassword = null) {
-        $this->route = ['accounts/change-password'];
-        $this->actor->sendPOST($this->getUrl(), [
+    public function changePassword(int $accountId, $currentPassword = null, $newPassword = null, $newRePassword = null) {
+        $this->getActor()->sendPOST("/v1/accounts/{$accountId}/password", [
             'password' => $currentPassword,
             'newPassword' => $newPassword,
             'newRePassword' => $newRePassword,
         ]);
     }
 
-    public function changeUsername($currentPassword = null, $newUsername = null) {
-        $this->route = ['accounts/change-username'];
-        $this->actor->sendPOST($this->getUrl(), [
+    public function changeUsername(int $accountId, $currentPassword = null, $newUsername = null) {
+        $this->getActor()->sendPOST("/v1/accounts/{$accountId}/username", [
             'password' => $currentPassword,
             'username' => $newUsername,
         ]);
     }
 
-    public function changeEmailInitialize($password = '') {
-        $this->route = ['accounts/change-email-initialize'];
-        $this->actor->sendPOST($this->getUrl(), [
+    public function changeEmailInitialize(int $accountId, $password = '') {
+        $this->getActor()->sendPOST("/v1/accounts/{$accountId}/email-verification", [
             'password' => $password,
         ]);
     }
 
-    public function changeEmailSubmitNewEmail($key = null, $email = null) {
-        $this->route = ['accounts/change-email-submit-new-email'];
-        $this->actor->sendPOST($this->getUrl(), [
+    public function changeEmailSubmitNewEmail(int $accountId, $key = null, $email = null) {
+        $this->getActor()->sendPOST("/v1/accounts/{$accountId}/new-email-verification", [
             'key' => $key,
             'email' => $email,
         ]);
     }
 
-    public function changeEmailConfirmNewEmail($key = null) {
-        $this->route = ['accounts/change-email-confirm-new-email'];
-        $this->actor->sendPOST($this->getUrl(), [
+    public function changeEmail(int $accountId, $key = null) {
+        $this->getActor()->sendPOST("/v1/accounts/{$accountId}/email", [
             'key' => $key,
         ]);
     }
 
-    public function changeLang($lang = null) {
-        $this->route = ['accounts/change-lang'];
-        $this->actor->sendPOST($this->getUrl(), [
+    public function changeLanguage(int $accountId, $lang = null) {
+        $this->getActor()->sendPOST("/v1/accounts/{$accountId}/language", [
             'lang' => $lang,
         ]);
     }
 
-    public function acceptRules() {
-        $this->route = ['accounts/accept-rules'];
-        $this->actor->sendPOST($this->getUrl());
+    public function acceptRules(int $accountId) {
+        $this->getActor()->sendPOST("/v1/accounts/{$accountId}/rules");
+    }
+
+    public function getTwoFactorAuthCredentials(int $accountId) {
+        $this->getActor()->sendGET("/v1/accounts/{$accountId}/two-factor-auth");
+    }
+
+    public function enableTwoFactorAuth(int $accountId, $totp = null, $password = null) {
+        $this->getActor()->sendPOST("/v1/accounts/{$accountId}/two-factor-auth", [
+            'totp' => $totp,
+            'password' => $password,
+        ]);
+    }
+
+    public function disableTwoFactorAuth(int $accountId, $totp = null, $password = null) {
+        $this->getActor()->sendDELETE("/v1/accounts/{$accountId}/two-factor-auth", [
+            'totp' => $totp,
+            'password' => $password,
+        ]);
+    }
+
+    public function ban(int $accountId) {
+        $this->getActor()->sendPOST("/v1/accounts/{$accountId}/ban");
+    }
+
+    public function pardon(int $accountId) {
+        $this->getActor()->sendDELETE("/v1/accounts/{$accountId}/ban");
     }
 
 }
