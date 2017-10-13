@@ -130,6 +130,16 @@ class TestData {
     public function beforeAccountEmailVerification(Request $request): ?array {
         $httpAuth = $request->getHeaders()->get('authorization');
         if ($httpAuth === 'Bearer dummy_token') {
+            $password = $request->post('password');
+            if (empty($password)) {
+                return [
+                    'success' => false,
+                    'errors' => [
+                        'password' => 'error.password_required',
+                    ],
+                ];
+            }
+
             return [
                 'success' => true,
             ];
