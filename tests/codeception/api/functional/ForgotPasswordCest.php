@@ -1,7 +1,6 @@
 <?php
 namespace codeception\api\functional;
 
-use OTPHP\TOTP;
 use tests\codeception\api\_pages\AuthenticationRoute;
 use tests\codeception\api\FunctionalTester;
 
@@ -34,30 +33,6 @@ class ForgotPasswordCest {
                 'login' => 'error.login_not_exist',
             ],
         ]);
-
-        $this->route->forgotPassword('AccountWithEnabledOtp');
-        $I->canSeeResponseContainsJson([
-            'success' => false,
-            'errors' => [
-                'totp' => 'error.totp_required',
-            ],
-        ]);
-
-        $this->route->forgotPassword('AccountWithEnabledOtp');
-        $I->canSeeResponseContainsJson([
-            'success' => false,
-            'errors' => [
-                'totp' => 'error.totp_required',
-            ],
-        ]);
-
-        $this->route->forgotPassword('AccountWithEnabledOtp', '123456');
-        $I->canSeeResponseContainsJson([
-            'success' => false,
-            'errors' => [
-                'totp' => 'error.totp_incorrect',
-            ],
-        ]);
     }
 
     public function testForgotPasswordByEmail(FunctionalTester $I) {
@@ -69,13 +44,6 @@ class ForgotPasswordCest {
     public function testForgotPasswordByUsername(FunctionalTester $I) {
         $I->wantTo('create new password recover request by passing username');
         $this->route->forgotPassword('Admin');
-        $this->assertSuccessResponse($I, true);
-    }
-
-    public function testForgotPasswordByAccountWithOtp(FunctionalTester $I) {
-        $I->wantTo('create new password recover request by passing username and otp totp');
-        $totp = TOTP::create('BBBB');
-        $this->route->forgotPassword('AccountWithEnabledOtp', $totp->now());
         $this->assertSuccessResponse($I, true);
     }
 
