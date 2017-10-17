@@ -34,7 +34,7 @@ COPY ./frontend/scripts /var/www/frontend/scripts
 COPY ./frontend/webpack-utils /var/www/frontend/webpack-utils
 
 RUN cd ../frontend \
- && npm install --quiet --depth -1 \
+ && npm run build:install \
  && cd -
 
 # Удаляем ключи из production контейнера на всякий случай
