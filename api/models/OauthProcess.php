@@ -7,6 +7,7 @@ use api\components\OAuth2\Grants\AuthCodeGrant;
 use api\components\OAuth2\Grants\AuthorizeParams;
 use common\models\Account;
 use common\models\OauthClient;
+use common\rbac\Permissions as P;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Exception\InvalidGrantException;
 use League\OAuth2\Server\Exception\OAuthException;
@@ -15,6 +16,11 @@ use Yii;
 use yii\helpers\ArrayHelper;
 
 class OauthProcess {
+
+    private const INTERNAL_PERMISSIONS_TO_PUBLIC_SCOPES = [
+        P::OBTAIN_OWN_ACCOUNT_INFO => 'account_info',
+        P::OBTAIN_ACCOUNT_EMAIL => 'account_email',
+    ];
 
     /**
      * @var AuthorizationServer
@@ -196,9 +202,19 @@ class OauthProcess {
                 'description' => ArrayHelper::getValue($queryParams, 'description', $client->description),
             ],
             'session' => [
-                'scopes' => array_keys($scopes),
+                'scopes' => $this->fixScopesNames(array_keys($scopes)),
             ],
         ];
+    }
+
+    private function fixScopesNames(array $scopes): array {
+        foreach ($scopes as &$scope) {
+            if (isset(self::INTERNAL_PERMISSIONS_TO_PUBLIC_SCOPES[$scope])) {
+                $scope = self::INTERNAL_PERMISSIONS_TO_PUBLIC_SCOPES[$scope];
+            }
+        }
+
+        return $scopes;
     }
 
     private function buildErrorResponse(OAuthException $e): array {
