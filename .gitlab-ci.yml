@@ -46,7 +46,7 @@ test:frontend:
             - frontend/node_modules
     script:
         - cd frontend
-        - npm i --silent > /dev/null
+        - npm run build:install --silent
         - npm run lint --silent
         # - npm run flow --silent # disabled due to missing libelf.so.1 in docker container
         - npm run test --silent

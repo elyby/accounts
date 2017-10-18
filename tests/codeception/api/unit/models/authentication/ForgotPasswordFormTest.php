@@ -6,7 +6,6 @@ use api\models\authentication\ForgotPasswordForm;
 use Codeception\Specify;
 use common\models\EmailActivation;
 use GuzzleHttp\ClientInterface;
-use OTPHP\TOTP;
 use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\EmailActivationFixture;
@@ -39,21 +38,6 @@ class ForgotPasswordFormTest extends TestCase {
         $model = new ForgotPasswordForm(['login' => $this->tester->grabFixture('accounts', 'admin')['username']]);
         $model->validateLogin('login');
         $this->assertEmpty($model->getErrors('login'), 'empty errors if login is exists');
-    }
-
-    public function testValidateTotp() {
-        $model = new ForgotPasswordForm();
-        $model->login = 'AccountWithEnabledOtp';
-        $model->totp = '123456';
-        $model->validateTotp('totp');
-        $this->assertEquals(['error.totp_incorrect'], $model->getErrors('totp'));
-
-        $totp = TOTP::create('BBBB');
-        $model = new ForgotPasswordForm();
-        $model->login = 'AccountWithEnabledOtp';
-        $model->totp = $totp->now();
-        $model->validateTotp('totp');
-        $this->assertEmpty($model->getErrors('totp'));
     }
 
     public function testValidateActivity() {

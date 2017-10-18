@@ -1,6 +1,6 @@
 <?php
 return [
-    'version' => '1.1.18',
+    'version' => '1.1.19',
     'vendorPath' => dirname(__DIR__, 2) . '/vendor',
     'components' => [
         'cache' => [

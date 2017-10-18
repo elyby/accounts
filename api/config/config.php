@@ -87,4 +87,5 @@ return [
         'internal' => api\modules\internal\Module::class,
         'accounts' => api\modules\accounts\Module::class,
     ],
+    'on beforeAction' => api\components\TestData::getInstance(),
 ];

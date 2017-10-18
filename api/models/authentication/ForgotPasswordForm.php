@@ -3,7 +3,6 @@ namespace api\models\authentication;
 
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\base\ApiForm;
-use api\validators\TotpValidator;
 use common\emails\EmailHelper;
 use common\helpers\Error as E;
 use api\traits\AccountFinder;
@@ -20,17 +19,11 @@ class ForgotPasswordForm extends ApiForm {
 
     public $login;
 
-    public $totp;
-
     public function rules() {
         return [
             ['captcha', ReCaptchaValidator::class],
             ['login', 'required', 'message' => E::LOGIN_REQUIRED],
             ['login', 'validateLogin'],
-            ['totp', 'required', 'when' => function(self $model) {
-                return !$this->hasErrors() && $model->getAccount()->is_otp_enabled;
-            }, 'message' => E::TOTP_REQUIRED],
-            ['totp', 'validateTotp'],
             ['login', 'validateActivity'],
             ['login', 'validateFrequency'],
         ];
@@ -42,21 +35,6 @@ class ForgotPasswordForm extends ApiForm {
                 $this->addError($attribute, E::LOGIN_NOT_EXIST);
             }
         }
-    }
-
-    public function validateTotp($attribute) {
-        if ($this->hasErrors()) {
-            return;
-        }
-
-        $account = $this->getAccount();
-        if (!$account->is_otp_enabled) {
-            return;
-        }
-
-        $validator = new TotpValidator(['account' => $account]);
-        $validator->window = 1;
-        $validator->validateAttribute($this, $attribute);
     }
 
     public function validateActivity($attribute) {

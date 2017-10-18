@@ -24,7 +24,7 @@ class AuthCodeCest {
             'ely',
             'http://ely.by',
             'code',
-            [P::MINECRAFT_SERVER_SESSION],
+            [P::MINECRAFT_SERVER_SESSION, 'account_info', 'account_email'],
             'test-state'
         ));
         $I->canSeeResponseCodeIs(200);
@@ -35,7 +35,7 @@ class AuthCodeCest {
                 'client_id' => 'ely',
                 'redirect_uri' => 'http://ely.by',
                 'response_type' => 'code',
-                'scope' => 'minecraft_server_session',
+                'scope' => 'minecraft_server_session,account_info,account_email',
                 'state' => 'test-state',
             ],
             'client' => [
@@ -46,6 +46,8 @@ class AuthCodeCest {
             'session' => [
                 'scopes' => [
                     'minecraft_server_session',
+                    'account_info',
+                    'account_email',
                 ],
             ],
         ]);
