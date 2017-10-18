@@ -4,6 +4,7 @@ namespace api\components\User;
 use common\models\Account;
 use Emarref\Jwt\Claim\Subject;
 use Emarref\Jwt\Exception\ExpiredException;
+use Emarref\Jwt\Exception\InvalidSubjectException;
 use Emarref\Jwt\Token;
 use Exception;
 use Yii;
@@ -28,7 +29,8 @@ class JwtIdentity implements IdentityInterface {
         $component = Yii::$app->user;
         try {
             $token = $component->parseToken($rawToken);
-        } catch (ExpiredException $e) {
+        } catch (ExpiredException | InvalidSubjectException $e) {
+            // InvalidSubjectException is temporary solution and should be removed in the next release
             throw new UnauthorizedHttpException('Token expired');
         } catch (Exception $e) {
             Yii::error($e);
