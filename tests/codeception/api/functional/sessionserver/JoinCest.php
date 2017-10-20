@@ -52,6 +52,17 @@ class JoinCest {
         $this->expectSuccessResponse($I);
     }
 
+    public function joinByOauth2TokenWithNotDashedUUID(OauthSteps $I) {
+        $I->wantTo('join to server, using modern oAuth2 generated token and non dashed uuid');
+        $accessToken = $I->getAccessToken([P::MINECRAFT_SERVER_SESSION]);
+        $this->route->join([
+            'accessToken' => $accessToken,
+            'selectedProfile' => 'df936908b2e1544d96f82977ec213022',
+            'serverId' => Uuid::uuid(),
+        ]);
+        $this->expectSuccessResponse($I);
+    }
+
     public function joinByModernOauth2TokenWithoutPermission(OauthSteps $I) {
         $I->wantTo('join to server, using moder oAuth2 generated token, but without minecraft auth permission');
         $accessToken = $I->getAccessToken(['account_info', 'account_email']);

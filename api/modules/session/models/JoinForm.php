@@ -126,7 +126,7 @@ class JoinForm extends Model {
 
         $selectedProfile = $this->selectedProfile;
         $isUuid = StringHelper::isUuid($selectedProfile);
-        if ($isUuid && $account->uuid !== $selectedProfile) {
+        if ($isUuid && $account->uuid !== $this->normalizeUUID($selectedProfile)) {
             Session::error(
                 "User with access_token = '{$accessToken}' trying to join with identity = '{$selectedProfile}'," .
                 " but access_token issued to account with id = '{$account->uuid}'."
@@ -134,7 +134,7 @@ class JoinForm extends Model {
             throw new ForbiddenOperationException('Wrong selected_profile.');
         }
 
-        if (!$isUuid && $account->username !== $selectedProfile) {
+        if (!$isUuid && mb_strtolower($account->username) !== mb_strtolower($selectedProfile)) {
             Session::error(
                 "User with access_token = '{$accessToken}' trying to join with identity = '{$selectedProfile}'," .
                 " but access_token issued to account with username = '{$account->username}'."
@@ -147,6 +147,10 @@ class JoinForm extends Model {
 
     protected function getAccount(): Account {
         return $this->account;
+    }
+
+    private function normalizeUUID(string $uuid): string {
+        return Uuid::fromString($uuid)->toString();
     }
 
 }
