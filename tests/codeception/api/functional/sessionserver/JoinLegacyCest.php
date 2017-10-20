@@ -30,6 +30,17 @@ class JoinLegacyCest {
         $this->expectSuccessResponse($I);
     }
 
+    public function joinByOauth2TokenAndDifferentLetterCase(AuthserverSteps $I) {
+        $I->wantTo('join to server by legacy protocol, using legacy authserver access token and different letter case');
+        [$accessToken] = $I->amAuthenticated();
+        $this->route->joinLegacy([
+            'sessionId' => $accessToken,
+            'user' => 'admin',
+            'serverId' => Uuid::uuid(),
+        ]);
+        $this->expectSuccessResponse($I);
+    }
+
     public function joinByNewSessionFormat(AuthserverSteps $I) {
         $I->wantTo('join to server by legacy protocol with new launcher session format, using legacy authserver');
         [$accessToken] = $I->amAuthenticated();

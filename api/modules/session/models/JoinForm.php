@@ -134,7 +134,7 @@ class JoinForm extends Model {
             throw new ForbiddenOperationException('Wrong selected_profile.');
         }
 
-        if (!$isUuid && $account->username !== $selectedProfile) {
+        if (!$isUuid && mb_strtolower($account->username) !== mb_strtolower($selectedProfile)) {
             Session::error(
                 "User with access_token = '{$accessToken}' trying to join with identity = '{$selectedProfile}'," .
                 " but access_token issued to account with username = '{$account->username}'."
