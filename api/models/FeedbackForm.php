@@ -3,6 +3,7 @@ namespace api\models;
 
 use common\helpers\Error as E;
 use api\models\base\ApiForm;
+use common\models\Account;
 use Yii;
 use yii\base\ErrorException;
 use yii\base\InvalidConfigException;
@@ -58,11 +59,13 @@ class FeedbackForm extends ApiForm {
         return true;
     }
 
-    /**
-     * @return \common\models\Account|null $account
-     */
-    protected function getAccount() {
-        return Yii::$app->user->identity;
+    protected function getAccount(): ?Account {
+        $identity = Yii::$app->user->identity;
+        if ($identity === null) {
+            return null;
+        }
+
+        return $identity->getAccount();
     }
 
 }
