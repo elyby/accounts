@@ -23,7 +23,9 @@
         "spomky-labs/otphp": "^9.0.2",
         "bacon/bacon-qr-code": "^1.0",
         "paragonie/constant_time_encoding": "^2.0",
-        "webmozart/assert": "^1.2.0"
+        "webmozart/assert": "^1.2.0",
+        "goaop/framework": "~2.1.2",
+        "domnikl/statsd": "^2.6"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "*",
@@ -51,6 +53,11 @@
         }
     ],
     "autoload": {
+        "psr-4": {
+            "api\\": "api",
+            "common\\": "common",
+            "console\\": "console"
+        },
         "files": [
             "common/consts.php"
         ]
