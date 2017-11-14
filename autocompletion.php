@@ -16,6 +16,7 @@ class Yii extends \yii\BaseYii {
  * Class BaseApplication
  * Used for properties that are identical for both WebApplication and ConsoleApplication
  *
+ * @property \yii\db\Connection                    $unbufferedDb
  * @property \yii\swiftmailer\Mailer               $mailer
  * @property \common\components\Redis\Connection   $redis
  * @property \common\components\RabbitMQ\Component $amqp

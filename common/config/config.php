@@ -17,6 +17,19 @@ return [
                 'mysql' => common\db\mysql\Schema::class,
             ],
         ],
+        'unbufferedDb' => [
+            'class' => yii\db\Connection::class,
+            'dsn' => 'mysql:host=' . (getenv('DB_HOST') ?: 'db') . ';dbname=' . getenv('DB_DATABASE'),
+            'username' => getenv('DB_USER'),
+            'password' => getenv('DB_PASSWORD'),
+            'charset' => 'utf8',
+            'attributes' => [
+                PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => false,
+            ],
+            'schemaMap' => [
+                'mysql' => common\db\mysql\Schema::class,
+            ],
+        ],
         'mailer' => [
             'class' => yii\swiftmailer\Mailer::class,
             'viewPath' => '@common/mail',
