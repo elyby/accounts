@@ -4,24 +4,24 @@ namespace console\controllers;
 use common\models\AccountSession;
 use common\models\EmailActivation;
 use common\models\MinecraftAccessKey;
+use Generator;
 use yii\console\Controller;
+use yii\db\ActiveQueryInterface;
 
 class CleanupController extends Controller {
 
     public function actionEmailKeys() {
         $query = EmailActivation::find();
-        $conditions = ['OR'];
         foreach ($this->getEmailActivationsDurationsMap() as $typeId => $expiration) {
-            $conditions[] = [
+            $query->orWhere([
                 'AND',
                 ['type' => $typeId],
                 ['<', 'created_at', time() - $expiration],
-            ];
+            ]);
         }
 
-        /** @var \yii\db\BatchQueryResult|EmailActivation[] $expiredEmails */
-        $expiredEmails = $query->andWhere($conditions)->each();
-        foreach ($expiredEmails as $email) {
+        foreach ($this->each($query) as $email) {
+            /** @var EmailActivation $email */
             $email->delete();
         }
 
@@ -29,12 +29,11 @@ class CleanupController extends Controller {
     }
 
     public function actionMinecraftSessions() {
-        /** @var \yii\db\BatchQueryResult|MinecraftAccessKey[] $expiredMinecraftSessions */
-        $expiredMinecraftSessions = MinecraftAccessKey::find()
-            ->andWhere(['<', 'updated_at', time() - 1209600]) // 2 weeks
-            ->each();
+        $expiredMinecraftSessionsQuery = MinecraftAccessKey::find()
+            ->andWhere(['<', 'updated_at', time() - 1209600]); // 2 weeks
 
-        foreach ($expiredMinecraftSessions as $minecraftSession) {
+        foreach ($this->each($expiredMinecraftSessionsQuery) as $minecraftSession) {
+            /** @var MinecraftAccessKey $minecraftSession */
             $minecraftSession->delete();
         }
 
@@ -61,6 +60,31 @@ class CleanupController extends Controller {
         ]);
 
         return self::EXIT_CODE_NORMAL;
+    }
+
+    /**
+     * Each function implementation, that allows you to iterate over values,
+     * when in each iteration row removing from database. If you do not remove
+     * value in iteration, then this will cause infinite loop.
+     *
+     * @param ActiveQueryInterface $query
+     * @param int                  $size
+     *
+     * @return Generator
+     */
+    private function each(ActiveQueryInterface $query, int $size = 100): Generator {
+        $query = clone $query;
+        $query->limit($size);
+        while (true) {
+            $rows = $query->all();
+            if (empty($rows)) {
+                break;
+            }
+
+            foreach ($rows as $row) {
+                yield $row;
+            }
+        }
     }
 
     private function getEmailActivationsDurationsMap(): array {
