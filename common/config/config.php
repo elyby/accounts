@@ -90,6 +90,12 @@ return [
             'itemFile' => '@common/rbac/.generated/items.php',
             'ruleFile' => '@common/rbac/.generated/rules.php',
         ],
+        'statsd' => [
+            'class' => common\components\StatsD::class,
+            'host' => getenv('STATSD_HOST'),
+            'port' => getenv('STATSD_PORT') ?: 8125,
+            'namespace' => getenv('STATSD_NAMESPACE') ?: 'ely.accounts.' . gethostname() . '.app',
+        ],
     ],
     'container' => [
         'definitions' => [
