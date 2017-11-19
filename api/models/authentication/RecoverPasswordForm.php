@@ -1,6 +1,7 @@
 <?php
 namespace api\models\authentication;
 
+use api\aop\annotations\CollectModelMetrics;
 use api\models\base\ApiForm;
 use api\validators\EmailActivationKeyValidator;
 use common\helpers\Error as E;
@@ -36,6 +37,7 @@ class RecoverPasswordForm extends ApiForm {
     }
 
     /**
+     * @CollectModelMetrics(prefix="authentication.recoverPassword")
      * @return \api\components\User\AuthenticationResult|bool
      * @throws ErrorException
      */

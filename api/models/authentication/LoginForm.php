@@ -1,6 +1,7 @@
 <?php
 namespace api\models\authentication;
 
+use api\aop\annotations\CollectModelMetrics;
 use api\models\base\ApiForm;
 use api\validators\TotpValidator;
 use common\helpers\Error as E;
@@ -87,6 +88,7 @@ class LoginForm extends ApiForm {
     }
 
     /**
+     * @CollectModelMetrics(prefix="authentication.login")
      * @return \api\components\User\AuthenticationResult|bool
      */
     public function login() {

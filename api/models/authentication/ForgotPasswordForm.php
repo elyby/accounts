@@ -1,6 +1,7 @@
 <?php
 namespace api\models\authentication;
 
+use api\aop\annotations\CollectModelMetrics;
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\base\ApiForm;
 use common\emails\EmailHelper;
@@ -55,6 +56,11 @@ class ForgotPasswordForm extends ApiForm {
         }
     }
 
+    /**
+     * @CollectModelMetrics(prefix="authentication.forgotPassword")
+     * @return bool
+     * @throws ErrorException
+     */
     public function forgotPassword() {
         if (!$this->validate()) {
             return false;
