@@ -58,4 +58,15 @@ class EnableTwoFactorAuthCest {
         ]);
     }
 
+    public function testSuccessEnableWithNotSoExpiredCode(FunctionalTester $I) {
+        $accountId = $I->amAuthenticated('AccountWithOtpSecret');
+        $totp = TOTP::create('AAAA');
+        $this->route->enableTwoFactorAuth($accountId, $totp->at(time() - 35), 'password_0');
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseIsJson();
+        $I->canSeeResponseContainsJson([
+            'success' => true,
+        ]);
+    }
+
 }
