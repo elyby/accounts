@@ -21,7 +21,7 @@ COPY ./composer.json /var/www/composer.json
 
 # Устанавливаем зависимости PHP
 RUN cd .. \
- && composer install --no-interaction --no-suggest --no-dev --classmap-authoritative \
+ && composer install --no-interaction --no-suggest --no-dev --optimize-autoloader \
  && cd -
 
 # Устанавливаем зависимости для Node.js
