@@ -96,10 +96,11 @@ class JoinForm extends Model {
         /** @var MinecraftAccessKey|null $accessModel */
         $accessModel = MinecraftAccessKey::findOne($accessToken);
         if ($accessModel !== null) {
+            Yii::$app->statsd->inc('sessionserver.authentication.legacy_minecraft_protocol');
             /** @var MinecraftAccessKey|\api\components\OAuth2\Entities\AccessTokenEntity $accessModel */
             if ($accessModel->isExpired()) {
                 Session::error("User with access_token = '{$accessToken}' failed join by expired access_token.");
-                Yii::$app->statsd->inc('sessionserver.join.fail_token_expired');
+                Yii::$app->statsd->inc('sessionserver.authentication.legacy_minecraft_protocol_token_expired');
                 throw new ForbiddenOperationException('Expired access_token.');
             }
 
@@ -117,9 +118,10 @@ class JoinForm extends Model {
                 throw new ForbiddenOperationException('Invalid access_token.');
             }
 
+            Yii::$app->statsd->inc('sessionserver.authentication.oauth2');
             if (!Yii::$app->user->can(P::MINECRAFT_SERVER_SESSION)) {
                 Session::error("User with access_token = '{$accessToken}' doesn't have enough scopes to make join.");
-                Yii::$app->statsd->inc('sessionserver.join.fail_not_enough_scopes');
+                Yii::$app->statsd->inc('sessionserver.authentication.oauth2_not_enough_scopes');
                 throw new ForbiddenOperationException('The token does not have required scope.');
             }
 
