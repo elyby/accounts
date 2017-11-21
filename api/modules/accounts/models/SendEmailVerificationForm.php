@@ -1,6 +1,7 @@
 <?php
 namespace api\modules\accounts\models;
 
+use api\aop\annotations\CollectModelMetrics;
 use api\exceptions\ThisShouldNotHappenException;
 use common\emails\EmailHelper;
 use api\validators\PasswordRequiredValidator;
@@ -34,6 +35,9 @@ class SendEmailVerificationForm extends AccountActionForm {
         }
     }
 
+    /**
+     * @CollectModelMetrics(prefix="accounts.sendEmailVerification")
+     */
     public function performAction(): bool {
         if (!$this->validate()) {
             return false;

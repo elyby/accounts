@@ -1,6 +1,7 @@
 <?php
 namespace api\modules\accounts\models;
 
+use api\aop\annotations\CollectModelMetrics;
 use api\exceptions\ThisShouldNotHappenException;
 use api\validators\PasswordRequiredValidator;
 use common\helpers\Amqp;
@@ -26,6 +27,9 @@ class ChangeUsernameForm extends AccountActionForm {
         ];
     }
 
+    /**
+     * @CollectModelMetrics(prefix="accounts.changeUsername")
+     */
     public function performAction(): bool {
         if (!$this->validate()) {
             return false;
