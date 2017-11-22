@@ -9,6 +9,7 @@ class AspectKernel extends BaseAspectKernel {
 
     protected function configureAop(AspectContainer $container): void {
         $container->registerAspect(new aspects\MockDataAspect());
+        $container->registerAspect(new aspects\CollectMetricsAspect());
     }
 
 }

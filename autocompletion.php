@@ -24,6 +24,7 @@ class Yii extends \yii\BaseYii {
  * @property \common\components\EmailRenderer      $emailRenderer
  * @property \mito\sentry\Component                $sentry
  * @property \api\components\OAuth2\Component      $oauth
+ * @property \common\components\StatsD             $statsd
  */
 abstract class BaseApplication extends yii\base\Application {
 }

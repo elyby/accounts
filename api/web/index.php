@@ -4,6 +4,8 @@ use api\aop\AspectKernel;
 use common\config\ConfigLoader;
 use yii\web\Application;
 
+$time = microtime(true);
+
 require __DIR__ . '/../../vendor/autoload.php';
 
 defined('YII_DEBUG') or define('YII_DEBUG', in_array(getenv('YII_DEBUG'), ['true', '1']));
@@ -29,3 +31,7 @@ $config = ConfigLoader::load('api');
 
 $application = new Application($config);
 $application->run();
+
+$timeDifference = (microtime(true) - $time) * 1000;
+fastcgi_finish_request();
+Yii::$app->statsd->time('request.time', $timeDifference);

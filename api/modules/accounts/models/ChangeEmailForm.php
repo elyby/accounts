@@ -1,6 +1,7 @@
 <?php
 namespace api\modules\accounts\models;
 
+use api\aop\annotations\CollectModelMetrics;
 use api\validators\EmailActivationKeyValidator;
 use common\helpers\Amqp;
 use common\models\amqp\EmailChanged;
@@ -19,6 +20,9 @@ class ChangeEmailForm extends AccountActionForm {
         ];
     }
 
+    /**
+     * @CollectModelMetrics(prefix="accounts.changeEmail")
+     */
     public function performAction(): bool {
         if (!$this->validate()) {
             return false;

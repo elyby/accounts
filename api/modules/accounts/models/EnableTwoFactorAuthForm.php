@@ -1,6 +1,7 @@
 <?php
 namespace api\modules\accounts\models;
 
+use api\aop\annotations\CollectModelMetrics;
 use api\components\User\Component;
 use api\exceptions\ThisShouldNotHappenException;
 use api\validators\PasswordRequiredValidator;
@@ -23,6 +24,9 @@ class EnableTwoFactorAuthForm extends AccountActionForm {
         ];
     }
 
+    /**
+     * @CollectModelMetrics(prefix="accounts.enableTwoFactorAuth")
+     */
     public function performAction(): bool {
         if (!$this->validate()) {
             return false;

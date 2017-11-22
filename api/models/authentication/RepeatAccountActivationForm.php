@@ -1,6 +1,7 @@
 <?php
 namespace api\models\authentication;
 
+use api\aop\annotations\CollectModelMetrics;
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use common\emails\EmailHelper;
 use api\models\base\ApiForm;
@@ -53,6 +54,11 @@ class RepeatAccountActivationForm extends ApiForm {
         }
     }
 
+    /**
+     * @CollectModelMetrics(prefix="signup.repeatEmail")
+     * @return bool
+     * @throws ErrorException
+     */
     public function sendRepeatMessage() {
         if (!$this->validate()) {
             return false;
