@@ -5,6 +5,7 @@ use api\modules\accounts\models\SendEmailVerificationForm;
 use common\models\Account;
 use common\models\confirmations\CurrentEmailConfirmation;
 use common\models\EmailActivation;
+use common\tasks\SendCurrentEmailConfirmation;
 use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\EmailActivationFixture;
@@ -35,11 +36,19 @@ class SendEmailVerificationFormTest extends TestCase {
             'password' => 'password_0',
         ]);
         $this->assertTrue($model->performAction());
-        $this->assertTrue(EmailActivation::find()->andWhere([
+        /** @var EmailActivation $activation */
+        $activation = EmailActivation::findOne([
             'account_id' => $account->id,
             'type' => EmailActivation::TYPE_CURRENT_EMAIL_CONFIRMATION,
-        ])->exists());
-        $this->tester->canSeeEmailIsSent();
+        ]);
+        $this->assertInstanceOf(EmailActivation::class, $activation);
+
+        /** @var SendCurrentEmailConfirmation $job */
+        $job = $this->tester->grabLastQueuedJob();
+        $this->assertInstanceOf(SendCurrentEmailConfirmation::class, $job);
+        $this->assertSame($account->username, $job->username);
+        $this->assertSame($account->email, $job->email);
+        $this->assertSame($activation->key, $job->code);
     }
 
 }

@@ -78,6 +78,8 @@ class RepeatAccountActivationForm extends ApiForm {
             throw new ThisShouldNotHappenException('Unable save email-activation model.');
         }
 
+        $this->emailActivation = $activation;
+
         Yii::$app->queue->push(SendRegistrationEmail::createFromConfirmation($activation));
 
         $transaction->commit();

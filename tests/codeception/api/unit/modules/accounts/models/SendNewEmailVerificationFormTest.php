@@ -5,6 +5,7 @@ use api\modules\accounts\models\SendNewEmailVerificationForm;
 use common\models\Account;
 use common\models\confirmations\NewEmailConfirmation;
 use common\models\EmailActivation;
+use common\tasks\SendNewEmailConfirmation;
 use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
 use tests\codeception\common\fixtures\EmailActivationFixture;
@@ -44,11 +45,19 @@ class SendNewEmailVerificationFormTest extends TestCase {
         Mock::func(EmailValidator::class, 'checkdnsrr')->andReturn(true);
         $this->assertTrue($model->performAction());
         $this->assertNull(EmailActivation::findOne($key));
-        $this->assertNotNull(EmailActivation::findOne([
+        /** @var EmailActivation $activation */
+        $activation = EmailActivation::findOne([
             'account_id' => $account->id,
             'type' => EmailActivation::TYPE_NEW_EMAIL_CONFIRMATION,
-        ]));
-        $this->tester->canSeeEmailIsSent();
+        ]);
+        $this->assertNotNull(EmailActivation::class, $activation);
+
+        /** @var SendNewEmailConfirmation $job */
+        $job = $this->tester->grabLastQueuedJob();
+        $this->assertInstanceOf(SendNewEmailConfirmation::class, $job);
+        $this->assertSame($account->username, $job->username);
+        $this->assertSame('my-new-email@ely.by', $job->email);
+        $this->assertSame($activation->key, $job->code);
     }
 
 }
