@@ -96,6 +96,16 @@ return [
             'port' => getenv('STATSD_PORT') ?: 8125,
             'namespace' => getenv('STATSD_NAMESPACE') ?: 'ely.accounts.' . gethostname() . '.app',
         ],
+        'queue' => [
+            'class' => yii\queue\amqp\Queue::class,
+            'host' => getenv('RABBITMQ_HOST') ?: 'rabbitmq',
+            'port' => getenv('RABBITMQ_PORT') ?: 5672,
+            'user' => getenv('RABBITMQ_USER'),
+            'password' => getenv('RABBITMQ_PASS'),
+            'vhost' => getenv('RABBITMQ_VHOST'),
+            'queueName' => 'worker',
+            'exchangeName' => 'tasks',
+        ],
     ],
     'container' => [
         'definitions' => [

@@ -29,7 +29,7 @@ class EmailRenderer extends Component {
         parent::__construct($config);
 
         if ($this->_baseDomain === null) {
-            $this->_baseDomain = Yii::$app->request->getHostInfo();
+            $this->_baseDomain = Yii::$app->urlManager->getHostInfo();
             if ($this->_baseDomain === null) {
                 throw new InvalidConfigException('Cannot automatically obtain base domain');
             }
@@ -51,7 +51,7 @@ class EmailRenderer extends Component {
      * @param string $templateName
      * @return TemplateBuilder
      */
-    public function getTemplate(string $templateName) : TemplateBuilder {
+    public function getTemplate(string $templateName): TemplateBuilder {
         return $this->renderer->getTemplate($templateName);
     }
 
@@ -60,11 +60,11 @@ class EmailRenderer extends Component {
      * @throws \Ely\Email\RendererException
      * @return string
      */
-    public function render(TemplateBuilder $template) : string {
+    public function render(TemplateBuilder $template): string {
         return $this->renderer->render($template);
     }
 
-    private function buildBasePath() : string {
+    private function buildBasePath(): string {
         return $this->_baseDomain . $this->basePath;
     }
 

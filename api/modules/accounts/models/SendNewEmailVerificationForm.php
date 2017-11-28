@@ -3,10 +3,10 @@ namespace api\modules\accounts\models;
 
 use api\aop\annotations\CollectModelMetrics;
 use api\exceptions\ThisShouldNotHappenException;
-use common\emails\EmailHelper;
 use api\validators\EmailActivationKeyValidator;
 use common\models\confirmations\NewEmailConfirmation;
 use common\models\EmailActivation;
+use common\tasks\SendNewEmailConfirmation;
 use common\validators\EmailValidator;
 use Yii;
 
@@ -39,7 +39,7 @@ class SendNewEmailVerificationForm extends AccountActionForm {
 
         $activation = $this->createCode();
 
-        EmailHelper::changeEmailConfirmNew($activation);
+        Yii::$app->queue->push(SendNewEmailConfirmation::createFromConfirmation($activation));
 
         $transaction->commit();
 

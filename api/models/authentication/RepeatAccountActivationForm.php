@@ -3,15 +3,15 @@ namespace api\models\authentication;
 
 use api\aop\annotations\CollectModelMetrics;
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
-use common\emails\EmailHelper;
+use api\exceptions\ThisShouldNotHappenException;
 use api\models\base\ApiForm;
 use common\helpers\Error as E;
 use common\components\UserFriendlyRandomKey;
 use common\models\Account;
 use common\models\confirmations\RegistrationConfirmation;
 use common\models\EmailActivation;
+use common\tasks\SendRegistrationEmail;
 use Yii;
-use yii\base\ErrorException;
 
 class RepeatAccountActivationForm extends ApiForm {
 
@@ -57,7 +57,6 @@ class RepeatAccountActivationForm extends ApiForm {
     /**
      * @CollectModelMetrics(prefix="signup.repeatEmail")
      * @return bool
-     * @throws ErrorException
      */
     public function sendRepeatMessage() {
         if (!$this->validate()) {
@@ -66,26 +65,24 @@ class RepeatAccountActivationForm extends ApiForm {
 
         $account = $this->getAccount();
         $transaction = Yii::$app->db->beginTransaction();
-        try {
-            EmailActivation::deleteAll([
-                'account_id' => $account->id,
-                'type' => EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION,
-            ]);
 
-            $activation = new RegistrationConfirmation();
-            $activation->account_id = $account->id;
-            $activation->key = UserFriendlyRandomKey::make();
-            if (!$activation->save()) {
-                throw new ErrorException('Unable save email-activation model.');
-            }
+        EmailActivation::deleteAll([
+            'account_id' => $account->id,
+            'type' => EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION,
+        ]);
 
-            EmailHelper::registration($activation);
-
-            $transaction->commit();
-        } catch (ErrorException $e) {
-            $transaction->rollBack();
-            throw $e;
+        $activation = new RegistrationConfirmation();
+        $activation->account_id = $account->id;
+        $activation->key = UserFriendlyRandomKey::make();
+        if (!$activation->save()) {
+            throw new ThisShouldNotHappenException('Unable save email-activation model.');
         }
+
+        $this->emailActivation = $activation;
+
+        Yii::$app->queue->push(SendRegistrationEmail::createFromConfirmation($activation));
+
+        $transaction->commit();
 
         return true;
     }

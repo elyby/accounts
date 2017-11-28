@@ -7,6 +7,7 @@ use Codeception\Specify;
 use common\models\Account;
 use common\models\EmailActivation;
 use common\models\UsernameHistory;
+use common\tasks\SendRegistrationEmail;
 use GuzzleHttp\ClientInterface;
 use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
@@ -40,23 +41,19 @@ class RegistrationFormTest extends TestCase {
     }
 
     public function testValidatePasswordAndRePasswordMatch() {
-        $this->specify('error.rePassword_does_not_match if password and rePassword not match', function() {
-            $model = new RegistrationForm([
-                'password' => 'enough-length',
-                'rePassword' => 'password',
-            ]);
-            expect($model->validate(['rePassword']))->false();
-            expect($model->getErrors('rePassword'))->equals(['error.rePassword_does_not_match']);
-        });
+        $model = new RegistrationForm([
+            'password' => 'enough-length',
+            'rePassword' => 'but-mismatch',
+        ]);
+        $this->assertFalse($model->validate(['rePassword']));
+        $this->assertSame(['error.rePassword_does_not_match'], $model->getErrors('rePassword'));
 
-        $this->specify('no errors if password and rePassword match', function() {
-            $model = new RegistrationForm([
-                'password' => 'enough-length',
-                'rePassword' => 'enough-length',
-            ]);
-            expect($model->validate(['rePassword']))->true();
-            expect($model->getErrors('rePassword'))->isEmpty();
-        });
+        $model = new RegistrationForm([
+            'password' => 'enough-length',
+            'rePassword' => 'enough-length',
+        ]);
+        $this->assertTrue($model->validate(['rePassword']));
+        $this->assertEmpty($model->getErrors('rePassword'));
     }
 
     public function testSignup() {
@@ -118,12 +115,15 @@ class RegistrationFormTest extends TestCase {
             'account_id' => $account->id,
             'applied_in' => $account->created_at,
         ])->exists(), 'username history record exists in database');
-        $this->tester->canSeeEmailIsSent(1);
-        /** @var \yii\swiftmailer\Message $email */
-        $email = $this->tester->grabSentEmails()[0];
-        $body = $email->getSwiftMessage()->getBody();
-        $this->assertContains($activation->key, $body);
-        $this->assertContains('/activation/' . $activation->key, $body);
+
+        /** @var SendRegistrationEmail $job */
+        $job = $this->tester->grabLastQueuedJob();
+        $this->assertInstanceOf(SendRegistrationEmail::class, $job);
+        $this->assertSame($account->username, $job->username);
+        $this->assertSame($account->email, $job->email);
+        $this->assertSame($account->lang, $job->locale);
+        $this->assertSame($activation->key, $job->code);
+        $this->assertSame('http://localhost/activation/' . $activation->key, $job->link);
     }
 
     private function mockRequest($ip = '88.225.20.236') {
