@@ -43,10 +43,8 @@ RUN rm -rf /root/.ssh
 # Наконец переносим все сорцы внутрь контейнера
 COPY . /var/www/html
 
-RUN mkdir -p api/runtime api/web/assets console/runtime \
- && chown www-data:www-data api/runtime api/web/assets console/runtime \
- # Билдим фронт
- && cd frontend \
+# Билдим фронт
+RUN cd frontend \
  && ln -s /var/www/frontend/node_modules $PWD/node_modules \
  && npm run build:quiet \
  && rm node_modules \
