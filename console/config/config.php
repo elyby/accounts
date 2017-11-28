@@ -26,6 +26,9 @@ return [
         'urlManager' => [
             'hostInfo' => getenv('DOMAIN') ?: 'https://account.ely.by',
         ],
+        'queue' => [
+            'on afterError' => [new console\components\ErrorHandler(), 'handleQueueError'],
+        ],
     ],
     'controllerMap' => [
         'migrate' => [
