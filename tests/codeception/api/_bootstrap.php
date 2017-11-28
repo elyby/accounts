@@ -1,6 +1,5 @@
 <?php
 use Codeception\Configuration;
-use Codeception\Specify\Config;
 
 defined('YII_DEBUG') or define('YII_DEBUG', true);
 defined('YII_ENV') or define('YII_ENV', 'test');
@@ -21,5 +20,4 @@ $_SERVER['SCRIPT_NAME'] = API_ENTRY_URL;
 $_SERVER['SERVER_NAME'] =  parse_url(Configuration::config()['config']['test_entry_url'], PHP_URL_HOST);
 $_SERVER['SERVER_PORT'] =  parse_url(Configuration::config()['config']['test_entry_url'], PHP_URL_PORT) ?: '80';
 
-Yii::setAlias('@tests', dirname(dirname(__DIR__)));
-Config::setDeepClone(false);
+Yii::setAlias('@tests', dirname(__DIR__, 2));

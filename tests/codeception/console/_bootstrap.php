@@ -11,5 +11,4 @@ require_once __DIR__ . '/../../../console/config/bootstrap.php';
 $_SERVER['SERVER_NAME'] = 'localhost';
 $_SERVER['SERVER_PORT'] = '80';
 
-Yii::setAlias('@tests', dirname(dirname(__DIR__)));
-\Codeception\Specify\Config::setDeepClone(false);
+Yii::setAlias('@tests', dirname(__DIR__, 2));
