@@ -32,7 +32,7 @@
         "yiisoft/yii2-faker": "*",
         "flow/jsonpath": "^0.3.1",
         "phpunit/phpunit": "^6.0",
-        "codeception/codeception": "2.3.6",
+        "codeception/codeception": "dev-reset_yii2_app#6045eed00f7b163226d04fe40333f076b0f132e3",
         "codeception/specify": "*",
         "codeception/verify": "*",
         "mockery/mockery": "^1.0.0",
@@ -50,6 +50,10 @@
         {
             "type": "git",
             "url": "git@gitlab.ely.by:elyby/email-renderer.git"
+        },
+        {
+            "type": "git",
+            "url": "git@github.com:erickskrauch/Codeception.git"
         }
     ],
     "autoload": {
