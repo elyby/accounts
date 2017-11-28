@@ -26,7 +26,7 @@
         "webmozart/assert": "^1.2.0",
         "goaop/framework": "~2.1.2",
         "domnikl/statsd": "^2.6",
-        "yiisoft/yii2-queue": "~2.0.1"
+        "yiisoft/yii2-queue": "dev-fix_amqp_error_behavior#385e1cc0afcce0d6712080beb11922735e72f59d"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "*",
@@ -55,6 +55,10 @@
         {
             "type": "git",
             "url": "git@github.com:erickskrauch/Codeception.git"
+        },
+        {
+            "type": "git",
+            "url": "git@github.com:erickskrauch/yii2-queue.git"
         }
     ],
     "autoload": {
