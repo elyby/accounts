@@ -5,6 +5,13 @@ use common\models\Account;
 
 interface IdentityInterface extends \yii\web\IdentityInterface {
 
+    /**
+     * @param string $token
+     * @param string $type
+     *
+     * @throws \yii\web\UnauthorizedHttpException
+     * @return IdentityInterface
+     */
     public static function findIdentityByAccessToken($token, $type = null): IdentityInterface;
 
     /**
