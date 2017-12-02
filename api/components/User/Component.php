@@ -131,14 +131,10 @@ class Component extends YiiUserComponent {
     public function parseToken(string $jwtString): Token {
         $token = &self::$parsedTokensCache[$jwtString];
         if ($token === null) {
-            $hostInfo = Yii::$app->request->hostInfo;
-
             $jwt = new Jwt();
             $notVerifiedToken = $jwt->deserialize($jwtString);
 
             $context = new VerificationContext(EncryptionFactory::create($this->getAlgorithm()));
-            $context->setAudience($hostInfo);
-            $context->setIssuer($hostInfo);
             $context->setSubject(self::JWT_SUBJECT_PREFIX);
             $jwt->verify($notVerifiedToken, $context);
 
@@ -227,12 +223,9 @@ class Component extends YiiUserComponent {
      */
     protected function getClaims(Account $account): array {
         $currentTime = new DateTime();
-        $hostInfo = Yii::$app->request->hostIHttpExceptionnfo;
 
         return [
             new ScopesClaim([R::ACCOUNTS_WEB_USER]),
-            new Claim\Audience($hostInfo),
-            new Claim\Issuer($hostInfo),
             new Claim\IssuedAt($currentTime),
             new Claim\Expiration($currentTime->add(new DateInterval($this->expirationTimeout))),
             new Claim\Subject(self::JWT_SUBJECT_PREFIX . $account->id),
