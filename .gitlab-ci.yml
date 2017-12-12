@@ -39,17 +39,17 @@ test:backend:
             php vendor/bin/codecept run -c tests
 
 test:frontend:
-    image: node:8.2.1
+    image: node:8.9.3-alpine
     stage: test
     cache:
         paths:
             - frontend/node_modules
     script:
         - cd frontend
-        - npm run build:install --silent
-        - npm run lint --silent
-        # - npm run flow --silent # disabled due to missing libelf.so.1 in docker container
-        - npm run test --silent
+        - yarn run build:install
+        - yarn run lint
+        # - yarn flow # disabled due to missing libelf.so.1 in docker container
+        - yarn test
 
 build:production:
     image: docker:latest
