@@ -1,4 +1,4 @@
-FROM registry.ely.by/elyby/accounts-php:1.5.1
+FROM registry.ely.by/elyby/accounts-php:1.6.0
 
 # bootstrap скрипт для проекта
 COPY docker/php/bootstrap.sh /bootstrap.sh
@@ -30,11 +30,12 @@ RUN cd .. \
 RUN mkdir -p /var/www/frontend
 
 COPY ./frontend/package.json /var/www/frontend/
+COPY ./frontend/yarn.lock /var/www/frontend/
 COPY ./frontend/scripts /var/www/frontend/scripts
 COPY ./frontend/webpack-utils /var/www/frontend/webpack-utils
 
-RUN cd ../frontend \
- && npm run build:install \
+RUN cd /var/www/frontend \
+ && yarn run build:install \
  && cd -
 
 # Удаляем ключи из production контейнера на всякий случай
@@ -46,7 +47,7 @@ COPY . /var/www/html
 # Билдим фронт
 RUN cd frontend \
  && ln -s /var/www/frontend/node_modules $PWD/node_modules \
- && npm run build:quiet \
+ && yarn run build:quiet \
  && rm node_modules \
  # Копируем билд наружу, чтобы его не затёрло volume в dev режиме
  && cp -r ./dist /var/www/dist \
