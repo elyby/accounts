@@ -9,7 +9,7 @@ variables:
 test:backend:
     image: docker:latest
     services:
-        - mariadb:10.0
+        - mariadb:10.2.11
         - redis:3.0-alpine
     variables:
         # mariadb config
