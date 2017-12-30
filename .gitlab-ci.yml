@@ -45,19 +45,17 @@ test:frontend:
         paths:
             - frontend/node_modules
     before_script:
-        # Uncomment this steps to enable install required for flow libraries
-
         # Enable SSL support for wget
-        # - apk add --update openssl
+        - apk add --update openssl
         # https://github.com/facebook/flow/issues/3649#issuecomment-308070179
-        # - wget -O /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub
-        # - wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.25-r0/glibc-2.25-r0.apk
-        # - apk add glibc-2.25-r0.apk
+        - wget -O /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub
+        - wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.25-r0/glibc-2.25-r0.apk
+        - apk add glibc-2.25-r0.apk
     script:
         - cd frontend
         - yarn run build:install
         - yarn run lint
-        # - yarn flow
+        - yarn flow
         - yarn test
 
 build:production:
