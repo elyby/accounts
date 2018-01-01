@@ -132,7 +132,11 @@ class Component extends YiiUserComponent {
         $token = &self::$parsedTokensCache[$jwtString];
         if ($token === null) {
             $jwt = new Jwt();
-            $notVerifiedToken = $jwt->deserialize($jwtString);
+            try {
+                $notVerifiedToken = $jwt->deserialize($jwtString);
+            } catch (Exception $e) {
+                throw new VerificationException('Incorrect token encoding', 0, $e);
+            }
 
             $context = new VerificationContext(EncryptionFactory::create($this->getAlgorithm()));
             $context->setSubject(self::JWT_SUBJECT_PREFIX);
