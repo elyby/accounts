@@ -60,9 +60,8 @@ class GetCest {
     public function testGetInfoWithExpiredToken(FunctionalTester $I) {
         // Устанавливаем заведомо истёкший токен
         $I->amBearerAuthenticated(
-            // TODO: обновить токен
-            'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJodHRwOlwvXC9sb2NhbGhvc3QiLCJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3QiLCJpYXQiO' .
-            'jE0NjQ2Mjc1NDUsImV4cCI6MTQ2NDYzMTE0NSwianRpIjoxfQ.9c1mm0BK-cuW1qh15F12s2Fh37IN43YeeZeU4DFtlrE'
+            'eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0NjQ2Mjc1NDUsImV4cCI6MTQ2NDYzMTE0NSwic3ViIjoiZWx5fDEiLCJlbHktc' .
+            '2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIifQ.v1u8V5wk2RkWmnZtH3jZvM3zO1Gpgbp2DQFfLfy8jHY'
         );
 
         $this->route->get(1);

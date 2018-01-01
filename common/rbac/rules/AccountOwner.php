@@ -30,7 +30,10 @@ class AccountOwner extends Rule {
         }
 
         $identity = Yii::$app->user->findIdentityByAccessToken($accessToken);
-        /** @noinspection NullPointerExceptionInspection это исключено, т.к. уже сработал authManager */
+        if ($identity === null) {
+            return false;
+        }
+
         $account = $identity->getAccount();
         if ($account === null) {
             return false;

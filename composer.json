@@ -7,7 +7,7 @@
     "require": {
         "php": "^7.1",
         "roave/security-advisories": "dev-master",
-        "yiisoft/yii2": "2.0.12",
+        "yiisoft/yii2": "2.0.13.1",
         "yiisoft/yii2-swiftmailer": "~2.1.0",
         "ramsey/uuid": "^3.5",
         "league/oauth2-server": "^4.1",
@@ -23,15 +23,19 @@
         "spomky-labs/otphp": "^9.0.2",
         "bacon/bacon-qr-code": "^1.0",
         "paragonie/constant_time_encoding": "^2.0",
-        "webmozart/assert": "^1.2.0"
+        "webmozart/assert": "^1.2.0",
+        "goaop/framework": "~2.1.2",
+        "domnikl/statsd": "^2.6",
+        "yiisoft/yii2-queue": "~2.0.2",
+        "enqueue/amqp-lib": "^0.8.11"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "*",
         "yiisoft/yii2-faker": "*",
         "flow/jsonpath": "^0.3.1",
         "phpunit/phpunit": "^6.0",
-        "codeception/codeception": "2.3.6",
-        "codeception/specify": "*",
+        "codeception/codeception": "dev-reset_yii2_app#6045eed00f7b163226d04fe40333f076b0f132e3",
+        "codeception/specify": "^1.0.0",
         "codeception/verify": "*",
         "mockery/mockery": "^1.0.0",
         "php-mock/php-mock-mockery": "^1.2.0"
@@ -48,9 +52,18 @@
         {
             "type": "git",
             "url": "git@gitlab.ely.by:elyby/email-renderer.git"
+        },
+        {
+            "type": "git",
+            "url": "git@github.com:erickskrauch/Codeception.git"
         }
     ],
     "autoload": {
+        "psr-4": {
+            "api\\": "api",
+            "common\\": "common",
+            "console\\": "console"
+        },
         "files": [
             "common/consts.php"
         ]

@@ -1,6 +1,6 @@
 <?php
 return [
-    'version' => '1.1.21',
+    'version' => '1.1.22',
     'vendorPath' => dirname(__DIR__, 2) . '/vendor',
     'components' => [
         'cache' => [
@@ -13,6 +13,19 @@ return [
             'username' => getenv('DB_USER'),
             'password' => getenv('DB_PASSWORD'),
             'charset' => 'utf8',
+            'schemaMap' => [
+                'mysql' => common\db\mysql\Schema::class,
+            ],
+        ],
+        'unbufferedDb' => [
+            'class' => yii\db\Connection::class,
+            'dsn' => 'mysql:host=' . (getenv('DB_HOST') ?: 'db') . ';dbname=' . getenv('DB_DATABASE'),
+            'username' => getenv('DB_USER'),
+            'password' => getenv('DB_PASSWORD'),
+            'charset' => 'utf8',
+            'attributes' => [
+                PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => false,
+            ],
             'schemaMap' => [
                 'mysql' => common\db\mysql\Schema::class,
             ],
@@ -76,6 +89,23 @@ return [
             'class' => common\rbac\Manager::class,
             'itemFile' => '@common/rbac/.generated/items.php',
             'ruleFile' => '@common/rbac/.generated/rules.php',
+        ],
+        'statsd' => [
+            'class' => common\components\StatsD::class,
+            'host' => getenv('STATSD_HOST'),
+            'port' => getenv('STATSD_PORT') ?: 8125,
+            'namespace' => getenv('STATSD_NAMESPACE') ?: 'ely.accounts.' . gethostname() . '.app',
+        ],
+        'queue' => [
+            'class' => yii\queue\amqp_interop\Queue::class,
+            'driver' => yii\queue\amqp_interop\Queue::ENQUEUE_AMQP_LIB,
+            'host' => getenv('RABBITMQ_HOST') ?: 'rabbitmq',
+            'port' => getenv('RABBITMQ_PORT') ?: 5672,
+            'user' => getenv('RABBITMQ_USER'),
+            'password' => getenv('RABBITMQ_PASS'),
+            'vhost' => getenv('RABBITMQ_VHOST'),
+            'queueName' => 'worker',
+            'exchangeName' => 'tasks',
         ],
     ],
     'container' => [

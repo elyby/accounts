@@ -32,11 +32,14 @@ class AccountQueueController extends AmqpController {
     }
 
     public function routeUsernameChanged(UsernameChanged $body): bool {
+        Yii::$app->statsd->inc('worker.account.usernameChanged.attempt');
         $mojangApi = $this->createMojangApi();
         try {
             $response = $mojangApi->usernameToUUID($body->newUsername);
+            Yii::$app->statsd->inc('worker.account.usernameChanged.found');
         } catch (NoContentException $e) {
             $response = false;
+            Yii::$app->statsd->inc('worker.account.usernameChanged.not_found');
         } catch (RequestException $e) {
             return true;
         }

@@ -4,7 +4,9 @@ namespace codeception\api\unit\models\authentication;
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\authentication\ForgotPasswordForm;
 use Codeception\Specify;
+use common\models\Account;
 use common\models\EmailActivation;
+use common\tasks\SendPasswordRecoveryEmail;
 use GuzzleHttp\ClientInterface;
 use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
@@ -78,29 +80,41 @@ class ForgotPasswordFormTest extends TestCase {
     }
 
     public function testForgotPassword() {
-        $model = new ForgotPasswordForm(['login' => $this->tester->grabFixture('accounts', 'admin')['username']]);
+        /** @var Account $account */
+        $account = $this->tester->grabFixture('accounts', 'admin');
+        $model = new ForgotPasswordForm(['login' => $account->username]);
         $this->assertTrue($model->forgotPassword(), 'form should be successfully processed');
         $activation = $model->getEmailActivation();
         $this->assertInstanceOf(EmailActivation::class, $activation, 'getEmailActivation should return valid object instance');
-        $this->tester->canSeeEmailIsSent(1);
-        /** @var \yii\swiftmailer\Message $email */
-        $email = $this->tester->grabSentEmails()[0];
-        $body = $email->getSwiftMessage()->getBody();
-        $this->assertContains($activation->key, $body);
-        $this->assertContains('/recover-password/' . $activation->key, $body);
+
+        $this->assertTaskCreated($this->tester->grabLastQueuedJob(), $account, $activation);
     }
 
     public function testForgotPasswordResend() {
-        $fixture = $this->tester->grabFixture('accounts', 'account-with-expired-forgot-password-message');
-        $model = new ForgotPasswordForm([
-            'login' => $fixture['username'],
-        ]);
+        /** @var Account $account */
+        $account = $this->tester->grabFixture('accounts', 'account-with-expired-forgot-password-message');
+        $model = new ForgotPasswordForm(['login' => $account->username]);
         $callTime = time();
         $this->assertTrue($model->forgotPassword(), 'form should be successfully processed');
         $emailActivation = $model->getEmailActivation();
         $this->assertInstanceOf(EmailActivation::class, $emailActivation);
         $this->assertGreaterThanOrEqual($callTime, $emailActivation->created_at);
-        $this->tester->canSeeEmailIsSent(1);
+
+        $this->assertTaskCreated($this->tester->grabLastQueuedJob(), $account, $emailActivation);
+    }
+
+    /**
+     * @param SendPasswordRecoveryEmail $job
+     * @param Account $account
+     * @param EmailActivation $activation
+     */
+    private function assertTaskCreated($job, Account $account, EmailActivation $activation) {
+        $this->assertInstanceOf(SendPasswordRecoveryEmail::class, $job);
+        $this->assertSame($account->username, $job->username);
+        $this->assertSame($account->email, $job->email);
+        $this->assertSame($account->lang, $job->locale);
+        $this->assertSame($activation->key, $job->code);
+        $this->assertSame('http://localhost/recover-password/' . $activation->key, $job->link);
     }
 
     /**

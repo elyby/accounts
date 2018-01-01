@@ -1,6 +1,7 @@
 <?php
 namespace api\modules\accounts\models;
 
+use api\aop\annotations\CollectModelMetrics;
 use api\components\User\Component;
 use api\exceptions\ThisShouldNotHappenException;
 use api\validators\PasswordRequiredValidator;
@@ -18,11 +19,14 @@ class EnableTwoFactorAuthForm extends AccountActionForm {
         return [
             ['account', 'validateOtpDisabled'],
             ['totp', 'required', 'message' => E::TOTP_REQUIRED],
-            ['totp', TotpValidator::class, 'account' => $this->getAccount()],
+            ['totp', TotpValidator::class, 'account' => $this->getAccount(), 'window' => 2],
             ['password', PasswordRequiredValidator::class, 'account' => $this->getAccount()],
         ];
     }
 
+    /**
+     * @CollectModelMetrics(prefix="accounts.enableTwoFactorAuth")
+     */
     public function performAction(): bool {
         if (!$this->validate()) {
             return false;

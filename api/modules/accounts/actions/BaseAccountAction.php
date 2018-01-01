@@ -9,7 +9,8 @@ use yii\web\NotFoundHttpException;
 
 abstract class BaseAccountAction extends Action {
 
-    final public function run(int $id): array {
+    // TODO: вернуть final модификатор метода после того, как в GoAOP добавят поддержку аспектов для final методов
+    public function run(int $id): array {
         $className = $this->getFormClassName();
         /** @var AccountActionForm $model */
         $model = new $className($this->findAccount($id));

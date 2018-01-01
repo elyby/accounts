@@ -1,4 +1,4 @@
-FROM registry.ely.by/elyby/accounts-php:1.5.1
+FROM registry.ely.by/elyby/accounts-php:1.6.0
 
 # bootstrap скрипт для проекта
 COPY docker/php/bootstrap.sh /bootstrap.sh
@@ -21,7 +21,7 @@ COPY ./composer.json /var/www/composer.json
 
 # Устанавливаем зависимости PHP
 RUN cd .. \
- && composer install --no-interaction --no-suggest --no-dev --classmap-authoritative \
+ && composer install --no-interaction --no-suggest --no-dev --optimize-autoloader \
  && cd -
 
 # Устанавливаем зависимости для Node.js
@@ -30,11 +30,12 @@ RUN cd .. \
 RUN mkdir -p /var/www/frontend
 
 COPY ./frontend/package.json /var/www/frontend/
+COPY ./frontend/yarn.lock /var/www/frontend/
 COPY ./frontend/scripts /var/www/frontend/scripts
 COPY ./frontend/webpack-utils /var/www/frontend/webpack-utils
 
-RUN cd ../frontend \
- && npm run build:install \
+RUN cd /var/www/frontend \
+ && yarn run build:install \
  && cd -
 
 # Удаляем ключи из production контейнера на всякий случай
@@ -43,12 +44,10 @@ RUN rm -rf /root/.ssh
 # Наконец переносим все сорцы внутрь контейнера
 COPY . /var/www/html
 
-RUN mkdir -p api/runtime api/web/assets console/runtime \
- && chown www-data:www-data api/runtime api/web/assets console/runtime \
- # Билдим фронт
- && cd frontend \
+# Билдим фронт
+RUN cd frontend \
  && ln -s /var/www/frontend/node_modules $PWD/node_modules \
- && npm run build:quiet \
+ && yarn run build:quiet \
  && rm node_modules \
  # Копируем билд наружу, чтобы его не затёрло volume в dev режиме
  && cp -r ./dist /var/www/dist \

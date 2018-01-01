@@ -5,6 +5,7 @@ use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\authentication\RepeatAccountActivationForm;
 use Codeception\Specify;
 use common\models\EmailActivation;
+use common\tasks\SendRegistrationEmail;
 use GuzzleHttp\ClientInterface;
 use tests\codeception\api\unit\TestCase;
 use tests\codeception\common\fixtures\AccountFixture;
@@ -69,19 +70,24 @@ class RepeatAccountActivationFormTest extends TestCase {
     }
 
     public function testSendRepeatMessage() {
-        $this->specify('no magic if we don\'t pass validation', function() {
-            $model = new RepeatAccountActivationForm();
-            expect($model->sendRepeatMessage())->false();
-            $this->tester->cantSeeEmailIsSent();
-        });
+        $model = new RepeatAccountActivationForm();
+        $this->assertFalse($model->sendRepeatMessage(), 'no magic if we don\'t pass validation');
+        $this->assertEmpty($this->tester->grabQueueJobs());
 
-        $this->specify('successfully send new message if previous message has expired', function() {
-            $email = $this->tester->grabFixture('accounts', 'not-activated-account-with-expired-message')['email'];
-            $model = new RepeatAccountActivationForm(['email' => $email]);
-            expect($model->sendRepeatMessage())->true();
-            expect($model->getActivation())->notNull();
-            $this->tester->canSeeEmailIsSent(1);
-        });
+        /** @var \common\models\Account $account */
+        $account = $this->tester->grabFixture('accounts', 'not-activated-account-with-expired-message');
+        $model = new RepeatAccountActivationForm(['email' => $account->email]);
+        $this->assertTrue($model->sendRepeatMessage());
+        $activation = $model->getActivation();
+        $this->assertNotNull($activation);
+        /** @var SendRegistrationEmail $job */
+        $job = $this->tester->grabLastQueuedJob();
+        $this->assertInstanceOf(SendRegistrationEmail::class, $job);
+        $this->assertSame($account->username, $job->username);
+        $this->assertSame($account->email, $job->email);
+        $this->assertSame($account->lang, $job->locale);
+        $this->assertSame($activation->key, $job->code);
+        $this->assertSame('http://localhost/activation/' . $activation->key, $job->link);
     }
 
     /**

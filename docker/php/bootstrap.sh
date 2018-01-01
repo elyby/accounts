@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+mkdir -p api/runtime api/web/assets console/runtime
+chown www-data:www-data api/runtime api/web/assets console/runtime
+
 if [ "$YII_ENV" = "test" ]
 then
     YII_EXEC="/var/www/html/tests/codeception/bin/yii"

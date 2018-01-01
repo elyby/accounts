@@ -1,6 +1,7 @@
 <?php
 namespace api\models\authentication;
 
+use api\aop\annotations\CollectModelMetrics;
 use api\models\base\ApiForm;
 use api\modules\accounts\models\ChangeUsernameForm;
 use api\validators\EmailActivationKeyValidator;
@@ -20,6 +21,7 @@ class ConfirmEmailForm extends ApiForm {
     }
 
     /**
+     * @CollectModelMetrics(prefix="signup.confirmEmail")
      * @return \api\components\User\AuthenticationResult|bool
      * @throws ErrorException
      */

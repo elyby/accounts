@@ -1,14 +1,15 @@
 <?php
 namespace api\models\authentication;
 
+use api\aop\annotations\CollectModelMetrics;
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
-use common\emails\EmailHelper;
 use api\models\base\ApiForm;
 use common\helpers\Error as E;
 use common\components\UserFriendlyRandomKey;
 use common\models\Account;
 use common\models\confirmations\RegistrationConfirmation;
 use common\models\UsernameHistory;
+use common\tasks\SendRegistrationEmail;
 use common\validators\EmailValidator;
 use common\validators\LanguageValidator;
 use common\validators\PasswordValidator;
@@ -63,6 +64,7 @@ class RegistrationForm extends ApiForm {
     }
 
     /**
+     * @CollectModelMetrics(prefix="signup.register")
      * @return Account|null the saved model or null if saving fails
      * @throws Exception
      */
@@ -102,7 +104,7 @@ class RegistrationForm extends ApiForm {
                 throw new ErrorException('Cannot save username history record');
             }
 
-            EmailHelper::registration($emailActivation);
+            Yii::$app->queue->push(SendRegistrationEmail::createFromConfirmation($emailActivation));
 
             $transaction->commit();
         } catch (Exception $e) {

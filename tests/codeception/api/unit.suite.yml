@@ -4,6 +4,7 @@ modules:
         - Yii2:
             part: [orm, email, fixtures]
         - tests\codeception\common\_support\amqp\Helper
+        - tests\codeception\common\_support\queue\CodeceptionQueueHelper
         - tests\codeception\common\_support\Mockery
     config:
         Yii2:

@@ -9,7 +9,7 @@ variables:
 test:backend:
     image: docker:latest
     services:
-        - mariadb:10.0
+        - mariadb:10.2.11
         - redis:3.0-alpine
     variables:
         # mariadb config
@@ -39,17 +39,24 @@ test:backend:
             php vendor/bin/codecept run -c tests
 
 test:frontend:
-    image: node:8.2.1
+    image: node:9.2.1-alpine
     stage: test
     cache:
         paths:
             - frontend/node_modules
+    before_script:
+        # Enable SSL support for wget
+        - apk add --update openssl
+        # https://github.com/facebook/flow/issues/3649#issuecomment-308070179
+        - wget -O /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub
+        - wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.25-r0/glibc-2.25-r0.apk
+        - apk add glibc-2.25-r0.apk
     script:
         - cd frontend
-        - npm run build:install --silent
-        - npm run lint --silent
-        # - npm run flow --silent # disabled due to missing libelf.so.1 in docker container
-        - npm run test --silent
+        - yarn run build:install
+        - yarn run lint
+        - yarn flow
+        - yarn test
 
 build:production:
     image: docker:latest

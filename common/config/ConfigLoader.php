@@ -5,10 +5,7 @@ use yii\helpers\ArrayHelper;
 
 class ConfigLoader {
 
-    /*
-     * TODO: В PHP 7.1 следует сделать её protected
-     */
-    const ROOT_PATH = __DIR__ . '/../..';
+    private const ROOT_PATH = __DIR__ . '/../..';
 
     private $application;
 

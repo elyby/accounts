@@ -17,6 +17,7 @@ use Emarref\Jwt\Verification\Context as VerificationContext;
 use Exception;
 use Yii;
 use yii\base\InvalidConfigException;
+use yii\web\UnauthorizedHttpException;
 use yii\web\User as YiiUserComponent;
 
 /**
@@ -28,11 +29,11 @@ use yii\web\User as YiiUserComponent;
  */
 class Component extends YiiUserComponent {
 
-    const KEEP_MINECRAFT_SESSIONS = 1;
-    const KEEP_SITE_SESSIONS = 2;
-    const KEEP_CURRENT_SESSION = 4;
+    public const KEEP_MINECRAFT_SESSIONS = 1;
+    public const KEEP_SITE_SESSIONS = 2;
+    public const KEEP_CURRENT_SESSION = 4;
 
-    const JWT_SUBJECT_PREFIX = 'ely|';
+    public const JWT_SUBJECT_PREFIX = 'ely|';
 
     public $enableSession = false;
 
@@ -59,7 +60,7 @@ class Component extends YiiUserComponent {
     }
 
     public function findIdentityByAccessToken($accessToken): ?IdentityInterface {
-        if ($accessToken === null) {
+        if (empty($accessToken)) {
             return null;
         }
 
@@ -67,10 +68,13 @@ class Component extends YiiUserComponent {
         $identityClass = $this->identityClass;
         try {
             return $identityClass::findIdentityByAccessToken($accessToken);
+        } catch (UnauthorizedHttpException $e) {
+            // Do nothing. It's okay to catch this.
         } catch (Exception $e) {
             Yii::error($e);
-            return null;
         }
+
+        return null;
     }
 
     public function createJwtAuthenticationToken(Account $account, bool $rememberMe): AuthenticationResult {
@@ -127,14 +131,14 @@ class Component extends YiiUserComponent {
     public function parseToken(string $jwtString): Token {
         $token = &self::$parsedTokensCache[$jwtString];
         if ($token === null) {
-            $hostInfo = Yii::$app->request->hostInfo;
-
             $jwt = new Jwt();
-            $notVerifiedToken = $jwt->deserialize($jwtString);
+            try {
+                $notVerifiedToken = $jwt->deserialize($jwtString);
+            } catch (Exception $e) {
+                throw new VerificationException('Incorrect token encoding', 0, $e);
+            }
 
             $context = new VerificationContext(EncryptionFactory::create($this->getAlgorithm()));
-            $context->setAudience($hostInfo);
-            $context->setIssuer($hostInfo);
             $context->setSubject(self::JWT_SUBJECT_PREFIX);
             $jwt->verify($notVerifiedToken, $context);
 
@@ -223,12 +227,9 @@ class Component extends YiiUserComponent {
      */
     protected function getClaims(Account $account): array {
         $currentTime = new DateTime();
-        $hostInfo = Yii::$app->request->hostInfo;
 
         return [
             new ScopesClaim([R::ACCOUNTS_WEB_USER]),
-            new Claim\Audience($hostInfo),
-            new Claim\Issuer($hostInfo),
             new Claim\IssuedAt($currentTime),
             new Claim\Expiration($currentTime->add(new DateInterval($this->expirationTimeout))),
             new Claim\Subject(self::JWT_SUBJECT_PREFIX . $account->id),

@@ -37,8 +37,6 @@ class JwtIdentityTest extends TestCase {
      */
     public function testFindIdentityByAccessTokenWithExpiredToken() {
         $token = new Token();
-        $token->addClaim(new Claim\Audience('http://localhost'));
-        $token->addClaim(new Claim\Issuer('http://localhost'));
         $token->addClaim(new Claim\IssuedAt(1464593193));
         $token->addClaim(new Claim\Expiration(1464596793));
         $token->addClaim(new Claim\Subject('ely|' . $this->tester->grabFixture('accounts', 'admin')['id']));

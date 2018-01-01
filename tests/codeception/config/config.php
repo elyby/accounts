@@ -9,6 +9,9 @@ return [
             'namespace' => 'tests\codeception\common\fixtures',
         ],
     ],
+    'params' => [
+        'fromEmail' => 'ely@ely.by',
+    ],
     'components' => [
         'urlManager' => [
             'showScriptName' => true,
@@ -19,6 +22,9 @@ return [
         ],
         'amqp' => [
             'class' => tests\codeception\common\_support\amqp\TestComponent::class,
+        ],
+        'queue' => [
+            'class' => tests\codeception\common\_support\queue\Queue::class,
         ],
         'sentry' => [
             'enabled' => false,

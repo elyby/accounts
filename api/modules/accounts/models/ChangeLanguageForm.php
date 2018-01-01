@@ -1,6 +1,7 @@
 <?php
 namespace api\modules\accounts\models;
 
+use api\aop\annotations\CollectModelMetrics;
 use api\exceptions\ThisShouldNotHappenException;
 use common\validators\LanguageValidator;
 
@@ -15,6 +16,9 @@ class ChangeLanguageForm extends AccountActionForm {
         ];
     }
 
+    /**
+     * @CollectModelMetrics(prefix="accounts.switchLanguage")
+     */
     public function performAction(): bool {
         if (!$this->validate()) {
             return false;

@@ -1,15 +1,17 @@
 <?php
 namespace api\models\authentication;
 
+use api\aop\annotations\CollectModelMetrics;
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\base\ApiForm;
-use common\emails\EmailHelper;
 use common\helpers\Error as E;
 use api\traits\AccountFinder;
 use common\components\UserFriendlyRandomKey;
 use common\models\Account;
 use common\models\confirmations\ForgotPassword;
 use common\models\EmailActivation;
+use common\tasks\SendPasswordRecoveryEmail;
+use Yii;
 use yii\base\ErrorException;
 
 class ForgotPasswordForm extends ApiForm {
@@ -55,6 +57,11 @@ class ForgotPasswordForm extends ApiForm {
         }
     }
 
+    /**
+     * @CollectModelMetrics(prefix="authentication.forgotPassword")
+     * @return bool
+     * @throws ErrorException
+     */
     public function forgotPassword() {
         if (!$this->validate()) {
             return false;
@@ -74,7 +81,7 @@ class ForgotPasswordForm extends ApiForm {
             throw new ErrorException('Cannot create email activation for forgot password form');
         }
 
-        EmailHelper::forgotPassword($emailActivation);
+        Yii::$app->queue->push(SendPasswordRecoveryEmail::createFromConfirmation($emailActivation));
 
         return true;
     }

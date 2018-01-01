@@ -1,12 +1,13 @@
 <?php
 namespace api\modules\accounts\models;
 
+use api\aop\annotations\CollectModelMetrics;
 use api\exceptions\ThisShouldNotHappenException;
-use common\emails\EmailHelper;
 use api\validators\PasswordRequiredValidator;
 use common\helpers\Error as E;
 use common\models\confirmations\CurrentEmailConfirmation;
 use common\models\EmailActivation;
+use common\tasks\SendCurrentEmailConfirmation;
 use Yii;
 
 class SendEmailVerificationForm extends AccountActionForm {
@@ -34,6 +35,9 @@ class SendEmailVerificationForm extends AccountActionForm {
         }
     }
 
+    /**
+     * @CollectModelMetrics(prefix="accounts.sendEmailVerification")
+     */
     public function performAction(): bool {
         if (!$this->validate()) {
             return false;
@@ -44,7 +48,7 @@ class SendEmailVerificationForm extends AccountActionForm {
         $this->removeOldCode();
         $activation = $this->createCode();
 
-        EmailHelper::changeEmailConfirmCurrent($activation);
+        Yii::$app->queue->push(SendCurrentEmailConfirmation::createFromConfirmation($activation));
 
         $transaction->commit();
 

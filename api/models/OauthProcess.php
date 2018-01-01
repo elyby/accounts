@@ -87,6 +87,7 @@ class OauthProcess {
      */
     public function complete(): array {
         try {
+            Yii::$app->statsd->inc('oauth.complete.attempt');
             $grant = $this->getAuthorizationCodeGrant();
             $authParams = $grant->checkAuthorizeParams();
             $account = Yii::$app->user->identity->getAccount();
@@ -94,6 +95,7 @@ class OauthProcess {
             $clientModel = OauthClient::findOne($authParams->getClient()->getId());
 
             if (!$this->canAutoApprove($account, $clientModel, $authParams)) {
+                Yii::$app->statsd->inc('oauth.complete.approve_required');
                 $isAccept = Yii::$app->request->post('accept');
                 if ($isAccept === null) {
                     throw new AcceptRequiredException();
@@ -109,7 +111,12 @@ class OauthProcess {
                 'success' => true,
                 'redirectUri' => $redirectUri,
             ];
+            Yii::$app->statsd->inc('oauth.complete.success');
         } catch (OAuthException $e) {
+            if (!$e instanceof AcceptRequiredException) {
+                Yii::$app->statsd->inc('oauth.complete.fail');
+            }
+
             $response = $this->buildErrorResponse($e);
         }
 
@@ -139,8 +146,11 @@ class OauthProcess {
      */
     public function getToken(): array {
         try {
+            Yii::$app->statsd->inc('oauth.issueToken.attempt');
             $response = $this->server->issueAccessToken();
+            Yii::$app->statsd->inc('oauth.issueToken.success');
         } catch (OAuthException $e) {
+            Yii::$app->statsd->inc('oauth.issueToken.fail');
             Yii::$app->response->statusCode = $e->httpStatusCode;
             $response = [
                 'error' => $e->errorType,

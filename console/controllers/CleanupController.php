@@ -4,24 +4,23 @@ namespace console\controllers;
 use common\models\AccountSession;
 use common\models\EmailActivation;
 use common\models\MinecraftAccessKey;
+use Yii;
 use yii\console\Controller;
 
 class CleanupController extends Controller {
 
     public function actionEmailKeys() {
         $query = EmailActivation::find();
-        $conditions = ['OR'];
         foreach ($this->getEmailActivationsDurationsMap() as $typeId => $expiration) {
-            $conditions[] = [
+            $query->orWhere([
                 'AND',
                 ['type' => $typeId],
                 ['<', 'created_at', time() - $expiration],
-            ];
+            ]);
         }
 
-        /** @var \yii\db\BatchQueryResult|EmailActivation[] $expiredEmails */
-        $expiredEmails = $query->andWhere($conditions)->each();
-        foreach ($expiredEmails as $email) {
+        foreach ($query->each(100, Yii::$app->unbufferedDb) as $email) {
+            /** @var EmailActivation $email */
             $email->delete();
         }
 
@@ -29,12 +28,11 @@ class CleanupController extends Controller {
     }
 
     public function actionMinecraftSessions() {
-        /** @var \yii\db\BatchQueryResult|MinecraftAccessKey[] $expiredMinecraftSessions */
-        $expiredMinecraftSessions = MinecraftAccessKey::find()
-            ->andWhere(['<', 'updated_at', time() - 1209600]) // 2 weeks
-            ->each();
+        $expiredMinecraftSessionsQuery = MinecraftAccessKey::find()
+            ->andWhere(['<', 'updated_at', time() - 1209600]); // 2 weeks
 
-        foreach ($expiredMinecraftSessions as $minecraftSession) {
+        foreach ($expiredMinecraftSessionsQuery->each(100, Yii::$app->unbufferedDb) as $minecraftSession) {
+            /** @var MinecraftAccessKey $minecraftSession */
             $minecraftSession->delete();
         }
 
@@ -70,6 +68,7 @@ class CleanupController extends Controller {
             $object = new $className;
             /** @var \common\behaviors\EmailActivationExpirationBehavior $behavior */
             $behavior = $object->getBehavior('expirationBehavior');
+            /** @noinspection NullPointerExceptionInspection */
             $expiration = $behavior->expirationTimeout ?? 1123200; // 13d по умолчанию
             // Приращаем 1 день, чтобы пользователи ещё могли получать сообщения об истечении кода активации
             /** @noinspection SummerTimeUnsafeTimeManipulationInspection */

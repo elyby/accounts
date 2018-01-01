@@ -54,6 +54,7 @@ return [
         'rules_agreement_version' => \common\LATEST_RULES_VERSION,
         'created_at' => 1457890086,
         'updated_at' => 1457890086,
+        'password_changed_at' => 1457890086,
     ],
     'account-with-fresh-forgot-password-message' => [
         'id' => 5,
@@ -67,6 +68,7 @@ return [
         'rules_agreement_version' => \common\LATEST_RULES_VERSION,
         'created_at' => 1462891432,
         'updated_at' => 1462891432,
+        'password_changed_at' => 1462891432,
     ],
     'account-with-expired-forgot-password-message' => [
         'id' => 6,
@@ -80,6 +82,7 @@ return [
         'rules_agreement_version' => \common\LATEST_RULES_VERSION,
         'created_at' => 1462891612,
         'updated_at' => 1462891612,
+        'password_changed_at' => 1462891612,
     ],
     'account-with-change-email-init-state' => [
         'id' => 7,
@@ -93,6 +96,7 @@ return [
         'rules_agreement_version' => \common\LATEST_RULES_VERSION,
         'created_at' => 1463427287,
         'updated_at' => 1463427287,
+        'password_changed_at' => 1463427287,
     ],
     'account-with-change-email-finish-state' => [
         'id' => 8,
@@ -106,6 +110,7 @@ return [
         'rules_agreement_version' => \common\LATEST_RULES_VERSION,
         'created_at' => 1463349615,
         'updated_at' => 1463349615,
+        'password_changed_at' => 1463349615,
     ],
     'account-with-old-rules-version' => [
         'id' => 9,
@@ -119,6 +124,7 @@ return [
         'rules_agreement_version' => null,
         'created_at' => 1470499952,
         'updated_at' => 1470499952,
+        'password_changed_at' => 1470499952,
     ],
     'banned-account' => [
         'id' => 10,
@@ -132,6 +138,7 @@ return [
         'rules_agreement_version' => \common\LATEST_RULES_VERSION,
         'created_at' => 1472682343,
         'updated_at' => 1472682343,
+        'password_changed_at' => 1472682343,
     ],
     'account-with-usernames-history' => [
         'id' => 11,
@@ -145,6 +152,7 @@ return [
         'rules_agreement_version' => \common\LATEST_RULES_VERSION,
         'created_at' => 1474404139,
         'updated_at' => 1474404149,
+        'password_changed_at' => 1474404149,
     ],
     'account-with-otp-secret' => [
         'id' => 12,
@@ -160,6 +168,7 @@ return [
         'is_otp_enabled' => false,
         'created_at' => 1485124615,
         'updated_at' => 1485124615,
+        'password_changed_at' => 1485124615,
     ],
     'account-with-enabled-otp' => [
         'id' => 13,
@@ -175,5 +184,6 @@ return [
         'is_otp_enabled' => true,
         'created_at' => 1485124685,
         'updated_at' => 1485124685,
+        'password_changed_at' => 1485124685,
     ],
 ];

@@ -53,6 +53,7 @@ class JoinForm extends Model {
         $serverId = $this->serverId;
         $accessToken = $this->accessToken;
         Session::info("User with access_token = '{$accessToken}' trying join to server with server_id = '{$serverId}'.");
+        Yii::$app->statsd->inc('sessionserver.join.attempts');
         if (!$this->validate()) {
             return false;
         }
@@ -63,10 +64,8 @@ class JoinForm extends Model {
             throw new ErrorException('Cannot save join session model');
         }
 
-        Session::info(
-            "User with access_token = '{$accessToken}' and nickname = '{$account->username}' successfully joined to " .
-            "server_id = '{$serverId}'."
-        );
+        Session::info("User with access_token = '{$accessToken}' and nickname = '{$account->username}' successfully joined to server_id = '{$serverId}'.");
+        Yii::$app->statsd->inc('sessionserver.join.success');
 
         return true;
     }
@@ -97,9 +96,11 @@ class JoinForm extends Model {
         /** @var MinecraftAccessKey|null $accessModel */
         $accessModel = MinecraftAccessKey::findOne($accessToken);
         if ($accessModel !== null) {
+            Yii::$app->statsd->inc('sessionserver.authentication.legacy_minecraft_protocol');
             /** @var MinecraftAccessKey|\api\components\OAuth2\Entities\AccessTokenEntity $accessModel */
             if ($accessModel->isExpired()) {
                 Session::error("User with access_token = '{$accessToken}' failed join by expired access_token.");
+                Yii::$app->statsd->inc('sessionserver.authentication.legacy_minecraft_protocol_token_expired');
                 throw new ForbiddenOperationException('Expired access_token.');
             }
 
@@ -113,11 +114,14 @@ class JoinForm extends Model {
 
             if ($identity === null) {
                 Session::error("User with access_token = '{$accessToken}' failed join by wrong access_token.");
+                Yii::$app->statsd->inc('sessionserver.join.fail_wrong_token');
                 throw new ForbiddenOperationException('Invalid access_token.');
             }
 
+            Yii::$app->statsd->inc('sessionserver.authentication.oauth2');
             if (!Yii::$app->user->can(P::MINECRAFT_SERVER_SESSION)) {
                 Session::error("User with access_token = '{$accessToken}' doesn't have enough scopes to make join.");
+                Yii::$app->statsd->inc('sessionserver.authentication.oauth2_not_enough_scopes');
                 throw new ForbiddenOperationException('The token does not have required scope.');
             }
 
@@ -127,18 +131,14 @@ class JoinForm extends Model {
         $selectedProfile = $this->selectedProfile;
         $isUuid = StringHelper::isUuid($selectedProfile);
         if ($isUuid && $account->uuid !== $this->normalizeUUID($selectedProfile)) {
-            Session::error(
-                "User with access_token = '{$accessToken}' trying to join with identity = '{$selectedProfile}'," .
-                " but access_token issued to account with id = '{$account->uuid}'."
-            );
+            Session::error("User with access_token = '{$accessToken}' trying to join with identity = '{$selectedProfile}', but access_token issued to account with id = '{$account->uuid}'.");
+            Yii::$app->statsd->inc('sessionserver.join.fail_uuid_mismatch');
             throw new ForbiddenOperationException('Wrong selected_profile.');
         }
 
         if (!$isUuid && mb_strtolower($account->username) !== mb_strtolower($selectedProfile)) {
-            Session::error(
-                "User with access_token = '{$accessToken}' trying to join with identity = '{$selectedProfile}'," .
-                " but access_token issued to account with username = '{$account->username}'."
-            );
+            Session::error("User with access_token = '{$accessToken}' trying to join with identity = '{$selectedProfile}', but access_token issued to account with username = '{$account->username}'.");
+            Yii::$app->statsd->inc('sessionserver.join.fail_username_mismatch');
             throw new ForbiddenOperationException('Invalid credentials');
         }
 

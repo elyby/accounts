@@ -12,6 +12,16 @@ use const common\LATEST_RULES_VERSION;
 
 class AccountOwnerTest extends TestCase {
 
+    public function testIdentityIsNull() {
+        $component = mock(Component::class . '[findIdentityByAccessToken]', [['secret' => 'secret']]);
+        $component->shouldDeferMissing();
+        $component->shouldReceive('findIdentityByAccessToken')->andReturn(null);
+
+        Yii::$app->set('user', $component);
+
+        $this->assertFalse((new AccountOwner())->execute('some token', new Item(), ['accountId' => 123]));
+    }
+
     public function testExecute() {
         $rule = new AccountOwner();
         $item = new Item();
