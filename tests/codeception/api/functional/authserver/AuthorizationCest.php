@@ -75,6 +75,31 @@ class AuthorizationCest {
         $this->testSuccessResponse($I);
     }
 
+    public function longClientToken(FunctionalTester $I) {
+        $I->wantTo('send non uuid clientToken, but less then 255 characters');
+        $this->route->authenticate([
+            'username' => 'admin@ely.by',
+            'password' => 'password_0',
+            'clientToken' => str_pad('', 255, 'x'),
+        ]);
+        $this->testSuccessResponse($I);
+    }
+
+    public function tooLongClientToken(FunctionalTester $I) {
+        $I->wantTo('send non uuid clientToken with more then 255 characters length');
+        $this->route->authenticate([
+            'username' => 'admin@ely.by',
+            'password' => 'password_0',
+            'clientToken' => str_pad('', 256, 'x'),
+        ]);
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseIsJson();
+        $I->canSeeResponseContainsJson([
+            'error' => 'IllegalArgumentException',
+            'errorMessage' => 'clientToken is too long.',
+        ]);
+    }
+
     public function wrongArguments(FunctionalTester $I) {
         $I->wantTo('get error on wrong amount of arguments');
         $this->route->authenticate([
