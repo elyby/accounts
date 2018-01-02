@@ -126,8 +126,8 @@ class OauthProcess {
     /**
      * Метод выполняется сервером приложения, которому был выдан auth_token или refresh_token.
      *
-     * Входными данными является стандартный список GET параметров по стандарту oAuth:
-     * $_GET = [
+     * Входными данными является стандартный список POST параметров по стандарту oAuth:
+     * $_POST = [
      *     client_id,
      *     client_secret,
      *     redirect_uri,
@@ -135,7 +135,7 @@ class OauthProcess {
      *     grant_type,
      * ]
      * для запроса grant_type = authentication_code.
-     * $_GET = [
+     * $_POST = [
      *     client_id,
      *     client_secret,
      *     refresh_token,
@@ -145,12 +145,15 @@ class OauthProcess {
      * @return array
      */
     public function getToken(): array {
+        $grantType = Yii::$app->request->post('grant_type', 'null');
         try {
-            Yii::$app->statsd->inc('oauth.issueToken.attempt');
+            Yii::$app->statsd->inc("oauth.issueToken_{$grantType}.attempt");
             $response = $this->server->issueAccessToken();
-            Yii::$app->statsd->inc('oauth.issueToken.success');
+            $clientId = Yii::$app->request->post('client_id');
+            Yii::$app->statsd->inc("oauth.issueToken_client.{$clientId}");
+            Yii::$app->statsd->inc("oauth.issueToken_{$grantType}.success");
         } catch (OAuthException $e) {
-            Yii::$app->statsd->inc('oauth.issueToken.fail');
+            Yii::$app->statsd->inc("oauth.issueToken_{$grantType}.fail");
             Yii::$app->response->statusCode = $e->httpStatusCode;
             $response = [
                 'error' => $e->errorType,

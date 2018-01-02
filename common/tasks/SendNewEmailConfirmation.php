@@ -5,6 +5,7 @@ namespace common\tasks;
 use common\emails\EmailHelper;
 use common\emails\templates\ChangeEmailConfirmNewEmail;
 use common\models\confirmations\NewEmailConfirmation;
+use Yii;
 use yii\queue\RetryableJobInterface;
 
 class SendNewEmailConfirmation implements RetryableJobInterface {
@@ -36,6 +37,7 @@ class SendNewEmailConfirmation implements RetryableJobInterface {
      * @param \yii\queue\Queue $queue
      */
     public function execute($queue) {
+        Yii::$app->statsd->inc('queue.sendNewEmailConfirmation.attempt');
         $to = EmailHelper::buildTo($this->username, $this->email);
         $template = new ChangeEmailConfirmNewEmail($to, $this->username, $this->code);
         $template->send();
