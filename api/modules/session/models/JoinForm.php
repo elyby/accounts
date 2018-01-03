@@ -53,7 +53,7 @@ class JoinForm extends Model {
         $serverId = $this->serverId;
         $accessToken = $this->accessToken;
         Session::info("User with access_token = '{$accessToken}' trying join to server with server_id = '{$serverId}'.");
-        Yii::$app->statsd->inc('sessionserver.join.attempts');
+        Yii::$app->statsd->inc('sessionserver.join.attempt');
         if (!$this->validate()) {
             return false;
         }
