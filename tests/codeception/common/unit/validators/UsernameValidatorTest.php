@@ -18,6 +18,13 @@ class UsernameValidatorTest extends TestCase {
         $this->validator = new UsernameValidator();
     }
 
+    public function testValidateTrimming() {
+        $model = $this->createModel("HereIsJohnny#\u{feff}"); // Zero width no-break space (U+FEFF)
+        $this->validator->validateAttribute($model, 'field');
+        $this->assertEquals(['error.username_invalid'], $model->getErrors('field'));
+        $this->assertEquals('HereIsJohnny#', $model->field);
+    }
+
     public function testValidateAttributeRequired() {
         $model = $this->createModel('');
         $this->validator->validateAttribute($model, 'field');

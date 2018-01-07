@@ -1,11 +1,12 @@
 <?php
+declare(strict_types=1);
 namespace common\helpers;
 
 use Ramsey\Uuid\Uuid;
 
 class StringHelper {
 
-    public static function getEmailMask(string $email) : string {
+    public static function getEmailMask(string $email): string {
         $username = explode('@', $email)[0];
         $usernameLength = mb_strlen($username);
         $maskChars = '**';
@@ -29,7 +30,7 @@ class StringHelper {
      * @param string $uuid
      * @return bool
      */
-    public static function isUuid(string $uuid) : bool {
+    public static function isUuid(string $uuid): bool {
         try {
             Uuid::fromString($uuid);
         } catch (\InvalidArgumentException $e) {
@@ -37,6 +38,19 @@ class StringHelper {
         }
 
         return true;
+    }
+
+    /**
+     * Returns a string with whitespace removed from the start and end of the
+     * string. Supports the removal of unicode whitespace.
+     *
+     * Based on the http://markushedlund.com/dev/trim-unicodeutf-8-whitespace-in-php
+     *
+     * @param  string $string string to remove whitespaces
+     * @return string trimmed $string
+     */
+    public static function trim(string $string): string {
+        return preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $string);
     }
 
 }

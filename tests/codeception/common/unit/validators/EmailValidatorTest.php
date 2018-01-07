@@ -20,6 +20,16 @@ class EmailValidatorTest extends TestCase {
         $this->validator = new EmailValidator();
     }
 
+    public function testValidateTrimming() {
+        // Prevent it to access to db
+        Mock::func(YiiEmailValidator::class, 'checkdnsrr')->andReturn(false);
+
+        $model = $this->createModel("testemail@ely.by\u{feff}"); // Zero width no-break space (U+FEFF)
+        $this->validator->validateAttribute($model, 'field');
+        $this->assertEquals(['error.email_invalid'], $model->getErrors('field'));
+        $this->assertEquals('testemail@ely.by', $model->field);
+    }
+
     public function testValidateAttributeRequired() {
         $model = $this->createModel('');
         $this->validator->validateAttribute($model, 'field');
