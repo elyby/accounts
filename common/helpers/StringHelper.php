@@ -49,7 +49,11 @@ class StringHelper {
      * @param  string $string string to remove whitespaces
      * @return string trimmed $string
      */
-    public static function trim(string $string): string {
+    public static function trim(?string $string): string {
+        if ($string === null) {
+            return '';
+        }
+
         return preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $string);
     }
 
