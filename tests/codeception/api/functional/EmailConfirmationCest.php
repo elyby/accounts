@@ -5,7 +5,19 @@ use tests\codeception\api\_pages\SignupRoute;
 
 class EmailConfirmationCest {
 
-    public function testLoginEmailOrUsername(FunctionalTester $I) {
+    public function testConfirmEmailByCorrectKey(FunctionalTester $I) {
+        $route = new SignupRoute($I);
+
+        $I->wantTo('confirm my email using correct activation key');
+        $route->confirm('HABGCABHJ1234HBHVD');
+        $I->canSeeResponseContainsJson([
+            'success' => true,
+        ]);
+        $I->cantSeeResponseJsonMatchesJsonPath('$.errors');
+        $I->canSeeAuthCredentials(true);
+    }
+
+    public function testConfirmEmailByInvalidKey(FunctionalTester $I) {
         $route = new SignupRoute($I);
 
         $I->wantTo('see error.key_is_required expected if key is not set');
@@ -27,16 +39,22 @@ class EmailConfirmationCest {
         ]);
     }
 
-    public function testLoginByEmailCorrect(FunctionalTester $I) {
+    public function testConfirmByInvalidEmojiString(FunctionalTester $I) {
         $route = new SignupRoute($I);
 
-        $I->wantTo('confirm my email using correct activation key');
-        $route->confirm('HABGCABHJ1234HBHVD');
+        $I->wantTo('try to submit some long emoji string (Sentry ACCOUNTS-43Y)');
+        $route->confirm(
+            'ALWAYS 🕔 make sure 👍 to shave 🔪🍑 because ✌️ the last time 🕒 we let 👐😪 a bush 🌳 ' .
+            'in our lives 👈😜👉 it did 9/11 💥🏢🏢✈️🔥🔥🔥 ALWAYS 🕔 make sure 👍 to shave 🔪🍑 ' .
+            'because ✌️ the last time 🕒 we let 👐😪 a bush 🌳 in our lives 👈😜👉 it did 9/11 ' .
+            '💥🏢🏢✈️🔥🔥🔥/'
+        );
         $I->canSeeResponseContainsJson([
-            'success' => true,
+            'success' => false,
+            'errors' => [
+                'key' => 'error.key_not_exists',
+            ],
         ]);
-        $I->cantSeeResponseJsonMatchesJsonPath('$.errors');
-        $I->canSeeAuthCredentials(true);
     }
 
 }
