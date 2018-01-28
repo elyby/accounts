@@ -2,6 +2,7 @@
 namespace common\validators;
 
 use common\helpers\Error as E;
+use common\helpers\StringHelper;
 use common\models\Account;
 use Ely\Yii2\TempmailValidator;
 use yii\base\Model;
@@ -20,7 +21,7 @@ class EmailValidator extends Validator {
     public $skipOnEmpty = false;
 
     public function validateAttribute($model, $attribute) {
-        $filter = new validators\FilterValidator(['filter' => 'trim']);
+        $filter = new validators\FilterValidator(['filter' => [StringHelper::class, 'trim']]);
 
         $required = new validators\RequiredValidator();
         $required->message = E::EMAIL_REQUIRED;

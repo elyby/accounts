@@ -1,6 +1,6 @@
 <?php
 return [
-    'version' => '1.1.23',
+    'version' => '1.1.24',
     'vendorPath' => dirname(__DIR__, 2) . '/vendor',
     'components' => [
         'cache' => [
@@ -12,7 +12,7 @@ return [
             'dsn' => 'mysql:host=' . (getenv('DB_HOST') ?: 'db') . ';dbname=' . getenv('DB_DATABASE'),
             'username' => getenv('DB_USER'),
             'password' => getenv('DB_PASSWORD'),
-            'charset' => 'utf8',
+            'charset' => 'utf8mb4',
             'schemaMap' => [
                 'mysql' => common\db\mysql\Schema::class,
             ],
@@ -22,7 +22,7 @@ return [
             'dsn' => 'mysql:host=' . (getenv('DB_HOST') ?: 'db') . ';dbname=' . getenv('DB_DATABASE'),
             'username' => getenv('DB_USER'),
             'password' => getenv('DB_PASSWORD'),
-            'charset' => 'utf8',
+            'charset' => 'utf8mb4',
             'attributes' => [
                 PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => false,
             ],
