@@ -22,7 +22,7 @@ class TwoFactorAuthInfo extends BaseAccountForm {
         $provisioningUri = $this->getTotp()->getProvisioningUri();
 
         return [
-            'qr' => 'data:image/svg+xml,' . trim($this->drawQrCode($provisioningUri)),
+            'qr' => $this->buildDataImage($this->drawQrCode($provisioningUri)),
             'uri' => $provisioningUri,
             'secret' => $this->getAccount()->otp_secret,
         ];
@@ -39,6 +39,14 @@ class TwoFactorAuthInfo extends BaseAccountForm {
         $writer = new Writer($renderer);
 
         return $writer->writeString($content, Encoder::DEFAULT_BYTE_MODE_ECODING, ErrorCorrectionLevel::H);
+    }
+
+    private function buildDataImage(string $svg) {
+        $svg = trim($svg);
+        // https://stackoverflow.com/a/30733736/5184751
+        $svg = str_replace('#', '%23', $svg);
+
+        return 'data:image/svg+xml,' . $svg;
     }
 
     /**
