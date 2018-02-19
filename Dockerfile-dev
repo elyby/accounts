@@ -15,9 +15,10 @@ RUN chmod 400 ~/.ssh/id_rsa \
  && touch /root/.ssh/known_hosts \
  && ssh-keyscan github.com gitlab.ely.by >> /root/.ssh/known_hosts
 
-# Копируем composer.json в родительскую директорию, которая не будет синкаться с хостом через
-# volume на dev окружении. В entrypoint эта папка будет скопирована обратно.
+# Копируем списки зависимостей composer в родительскую директорию, которая не будет синкаться
+# с хостом через volume на dev окружении. В entrypoint эта папка будет скопирована обратно
 COPY ./composer.json /var/www/composer.json
+COPY ./composer.lock /var/www/composer.lock
 
 # Устанавливаем зависимости PHP
 RUN cd .. \
