@@ -4,6 +4,7 @@ namespace common\models;
 use common\components\Redis\Set;
 use Yii;
 use yii\base\NotSupportedException;
+use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -14,6 +15,7 @@ use yii\db\ActiveRecord;
  * @property string|null $owner_id
  * @property string      $client_id
  * @property string      $client_redirect_uri
+ * @property integer     $created_at
  *
  * Отношения
  * @property OauthClient $client
@@ -24,6 +26,15 @@ class OauthSession extends ActiveRecord {
 
     public static function tableName(): string {
         return '{{%oauth_sessions}}';
+    }
+
+    public function behaviors() {
+        return [
+            [
+                'class' => TimestampBehavior::class,
+                'updatedAtAttribute' => false,
+            ],
+        ];
     }
 
     public function getClient(): ActiveQuery {

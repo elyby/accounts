@@ -186,4 +186,20 @@ return [
         'updated_at' => 1485124685,
         'password_changed_at' => 1485124685,
     ],
+    'account-with-two-oauth-clients' => [
+        'id' => 14,
+        'uuid' => '1b946267-b1a9-4409-ae83-94f84a329883',
+        'username' => 'TwoOauthClients',
+        'email' => 'oauth2-two@gmail.com',
+        'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
+        'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
+        'lang' => 'ru',
+        'status' => \common\models\Account::STATUS_ACTIVE,
+        'rules_agreement_version' => \common\LATEST_RULES_VERSION,
+        'otp_secret' => null,
+        'is_otp_enabled' => false,
+        'created_at' => 1519487320,
+        'updated_at' => 1519487320,
+        'password_changed_at' => 1519487320,
+    ],
 ];

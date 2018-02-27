@@ -4,10 +4,10 @@ namespace codeception\console\unit\controllers;
 use common\models\AccountSession;
 use common\models\EmailActivation;
 use common\models\MinecraftAccessKey;
+use common\models\OauthClient;
+use common\tasks\ClearOauthSessions;
 use console\controllers\CleanupController;
-use tests\codeception\common\fixtures\AccountSessionFixture;
-use tests\codeception\common\fixtures\EmailActivationFixture;
-use tests\codeception\common\fixtures\MinecraftAccessKeyFixture;
+use tests\codeception\common\fixtures;
 use tests\codeception\console\unit\TestCase;
 use Yii;
 
@@ -15,9 +15,11 @@ class CleanupControllerTest extends TestCase {
 
     public function _fixtures() {
         return [
-            'emailActivations' => EmailActivationFixture::class,
-            'minecraftSessions' => MinecraftAccessKeyFixture::class,
-            'accountsSessions' => AccountSessionFixture::class,
+            'emailActivations' => fixtures\EmailActivationFixture::class,
+            'minecraftSessions' => fixtures\MinecraftAccessKeyFixture::class,
+            'accountsSessions' => fixtures\AccountSessionFixture::class,
+            'oauthClients' => fixtures\OauthClientFixture::class,
+            'oauthSessions' => fixtures\OauthSessionFixture::class,
         ];
     }
 
@@ -54,6 +56,24 @@ class CleanupControllerTest extends TestCase {
         $this->tester->cantSeeRecord(AccountSession::class, ['id' => $expiredSession->id]);
         $this->tester->cantSeeRecord(AccountSession::class, ['id' => $notRefreshedSession->id]);
         $this->assertEquals($totalSessionsCount - 2, AccountSession::find()->count());
+    }
+
+    public function testActionOauthClients() {
+        /** @var OauthClient $deletedClient */
+        $totalClientsCount = OauthClient::find()->includeDeleted()->count();
+
+        $controller = new CleanupController('cleanup', Yii::$app);
+        $this->assertEquals(0, $controller->actionOauthClients());
+
+        $this->assertNull(OauthClient::find()->includeDeleted()->andWhere(['id' => 'deleted-oauth-client'])->one());
+        $this->assertNotNull(OauthClient::find()->includeDeleted()->andWhere(['id' => 'deleted-oauth-client-with-sessions'])->one());
+        $this->assertEquals($totalClientsCount - 1, OauthClient::find()->includeDeleted()->count());
+
+        /** @var ClearOauthSessions $job */
+        $job = $this->tester->grabLastQueuedJob();
+        $this->assertInstanceOf(ClearOauthSessions::class, $job);
+        $this->assertSame('deleted-oauth-client-with-sessions', $job->clientId);
+        $this->assertNull($job->notSince);
     }
 
 }

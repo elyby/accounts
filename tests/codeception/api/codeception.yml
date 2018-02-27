@@ -22,7 +22,6 @@ coverage:
             - ../../../api/*
         exclude:
             - ../../../api/config/*
-            - ../../../api/mails/*
             - ../../../api/web/*
             - ../../../api/runtime/*
     c3url: 'http://localhost/api/web/index.php'

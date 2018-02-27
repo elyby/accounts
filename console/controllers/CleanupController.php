@@ -4,12 +4,15 @@ namespace console\controllers;
 use common\models\AccountSession;
 use common\models\EmailActivation;
 use common\models\MinecraftAccessKey;
+use common\models\OauthClient;
+use common\tasks\ClearOauthSessions;
 use Yii;
 use yii\console\Controller;
+use yii\console\ExitCode;
 
 class CleanupController extends Controller {
 
-    public function actionEmailKeys() {
+    public function actionEmailKeys(): int {
         $query = EmailActivation::find();
         foreach ($this->getEmailActivationsDurationsMap() as $typeId => $expiration) {
             $query->orWhere([
@@ -24,10 +27,10 @@ class CleanupController extends Controller {
             $email->delete();
         }
 
-        return self::EXIT_CODE_NORMAL;
+        return ExitCode::OK;
     }
 
-    public function actionMinecraftSessions() {
+    public function actionMinecraftSessions(): int {
         $expiredMinecraftSessionsQuery = MinecraftAccessKey::find()
             ->andWhere(['<', 'updated_at', time() - 1209600]); // 2 weeks
 
@@ -36,7 +39,7 @@ class CleanupController extends Controller {
             $minecraftSession->delete();
         }
 
-        return self::EXIT_CODE_NORMAL;
+        return ExitCode::OK;
     }
 
     /**
@@ -47,7 +50,7 @@ class CleanupController extends Controller {
      * У модели AccountSession нет внешних связей, так что целевые записи
      * могут быть удалены без использования циклов.
      */
-    public function actionWebSessions() {
+    public function actionWebSessions(): int {
         AccountSession::deleteAll([
             'OR',
             ['<', 'last_refreshed_at', time() - 7776000], // 90 days
@@ -58,7 +61,24 @@ class CleanupController extends Controller {
             ],
         ]);
 
-        return self::EXIT_CODE_NORMAL;
+        return ExitCode::OK;
+    }
+
+    public function actionOauthClients(): int {
+        /** @var OauthClient[] $clients */
+        $clients = OauthClient::find()
+            ->onlyDeleted()
+            ->all();
+        foreach ($clients as $client) {
+            if ($client->getSessions()->exists()) {
+                Yii::$app->queue->push(ClearOauthSessions::createFromOauthClient($client));
+                continue;
+            }
+
+            $client->delete();
+        }
+
+        return ExitCode::OK;
     }
 
     private function getEmailActivationsDurationsMap(): array {

@@ -60,4 +60,13 @@ final class Error {
     const OTP_ALREADY_ENABLED = 'error.otp_already_enabled';
     const OTP_NOT_ENABLED = 'error.otp_not_enabled';
 
+    const NAME_REQUIRED = 'error.name_required';
+
+    const REDIRECT_URI_REQUIRED = 'error.redirectUri_required';
+    const REDIRECT_URI_INVALID = 'error.redirectUri_invalid';
+
+    const WEBSITE_URL_INVALID = 'error.websiteUrl_invalid';
+
+    const MINECRAFT_SERVER_IP_INVALID = 'error.minecraftServerIp_invalid';
+
 }

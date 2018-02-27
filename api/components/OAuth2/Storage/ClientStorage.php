@@ -18,14 +18,12 @@ class ClientStorage extends AbstractStorage implements ClientInterface {
      * @inheritdoc
      */
     public function get($clientId, $clientSecret = null, $redirectUri = null, $grantType = null) {
-        $query = OauthClient::find()->andWhere(['id' => $clientId]);
-        if ($clientSecret !== null) {
-            $query->andWhere(['secret' => $clientSecret]);
+        $model = $this->findClient($clientId);
+        if ($model === null) {
+            return null;
         }
 
-        /** @var OauthClient|null $model */
-        $model = $query->one();
-        if ($model === null) {
+        if ($clientSecret !== null && $clientSecret !== $model->secret) {
             return null;
         }
 
@@ -60,8 +58,7 @@ class ClientStorage extends AbstractStorage implements ClientInterface {
             throw new \ErrorException('This module assumes that $session typeof ' . SessionEntity::class);
         }
 
-        /** @var OauthClient|null $model */
-        $model = OauthClient::findOne($session->getClientId());
+        $model = $this->findClient($session->getClientId());
         if ($model === null) {
             return null;
         }
@@ -78,6 +75,10 @@ class ClientStorage extends AbstractStorage implements ClientInterface {
         $entity->setRedirectUri($model->redirect_uri);
 
         return $entity;
+    }
+
+    private function findClient(string $clientId): ?OauthClient {
+        return OauthClient::findOne($clientId);
     }
 
 }

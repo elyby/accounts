@@ -1,16 +1,17 @@
 <?php
-namespace api\controllers;
+namespace api\modules\oauth\controllers;
 
-use api\models\OauthAccountInfo;
+use api\controllers\Controller;
+use api\modules\oauth\models\IdentityInfo;
 use common\rbac\Permissions as P;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 
-class IdentityInfoController extends Controller {
+class IdentityController extends Controller {
 
     public function behaviors(): array {
-        return ArrayHelper::merge(parent::behaviors(), [
+        return ArrayHelper::merge(Controller::behaviors(), [
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
@@ -32,7 +33,7 @@ class IdentityInfoController extends Controller {
 
     public function actionIndex(): array {
         /** @noinspection NullPointerExceptionInspection */
-        return (new OauthAccountInfo(Yii::$app->user->getIdentity()->getAccount()))->info();
+        return (new IdentityInfo(Yii::$app->user->getIdentity()->getAccount()))->info();
     }
 
 }

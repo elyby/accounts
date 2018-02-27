@@ -34,6 +34,7 @@ use const common\LATEST_RULES_VERSION;
  * Отношения:
  * @property EmailActivation[]    $emailActivations
  * @property OauthSession[]       $oauthSessions
+ * @property OauthClient[]        $oauthClients
  * @property UsernameHistory[]    $usernameHistory
  * @property AccountSession[]     $sessions
  * @property MinecraftAccessKey[] $minecraftAccessKeys
@@ -91,6 +92,11 @@ class Account extends ActiveRecord {
 
     public function getOauthSessions(): ActiveQuery {
         return $this->hasMany(OauthSession::class, ['owner_id' => 'id'])->andWhere(['owner_type' => 'user']);
+    }
+
+    public function getOauthClients(): OauthClientQuery {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
+        return $this->hasMany(OauthClient::class, ['account_id' => 'id']);
     }
 
     public function getUsernameHistory(): ActiveQuery {

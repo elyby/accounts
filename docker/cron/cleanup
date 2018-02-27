@@ -2,3 +2,4 @@
 0 0 * * * root /usr/local/bin/php /var/www/html/yii cleanup/email-keys >/dev/null 2>&1
 0 1 * * * root /usr/local/bin/php /var/www/html/yii cleanup/minecraft-sessions >/dev/null 2>&1
 0 2 * * * root /usr/local/bin/php /var/www/html/yii cleanup/web-sessions >/dev/null 2>&1
+0 3 * * * root /usr/local/bin/php /var/www/html/yii cleanup/oauth-clients >/dev/null 2>&1

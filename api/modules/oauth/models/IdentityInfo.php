@@ -1,11 +1,13 @@
 <?php
-namespace api\models;
+declare(strict_types=1);
+
+namespace api\modules\oauth\models;
 
 use api\models\base\BaseAccountForm;
 use api\modules\accounts\models\AccountInfo;
 use common\models\Account;
 
-class OauthAccountInfo extends BaseAccountForm {
+class IdentityInfo extends BaseAccountForm {
 
     private $model;
 

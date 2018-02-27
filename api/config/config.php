@@ -86,5 +86,6 @@ return [
         'mojang' => api\modules\mojang\Module::class,
         'internal' => api\modules\internal\Module::class,
         'accounts' => api\modules\accounts\Module::class,
+        'oauth' => api\modules\oauth\Module::class,
     ],
 ];

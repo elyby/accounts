@@ -1,16 +1,17 @@
 <?php
-namespace api\controllers;
+namespace api\modules\oauth\controllers;
 
-use api\models\OauthProcess;
+use api\controllers\Controller;
+use api\modules\oauth\models\OauthProcess;
 use common\rbac\Permissions as P;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 
-class OauthController extends Controller {
+class AuthorizationController extends Controller {
 
     public function behaviors(): array {
-        return ArrayHelper::merge(parent::behaviors(), [
+        return ArrayHelper::merge(Controller::behaviors(), [
             'authenticator' => [
                 'only' => ['complete'],
             ],
