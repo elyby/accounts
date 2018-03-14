@@ -1,9 +1,9 @@
 <?php
 namespace common\models\amqp;
 
-use yii\base\Object;
+use yii\base\BaseObject;
 
-class AccountBanned extends Object {
+class AccountBanned extends BaseObject {
 
     public $accountId;
 

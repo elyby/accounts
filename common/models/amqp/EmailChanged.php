@@ -1,9 +1,9 @@
 <?php
 namespace common\models\amqp;
 
-use yii\base\Object;
+use yii\base\BaseObject;
 
-class EmailChanged extends Object {
+class EmailChanged extends BaseObject {
 
     public $accountId;
 
