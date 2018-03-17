@@ -7,7 +7,7 @@ variables:
     CONTAINER_IMAGE: "registry.ely.by/elyby/accounts"
 
 test:backend:
-    image: docker:latest
+    image: docker:18.02
     services:
         - mariadb:10.2.11
         - redis:3.0-alpine
@@ -59,7 +59,7 @@ test:frontend:
         - yarn test
 
 build:production:
-    image: docker:latest
+    image: docker:18.02
     stage: build
     variables:
         GA_ID: "UA-45299905-3"
@@ -85,7 +85,7 @@ build:production:
         - tags
 
 release:latest:
-    image: docker:latest
+    image: docker:18.02
     stage: release
     variables:
         GIT_STRATEGY: none
@@ -98,7 +98,7 @@ release:latest:
         - tags
 
 release:tag:
-    image: docker:latest
+    image: docker:18.02
     stage: release
     variables:
         GIT_STRATEGY: none
