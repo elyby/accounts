@@ -76,7 +76,7 @@ build:production:
                     sentryCdn: "$SENTRY_CDN",
                 };
             " > frontend/config/env.js
-        - sed -i '' -e 's/{{PLACE_VERSION_HERE}}/$VERSION/g' common/config/config.php
+        - sed -i"" -e "s/{{PLACE_VERSION_HERE}}/$VERSION/g" common/config/config.php
     script:
         - export IMAGE_NAME="$CONTAINER_IMAGE:latest"
         - docker build --pull -t $IMAGE_NAME .
