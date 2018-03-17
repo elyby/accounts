@@ -1,6 +1,6 @@
 <?php
 return [
-    'version' => '1.1.25-dev',
+    'version' => '{{PLACE_VERSION_HERE}}', // This will be replaced by build tool
     'vendorPath' => dirname(__DIR__, 2) . '/vendor',
     'components' => [
         'cache' => [
