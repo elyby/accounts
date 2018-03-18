@@ -73,7 +73,7 @@ build:production:
                 module.exports = {
                     version: '$VERSION',
                     ga: {id: '$GA_ID'},
-                    sentryCdn: "$SENTRY_CDN",
+                    sentryCdn: '$SENTRY_CDN',
                 };
             " > frontend/config/env.js
         - sed -i"" -e "s/{{PLACE_VERSION_HERE}}/$VERSION/g" common/config/config.php
