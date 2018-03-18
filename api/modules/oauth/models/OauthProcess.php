@@ -1,5 +1,5 @@
 <?php
-namespace api\models;
+namespace api\modules\oauth\models;
 
 use api\components\OAuth2\Exception\AcceptRequiredException;
 use api\components\OAuth2\Exception\AccessDeniedException;
@@ -52,8 +52,8 @@ class OauthProcess {
         try {
             $authParams = $this->getAuthorizationCodeGrant()->checkAuthorizeParams();
             $client = $authParams->getClient();
-            /** @var \common\models\OauthClient $clientModel */
-            $clientModel = OauthClient::findOne($client->getId());
+            /** @var OauthClient $clientModel */
+            $clientModel = $this->findClient($client->getId());
             $response = $this->buildSuccessResponse(
                 Yii::$app->request->getQueryParams(),
                 $clientModel,
@@ -90,9 +90,10 @@ class OauthProcess {
             Yii::$app->statsd->inc('oauth.complete.attempt');
             $grant = $this->getAuthorizationCodeGrant();
             $authParams = $grant->checkAuthorizeParams();
+            /** @var Account $account */
             $account = Yii::$app->user->identity->getAccount();
             /** @var \common\models\OauthClient $clientModel */
-            $clientModel = OauthClient::findOne($authParams->getClient()->getId());
+            $clientModel = $this->findClient($authParams->getClient()->getId());
 
             if (!$this->canAutoApprove($account, $clientModel, $authParams)) {
                 Yii::$app->statsd->inc('oauth.complete.approve_required');
@@ -162,6 +163,10 @@ class OauthProcess {
         }
 
         return $response;
+    }
+
+    private function findClient(string $clientId): ?OauthClient {
+        return OauthClient::findOne($clientId);
     }
 
     /**

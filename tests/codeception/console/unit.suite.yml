@@ -4,6 +4,7 @@ modules:
         - Yii2:
             part: [orm, email, fixtures]
         - tests\codeception\common\_support\Mockery
+        - tests\codeception\common\_support\queue\CodeceptionQueueHelper
     config:
         Yii2:
             configFile: '../config/console/unit.php'

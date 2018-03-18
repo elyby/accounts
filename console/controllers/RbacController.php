@@ -4,6 +4,7 @@ namespace console\controllers;
 use common\rbac\Permissions as P;
 use common\rbac\Roles as R;
 use common\rbac\rules\AccountOwner;
+use common\rbac\rules\OauthClientOwner;
 use InvalidArgumentException;
 use Yii;
 use yii\base\ErrorException;
@@ -30,6 +31,9 @@ class RbacController extends Controller {
         $permChangeAccountEmail = $this->createPermission(P::CHANGE_ACCOUNT_EMAIL);
         $permManageTwoFactorAuth = $this->createPermission(P::MANAGE_TWO_FACTOR_AUTH);
         $permBlockAccount = $this->createPermission(P::BLOCK_ACCOUNT);
+        $permCreateOauthClients = $this->createPermission(P::CREATE_OAUTH_CLIENTS);
+        $permViewOauthClients = $this->createPermission(P::VIEW_OAUTH_CLIENTS);
+        $permManageOauthClients = $this->createPermission(P::MANAGE_OAUTH_CLIENTS);
         $permCompleteOauthFlow = $this->createPermission(P::COMPLETE_OAUTH_FLOW, AccountOwner::class);
 
         $permObtainAccountEmail = $this->createPermission(P::OBTAIN_ACCOUNT_EMAIL);
@@ -44,6 +48,8 @@ class RbacController extends Controller {
         $permChangeOwnAccountEmail = $this->createPermission(P::CHANGE_OWN_ACCOUNT_EMAIL, AccountOwner::class);
         $permManageOwnTwoFactorAuth = $this->createPermission(P::MANAGE_OWN_TWO_FACTOR_AUTH, AccountOwner::class);
         $permMinecraftServerSession = $this->createPermission(P::MINECRAFT_SERVER_SESSION);
+        $permViewOwnOauthClients = $this->createPermission(P::VIEW_OWN_OAUTH_CLIENTS, OauthClientOwner::class);
+        $permManageOwnOauthClients = $this->createPermission(P::MANAGE_OWN_OAUTH_CLIENTS, OauthClientOwner::class);
 
         $permEscapeIdentityVerification = $this->createPermission(P::ESCAPE_IDENTITY_VERIFICATION);
 
@@ -56,6 +62,8 @@ class RbacController extends Controller {
         $authManager->addChild($permChangeOwnAccountPassword, $permChangeAccountPassword);
         $authManager->addChild($permChangeOwnAccountEmail, $permChangeAccountEmail);
         $authManager->addChild($permManageOwnTwoFactorAuth, $permManageTwoFactorAuth);
+        $authManager->addChild($permViewOwnOauthClients, $permViewOauthClients);
+        $authManager->addChild($permManageOwnOauthClients, $permManageOauthClients);
 
         $authManager->addChild($permObtainExtendedAccountInfo, $permObtainAccountInfo);
         $authManager->addChild($permObtainExtendedAccountInfo, $permObtainAccountEmail);
@@ -68,6 +76,9 @@ class RbacController extends Controller {
         $authManager->addChild($roleAccountsWebUser, $permChangeOwnAccountEmail);
         $authManager->addChild($roleAccountsWebUser, $permManageOwnTwoFactorAuth);
         $authManager->addChild($roleAccountsWebUser, $permCompleteOauthFlow);
+        $authManager->addChild($roleAccountsWebUser, $permCreateOauthClients);
+        $authManager->addChild($roleAccountsWebUser, $permViewOwnOauthClients);
+        $authManager->addChild($roleAccountsWebUser, $permManageOwnOauthClients);
     }
 
     private function createRole(string $name): Role {

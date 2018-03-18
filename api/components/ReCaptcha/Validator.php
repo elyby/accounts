@@ -12,7 +12,7 @@ use yii\di\Instance;
 
 class Validator extends \yii\validators\Validator {
 
-    private const SITE_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
+    private const SITE_VERIFY_URL = 'https://recaptcha.net/recaptcha/api/siteverify';
 
     private const REPEAT_LIMIT = 3;
     private const REPEAT_TIMEOUT = 1;

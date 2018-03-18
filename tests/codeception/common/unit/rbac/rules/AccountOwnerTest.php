@@ -40,6 +40,7 @@ class AccountOwnerTest extends TestCase {
 
         Yii::$app->set('user', $component);
 
+        $this->assertFalse($rule->execute('token', $item, []));
         $this->assertFalse($rule->execute('token', $item, ['accountId' => 2]));
         $this->assertFalse($rule->execute('token', $item, ['accountId' => '2']));
         $this->assertTrue($rule->execute('token', $item, ['accountId' => 1]));
@@ -51,13 +52,6 @@ class AccountOwnerTest extends TestCase {
         $account->status = Account::STATUS_BANNED;
         $this->assertFalse($rule->execute('token', $item, ['accountId' => 1]));
         $this->assertFalse($rule->execute('token', $item, ['accountId' => 1, 'optionalRules' => true]));
-    }
-
-    /**
-     * @expectedException \yii\base\InvalidParamException
-     */
-    public function testExecuteWithException() {
-        (new AccountOwner())->execute('', new Item(), []);
     }
 
 }

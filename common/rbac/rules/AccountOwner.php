@@ -3,7 +3,6 @@ namespace common\rbac\rules;
 
 use common\models\Account;
 use Yii;
-use yii\base\InvalidParamException;
 use yii\rbac\Rule;
 
 class AccountOwner extends Rule {
@@ -26,7 +25,7 @@ class AccountOwner extends Rule {
     public function execute($accessToken, $item, $params): bool {
         $accountId = $params['accountId'] ?? null;
         if ($accountId === null) {
-            throw new InvalidParamException('params don\'t contain required key: accountId');
+            return false;
         }
 
         $identity = Yii::$app->user->findIdentityByAccessToken($accessToken);

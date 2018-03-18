@@ -12,6 +12,9 @@ final class Permissions {
     public const MANAGE_TWO_FACTOR_AUTH = 'manage_two_factor_auth';
     public const BLOCK_ACCOUNT = 'block_account';
     public const COMPLETE_OAUTH_FLOW = 'complete_oauth_flow';
+    public const CREATE_OAUTH_CLIENTS = 'create_oauth_clients';
+    public const VIEW_OAUTH_CLIENTS = 'view_oauth_clients';
+    public const MANAGE_OAUTH_CLIENTS = 'manage_oauth_clients';
 
     // Personal level controller permissions
     public const OBTAIN_OWN_ACCOUNT_INFO = 'obtain_own_account_info';
@@ -23,6 +26,8 @@ final class Permissions {
     public const CHANGE_OWN_ACCOUNT_EMAIL = 'change_own_account_email';
     public const MANAGE_OWN_TWO_FACTOR_AUTH = 'manage_own_two_factor_auth';
     public const MINECRAFT_SERVER_SESSION = 'minecraft_server_session';
+    public const VIEW_OWN_OAUTH_CLIENTS = 'view_own_oauth_clients';
+    public const MANAGE_OWN_OAUTH_CLIENTS = 'manage_own_oauth_clients';
 
     // Data permissions
     public const OBTAIN_ACCOUNT_EMAIL = 'obtain_account_email';
