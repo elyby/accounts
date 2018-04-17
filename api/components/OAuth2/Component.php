@@ -1,7 +1,6 @@
 <?php
 namespace api\components\OAuth2;
 
-use api\components\OAuth2\Storage;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Storage\AccessTokenInterface;
 use League\OAuth2\Server\Storage\RefreshTokenInterface;

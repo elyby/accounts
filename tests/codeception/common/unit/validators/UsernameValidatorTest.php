@@ -50,21 +50,22 @@ class UsernameValidatorTest extends TestCase {
         $this->assertNotEquals(['error.username_too_long'], $model->getErrors('field'));
     }
 
+    // TODO: rewrite this test with @provider usage
     public function testValidateAttributePattern() {
         $shouldBeValid = [
             'русский_ник', 'русский_ник_на_грани!', 'numbers1132', '*__*-Stars-*__*', '1-_.!$%^&*()[]',
             '[ESP]Эрик', 'Свят_помидор;', 'зроблена_ў_беларусі:)',
         ];
-        foreach($shouldBeValid as $nickname) {
+        foreach ($shouldBeValid as $nickname) {
             $model = $this->createModel($nickname);
             $this->validator->validateAttribute($model, 'field');
             $this->assertNotEquals(['error.username_invalid'], $model->getErrors('field'));
         }
 
         $shouldBeInvalid = [
-            'nick@name', 'spaced nick', 'im#hashed', 'quest?ion'
+            'nick@name', 'spaced nick', 'im#hashed', 'quest?ion',
         ];
-        foreach($shouldBeInvalid as $nickname) {
+        foreach ($shouldBeInvalid as $nickname) {
             $model = $this->createModel($nickname);
             $this->validator->validateAttribute($model, 'field');
             $this->assertEquals(['error.username_invalid'], $model->getErrors('field'));
@@ -100,7 +101,7 @@ class UsernameValidatorTest extends TestCase {
      * @param string $fieldValue
      * @return Model
      */
-    private function createModel(string $fieldValue) : Model {
+    private function createModel(string $fieldValue): Model {
         $class = new class extends Model {
             public $field;
         };

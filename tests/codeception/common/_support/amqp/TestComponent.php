@@ -40,13 +40,13 @@ class TestComponent extends Component {
      * @param string|null $exchangeName
      * @return \PhpAmqpLib\Message\AMQPMessage[]
      */
-    public function getSentMessages(string $exchangeName = null) : array {
+    public function getSentMessages(string $exchangeName = null): array {
         if ($exchangeName !== null) {
             return $this->sentMessages[$exchangeName] ?? [];
         }
 
         $messages = [];
-        foreach($this->sentMessages as $exchangeGroup) {
+        foreach ($this->sentMessages as $exchangeGroup) {
             foreach ($exchangeGroup as $message) {
                 $messages[] = $message;
             }

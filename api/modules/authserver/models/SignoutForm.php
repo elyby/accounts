@@ -12,6 +12,7 @@ use Yii;
 class SignoutForm extends ApiForm {
 
     public $username;
+
     public $password;
 
     public function rules() {
@@ -20,7 +21,7 @@ class SignoutForm extends ApiForm {
         ];
     }
 
-    public function signout() : bool {
+    public function signout(): bool {
         $this->validate();
 
         $loginForm = new LoginForm();

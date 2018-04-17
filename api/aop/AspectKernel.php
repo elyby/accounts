@@ -1,7 +1,6 @@
 <?php
 namespace api\aop;
 
-use api\aop\aspects;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Go\Core\AspectContainer;
 use Go\Core\AspectKernel as BaseAspectKernel;

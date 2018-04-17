@@ -1,7 +1,6 @@
 <?php
 namespace tests\codeception\common\_support;
 
-use Codeception\Module;
 use ReflectionClass;
 
 trait ProtectedCaller {

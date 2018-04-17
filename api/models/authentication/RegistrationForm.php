@@ -4,8 +4,8 @@ namespace api\models\authentication;
 use api\aop\annotations\CollectModelMetrics;
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\base\ApiForm;
-use common\helpers\Error as E;
 use common\components\UserFriendlyRandomKey;
+use common\helpers\Error as E;
 use common\models\Account;
 use common\models\confirmations\RegistrationConfirmation;
 use common\models\UsernameHistory;
@@ -126,7 +126,7 @@ class RegistrationForm extends ApiForm {
      *
      * @return bool
      */
-    protected function canContinue(array $errors) : bool {
+    protected function canContinue(array $errors): bool {
         if (ArrayHelper::getValue($errors, 'username') === E::USERNAME_NOT_AVAILABLE) {
             $duplicatedUsername = Account::findOne([
                 'username' => $this->username,

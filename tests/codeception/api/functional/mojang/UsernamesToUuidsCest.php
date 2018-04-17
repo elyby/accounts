@@ -64,9 +64,10 @@ class UsernamesToUuidsCest {
     public function passTooManyUsernames(FunctionalTester $I) {
         $I->wantTo('get specific response when pass too many usernames');
         $usernames = [];
-        for($i = 0; $i < 150; $i++) {
+        for ($i = 0; $i < 150; $i++) {
             $usernames[] = random_bytes(10);
         }
+
         $this->route->uuidsByUsernames($usernames);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();

@@ -43,7 +43,7 @@ class Migration extends YiiMigration {
     private function buildKey(array $columns) {
         $key = '';
         foreach ($columns as $i => $column) {
-            $key .= $i == count($columns) ? $column : "$column,";
+            $key .= $i === count($columns) ? $column : "$column,";
         }
 
         return $key;

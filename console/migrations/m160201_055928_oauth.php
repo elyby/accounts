@@ -6,14 +6,14 @@ class m160201_055928_oauth extends Migration {
 
     public function safeUp() {
         $this->createTable('{{%oauth_clients}}', [
-            'id'           => $this->string(64),
-            'secret'       => $this->string()->notNull(),
-            'name'         => $this->string()->notNull(),
-            'description'  => $this->string(),
+            'id' => $this->string(64),
+            'secret' => $this->string()->notNull(),
+            'name' => $this->string()->notNull(),
+            'description' => $this->string(),
             'redirect_uri' => $this->string()->notNull(),
-            'account_id'   => $this->getDb()->getTableSchema('{{%accounts}}')->getColumn('id')->dbType,
-            'is_trusted'   => $this->boolean()->defaultValue(false)->notNull(),
-            'created_at'   => $this->integer()->notNull(),
+            'account_id' => $this->getDb()->getTableSchema('{{%accounts}}')->getColumn('id')->dbType,
+            'is_trusted' => $this->boolean()->defaultValue(false)->notNull(),
+            'created_at' => $this->integer()->notNull(),
             $this->primary('id'),
         ], $this->tableOptions);
 
@@ -23,17 +23,17 @@ class m160201_055928_oauth extends Migration {
         ], $this->tableOptions);
 
         $this->createTable('{{%oauth_sessions}}', [
-            'id'                  => $this->primaryKey(),
-            'owner_type'          => $this->string()->notNull(),
-            'owner_id'            => $this->string()->notNull(),
-            'client_id'           => $this->getDb()->getTableSchema('{{%oauth_clients}}')->getColumn('id')->dbType,
+            'id' => $this->primaryKey(),
+            'owner_type' => $this->string()->notNull(),
+            'owner_id' => $this->string()->notNull(),
+            'client_id' => $this->getDb()->getTableSchema('{{%oauth_clients}}')->getColumn('id')->dbType,
             'client_redirect_uri' => $this->string(),
         ], $this->tableOptions);
 
         $this->createTable('{{%oauth_access_tokens}}', [
             'access_token' => $this->string(64),
-            'session_id'   => $this->getDb()->getTableSchema('{{%oauth_sessions}}')->getColumn('id')->dbType,
-            'expire_time'  => $this->integer()->notNull(),
+            'session_id' => $this->getDb()->getTableSchema('{{%oauth_sessions}}')->getColumn('id')->dbType,
+            'expire_time' => $this->integer()->notNull(),
             $this->primary('access_token'),
         ], $this->tableOptions);
 

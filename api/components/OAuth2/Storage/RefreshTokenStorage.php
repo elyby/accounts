@@ -51,12 +51,12 @@ class RefreshTokenStorage extends AbstractStorage implements RefreshTokenInterfa
         $this->sessionHash($token->getSessionId())->remove($token->getId());
     }
 
-    public function sessionHash(string $sessionId) : Set {
+    public function sessionHash(string $sessionId): Set {
         $tableName = Yii::$app->db->getSchema()->getRawTableName(OauthSession::tableName());
         return new Set($tableName, $sessionId, 'refresh_tokens');
     }
 
-    private function key(string $token) : Key {
+    private function key(string $token): Key {
         return new Key($this->dataTable, $token);
     }
 

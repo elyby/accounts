@@ -5,7 +5,7 @@ use Emarref\Jwt\Claim\AbstractClaim;
 
 class ScopesClaim extends AbstractClaim {
 
-    const NAME = 'ely-scopes';
+    public const NAME = 'ely-scopes';
 
     /**
      * ScopesClaim constructor.

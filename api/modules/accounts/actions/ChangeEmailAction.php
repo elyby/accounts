@@ -6,10 +6,6 @@ use api\modules\accounts\models\ChangeEmailForm;
 
 class ChangeEmailAction extends BaseAccountAction {
 
-    protected function getFormClassName(): string {
-        return ChangeEmailForm::class;
-    }
-
     /**
      * @param ChangeEmailForm|AccountActionForm $model
      * @return array
@@ -18,6 +14,10 @@ class ChangeEmailAction extends BaseAccountAction {
         return [
             'email' => $model->getAccount()->email,
         ];
+    }
+
+    protected function getFormClassName(): string {
+        return ChangeEmailForm::class;
     }
 
 }

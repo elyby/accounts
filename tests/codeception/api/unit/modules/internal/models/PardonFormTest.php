@@ -1,8 +1,8 @@
 <?php
 namespace tests\codeception\api\unit\modules\internal\models;
 
-use api\modules\internal\helpers\Error as E;
 use api\modules\accounts\models\PardonAccountForm;
+use api\modules\internal\helpers\Error as E;
 use common\models\Account;
 use tests\codeception\api\unit\TestCase;
 

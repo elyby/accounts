@@ -10,6 +10,7 @@ use yii\web\TooManyRequestsHttpException;
 class RateLimiter extends \yii\filters\RateLimiter {
 
     public $limit = 180;
+
     public $limitTime = 3600; // 1h
 
     public $authserverDomain;
@@ -100,7 +101,7 @@ class RateLimiter extends \yii\filters\RateLimiter {
         return $this->server;
     }
 
-    protected function buildKey($ip) : string {
+    protected function buildKey($ip): string {
         return 'sessionserver:ratelimit:' . $ip;
     }
 

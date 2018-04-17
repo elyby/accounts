@@ -79,7 +79,7 @@ class Helper extends Module {
         return $this->getYii2()->grabComponent($component);
     }
 
-    private function getYii2() : Yii2 {
+    private function getYii2(): Yii2 {
         $yii2 = $this->getModule('Yii2');
         if (!$yii2 instanceof Yii2) {
             throw new ModuleException($this, 'Yii2 module must be configured');

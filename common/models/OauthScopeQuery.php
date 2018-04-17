@@ -11,6 +11,10 @@ class OauthScopeQuery {
 
     private $owner;
 
+    public function __construct(array $scopes) {
+        $this->scopes = $scopes;
+    }
+
     public function onlyPublic(): self {
         $this->internal = false;
         return $this;
@@ -41,10 +45,6 @@ class OauthScopeQuery {
             return (!$shouldCheckInternal || $isInternalMatch)
                 && (!$shouldCheckOwner || $isOwnerMatch);
         }), 'value');
-    }
-
-    public function __construct(array $scopes) {
-        $this->scopes = $scopes;
     }
 
 }

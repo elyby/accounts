@@ -8,11 +8,13 @@ class Set extends Key implements IteratorAggregate {
 
     public function add($value): self {
         $this->getRedis()->sadd($this->getKey(), $value);
+
         return $this;
     }
 
     public function remove($value): self {
         $this->getRedis()->srem($this->getKey(), $value);
+
         return $this;
     }
 

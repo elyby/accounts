@@ -61,11 +61,11 @@ class AuthCodeStorage extends AbstractStorage implements AuthCodeInterface {
         $this->scopes($token->getId())->delete();
     }
 
-    private function key(string $token) : Key {
+    private function key(string $token): Key {
         return new Key($this->dataTable, $token);
     }
 
-    private function scopes(string $token) : Set {
+    private function scopes(string $token): Set {
         return new Set($this->dataTable, $token, 'scopes');
     }
 

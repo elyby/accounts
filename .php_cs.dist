@@ -1,0 +1,16 @@
+<?php
+$finder = \PhpCsFixer\Finder::create()
+    ->in(__DIR__)
+    ->exclude('data')
+    ->exclude('docker')
+    ->exclude('frontend')
+    ->notPath('common/emails/views')
+    ->notPath('/.*\/runtime/')
+    ->notPath('autocompletion.php')
+    ->notPath('tests/codeception/_output')
+    ->notPath('/tests\/codeception\/.*\/_output/')
+    ->notPath('/tests\/codeception\/.*\/_support\/_generated/')
+    ->name('yii');
+
+return \Ely\CS\Config::create()
+    ->setFinder($finder);

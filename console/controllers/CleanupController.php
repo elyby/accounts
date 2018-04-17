@@ -85,7 +85,7 @@ class CleanupController extends Controller {
         $durationsMap = [];
         foreach (EmailActivation::getClassMap() as $typeId => $className) {
             /** @var EmailActivation $object */
-            $object = new $className;
+            $object = new $className();
             /** @var \common\behaviors\EmailActivationExpirationBehavior $behavior */
             $behavior = $object->getBehavior('expirationBehavior');
             /** @noinspection NullPointerExceptionInspection */

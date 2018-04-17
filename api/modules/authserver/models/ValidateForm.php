@@ -16,7 +16,7 @@ class ValidateForm extends ApiForm {
         ];
     }
 
-    public function validateToken() : bool {
+    public function validateToken(): bool {
         $this->validate();
 
         /** @var MinecraftAccessKey|null $result */

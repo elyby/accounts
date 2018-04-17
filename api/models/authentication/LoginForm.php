@@ -3,9 +3,9 @@ namespace api\models\authentication;
 
 use api\aop\annotations\CollectModelMetrics;
 use api\models\base\ApiForm;
+use api\traits\AccountFinder;
 use api\validators\TotpValidator;
 use common\helpers\Error as E;
-use api\traits\AccountFinder;
 use common\models\Account;
 use Yii;
 
@@ -13,8 +13,11 @@ class LoginForm extends ApiForm {
     use AccountFinder;
 
     public $login;
+
     public $password;
+
     public $totp;
+
     public $rememberMe = false;
 
     public function rules(): array {

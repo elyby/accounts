@@ -4,8 +4,6 @@ use console\db\Migration;
 
 class m161030_013122_ely_by_admin_app extends Migration {
 
-    const APP_NAME = 'ely_admin';
-
     public function safeUp() {
         $exists = $this->db->createCommand('
             SELECT COUNT(*)
@@ -13,12 +11,12 @@ class m161030_013122_ely_by_admin_app extends Migration {
              WHERE id = :app_name
              LIMIT 1
         ', [
-            'app_name' => self::APP_NAME,
+            'app_name' => 'ely_admin',
         ])->queryScalar();
 
         if (!$exists) {
             $this->insert('{{%oauth_clients}}', [
-                'id' => self::APP_NAME,
+                'id' => 'ely_admin',
                 'secret' => 'change_this_on_production',
                 'name' => 'Admin Ely.by',
                 'description' => '',
@@ -30,7 +28,7 @@ class m161030_013122_ely_by_admin_app extends Migration {
     }
 
     public function safeDown() {
-        $this->delete('{{%oauth_clients}}', ['id' => self::APP_NAME]);
+        $this->delete('{{%oauth_clients}}', ['id' => 'ely_admin']);
     }
 
 }
