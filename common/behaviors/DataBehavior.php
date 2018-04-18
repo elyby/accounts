@@ -5,6 +5,7 @@ use yii\base\Behavior;
 use yii\helpers\ArrayHelper;
 
 class DataBehavior extends Behavior {
+
     /**
      * @var string имя атрибута, к которому будет применяться поведение
      */

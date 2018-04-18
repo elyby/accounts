@@ -7,10 +7,6 @@ use common\helpers\Error as E;
 
 class EmailVerificationAction extends BaseAccountAction {
 
-    protected function getFormClassName(): string {
-        return SendEmailVerificationForm::class;
-    }
-
     /**
      * @param SendEmailVerificationForm|AccountActionForm $model
      * @return array
@@ -27,6 +23,10 @@ class EmailVerificationAction extends BaseAccountAction {
             'canRepeatIn' => $emailActivation->canRepeatIn(),
             'repeatFrequency' => $emailActivation->repeatTimeout,
         ];
+    }
+
+    protected function getFormClassName(): string {
+        return SendEmailVerificationForm::class;
     }
 
 }

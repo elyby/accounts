@@ -6,7 +6,7 @@ use Yii;
 
 class SessionModel {
 
-    const KEY_TIME = 120; // 2 min
+    private const KEY_TIME = 120; // 2 min
 
     public $username;
 

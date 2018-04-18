@@ -1,9 +1,9 @@
 <?php
 namespace codeception\api\unit\components\User;
 
+use api\components\User\AuthenticationResult;
 use api\components\User\Component;
 use api\components\User\Identity;
-use api\components\User\AuthenticationResult;
 use common\models\Account;
 use common\models\AccountSession;
 use Emarref\Jwt\Claim;

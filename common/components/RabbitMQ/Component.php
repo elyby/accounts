@@ -1,11 +1,11 @@
 <?php
 namespace common\components\RabbitMQ;
 
-use yii\base\Exception;
-use yii\helpers\Json;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
+use yii\base\Exception;
+use yii\helpers\Json;
 
 /**
  * Не гибкий компонент для работы с RabbitMQ, заточенный под нужны текущего проекта
@@ -17,20 +17,10 @@ use PhpAmqpLib\Message\AMQPMessage;
  */
 class Component extends \yii\base\Component {
 
-    const TYPE_TOPIC = 'topic';
-    const TYPE_DIRECT = 'direct';
-    const TYPE_HEADERS = 'headers';
-    const TYPE_FANOUT = 'fanout';
-
-    /**
-     * @var AMQPStreamConnection
-     */
-    protected $amqpConnection;
-
-    /**
-     * @var AMQPChannel[]
-     */
-    protected $channels = [];
+    public const TYPE_TOPIC = 'topic';
+    public const TYPE_DIRECT = 'direct';
+    public const TYPE_HEADERS = 'headers';
+    public const TYPE_FANOUT = 'fanout';
 
     /**
      * @var string
@@ -56,6 +46,16 @@ class Component extends \yii\base\Component {
      * @var string
      */
     public $vhost = '/';
+
+    /**
+     * @var AMQPStreamConnection
+     */
+    protected $amqpConnection;
+
+    /**
+     * @var AMQPChannel[]
+     */
+    protected $channels = [];
 
     /**
      * @inheritdoc
@@ -116,6 +116,30 @@ class Component extends \yii\base\Component {
     }
 
     /**
+     * Returns prepaired AMQP message.
+     *
+     * @param string|array|object $message
+     * @param array $properties
+     * @return AMQPMessage
+     * @throws Exception If message is empty.
+     */
+    public function prepareMessage($message, $properties = null) {
+        if ($message instanceof AMQPMessage) {
+            return $message;
+        }
+
+        if (empty($message)) {
+            throw new Exception('AMQP message can not be empty');
+        }
+
+        if (is_array($message) || is_object($message)) {
+            $message = Json::encode($message);
+        }
+
+        return new AMQPMessage($message, $properties);
+    }
+
+    /**
      * Объединяет переданный набор аргументов с поведением по умолчанию
      *
      * @param string $exchangeName
@@ -148,30 +172,6 @@ class Component extends \yii\base\Component {
             $exchangeName,
             $routeKey,
         ], $args);
-    }
-
-    /**
-     * Returns prepaired AMQP message.
-     *
-     * @param string|array|object $message
-     * @param array $properties
-     * @return AMQPMessage
-     * @throws Exception If message is empty.
-     */
-    public function prepareMessage($message, $properties = null) {
-        if ($message instanceof AMQPMessage) {
-            return $message;
-        }
-
-        if (empty($message)) {
-            throw new Exception('AMQP message can not be empty');
-        }
-
-        if (is_array($message) || is_object($message)) {
-            $message = Json::encode($message);
-        }
-
-        return new AMQPMessage($message, $properties);
     }
 
 }

@@ -8,11 +8,11 @@ use common\behaviors\DataBehavior;
  */
 class NewEmailConfirmationBehavior extends DataBehavior {
 
-    public function getNewEmail() : string {
+    public function getNewEmail(): string {
         return $this->getKey('newEmail');
     }
 
-    public function setNewEmail(string $newEmail) {
+    public function setNewEmail(string $newEmail): void {
         $this->setKey('newEmail', $newEmail);
     }
 

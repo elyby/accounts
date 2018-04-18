@@ -6,6 +6,8 @@ use OTPHP\TOTP;
 
 trait TotpHelper {
 
+    abstract public function getAccount(): Account;
+
     protected function getTotp(): TOTP {
         $account = $this->getAccount();
         $totp = TOTP::create($account->otp_secret);
@@ -14,7 +16,5 @@ trait TotpHelper {
 
         return $totp;
     }
-
-    abstract public function getAccount(): Account;
 
 }

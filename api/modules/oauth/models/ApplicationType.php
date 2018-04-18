@@ -16,7 +16,7 @@ class ApplicationType extends BaseOauthClientType {
     public function rules(): array {
         return ArrayHelper::merge(parent::rules(), [
             ['redirectUri', 'required', 'message' => E::REDIRECT_URI_REQUIRED],
-            ['redirectUri', 'url', 'validSchemes'  => ['[\w]+'], 'message' => E::REDIRECT_URI_INVALID],
+            ['redirectUri', 'url', 'validSchemes' => ['[\w]+'], 'message' => E::REDIRECT_URI_INVALID],
             ['description', 'string'],
         ]);
     }

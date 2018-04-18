@@ -9,11 +9,11 @@ class RefreshTokenEntity extends \League\OAuth2\Server\Entity\RefreshTokenEntity
 
     private $sessionId;
 
-    public function isExpired() : bool {
+    public function isExpired(): bool {
         return false;
     }
 
-    public function getSession() : SessionEntity {
+    public function getSession(): SessionEntity {
         if ($this->session instanceof SessionEntity) {
             return $this->session;
         }
@@ -26,18 +26,18 @@ class RefreshTokenEntity extends \League\OAuth2\Server\Entity\RefreshTokenEntity
         return $sessionStorage->getById($this->sessionId);
     }
 
-    public function getSessionId() : int {
+    public function getSessionId(): int {
         return $this->sessionId;
     }
 
-    public function setSession(OriginalSessionEntity $session) {
+    public function setSession(OriginalSessionEntity $session): self {
         parent::setSession($session);
         $this->setSessionId($session->getId());
 
         return $this;
     }
 
-    public function setSessionId(int $sessionId) {
+    public function setSessionId(int $sessionId): void {
         $this->sessionId = $sessionId;
     }
 

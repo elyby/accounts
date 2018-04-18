@@ -4,6 +4,7 @@ namespace api\modules\session\models\protocols;
 abstract class BaseHasJoined implements HasJoinedInterface {
 
     private $username;
+
     private $serverId;
 
     public function __construct(string $username, string $serverId) {

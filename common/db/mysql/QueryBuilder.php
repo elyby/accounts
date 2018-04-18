@@ -1,7 +1,7 @@
 <?php
 namespace common\db\mysql;
 
-use yii\db\Expression;
+use yii\db\ExpressionInterface;
 use yii\db\mysql\QueryBuilder as MysqlQueryBuilder;
 
 class QueryBuilder extends MysqlQueryBuilder {
@@ -12,22 +12,21 @@ class QueryBuilder extends MysqlQueryBuilder {
         }
 
         $orders = [];
-        foreach($columns as $name => $direction) {
-            if ($direction instanceof Expression) {
+        foreach ($columns as $name => $direction) {
+            if ($direction instanceof ExpressionInterface) {
                 $orders[] = $direction->expression;
             } elseif (is_array($direction)) {
-                // This is new feature
+                // This condition branch is our custom solution
                 if (empty($direction)) {
                     continue;
                 }
 
                 $fieldValues = [];
-                foreach($direction as $fieldValue) {
+                foreach ($direction as $fieldValue) {
                     $fieldValues[] = $this->db->quoteValue($fieldValue);
                 }
 
                 $orders[] = 'FIELD(' . $this->db->quoteColumnName($name) . ',' . implode(',', $fieldValues) . ')';
-                // End of new feature
             } else {
                 $orders[] = $this->db->quoteColumnName($name) . ($direction === SORT_DESC ? ' DESC' : '');
             }

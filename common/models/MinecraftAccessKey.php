@@ -29,7 +29,7 @@ use yii\db\ActiveRecord;
  */
 class MinecraftAccessKey extends ActiveRecord {
 
-    const LIFETIME = 172800; // Ключ актуален в течение 2 дней
+    public const LIFETIME = 172800; // Ключ актуален в течение 2 дней
 
     public static function tableName(): string {
         return '{{%minecraft_access_keys}}';

@@ -26,6 +26,14 @@ test:backend:
         - docker build --pull -f Dockerfile-dev -t $TEMP_DEV_IMAGE .
         - >
             docker run --rm
+            $TEMP_DEV_IMAGE
+            bash -c "
+            rm /usr/local/etc/php/conf.d/xdebug.ini &&
+            cp -r /var/www/vendor /var/www/html/vendor &&
+            vendor/bin/php-cs-fixer fix -v --dry-run
+            "
+        - >
+            docker run --rm
             --add-host=mariadb:`getent hosts mariadb | awk '{ print $1 ; exit }'`
             --add-host=redis:`getent hosts redis | awk '{ print $1 ; exit }'`
             -e YII_DEBUG="true"

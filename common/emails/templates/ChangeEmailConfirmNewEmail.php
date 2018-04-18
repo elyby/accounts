@@ -19,6 +19,13 @@ class ChangeEmailConfirmNewEmail extends Template {
         return 'Ely.by Account new E-mail confirmation';
     }
 
+    public function getParams(): array {
+        return [
+            'key' => $this->key,
+            'username' => $this->username,
+        ];
+    }
+
     /**
      * @return string|array
      */
@@ -26,13 +33,6 @@ class ChangeEmailConfirmNewEmail extends Template {
         return [
             'html' => '@common/emails/views/new-email-confirmation-html',
             'text' => '@common/emails/views/new-email-confirmation-text',
-        ];
-    }
-
-    public function getParams(): array {
-        return [
-            'key' => $this->key,
-            'username' => $this->username,
         ];
     }
 

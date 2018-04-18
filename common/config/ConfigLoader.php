@@ -13,11 +13,11 @@ class ConfigLoader {
         $this->application = $application;
     }
 
-    public function getEnvironment() : string {
+    public function getEnvironment(): string {
         return YII_ENV;
     }
 
-    public function getConfig() : array {
+    public function getConfig(): array {
         $toMerge = [
             require __DIR__ . '/config.php',
         ];
@@ -55,7 +55,7 @@ class ConfigLoader {
         return ArrayHelper::merge(...$toMerge);
     }
 
-    public static function load(string $application) : array {
+    public static function load(string $application): array {
         return (new static($application))->getConfig();
     }
 

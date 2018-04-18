@@ -76,7 +76,7 @@ class SessionStorage extends AbstractStorage implements SessionInterface {
         $this->getSessionModel($session->getId())->getScopes()->add($scope->getId());
     }
 
-    private function getSessionModel(string $sessionId) : OauthSession {
+    private function getSessionModel(string $sessionId): OauthSession {
         $session = OauthSession::findOne($sessionId);
         if ($session === null) {
             throw new ErrorException('Cannot find oauth session');

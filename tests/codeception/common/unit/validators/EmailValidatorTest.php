@@ -115,7 +115,7 @@ class EmailValidatorTest extends TestCase {
      * @param string $fieldValue
      * @return Model
      */
-    private function createModel(string $fieldValue) : Model {
+    private function createModel(string $fieldValue): Model {
         $class = new class extends Model {
             public $field;
         };

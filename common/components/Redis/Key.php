@@ -30,11 +30,13 @@ class Key {
 
     public function setValue($value): self {
         $this->getRedis()->set($this->key, $value);
+
         return $this;
     }
 
     public function delete(): self {
         $this->getRedis()->del([$this->getKey()]);
+
         return $this;
     }
 
@@ -44,17 +46,19 @@ class Key {
 
     public function expire(int $ttl): self {
         $this->getRedis()->expire($this->key, $ttl);
+
         return $this;
     }
 
     public function expireAt(int $unixTimestamp): self {
         $this->getRedis()->expireat($this->key, $unixTimestamp);
+
         return $this;
     }
 
     private function buildKey(array $parts): string {
         $keyParts = [];
-        foreach($parts as $part) {
+        foreach ($parts as $part) {
             $keyParts[] = str_replace('_', ':', $part);
         }
 

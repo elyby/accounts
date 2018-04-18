@@ -95,7 +95,7 @@ class RbacController extends Controller {
         $authManager = $this->getAuthManager();
         $permission = $authManager->createPermission($name);
         if ($ruleClassName !== null) {
-            $rule = new $ruleClassName;
+            $rule = new $ruleClassName();
             if (!$rule instanceof Rule) {
                 throw new InvalidArgumentException('ruleClassName must be rule class name');
             }

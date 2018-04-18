@@ -6,7 +6,7 @@ use Yii;
 
 class Api {
 
-    const BASE_DOMAIN = 'http://skinsystem.ely.by';
+    private const BASE_DOMAIN = 'http://skinsystem.ely.by';
 
     /**
      * @param string $username

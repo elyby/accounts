@@ -106,7 +106,6 @@ class ElyDecorator implements DecoratorInterface {
         $topPadding,
         $multiple
     ) {
-
     }
 
     private function encodeSvgToBase64(string $filePath): string {

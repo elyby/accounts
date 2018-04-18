@@ -8,9 +8,9 @@ class m160819_211139_minecraft_access_tokens extends Migration {
         $this->createTable('{{%minecraft_access_keys}}', [
             'access_token' => $this->string(36)->notNull(),
             'client_token' => $this->string(36)->notNull(),
-            'account_id'   => $this->db->getTableSchema('{{%accounts}}')->getColumn('id')->dbType . ' NOT NULL',
-            'created_at'   => $this->integer()->unsigned()->notNull(),
-            'updated_at'   => $this->integer()->unsigned()->notNull(),
+            'account_id' => $this->db->getTableSchema('{{%accounts}}')->getColumn('id')->dbType . ' NOT NULL',
+            'created_at' => $this->integer()->unsigned()->notNull(),
+            'updated_at' => $this->integer()->unsigned()->notNull(),
         ]);
 
         $this->addPrimaryKey('access_token', '{{%minecraft_access_keys}}', 'access_token');
