@@ -38,6 +38,11 @@ class EmailValidator extends Validator {
         $tempmail = new TempmailValidator();
         $tempmail->message = E::EMAIL_IS_TEMPMAIL;
 
+        $idnaDomain = new validators\FilterValidator(['filter' => function(string $value): string {
+            [$name, $domain] = explode('@', $value);
+            return $name . '@' . idn_to_ascii($domain, 0, INTL_IDNA_VARIANT_UTS46);
+        }]);
+
         $unique = new validators\UniqueValidator();
         $unique->message = E::EMAIL_NOT_AVAILABLE;
         $unique->targetClass = Account::class;
@@ -53,12 +58,12 @@ class EmailValidator extends Validator {
         $this->executeValidation($length, $model, $attribute) &&
         $this->executeValidation($email, $model, $attribute) &&
         $this->executeValidation($tempmail, $model, $attribute) &&
+        $this->executeValidation($idnaDomain, $model, $attribute) &&
         $this->executeValidation($unique, $model, $attribute);
     }
 
-    protected function executeValidation(Validator $validator, Model $model, string $attribute) {
+    private function executeValidation(Validator $validator, Model $model, string $attribute): bool {
         $validator->validateAttribute($model, $attribute);
-
         return !$model->hasErrors($attribute);
     }
 
