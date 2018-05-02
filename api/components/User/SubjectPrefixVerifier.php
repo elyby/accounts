@@ -21,7 +21,7 @@ class SubjectPrefixVerifier implements VerifierInterface {
         $subject = ($subjectClaim === null) ? null : $subjectClaim->getValue();
 
         if (!StringHelper::startsWith($subject, $this->subjectPrefix)) {
-            throw new InvalidSubjectException;
+            throw new InvalidSubjectException();
         }
     }
 

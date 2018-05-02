@@ -30,7 +30,7 @@ class EmailActivationExpirationBehavior extends Behavior {
      * @see EmailActivation::compareTime()
      * @return bool
      */
-    public function canRepeat() : bool {
+    public function canRepeat(): bool {
         return $this->compareTime($this->repeatTimeout);
     }
 
@@ -44,7 +44,7 @@ class EmailActivationExpirationBehavior extends Behavior {
      * @see EmailActivation::compareTime()
      * @return bool
      */
-    public function isExpired() : bool {
+    public function isExpired(): bool {
         return $this->compareTime($this->expirationTimeout);
     }
 
@@ -53,7 +53,7 @@ class EmailActivationExpirationBehavior extends Behavior {
      *
      * @return int
      */
-    public function canRepeatIn() : int {
+    public function canRepeatIn(): int {
         return $this->calculateTime($this->repeatTimeout);
     }
 
@@ -62,11 +62,11 @@ class EmailActivationExpirationBehavior extends Behavior {
      *
      * @return int
      */
-    public function expireIn() : int {
+    public function expireIn(): int {
         return $this->calculateTime($this->expirationTimeout);
     }
 
-    protected function compareTime(int $value) : bool {
+    protected function compareTime(int $value): bool {
         if ($value < 0) {
             return false;
         }
@@ -78,7 +78,7 @@ class EmailActivationExpirationBehavior extends Behavior {
         return time() > $this->calculateTime($value);
     }
 
-    protected function calculateTime(int $value) : int {
+    protected function calculateTime(int $value): int {
         return $this->owner->created_at + $value;
     }
 

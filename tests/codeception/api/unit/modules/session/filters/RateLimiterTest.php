@@ -25,7 +25,7 @@ class RateLimiterTest extends TestCase {
         /** @var RateLimiter|\PHPUnit_Framework_MockObject_MockObject $filter */
         $filter = $this->getMockBuilder(RateLimiter::class)
             ->setConstructorArgs([[
-                'authserverDomain' => Yii::$app->params['authserverHost']
+                'authserverDomain' => Yii::$app->params['authserverHost'],
             ]])
             ->setMethods(['getServer'])
             ->getMock();
@@ -58,7 +58,7 @@ class RateLimiterTest extends TestCase {
             ->will($this->returnValue('http://authserver.ely.by'));
 
         $filter = new RateLimiter([
-            'authserverDomain' => Yii::$app->params['authserverHost']
+            'authserverDomain' => Yii::$app->params['authserverHost'],
         ]);
         $filter->checkRateLimit(null, $request, null, null);
     }

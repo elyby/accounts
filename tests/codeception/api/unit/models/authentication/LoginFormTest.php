@@ -32,7 +32,7 @@ class LoginFormTest extends TestCase {
     }
 
     public function testValidateLogin() {
-        $this->specify('error.login_not_exist if login not exists', function () {
+        $this->specify('error.login_not_exist if login not exists', function() {
             $model = $this->createModel([
                 'login' => 'mr-test',
                 'account' => null,
@@ -41,7 +41,7 @@ class LoginFormTest extends TestCase {
             $this->assertEquals(['error.login_not_exist'], $model->getErrors('login'));
         });
 
-        $this->specify('no errors if login exists', function () {
+        $this->specify('no errors if login exists', function() {
             $model = $this->createModel([
                 'login' => 'mr-test',
                 'account' => new Account(),
@@ -52,7 +52,7 @@ class LoginFormTest extends TestCase {
     }
 
     public function testValidatePassword() {
-        $this->specify('error.password_incorrect if password invalid', function () {
+        $this->specify('error.password_incorrect if password invalid', function() {
             $model = $this->createModel([
                 'password' => '87654321',
                 'account' => new Account(['password' => '12345678']),
@@ -61,7 +61,7 @@ class LoginFormTest extends TestCase {
             $this->assertEquals(['error.password_incorrect'], $model->getErrors('password'));
         });
 
-        $this->specify('no errors if password valid', function () {
+        $this->specify('no errors if password valid', function() {
             $model = $this->createModel([
                 'password' => '12345678',
                 'account' => new Account(['password' => '12345678']),
@@ -100,7 +100,7 @@ class LoginFormTest extends TestCase {
     }
 
     public function testValidateActivity() {
-        $this->specify('error.account_not_activated if account in not activated state', function () {
+        $this->specify('error.account_not_activated if account in not activated state', function() {
             $model = $this->createModel([
                 'account' => new Account(['status' => Account::STATUS_REGISTERED]),
             ]);
@@ -108,7 +108,7 @@ class LoginFormTest extends TestCase {
             $this->assertEquals(['error.account_not_activated'], $model->getErrors('login'));
         });
 
-        $this->specify('error.account_banned if account has banned status', function () {
+        $this->specify('error.account_banned if account has banned status', function() {
             $model = $this->createModel([
                 'account' => new Account(['status' => Account::STATUS_BANNED]),
             ]);
@@ -116,7 +116,7 @@ class LoginFormTest extends TestCase {
             $this->assertEquals(['error.account_banned'], $model->getErrors('login'));
         });
 
-        $this->specify('no errors if account active', function () {
+        $this->specify('no errors if account active', function() {
             $model = $this->createModel([
                 'account' => new Account(['status' => Account::STATUS_ACTIVE]),
             ]);

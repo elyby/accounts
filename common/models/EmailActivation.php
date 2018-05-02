@@ -28,10 +28,10 @@ use yii\helpers\ArrayHelper;
  */
 class EmailActivation extends ActiveRecord {
 
-    const TYPE_REGISTRATION_EMAIL_CONFIRMATION = 0;
-    const TYPE_FORGOT_PASSWORD_KEY = 1;
-    const TYPE_CURRENT_EMAIL_CONFIRMATION = 2;
-    const TYPE_NEW_EMAIL_CONFIRMATION = 3;
+    public const TYPE_REGISTRATION_EMAIL_CONFIRMATION = 0;
+    public const TYPE_FORGOT_PASSWORD_KEY = 1;
+    public const TYPE_CURRENT_EMAIL_CONFIRMATION = 2;
+    public const TYPE_NEW_EMAIL_CONFIRMATION = 3;
 
     public static function tableName() {
         return '{{%email_activations}}';
@@ -79,15 +79,15 @@ class EmailActivation extends ActiveRecord {
             throw new InvalidConfigException('Unexpected type');
         }
 
-        return new $classMap[$type];
+        return new $classMap[$type]();
     }
 
     public static function getClassMap() {
         return [
             self::TYPE_REGISTRATION_EMAIL_CONFIRMATION => confirmations\RegistrationConfirmation::class,
-            self::TYPE_FORGOT_PASSWORD_KEY             => confirmations\ForgotPassword::class,
-            self::TYPE_CURRENT_EMAIL_CONFIRMATION      => confirmations\CurrentEmailConfirmation::class,
-            self::TYPE_NEW_EMAIL_CONFIRMATION          => confirmations\NewEmailConfirmation::class,
+            self::TYPE_FORGOT_PASSWORD_KEY => confirmations\ForgotPassword::class,
+            self::TYPE_CURRENT_EMAIL_CONFIRMATION => confirmations\CurrentEmailConfirmation::class,
+            self::TYPE_NEW_EMAIL_CONFIRMATION => confirmations\NewEmailConfirmation::class,
         ];
     }
 

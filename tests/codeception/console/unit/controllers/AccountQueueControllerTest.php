@@ -49,9 +49,9 @@ class AccountQueueControllerTest extends TestCase {
             ->willReturnCallback(function() {
                 if ($this->expectedResponse === false) {
                     throw new NoContentException();
-                } else {
-                    return $this->expectedResponse;
                 }
+
+                return $this->expectedResponse;
             });
 
         $controller

@@ -11,6 +11,11 @@ class TestCase extends Unit {
      */
     protected $tester;
 
+    protected function tearDown() {
+        parent::tearDown();
+        Mockery::close();
+    }
+
     /**
      * Список фикстур, что будут загружены перед тестом, но после зачистки базы данных
      *
@@ -20,11 +25,6 @@ class TestCase extends Unit {
      */
     public function _fixtures() {
         return [];
-    }
-
-    protected function tearDown() {
-        parent::tearDown();
-        Mockery::close();
     }
 
 }

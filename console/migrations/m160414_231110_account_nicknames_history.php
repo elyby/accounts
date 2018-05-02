@@ -21,7 +21,7 @@ class m160414_231110_account_nicknames_history extends Migration {
               FROM {{%accounts}}
         ')->queryAll();
 
-        foreach($accountNicknames as $row) {
+        foreach ($accountNicknames as $row) {
             $this->insert('{{%usernames_history}}', [
                 'username' => $row['username'],
                 'account_id' => $row['id'],

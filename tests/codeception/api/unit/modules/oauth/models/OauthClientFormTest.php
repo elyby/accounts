@@ -55,7 +55,6 @@ class OauthClientFormTest extends TestCase {
         $form->shouldReceive('isClientExists')->andReturn(false);
 
         $request = new class implements OauthClientTypeForm {
-
             public function load($data): bool {
                 return true;
             }
@@ -72,7 +71,6 @@ class OauthClientFormTest extends TestCase {
                 $client->name = 'New name';
                 $client->description = 'New description.';
             }
-
         };
 
         $this->assertTrue($form->save($request));

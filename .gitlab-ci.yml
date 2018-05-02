@@ -26,6 +26,14 @@ test:backend:
         - docker build --pull -f Dockerfile-dev -t $TEMP_DEV_IMAGE .
         - >
             docker run --rm
+            $TEMP_DEV_IMAGE
+            bash -c "
+            rm /usr/local/etc/php/conf.d/xdebug.ini &&
+            cp -r /var/www/vendor /var/www/html/vendor &&
+            vendor/bin/php-cs-fixer fix -v --dry-run
+            "
+        - >
+            docker run --rm
             --add-host=mariadb:`getent hosts mariadb | awk '{ print $1 ; exit }'`
             --add-host=redis:`getent hosts redis | awk '{ print $1 ; exit }'`
             -e YII_DEBUG="true"
@@ -36,7 +44,10 @@ test:backend:
             -e DB_PASSWORD="ely_accounts_tester_password"
             -e REDIS_HOST="redis"
             $TEMP_DEV_IMAGE
-            php vendor/bin/codecept run -c tests
+            bash -c "
+            rm /usr/local/etc/php/conf.d/xdebug.ini &&
+            docker-entrypoint.sh php vendor/bin/codecept run -c tests
+            "
 
 test:frontend:
     image: node:9.2.1-alpine

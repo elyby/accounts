@@ -3,12 +3,17 @@ namespace tests\codeception\api\unit;
 
 use Mockery;
 
-class TestCase extends \Codeception\Test\Unit  {
+class TestCase extends \Codeception\Test\Unit {
 
     /**
      * @var \tests\codeception\api\UnitTester
      */
     protected $tester;
+
+    protected function tearDown() {
+        parent::tearDown();
+        Mockery::close();
+    }
 
     /**
      * Список фикстур, что будут загружены перед тестом, но после зачистки базы данных
@@ -19,11 +24,6 @@ class TestCase extends \Codeception\Test\Unit  {
      */
     public function _fixtures() {
         return [];
-    }
-
-    protected function tearDown() {
-        parent::tearDown();
-        Mockery::close();
     }
 
 }

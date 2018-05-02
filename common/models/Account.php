@@ -44,13 +44,13 @@ use const common\LATEST_RULES_VERSION;
  */
 class Account extends ActiveRecord {
 
-    const STATUS_DELETED = -10;
-    const STATUS_BANNED = -1;
-    const STATUS_REGISTERED = 0;
-    const STATUS_ACTIVE = 10;
+    public const STATUS_DELETED = -10;
+    public const STATUS_BANNED = -1;
+    public const STATUS_REGISTERED = 0;
+    public const STATUS_ACTIVE = 10;
 
-    const PASS_HASH_STRATEGY_OLD_ELY = 0;
-    const PASS_HASH_STRATEGY_YII2 = 1;
+    public const PASS_HASH_STRATEGY_OLD_ELY = 0;
+    public const PASS_HASH_STRATEGY_YII2 = 1;
 
     public static function tableName(): string {
         return '{{%accounts}}';
@@ -67,10 +67,9 @@ class Account extends ActiveRecord {
             $passwordHashStrategy = $this->password_hash_strategy;
         }
 
-        switch($passwordHashStrategy) {
+        switch ($passwordHashStrategy) {
             case self::PASS_HASH_STRATEGY_OLD_ELY:
-                $hashedPass = UserPass::make($this->email, $password);
-                return $hashedPass === $this->password_hash;
+                return UserPass::make($this->email, $password) === $this->password_hash;
 
             case self::PASS_HASH_STRATEGY_YII2:
                 return Yii::$app->security->validatePassword($password, $this->password_hash);

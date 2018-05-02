@@ -23,6 +23,11 @@ class JwtIdentity implements IdentityInterface {
      */
     private $token;
 
+    private function __construct(string $rawToken, Token $token) {
+        $this->rawToken = $rawToken;
+        $this->token = $token;
+    }
+
     public static function findIdentityByAccessToken($rawToken, $type = null): IdentityInterface {
         /** @var \api\components\User\Component $component */
         $component = Yii::$app->user;
@@ -84,11 +89,6 @@ class JwtIdentity implements IdentityInterface {
 
     public static function findIdentity($id) {
         throw new NotSupportedException('This method used for cookie auth, except we using Bearer auth');
-    }
-
-    private function __construct(string $rawToken, Token $token) {
-        $this->rawToken = $rawToken;
-        $this->token = $token;
     }
 
 }

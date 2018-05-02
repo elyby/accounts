@@ -38,7 +38,7 @@ class AuthorizationController extends Controller {
         return [
             'validate' => ['GET'],
             'complete' => ['POST'],
-            'token'    => ['POST'],
+            'token' => ['POST'],
         ];
     }
 

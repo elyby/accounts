@@ -13,7 +13,7 @@ class NewEmailConfirmation extends EmailActivation {
     public function behaviors() {
         return ArrayHelper::merge(parent::behaviors(), [
             'expirationBehavior' => [
-                'repeatTimeout' => 5  * 60,
+                'repeatTimeout' => 5 * 60,
             ],
             'dataBehavior' => [
                 'class' => NewEmailConfirmationBehavior::class,

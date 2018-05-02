@@ -4,7 +4,9 @@ namespace api\modules\session\models\protocols;
 class ModernJoin extends BaseJoin {
 
     private $accessToken;
+
     private $selectedProfile;
+
     private $serverId;
 
     public function __construct(string $accessToken, string $selectedProfile, string $serverId) {

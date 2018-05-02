@@ -17,7 +17,7 @@ abstract class AmqpController extends Controller {
 
     private $reconnected = false;
 
-    public final function actionIndex() {
+    final public function actionIndex() {
         $this->start();
     }
 

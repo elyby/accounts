@@ -49,7 +49,7 @@ class ChangeEmailForm extends AccountActionForm {
     }
 
     public function createTask(int $accountId, string $newEmail, string $oldEmail): void {
-        $model = new EmailChanged;
+        $model = new EmailChanged();
         $model->accountId = $accountId;
         $model->oldEmail = $oldEmail;
         $model->newEmail = $newEmail;

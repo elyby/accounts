@@ -18,6 +18,10 @@ class Identity implements IdentityInterface {
      */
     private $_accessToken;
 
+    private function __construct(AccessTokenEntity $accessToken) {
+        $this->_accessToken = $accessToken;
+    }
+
     /**
      * @inheritdoc
      * @throws \yii\web\UnauthorizedHttpException
@@ -71,10 +75,6 @@ class Identity implements IdentityInterface {
 
     public static function findIdentity($id) {
         throw new NotSupportedException('This method used for cookie auth, except we using Bearer auth');
-    }
-
-    private function __construct(AccessTokenEntity $accessToken) {
-        $this->_accessToken = $accessToken;
     }
 
     private function getSession(): OauthSession {

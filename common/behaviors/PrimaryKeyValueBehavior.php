@@ -24,7 +24,7 @@ class PrimaryKeyValueBehavior extends Behavior {
         ];
     }
 
-    public function setPrimaryKeyValue() : bool {
+    public function setPrimaryKeyValue(): bool {
         if ($this->owner->getPrimaryKey() === null) {
             $this->refreshPrimaryKeyValue();
         }
@@ -40,15 +40,15 @@ class PrimaryKeyValueBehavior extends Behavior {
         $this->owner->{$this->getPrimaryKeyName()} = $key;
     }
 
-    protected function generateValue() : string {
+    protected function generateValue(): string {
         return (string)call_user_func($this->value);
     }
 
-    protected function isValueExists(string $key) : bool {
+    protected function isValueExists(string $key): bool {
         return $this->owner->find()->andWhere([$this->getPrimaryKeyName() => $key])->exists();
     }
 
-    protected function getPrimaryKeyName() : string {
+    protected function getPrimaryKeyName(): string {
         $owner = $this->owner;
         $primaryKeys = $owner->primaryKey();
         if (!isset($primaryKeys[0])) {

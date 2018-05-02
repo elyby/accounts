@@ -98,7 +98,7 @@ class SessionController extends Controller {
     public function actionProfile($uuid) {
         try {
             $uuid = Uuid::fromString($uuid)->toString();
-        } catch(\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException $e) {
             throw new IllegalArgumentException('Invalid uuid format.');
         }
 

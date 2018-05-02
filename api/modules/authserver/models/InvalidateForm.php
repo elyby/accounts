@@ -8,6 +8,7 @@ use common\models\MinecraftAccessKey;
 class InvalidateForm extends ApiForm {
 
     public $accessToken;
+
     public $clientToken;
 
     public function rules() {
@@ -20,7 +21,7 @@ class InvalidateForm extends ApiForm {
      * @return bool
      * @throws \api\modules\authserver\exceptions\AuthserverException
      */
-    public function invalidateToken() : bool {
+    public function invalidateToken(): bool {
         $this->validate();
 
         $token = MinecraftAccessKey::findOne([

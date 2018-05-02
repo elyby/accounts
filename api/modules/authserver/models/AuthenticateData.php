@@ -14,11 +14,11 @@ class AuthenticateData {
         $this->minecraftAccessKey = $minecraftAccessKey;
     }
 
-    public function getMinecraftAccessKey() : MinecraftAccessKey {
+    public function getMinecraftAccessKey(): MinecraftAccessKey {
         return $this->minecraftAccessKey;
     }
 
-    public function getResponseData(bool $includeAvailableProfiles = false) : array {
+    public function getResponseData(bool $includeAvailableProfiles = false): array {
         $accessKey = $this->minecraftAccessKey;
         $account = $accessKey->account;
 

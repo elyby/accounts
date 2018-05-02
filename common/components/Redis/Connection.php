@@ -157,7 +157,7 @@ class Connection extends Component implements ConnectionInterface {
     /**
      * @var array List of available redis commands http://redis.io/commands
      */
-    const REDIS_COMMANDS = [
+    public const REDIS_COMMANDS = [
         'BLPOP', // key [key ...] timeout Remove and get the first element in a list, or block until one is available
         'BRPOP', // key [key ...] timeout Remove and get the last element in a list, or block until one is available
         'BRPOPLPUSH', // source destination timeout Pop a value from a list, push it to another list and return it; or block until one is available
@@ -368,14 +368,6 @@ class Connection extends Component implements ConnectionInterface {
      */
     private $_client;
 
-    public function getConnection() : ClientInterface {
-        if ($this->_client === null) {
-            $this->_client = new Client($this->prepareParams(), $this->options);
-        }
-
-        return $this->_client;
-    }
-
     public function __call($name, $params) {
         $redisCommand = mb_strtoupper($name);
         if (in_array($redisCommand, self::REDIS_COMMANDS)) {
@@ -383,6 +375,14 @@ class Connection extends Component implements ConnectionInterface {
         }
 
         return parent::__call($name, $params);
+    }
+
+    public function getConnection(): ClientInterface {
+        if ($this->_client === null) {
+            $this->_client = new Client($this->prepareParams(), $this->options);
+        }
+
+        return $this->_client;
     }
 
     public function executeCommand(string $name, array $params = []) {

@@ -35,7 +35,7 @@ class SessionServerSteps extends FunctionalTester {
 
         return [$username, $serverId];
     }
-    
+
     public function canSeeValidTexturesResponse($expectedUsername, $expectedUuid) {
         $this->seeResponseIsJson();
         $this->canSeeResponseContainsJson([

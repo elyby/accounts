@@ -1,8 +1,8 @@
 <?php
 namespace api\models;
 
-use common\helpers\Error as E;
 use api\models\base\ApiForm;
+use common\helpers\Error as E;
 use common\models\Account;
 use Yii;
 use yii\base\ErrorException;
@@ -29,7 +29,7 @@ class FeedbackForm extends ApiForm {
         ];
     }
 
-    public function sendMessage() : bool {
+    public function sendMessage(): bool {
         if (!$this->validate()) {
             return false;
         }

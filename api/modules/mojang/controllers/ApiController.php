@@ -54,7 +54,7 @@ class ApiController extends Controller {
     public function actionUsernamesByUuid($uuid) {
         try {
             $uuid = Uuid::fromString($uuid)->toString();
-        } catch(\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException $e) {
             return $this->illegalArgumentResponse('Invalid uuid format.');
         }
 
@@ -69,7 +69,7 @@ class ApiController extends Controller {
             ->all();
 
         $data = [];
-        foreach($usernameHistory as $record) {
+        foreach ($usernameHistory as $record) {
             $data[] = [
                 'name' => $record->username,
                 'changedToAt' => $record->applied_in * 1000,
@@ -94,7 +94,7 @@ class ApiController extends Controller {
             return $this->illegalArgumentResponse('Not more that 100 profile name per call is allowed.');
         }
 
-        foreach($usernames as $username) {
+        foreach ($usernames as $username) {
             if (empty($username) || is_array($username)) {
                 return $this->illegalArgumentResponse('profileName can not be null, empty or array key.');
             }
@@ -108,7 +108,7 @@ class ApiController extends Controller {
             ->all();
 
         $responseData = [];
-        foreach($accounts as $account) {
+        foreach ($accounts as $account) {
             $responseData[] = [
                 'id' => str_replace('-', '', $account->uuid),
                 'name' => $account->username,

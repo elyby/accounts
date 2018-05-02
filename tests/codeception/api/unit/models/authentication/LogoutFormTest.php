@@ -13,7 +13,7 @@ class LogoutFormTest extends TestCase {
     use Specify;
 
     public function testValidateLogout() {
-        $this->specify('No actions if active session is not exists', function () {
+        $this->specify('No actions if active session is not exists', function() {
             $userComp = $this
                 ->getMockBuilder(Component::class)
                 ->setConstructorArgs([$this->getComponentArgs()])
@@ -30,7 +30,7 @@ class LogoutFormTest extends TestCase {
             expect($model->logout())->true();
         });
 
-        $this->specify('if active session is presented, then delete should be called', function () {
+        $this->specify('if active session is presented, then delete should be called', function() {
             $session = $this
                 ->getMockBuilder(AccountSession::class)
                 ->setMethods(['delete'])

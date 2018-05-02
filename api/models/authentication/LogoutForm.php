@@ -11,7 +11,7 @@ class LogoutForm extends ApiForm {
      * @CollectModelMetrics(prefix="authentication.logout")
      * @return bool
      */
-    public function logout() : bool {
+    public function logout(): bool {
         $component = Yii::$app->user;
         $session = $component->getActiveSession();
         if ($session === null) {

@@ -7,7 +7,7 @@ trait AccountFinder {
 
     private $account;
 
-    public abstract function getLogin(): string;
+    abstract public function getLogin(): string;
 
     public function getAccount(): ?Account {
         if ($this->account === null) {

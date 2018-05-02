@@ -21,8 +21,6 @@ abstract class BaseAccountAction extends Action {
         return $this->formatSuccessResult($model);
     }
 
-    abstract protected function getFormClassName(): string;
-
     public function getRequestData(): array {
         return Yii::$app->request->post();
     }
@@ -34,6 +32,8 @@ abstract class BaseAccountAction extends Action {
     public function getFailedResultData(AccountActionForm $model): array {
         return [];
     }
+
+    abstract protected function getFormClassName(): string;
 
     private function formatFailedResult(AccountActionForm $model): array {
         $response = [

@@ -38,7 +38,9 @@
         "codeception/specify": "^1.0.0",
         "codeception/verify": "*",
         "mockery/mockery": "^1.0.0",
-        "php-mock/php-mock-mockery": "^1.2.0"
+        "php-mock/php-mock-mockery": "^1.2.0",
+        "friendsofphp/php-cs-fixer": "^2.11",
+        "ely/php-code-style": "^0.1.0"
     },
     "repositories": [
         {
