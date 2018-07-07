@@ -25,28 +25,12 @@ class Migration extends YiiMigration {
         parent::createTable($table, $columns, $options);
     }
 
-    protected function primary(...$columns) {
-        switch (count($columns)) {
-            case 0:
-                $key = '';
-                break;
-            case 1:
-                $key = $columns[0];
-                break;
-            default:
-                $key = $this->buildKey($columns);
+    protected function primary(string ...$columns): string {
+        foreach ($columns as &$column) {
+            $column = $this->db->quoteColumnName($column);
         }
 
-        return " PRIMARY KEY ($key) ";
-    }
-
-    private function buildKey(array $columns) {
-        $key = '';
-        foreach ($columns as $i => $column) {
-            $key .= $i === count($columns) ? $column : "$column,";
-        }
-
-        return $key;
+        return ' PRIMARY KEY (' . implode(', ', $columns) . ') ';
     }
 
 }
