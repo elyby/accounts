@@ -78,6 +78,7 @@ class DeliveryWebHook implements RetryableJobInterface {
             ]);
         } catch (ClientException $e) {
             Yii::info("Delivery for {$this->url} has failed with {$e->getResponse()->getStatusCode()} status.");
+
             return;
         }
     }

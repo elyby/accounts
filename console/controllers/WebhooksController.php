@@ -38,7 +38,7 @@ class WebhooksController extends Controller {
             if ($eventIndex !== '') {
                 $events[] = $options[$eventIndex];
             }
-        } while($eventIndex !== '' || empty($events)); // User must choose at least one event
+        } while ($eventIndex !== '' || empty($events));
 
         $form->url = $url;
         $form->events = $events;

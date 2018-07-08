@@ -109,7 +109,8 @@ class DeliveryWebHookTest extends TestCase {
     private function createMockedTask(): DeliveryWebHook {
         $container = &$this->historyContainer;
         $response = $this->response;
-        return new class ($container, $response) extends DeliveryWebHook {
+
+        return new class($container, $response) extends DeliveryWebHook {
             private $historyContainer;
 
             private $response;
