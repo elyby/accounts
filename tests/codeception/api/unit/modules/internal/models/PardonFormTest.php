@@ -36,17 +36,6 @@ class PardonFormTest extends TestCase {
         $model = new PardonAccountForm($account);
         $this->assertTrue($model->performAction());
         $this->assertEquals(Account::STATUS_ACTIVE, $account->status);
-        $this->tester->canSeeAmqpMessageIsCreated('events');
-    }
-
-    public function testCreateTask() {
-        $account = new Account();
-        $account->id = 3;
-
-        $model = new PardonAccountForm($account);
-        $model->createTask();
-        $message = json_decode($this->tester->grabLastSentAmqpMessage('events')->body, true);
-        $this->assertSame(3, $message['accountId']);
     }
 
 }

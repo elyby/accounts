@@ -1,13 +1,11 @@
 <?php
 namespace api\modules\accounts\models;
 
+use api\exceptions\ThisShouldNotHappenException;
 use api\modules\internal\helpers\Error as E;
-use common\helpers\Amqp;
 use common\models\Account;
-use common\models\amqp\AccountBanned;
-use PhpAmqpLib\Message\AMQPMessage;
+use common\tasks\ClearAccountSessions;
 use Yii;
-use yii\base\ErrorException;
 
 class BanAccountForm extends AccountActionForm {
 
@@ -38,7 +36,7 @@ class BanAccountForm extends AccountActionForm {
         ];
     }
 
-    public function validateAccountActivity() {
+    public function validateAccountActivity(): void {
         if ($this->getAccount()->status === Account::STATUS_BANNED) {
             $this->addError('account', E::ACCOUNT_ALREADY_BANNED);
         }
@@ -54,27 +52,14 @@ class BanAccountForm extends AccountActionForm {
         $account = $this->getAccount();
         $account->status = Account::STATUS_BANNED;
         if (!$account->save()) {
-            throw new ErrorException('Cannot ban account');
+            throw new ThisShouldNotHappenException('Cannot ban account');
         }
 
-        $this->createTask();
+        Yii::$app->queue->push(ClearAccountSessions::createFromAccount($account));
 
         $transaction->commit();
 
         return true;
-    }
-
-    public function createTask(): void {
-        $model = new AccountBanned();
-        $model->accountId = $this->getAccount()->id;
-        $model->duration = $this->duration;
-        $model->message = $this->message;
-
-        $message = Amqp::getInstance()->prepareMessage($model, [
-            'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT,
-        ]);
-
-        Amqp::sendToEventsExchange('accounts.account-banned', $message);
     }
 
 }

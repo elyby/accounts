@@ -4,6 +4,7 @@ namespace tests\codeception\api\unit\modules\internal\models;
 use api\modules\accounts\models\BanAccountForm;
 use api\modules\internal\helpers\Error as E;
 use common\models\Account;
+use common\tasks\ClearAccountSessions;
 use tests\codeception\api\unit\TestCase;
 
 class BanFormTest extends TestCase {
@@ -35,28 +36,10 @@ class BanFormTest extends TestCase {
         $model = new BanAccountForm($account);
         $this->assertTrue($model->performAction());
         $this->assertEquals(Account::STATUS_BANNED, $account->status);
-        $this->tester->canSeeAmqpMessageIsCreated('events');
-    }
-
-    public function testCreateTask() {
-        $account = new Account();
-        $account->id = 3;
-
-        $model = new BanAccountForm($account);
-        $model->createTask();
-        $message = json_decode($this->tester->grabLastSentAmqpMessage('events')->body, true);
-        $this->assertSame(3, $message['accountId']);
-        $this->assertSame(-1, $message['duration']);
-        $this->assertSame('', $message['message']);
-
-        $model = new BanAccountForm($account);
-        $model->duration = 123;
-        $model->message = 'test';
-        $model->createTask();
-        $message = json_decode($this->tester->grabLastSentAmqpMessage('events')->body, true);
-        $this->assertSame(3, $message['accountId']);
-        $this->assertSame(123, $message['duration']);
-        $this->assertSame('test', $message['message']);
+        /** @var ClearAccountSessions $job */
+        $job = $this->tester->grabLastQueuedJob();
+        $this->assertInstanceOf(ClearAccountSessions::class, $job);
+        $this->assertSame($job->accountId, $account->id);
     }
 
 }

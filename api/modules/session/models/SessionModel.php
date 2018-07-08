@@ -19,7 +19,7 @@ class SessionModel {
 
     public static function find(string $username, string $serverId): ?self {
         $key = static::buildKey($username, $serverId);
-        $result = Yii::$app->redis->executeCommand('GET', [$key]);
+        $result = Yii::$app->redis->get($key);
         if (!$result) {
             return null;
         }
@@ -36,11 +36,11 @@ class SessionModel {
             'serverId' => $this->serverId,
         ]);
 
-        return Yii::$app->redis->executeCommand('SETEX', [$key, self::KEY_TIME, $data]);
+        return Yii::$app->redis->setex($key, self::KEY_TIME, $data);
     }
 
     public function delete() {
-        return Yii::$app->redis->executeCommand('DEL', [static::buildKey($this->username, $this->serverId)]);
+        return Yii::$app->redis->del(static::buildKey($this->username, $this->serverId));
     }
 
     public function getAccount(): ?Account {
