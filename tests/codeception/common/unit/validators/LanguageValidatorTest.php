@@ -1,39 +1,50 @@
 <?php
+declare(strict_types=1);
+
 namespace codeception\common\unit\validators;
 
-use Codeception\Specify;
 use common\validators\LanguageValidator;
-use tests\codeception\common\_support\ProtectedCaller;
 use tests\codeception\common\unit\TestCase;
 
+/**
+ * @covers \common\validators\LanguageValidator
+ */
 class LanguageValidatorTest extends TestCase {
-    use Specify;
-    use ProtectedCaller;
-
-    public function testGetFilesNames() {
-        $model = $this->createModelWithFixturePath();
-        $this->assertEquals(['en', 'ru'], $this->callProtected($model, 'getFilesNames'));
-    }
-
-    public function testValidateValueSupportedLanguage() {
-        $model = $this->createModelWithFixturePath();
-        $this->assertNull($this->callProtected($model, 'validateValue', 'ru'));
-    }
-
-    public function testValidateNotSupportedLanguage() {
-        $model = $this->createModelWithFixturePath();
-        $this->assertEquals([$model->message, []], $this->callProtected($model, 'validateValue', 'by'));
-    }
 
     /**
-     * @return LanguageValidator
+     * @param string $locale
+     * @param bool $shouldBeValid
+     *
+     * @dataProvider getTestCases
      */
-    private function createModelWithFixturePath() {
-        return new class extends LanguageValidator {
-            public function getFolderPath() {
-                return __DIR__ . '/../fixtures/data/i18n';
-            }
-        };
+    public function testValidate(string $locale, bool $shouldBeValid): void {
+        $validator = new LanguageValidator();
+        $result = $validator->validate($locale, $error);
+        $this->assertSame($shouldBeValid, $result, $locale);
+        if (!$shouldBeValid) {
+            $this->assertSame($validator->message, $error);
+        }
+    }
+
+    public function getTestCases(): array {
+        return [
+            // valid
+            ['de', true],
+            ['de_DE', true],
+            ['deu', true],
+            ['en', true],
+            ['en_US', true],
+            ['fil', true],
+            ['fil_PH', true],
+            ['zh', true],
+            ['zh_Hans_CN', true],
+            ['zh_Hant_HK', true],
+            // invalid
+            ['de_FR', false],
+            ['fr_US', false],
+            ['foo_bar', false],
+            ['foo_bar_baz', false],
+        ];
     }
 
 }
