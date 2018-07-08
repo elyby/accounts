@@ -1,7 +1,10 @@
 <?php
+declare(strict_types=1);
+
 namespace common\models;
 
 use common\components\UserPass;
+use common\tasks\CreateWebHooksDeliveries;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\behaviors\TimestampBehavior;
@@ -150,6 +153,24 @@ class Account extends ActiveRecord {
 
     public function getRegistrationIp(): ?string {
         return $this->registration_ip === null ? null : inet_ntop($this->registration_ip);
+    }
+
+    public function afterSave($insert, $changedAttributes) {
+        parent::afterSave($insert, $changedAttributes);
+
+        if ($insert) {
+            return;
+        }
+
+        $meaningfulFields = ['username', 'email', 'uuid', 'status', 'lang'];
+        $meaningfulChangedAttributes = array_filter($changedAttributes, function(string $key) use ($meaningfulFields) {
+            return in_array($key, $meaningfulFields, true);
+        }, ARRAY_FILTER_USE_KEY);
+        if (empty($meaningfulChangedAttributes)) {
+            return;
+        }
+
+        Yii::$app->queue->push(CreateWebHooksDeliveries::createAccountEdit($this, $meaningfulChangedAttributes));
     }
 
 }

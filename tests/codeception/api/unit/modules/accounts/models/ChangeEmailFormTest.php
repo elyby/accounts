@@ -32,19 +32,6 @@ class ChangeEmailFormTest extends TestCase {
         /** @noinspection UnserializeExploitsInspection */
         $data = unserialize($newEmailConfirmationFixture['_data']);
         $this->assertEquals($data['newEmail'], $account->email);
-        $this->tester->canSeeAmqpMessageIsCreated('events');
-    }
-
-    public function testCreateTask() {
-        /** @var Account $account */
-        $account = Account::findOne($this->getAccountId());
-        $model = new ChangeEmailForm($account);
-        $model->createTask(1, 'test1@ely.by', 'test@ely.by');
-        $message = $this->tester->grabLastSentAmqpMessage('events');
-        $body = json_decode($message->getBody(), true);
-        $this->assertEquals(1, $body['accountId']);
-        $this->assertEquals('test1@ely.by', $body['newEmail']);
-        $this->assertEquals('test@ely.by', $body['oldEmail']);
     }
 
     private function getAccountId() {

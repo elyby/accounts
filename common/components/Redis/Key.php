@@ -16,43 +16,35 @@ class Key {
         $this->key = $this->buildKey($key);
     }
 
-    public function getRedis(): Connection {
-        return Yii::$app->redis;
-    }
-
     public function getKey(): string {
         return $this->key;
     }
 
     public function getValue() {
-        return $this->getRedis()->get($this->key);
+        return Yii::$app->redis->get($this->key);
     }
 
     public function setValue($value): self {
-        $this->getRedis()->set($this->key, $value);
-
+        Yii::$app->redis->set($this->key, $value);
         return $this;
     }
 
     public function delete(): self {
-        $this->getRedis()->del([$this->getKey()]);
-
+        Yii::$app->redis->del($this->getKey());
         return $this;
     }
 
     public function exists(): bool {
-        return (bool)$this->getRedis()->exists($this->key);
+        return (bool)Yii::$app->redis->exists($this->key);
     }
 
     public function expire(int $ttl): self {
-        $this->getRedis()->expire($this->key, $ttl);
-
+        Yii::$app->redis->expire($this->key, $ttl);
         return $this;
     }
 
     public function expireAt(int $unixTimestamp): self {
-        $this->getRedis()->expireat($this->key, $unixTimestamp);
-
+        Yii::$app->redis->expireat($this->key, $unixTimestamp);
         return $this;
     }
 

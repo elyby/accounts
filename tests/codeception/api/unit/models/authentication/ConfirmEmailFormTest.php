@@ -28,12 +28,6 @@ class ConfirmEmailFormTest extends TestCase {
         /** @var Account $account */
         $account = Account::findOne($fixture['account_id']);
         $this->assertEquals(Account::STATUS_ACTIVE, $account->status, 'user status changed to active');
-
-        $message = $this->tester->grabLastSentAmqpMessage('events');
-        $body = json_decode($message->getBody(), true);
-        $this->assertEquals($account->id, $body['accountId']);
-        $this->assertEquals($account->username, $body['newUsername']);
-        $this->assertNull($body['oldUsername']);
     }
 
     private function createModel($key) {

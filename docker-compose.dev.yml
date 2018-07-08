@@ -7,7 +7,18 @@ services:
         depends_on:
             - db
             - redis
-            - rabbitmq
+        volumes:
+            - ./:/var/www/html/
+        env_file: .env
+
+    worker:
+        build:
+            dockerfile: Dockerfile-dev
+            context: .
+        command: ['php', 'yii', 'queue/listen', '-v']
+        depends_on:
+            - db
+            - redis
         volumes:
             - ./:/var/www/html/
         env_file: .env
@@ -33,16 +44,6 @@ services:
         image: redis:3.0-alpine
         volumes:
             - ./data/redis:/data
-
-    rabbitmq:
-        image: rabbitmq:3.6-management
-        env_file: .env
-        environment:
-            - VIRTUAL_HOST=rabbitmq.account.ely.by.local
-            - VIRTUAL_PORT=15672
-        networks:
-            - default
-            - nginx-proxy
 
     phpmyadmin:
         build: ./docker/phpmyadmin
