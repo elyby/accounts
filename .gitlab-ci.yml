@@ -9,26 +9,45 @@ variables:
 check backend codestyle:
     image: edbizarro/gitlab-ci-pipeline-php:7.2-alpine
     stage: test
+    cache:
+        paths:
+            - vendor
     script:
+        - composer install
         - vendor/bin/php-cs-fixer fix -v --dry-run
 
 test backend:
     image: edbizarro/gitlab-ci-pipeline-php:7.2-alpine
     services:
-        - mariadb:10.2.11
-        - redis:3.0-alpine
+        - name: redis:4.0.10-alpine
+          alias: redis
+        - name: mariadb:10.2.11
+          alias: db
     variables:
-        # app config
-        YII_ENV: "test"
-        YII_DEBUG: "true"
-        # mariadb config
+        # App config
+        DB_HOST: "db"
+        DB_DATABASE: "ely_accounts_test"
+        DB_USER: "ely_accounts_tester"
+        DB_PASSWORD: "ely_accounts_tester_password"
+        REDIS_HOST: "redis"
+        REDIS_PORT: "6379"
+        # MariaDB config
         MYSQL_RANDOM_ROOT_PASSWORD: "true"
         MYSQL_DATABASE: "ely_accounts_test"
         MYSQL_USER: "ely_accounts_tester"
         MYSQL_PASSWORD: "ely_accounts_tester_password"
     stage: test
+    cache:
+        paths:
+            - vendor
+    before_script:
+        # While we not counting coverage, xdebug only slow down tests
+        - sudo rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
     script:
-        - docker-entrypoint.sh vendor/bin/codecept run -c tests
+        - composer install
+        - php tests/codeception/bin/yii rbac/generate
+        - ./docker/php/wait-for-it.sh "${DB_HOST}:3306" -s -t 0 -- "php tests/codeception/bin/yii migrate/up --interactive=0"
+        - vendor/bin/codecept run -c tests
 
 test frontend:
     image: node:9.2.1-alpine
@@ -71,7 +90,7 @@ build:production:
         - sed -i"" -e "s/{{PLACE_VERSION_HERE}}/$VERSION/g" common/config/config.php
     script:
         - export IMAGE_NAME="$CONTAINER_IMAGE:latest"
-        - docker build --pull -t $IMAGE_NAME .
+        - docker build --pull --build-arg build_env=prod -t $IMAGE_NAME .
     only:
         - develop
         - tags
