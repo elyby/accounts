@@ -1,258 +1,299 @@
 <?php
 namespace tests\codeception\api\functional;
 
-use common\models\Account;
+use Codeception\Example;
 use tests\codeception\api\_pages\SignupRoute;
 use tests\codeception\api\FunctionalTester;
 
 class RegisterCest {
 
-    public function _after() {
-        Account::deleteAll([
-            'email' => 'erickskrauch@ely.by',
-            'username' => 'ErickSkrauch',
-        ]);
+    /**
+     * @var SignupRoute
+     */
+    private $route;
+
+    public function _before(FunctionalTester $I) {
+        $this->route = new SignupRoute($I);
     }
 
-    public function testIncorrectRegistration(FunctionalTester $I) {
-        $route = new SignupRoute($I);
-
-        $I->wantTo('get error.rulesAgreement_required if we don\'t accept rules');
-        $route->register([
-            'username' => 'ErickSkrauch',
-            'email' => 'erickskrauch@ely.by',
-            'password' => 'some_password',
-            'rePassword' => 'some_password',
-        ]);
-        $I->canSeeResponseContainsJson([
-            'success' => false,
-            'errors' => [
-                'rulesAgreement' => 'error.rulesAgreement_required',
-            ],
-        ]);
-
-        $I->wantTo('don\'t see error.rulesAgreement_requireds if we accept rules');
-        $route->register([
-            'rulesAgreement' => true,
-        ]);
-        $I->cantSeeResponseContainsJson([
-            'errors' => [
-                'rulesAgreement' => 'error.rulesAgreement_required',
-            ],
-        ]);
-
-        $I->wantTo('see error.username_required if username is not set');
-        $route->register([
-            'username' => '',
-            'email' => '',
-            'password' => '',
-            'rePassword' => '',
-            'rulesAgreement' => true,
-        ]);
-        $I->canSeeResponseContainsJson([
-            'success' => false,
-            'errors' => [
-                'username' => 'error.username_required',
-            ],
-        ]);
-
-        $I->wantTo('don\'t see error.username_required if username is not set');
-        $route->register([
-            'username' => 'valid_nickname',
-            'email' => '',
-            'password' => '',
-            'rePassword' => '',
-            'rulesAgreement' => true,
-        ]);
-        $I->cantSeeResponseContainsJson([
-            'errors' => [
-                'username' => 'error.username_required',
-            ],
-        ]);
-
-        $I->wantTo('see error.email_required if email is not set');
-        $route->register([
-            'username' => 'valid_nickname',
-            'email' => '',
-            'password' => '',
-            'rePassword' => '',
-            'rulesAgreement' => true,
-        ]);
-        $I->canSeeResponseContainsJson([
-            'success' => false,
-            'errors' => [
-                'email' => 'error.email_required',
-            ],
-        ]);
-
-        $I->wantTo('see error.email_invalid if email is set, but invalid');
-        $route->register([
-            'username' => 'valid_nickname',
-            'email' => 'invalid@email',
-            'password' => '',
-            'rePassword' => '',
-            'rulesAgreement' => true,
-        ]);
-        $I->canSeeResponseContainsJson([
-            'success' => false,
-            'errors' => [
-                'email' => 'error.email_invalid',
-            ],
-        ]);
-
-        $I->wantTo('see error.email_invalid if email is set, valid, but domain doesn\'t exist or don\'t have mx record');
-        $route->register([
-            'username' => 'valid_nickname',
-            'email' => 'invalid@govnomail.com',
-            'password' => '',
-            'rePassword' => '',
-            'rulesAgreement' => true,
-        ]);
-        $I->canSeeResponseContainsJson([
-            'success' => false,
-            'errors' => [
-                'email' => 'error.email_invalid',
-            ],
-        ]);
-
-        $I->wantTo('see error.email_not_available if email is set, fully valid, but not available for registration');
-        $route->register([
-            'username' => 'valid_nickname',
-            'email' => 'admin@ely.by',
-            'password' => '',
-            'rePassword' => '',
-            'rulesAgreement' => true,
-        ]);
-        $I->canSeeResponseContainsJson([
-            'success' => false,
-            'errors' => [
-                'email' => 'error.email_not_available',
-            ],
-        ]);
-
-        $I->wantTo('don\'t see errors on email if all valid');
-        $route->register([
-            'username' => 'valid_nickname',
-            'email' => 'erickskrauch@ely.by',
-            'password' => '',
-            'rePassword' => '',
-            'rulesAgreement' => true,
-        ]);
-        $I->cantSeeResponseJsonMatchesJsonPath('$.errors.email');
-
-        $I->wantTo('see error.password_required if password is not set');
-        $route->register([
-            'username' => 'valid_nickname',
-            'email' => 'erickskrauch@ely.by',
-            'password' => '',
-            'rePassword' => '',
-            'rulesAgreement' => true,
-        ]);
-        $I->canSeeResponseContainsJson([
-            'success' => false,
-            'errors' => [
-                'password' => 'error.password_required',
-            ],
-        ]);
-
-        $I->wantTo('see error.password_too_short before it will be compared with rePassword');
-        $route->register([
-            'username' => 'valid_nickname',
-            'email' => 'correct-email@ely.by',
-            'password' => 'short',
-            'rePassword' => 'password',
-            'rulesAgreement' => true,
-        ]);
-        $I->canSeeResponseContainsJson([
-            'success' => false,
-            'errors' => [
-                'password' => 'error.password_too_short',
-            ],
-        ]);
-        $I->cantSeeResponseJsonMatchesJsonPath('$.errors.rePassword');
-
-        $I->wantTo('see error.rePassword_required if password valid and rePassword not set');
-        $route->register([
-            'username' => 'valid_nickname',
-            'email' => 'correct-email@ely.by',
-            'password' => 'valid-password',
-            'rePassword' => '',
-            'rulesAgreement' => true,
-        ]);
-        $I->canSeeResponseContainsJson([
-            'success' => false,
-            'errors' => [
-                'rePassword' => 'error.rePassword_required',
-            ],
-        ]);
-
-        $I->wantTo('see error.rePassword_does_not_match if password valid and rePassword donen\'t match it');
-        $route->register([
-            'username' => 'valid_nickname',
-            'email' => 'correct-email@ely.by',
-            'password' => 'valid-password',
-            'rePassword' => 'password',
-            'rulesAgreement' => true,
-        ]);
-        $I->canSeeResponseContainsJson([
-            'success' => false,
-            'errors' => [
-                'rePassword' => 'error.rePassword_does_not_match',
-            ],
-        ]);
-        $I->cantSeeResponseJsonMatchesJsonPath('$.errors.password');
-    }
-
-    public function testUserCorrectRegistration(FunctionalTester $I) {
-        $route = new SignupRoute($I);
-
-        $I->wantTo('ensure that signup works');
-        $route->register([
-            'username' => 'some_username',
-            'email' => 'some_email@example.com',
-            'password' => 'some_password',
-            'rePassword' => 'some_password',
-            'rulesAgreement' => true,
-            'lang' => 'ru',
-        ]);
-        $this->assertSuccessRegistration($I);
-    }
-
-    public function testUserCorrectRegistrationWithReassignUsername(FunctionalTester $I) {
-        $route = new SignupRoute($I);
-
-        $I->wantTo('ensure that signup allow reassign not finished registration username');
-        $route->register([
-            'username' => 'howe.garnett',
-            'email' => 'custom-email@gmail.com',
-            'password' => 'some_password',
-            'rePassword' => 'some_password',
-            'rulesAgreement' => true,
-            'lang' => 'ru',
-        ]);
-        $this->assertSuccessRegistration($I);
-    }
-
-    public function testUserCorrectRegistrationWithReassignEmail(FunctionalTester $I) {
-        $route = new SignupRoute($I);
-
-        $I->wantTo('ensure that signup allow reassign not finished registration email');
-        $route->register([
-            'username' => 'CustomUsername',
-            'email' => 'achristiansen@gmail.com',
-            'password' => 'some_password',
-            'rePassword' => 'some_password',
-            'rulesAgreement' => true,
-            'lang' => 'ru',
-        ]);
-        $this->assertSuccessRegistration($I);
-    }
-
-    private function assertSuccessRegistration(FunctionalTester $I) {
+    /**
+     * @dataProvider getSuccessInputExamples
+     */
+    public function testUserCorrectRegistration(FunctionalTester $I, Example $example) {
+        $I->wantTo($example->offsetGet('case'));
+        $this->route->register($example->offsetGet('request'));
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson(['success' => true]);
         $I->cantSeeResponseJsonMatchesJsonPath('$.errors');
+    }
+
+    /**
+     * @dataProvider getInvalidInputExamples
+     */
+    public function testIncorrectRegistration(FunctionalTester $I, Example $example) {
+        $I->wantTo($example->offsetGet('case'));
+        $this->route->register($example->offsetGet('request'));
+        if ($example->offsetExists('canSee')) {
+            $I->canSeeResponseContainsJson($example->offsetGet('canSee'));
+        }
+
+        if ($example->offsetExists('cantSee')) {
+            $I->cantSeeResponseContainsJson($example->offsetGet('cantSee'));
+        }
+
+        if ($example->offsetExists('shouldNotMatch')) {
+            foreach ((array)$example->offsetGet('shouldNotMatch') as $jsonPath) {
+                $I->cantSeeResponseJsonMatchesJsonPath($jsonPath);
+            }
+        }
+    }
+
+    protected function getSuccessInputExamples(): array {
+        return [
+            [
+                'case' => 'ensure that signup works',
+                'request' => [
+                    'username' => 'some_username',
+                    'email' => 'some_email@example.com',
+                    'password' => 'some_password',
+                    'rePassword' => 'some_password',
+                    'rulesAgreement' => true,
+                    'lang' => 'ru',
+                ],
+            ],
+            [
+                'case' => 'ensure that signup allow reassign not finished registration username',
+                'request' => [
+                    'username' => 'howe.garnett',
+                    'email' => 'custom-email@gmail.com',
+                    'password' => 'some_password',
+                    'rePassword' => 'some_password',
+                    'rulesAgreement' => true,
+                    'lang' => 'ru',
+                ],
+            ],
+            [
+                'case' => 'ensure that signup allow reassign not finished registration email',
+                'request' => [
+                    'username' => 'CustomUsername',
+                    'email' => 'achristiansen@gmail.com',
+                    'password' => 'some_password',
+                    'rePassword' => 'some_password',
+                    'rulesAgreement' => true,
+                    'lang' => 'ru',
+                ],
+            ],
+        ];
+    }
+
+    protected function getInvalidInputExamples(): array {
+        return [
+            [
+                'case' => 'get error.rulesAgreement_required if we don\'t accept rules',
+                'request' => [
+                    'username' => 'ErickSkrauch',
+                    'email' => 'erickskrauch@ely.by',
+                    'password' => 'some_password',
+                    'rePassword' => 'some_password',
+                ],
+                'canSee' => [
+                    'success' => false,
+                    'errors' => [
+                        'rulesAgreement' => 'error.rulesAgreement_required',
+                    ],
+                ],
+            ],
+            [
+                'case' => 'don\'t see error.rulesAgreement_requireds if we accept rules',
+                'request' => [
+                    'rulesAgreement' => true,
+                ],
+                'cantSee' => [
+                    'errors' => [
+                        'rulesAgreement' => 'error.rulesAgreement_required',
+                    ],
+                ],
+            ],
+            [
+                'case' => 'see error.username_required if username is not set',
+                'request' => [
+                    'username' => '',
+                    'email' => '',
+                    'password' => '',
+                    'rePassword' => '',
+                    'rulesAgreement' => true,
+                ],
+                'canSee' => [
+                    'success' => false,
+                    'errors' => [
+                        'username' => 'error.username_required',
+                    ],
+                ],
+            ],
+            [
+                'case' => 'don\'t see error.username_required if username is not set',
+                'request' => [
+                    'username' => 'valid_nickname',
+                    'email' => '',
+                    'password' => '',
+                    'rePassword' => '',
+                    'rulesAgreement' => true,
+                ],
+                'cantSee' => [
+                    'errors' => [
+                        'username' => 'error.username_required',
+                    ],
+                ],
+            ],
+            [
+                'case' => 'see error.email_required if email is not set',
+                'request' => [
+                    'username' => 'valid_nickname',
+                    'email' => '',
+                    'password' => '',
+                    'rePassword' => '',
+                    'rulesAgreement' => true,
+                ],
+                'canSee' => [
+                    'success' => false,
+                    'errors' => [
+                        'email' => 'error.email_required',
+                    ],
+                ],
+            ],
+            [
+                'case' => 'see error.email_invalid if email is set, but invalid',
+                'request' => [
+                    'username' => 'valid_nickname',
+                    'email' => 'invalid@email',
+                    'password' => '',
+                    'rePassword' => '',
+                    'rulesAgreement' => true,
+                ],
+                'canSee' => [
+                    'success' => false,
+                    'errors' => [
+                        'email' => 'error.email_invalid',
+                    ],
+                ],
+            ],
+            [
+                'case' => 'see error.email_invalid if email is set, valid, but domain doesn\'t exist or don\'t have mx record',
+                'request' => [
+                    'username' => 'valid_nickname',
+                    'email' => 'invalid@this-should-be-really-no-exists-domain-63efd7ab-1529-46d5-9426-fa5ed9f710e6.com',
+                    'password' => '',
+                    'rePassword' => '',
+                    'rulesAgreement' => true,
+                ],
+                'canSee' => [
+                    'success' => false,
+                    'errors' => [
+                        'email' => 'error.email_invalid',
+                    ],
+                ],
+            ],
+            [
+                'case' => 'see error.email_not_available if email is set, fully valid, but not available for registration',
+                'request' => [
+                    'username' => 'valid_nickname',
+                    'email' => 'admin@ely.by',
+                    'password' => '',
+                    'rePassword' => '',
+                    'rulesAgreement' => true,
+                ],
+                'canSee' => [
+                    'success' => false,
+                    'errors' => [
+                        'email' => 'error.email_not_available',
+                    ],
+                ],
+            ],
+            [
+                'case' => 'don\'t see errors on email if email valid',
+                'request' => [
+                    'username' => 'valid_nickname',
+                    'email' => 'erickskrauch@ely.by',
+                    'password' => '',
+                    'rePassword' => '',
+                    'rulesAgreement' => true,
+                ],
+                'shouldNotMatch' => [
+                    '$.errors.email',
+                ],
+            ],
+            [
+                'case' => 'see error.password_required if password is not set',
+                'request' => [
+                    'username' => 'valid_nickname',
+                    'email' => 'erickskrauch@ely.by',
+                    'password' => '',
+                    'rePassword' => '',
+                    'rulesAgreement' => true,
+                ],
+                'canSee' => [
+                    'success' => false,
+                    'errors' => [
+                        'password' => 'error.password_required',
+                    ],
+                ],
+            ],
+            [
+                'case' => 'see error.password_too_short before it will be compared with rePassword',
+                'request' => [
+                    'username' => 'valid_nickname',
+                    'email' => 'correct-email@ely.by',
+                    'password' => 'short',
+                    'rePassword' => 'password',
+                    'rulesAgreement' => true,
+                ],
+                'canSee' => [
+                    'success' => false,
+                    'errors' => [
+                        'password' => 'error.password_too_short',
+                    ],
+                ],
+                'shouldNotMatch' => [
+                    '$.errors.rePassword',
+                ],
+            ],
+            [
+                'case' => 'see error.rePassword_required if password valid and rePassword not set',
+                'request' => [
+                    'username' => 'valid_nickname',
+                    'email' => 'correct-email@ely.by',
+                    'password' => 'valid-password',
+                    'rePassword' => '',
+                    'rulesAgreement' => true,
+                ],
+                'canSee' => [
+                    'success' => false,
+                    'errors' => [
+                        'rePassword' => 'error.rePassword_required',
+                    ],
+                ],
+            ],
+            [
+                'case' => 'see error.rePassword_does_not_match if password valid and rePassword doesn\'t match it',
+                'request' => [
+                    'username' => 'valid_nickname',
+                    'email' => 'correct-email@ely.by',
+                    'password' => 'valid-password',
+                    'rePassword' => 'password',
+                    'rulesAgreement' => true,
+                ],
+                'canSee' => [
+                    'success' => false,
+                    'errors' => [
+                        'rePassword' => 'error.rePassword_does_not_match',
+                    ],
+                ],
+                'shouldNotMatch' => [
+                    '$.errors.password',
+                ],
+            ],
+        ];
     }
 
 }
