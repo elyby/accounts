@@ -10,6 +10,7 @@ check backend codestyle:
     image: edbizarro/gitlab-ci-pipeline-php:7.2-alpine
     stage: test
     cache:
+        key: backend-vendor
         paths:
             - vendor
     script:
@@ -38,6 +39,7 @@ test backend:
         MYSQL_PASSWORD: "ely_accounts_tester_password"
     stage: test
     cache:
+        key: backend-vendor
         paths:
             - vendor
     before_script:
