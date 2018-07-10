@@ -2,10 +2,11 @@ version: '2'
 services:
     testphp:
         container_name: accountelyby_testphp
-        image: account_testphp
+        image: registry.ely.by/elyby/accounts:dev
         build:
             context: ../
-            dockerfile: Dockerfile-dev
+            args:
+                build_env: dev
         depends_on:
             - testdb
             - testredis
