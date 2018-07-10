@@ -6,50 +6,31 @@ stages:
 variables:
     CONTAINER_IMAGE: "registry.ely.by/elyby/accounts"
 
-test:backend:
-    image: docker:18.02
+check backend codestyle:
+    image: edbizarro/gitlab-ci-pipeline-php:7.2-alpine
+    stage: test
+    script:
+        - vendor/bin/php-cs-fixer fix -v --dry-run
+
+test backend:
+    image: edbizarro/gitlab-ci-pipeline-php:7.2-alpine
     services:
         - mariadb:10.2.11
         - redis:3.0-alpine
     variables:
+        # app config
+        YII_ENV: "test"
+        YII_DEBUG: "true"
         # mariadb config
         MYSQL_RANDOM_ROOT_PASSWORD: "true"
         MYSQL_DATABASE: "ely_accounts_test"
         MYSQL_USER: "ely_accounts_tester"
         MYSQL_PASSWORD: "ely_accounts_tester_password"
     stage: test
-    before_script:
-        - docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
-        - echo "$SSH_PRIVATE_KEY" > id_rsa
     script:
-        - export TEMP_DEV_IMAGE="${CONTAINER_IMAGE}:ci-${CI_BUILD_ID}"
-        - docker build --pull -f Dockerfile-dev -t $TEMP_DEV_IMAGE .
-        - >
-            docker run --rm
-            $TEMP_DEV_IMAGE
-            bash -c "
-            rm /usr/local/etc/php/conf.d/xdebug.ini &&
-            cp -r /var/www/vendor /var/www/html/vendor &&
-            vendor/bin/php-cs-fixer fix -v --dry-run
-            "
-        - >
-            docker run --rm
-            --add-host=mariadb:`getent hosts mariadb | awk '{ print $1 ; exit }'`
-            --add-host=redis:`getent hosts redis | awk '{ print $1 ; exit }'`
-            -e YII_DEBUG="true"
-            -e YII_ENV="test"
-            -e DB_HOST="mariadb"
-            -e DB_DATABASE="ely_accounts_test"
-            -e DB_USER="ely_accounts_tester"
-            -e DB_PASSWORD="ely_accounts_tester_password"
-            -e REDIS_HOST="redis"
-            $TEMP_DEV_IMAGE
-            bash -c "
-            rm /usr/local/etc/php/conf.d/xdebug.ini &&
-            docker-entrypoint.sh php vendor/bin/codecept run -c tests
-            "
+        - docker-entrypoint.sh vendor/bin/codecept run -c tests
 
-test:frontend:
+test frontend:
     image: node:9.2.1-alpine
     stage: test
     cache:

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4334ca4dd8b377a9c40afd844527a850",
+    "content-hash": "7368afb90e5f3ed26a7b6d98551da170",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -615,7 +615,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@gitlab.ely.by:elyby/email-renderer.git",
+                "url": "https://gitlab+deploy-token-1:FDGgmcnLdykcsyJJ_8Uv@gitlab.ely.by/elyby/email-renderer.git",
                 "reference": "8aa2e71c5b3b8e4a726c3c090b2997030ba29f73"
             },
             "require": {
