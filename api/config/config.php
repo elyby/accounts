@@ -58,6 +58,7 @@ return [
         ],
         'request' => [
             'baseUrl' => '/api',
+            'enableCsrfCookie' => false,
             'parsers' => [
                 '*' => api\request\RequestParser::class,
             ],
