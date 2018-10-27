@@ -84,6 +84,18 @@ class EmailValidatorTest extends TestCase {
         $this->assertNotEquals(['error.email_is_tempmail'], $model->getErrors('field'));
     }
 
+    public function testValidateAttributeIdna() {
+        Mock::func(YiiEmailValidator::class, 'checkdnsrr')->times(2)->andReturnTrue();
+
+        $model = $this->createModel('qdushyantasunassm@❕.gq');
+        $this->validator->validateAttribute($model, 'field');
+        $this->assertSame('qdushyantasunassm@xn--bei.gq', $model->field);
+
+        $model = $this->createModel('valid-email@gmail.com');
+        $this->validator->validateAttribute($model, 'field');
+        $this->assertSame('valid-email@gmail.com', $model->field);
+    }
+
     public function testValidateAttributeUnique() {
         Mock::func(YiiEmailValidator::class, 'checkdnsrr')->times(3)->andReturnTrue();
 
@@ -115,7 +127,7 @@ class EmailValidatorTest extends TestCase {
      * @param string $fieldValue
      * @return Model
      */
-    private function createModel(string $fieldValue) : Model {
+    private function createModel(string $fieldValue): Model {
         $class = new class extends Model {
             public $field;
         };

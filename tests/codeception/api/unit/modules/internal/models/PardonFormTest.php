@@ -1,8 +1,8 @@
 <?php
 namespace tests\codeception\api\unit\modules\internal\models;
 
-use api\modules\internal\helpers\Error as E;
 use api\modules\accounts\models\PardonAccountForm;
+use api\modules\internal\helpers\Error as E;
 use common\models\Account;
 use tests\codeception\api\unit\TestCase;
 
@@ -36,17 +36,6 @@ class PardonFormTest extends TestCase {
         $model = new PardonAccountForm($account);
         $this->assertTrue($model->performAction());
         $this->assertEquals(Account::STATUS_ACTIVE, $account->status);
-        $this->tester->canSeeAmqpMessageIsCreated('events');
-    }
-
-    public function testCreateTask() {
-        $account = new Account();
-        $account->id = 3;
-
-        $model = new PardonAccountForm($account);
-        $model->createTask();
-        $message = json_decode($this->tester->grabLastSentAmqpMessage('events')->body, true);
-        $this->assertSame(3, $message['accountId']);
     }
 
 }

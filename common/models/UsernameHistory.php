@@ -45,7 +45,7 @@ class UsernameHistory extends ActiveRecord {
      * @param int $afterTime
      * @return UsernameHistory|null
      */
-    public function findNext(int $afterTime = null) /*: ?UsernameHistory*/ {
+    public function findNext(int $afterTime = null): ?UsernameHistory {
         return self::find()
             ->andWhere(['account_id' => $this->account_id])
             ->andWhere(['>', 'applied_in', $afterTime ?: $this->applied_in])

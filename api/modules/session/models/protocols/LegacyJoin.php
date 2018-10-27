@@ -4,10 +4,13 @@ namespace api\modules\session\models\protocols;
 class LegacyJoin extends BaseJoin {
 
     private $user;
+
     private $sessionId;
+
     private $serverId;
 
     private $accessToken;
+
     private $uuid;
 
     public function __construct(string $user, string $sessionId, string $serverId) {
@@ -18,7 +21,7 @@ class LegacyJoin extends BaseJoin {
         $this->parseSessionId($this->sessionId);
     }
 
-    public function getAccessToken() : string {
+    public function getAccessToken(): string {
         return $this->accessToken;
     }
 

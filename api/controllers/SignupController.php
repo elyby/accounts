@@ -2,8 +2,8 @@
 namespace api\controllers;
 
 use api\models\authentication\ConfirmEmailForm;
-use api\models\authentication\RepeatAccountActivationForm;
 use api\models\authentication\RegistrationForm;
+use api\models\authentication\RepeatAccountActivationForm;
 use common\helpers\Error as E;
 use Yii;
 use yii\filters\AccessControl;

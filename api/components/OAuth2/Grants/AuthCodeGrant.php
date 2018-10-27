@@ -133,8 +133,10 @@ class AuthCodeGrant extends AbstractGrant {
             throw new Exception\InvalidRequestException('client_id');
         }
 
-        $clientSecret = $this->server->getRequest()->request->get('client_secret',
-            $this->server->getRequest()->getPassword());
+        $clientSecret = $this->server->getRequest()->request->get(
+            'client_secret',
+            $this->server->getRequest()->getPassword()
+        );
         if ($clientSecret === null && $this->shouldRequireClientSecret()) {
             throw new Exception\InvalidRequestException('client_secret');
         }

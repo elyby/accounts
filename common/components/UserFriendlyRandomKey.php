@@ -1,10 +1,11 @@
 <?php
-namespace common\components;
+declare(strict_types=1);
 
+namespace common\components;
 
 class UserFriendlyRandomKey {
 
-    public static function make ($length = 18) {
+    public static function make(int $length = 18) {
         $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
         $numChars = strlen($chars);
         $key = '';

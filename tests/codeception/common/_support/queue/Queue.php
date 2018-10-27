@@ -8,6 +8,11 @@ class Queue extends BaseQueue {
 
     private $messages = [];
 
+    public function __set($name, $value) {
+        // Yii2 components may contains some configuration
+        // But we just ignore it for this mock component
+    }
+
     public function push($job) {
         $this->messages[] = $job;
     }
@@ -22,11 +27,6 @@ class Queue extends BaseQueue {
 
     protected function pushMessage($message, $ttr, $delay, $priority) {
         // This function is abstract, but will be not called
-    }
-
-    public function __set($name, $value) {
-        // Yii2 components may contains some configuration
-        // But we just ignore it for this mock component
     }
 
 }

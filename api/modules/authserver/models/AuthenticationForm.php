@@ -14,7 +14,9 @@ use common\models\MinecraftAccessKey;
 class AuthenticationForm extends ApiForm {
 
     public $username;
+
     public $password;
+
     public $clientToken;
 
     public function rules() {
@@ -41,13 +43,15 @@ class AuthenticationForm extends ApiForm {
             if (isset($errors['totp'])) {
                 Authserver::error("User with login = '{$this->username}' protected by two factor auth.");
                 throw new ForbiddenOperationException('Account protected with two factor auth.');
-            } elseif (isset($errors['login'])) {
+            }
+
+            if (isset($errors['login'])) {
                 if ($errors['login'] === E::ACCOUNT_BANNED) {
                     Authserver::error("User with login = '{$this->username}' is banned");
                     throw new ForbiddenOperationException('This account has been suspended.');
-                } else {
-                    Authserver::error("Cannot find user by login = '{$this->username}'");
                 }
+
+                Authserver::error("Cannot find user by login = '{$this->username}'");
             } elseif (isset($errors['password'])) {
                 Authserver::error("User with login = '{$this->username}' passed wrong password.");
             }
@@ -72,7 +76,7 @@ class AuthenticationForm extends ApiForm {
         return $dataModel;
     }
 
-    protected function createMinecraftAccessToken(Account $account) : MinecraftAccessKey {
+    protected function createMinecraftAccessToken(Account $account): MinecraftAccessKey {
         /** @var MinecraftAccessKey|null $accessTokenModel */
         $accessTokenModel = MinecraftAccessKey::findOne([
             'account_id' => $account->id,
@@ -92,7 +96,7 @@ class AuthenticationForm extends ApiForm {
         return $accessTokenModel;
     }
 
-    protected function createLoginForm() : LoginForm {
+    protected function createLoginForm(): LoginForm {
         return new LoginForm();
     }
 

@@ -1,55 +1,86 @@
-FROM registry.ely.by/elyby/accounts-php:1.7.0
+FROM node:9.11.2-alpine as frontend
 
-# bootstrap скрипт для проекта
-COPY docker/php/bootstrap.sh /bootstrap.sh
-# Вносим конфигурации для крона и воркеров
-COPY docker/cron/* /etc/cron.d/
-COPY docker/supervisor/* /etc/supervisor/conf.d/
+WORKDIR /app
 
-COPY id_rsa /root/.ssh/id_rsa
+COPY ./frontend/package.json ./
+COPY ./frontend/scripts ./scripts
+COPY ./frontend/webpack-utils ./webpack-utils
+COPY ./frontend/yarn.lock ./
+RUN yarn build:install
 
-# Включаем поддержку ssh
-RUN chmod 400 ~/.ssh/id_rsa \
- && eval $(ssh-agent -s) \
- && ssh-add /root/.ssh/id_rsa \
- && touch /root/.ssh/known_hosts \
- && ssh-keyscan github.com gitlab.ely.by >> /root/.ssh/known_hosts
+COPY ./frontend .
+RUN yarn build:quiet
 
-# Копируем списки зависимостей composer в родительскую директорию, которая не будет синкаться
-# с хостом через volume на dev окружении. В entrypoint эта папка будет скопирована обратно
-COPY ./composer.json /var/www/composer.json
-COPY ./composer.lock /var/www/composer.lock
 
-# Устанавливаем зависимости PHP
-RUN cd .. \
- && composer install --no-interaction --no-suggest --no-dev --optimize-autoloader \
- && cd -
+FROM php:7.2.7-fpm-alpine3.7
 
-# Устанавливаем зависимости для Node.js
-# Делаем это отдельно, чтобы можно было воспользоваться кэшем, если от предыдущего билда
-# ничего не менялось в зависимостях
-RUN mkdir -p /var/www/frontend
+# bash needed to support wait-for-it script
+RUN apk add --update --no-cache \
+    git \
+    bash \
+    openssh \
+    dcron \
+    zlib-dev \
+    icu-dev \
+    libintl \
+    imagemagick-dev \
+    imagemagick \
+ && docker-php-ext-install \
+    zip \
+    pdo_mysql \
+    intl \
+    pcntl \
+    opcache \
+ && apk add --no-cache --virtual ".phpize-deps" $PHPIZE_DEPS \
+ && yes | pecl install xdebug-2.6.0 \
+ && yes | pecl install imagick \
+ && docker-php-ext-enable imagick \
+ && apk del ".phpize-deps" \
+ && rm -rf /usr/share/man \
+ && rm -rf /tmp/* \
+ && mkdir /etc/cron.d
 
-COPY ./frontend/package.json /var/www/frontend/
-COPY ./frontend/yarn.lock /var/www/frontend/
-COPY ./frontend/scripts /var/www/frontend/scripts
-COPY ./frontend/webpack-utils /var/www/frontend/webpack-utils
+COPY --from=composer:1.6.5 /usr/bin/composer /usr/bin/composer
+COPY --from=node:9.11.2-alpine /usr/local/bin/node /usr/bin/
+COPY --from=node:9.11.2-alpine /usr/lib/libgcc* /usr/lib/libstdc* /usr/lib/* /usr/lib/
 
-RUN cd /var/www/frontend \
- && yarn run build:install \
- && cd -
+# ENV variables for composer
+ENV COMPOSER_NO_INTERACTION 1
+ENV COMPOSER_ALLOW_SUPERUSER 1
 
-# Удаляем ключи из production контейнера на всякий случай
-RUN rm -rf /root/.ssh
+RUN mkdir /root/.composer \
+ && echo '{"github-oauth": {"github.com": "***REMOVED***"}}' > ~/.composer/auth.json \
+ && composer global require --no-progress "hirak/prestissimo:^0.3.7" \
+ && composer clear-cache
 
-# Наконец переносим все сорцы внутрь контейнера
-COPY . /var/www/html
+COPY ./docker/php/wait-for-it.sh /usr/local/bin/wait-for-it
 
-# Билдим фронт
-RUN cd frontend \
- && ln -s /var/www/frontend/node_modules $PWD/node_modules \
- && yarn run build:quiet \
- && rm node_modules \
- # Копируем билд наружу, чтобы его не затёрло volume в dev режиме
- && cp -r ./dist /var/www/dist \
- && cd -
+COPY ./composer.* /var/www/html/
+
+ARG build_env=prod
+ENV YII_ENV=$build_env
+
+RUN if [ "$build_env" = "prod" ] ; then \
+        composer install --no-interaction --no-suggest --no-dev --optimize-autoloader; \
+    else \
+        composer install --no-interaction --no-suggest; \
+    fi \
+ && composer clear-cache
+
+COPY ./docker/php/*.ini /usr/local/etc/php/conf.d/
+COPY ./docker/php/docker-entrypoint.sh /usr/local/bin/
+COPY ./docker/cron/* /etc/cron.d/
+
+COPY --from=frontend /app/dist /var/www/html/frontend/dist
+
+COPY ./api /var/www/html/api/
+COPY ./common /var/www/html/common/
+COPY ./console /var/www/html/console/
+COPY ./yii /var/www/html/yii
+
+# Expose everything under /var/www/html to share it with nginx
+VOLUME ["/var/www/html"]
+
+WORKDIR /var/www/html
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["php-fpm"]

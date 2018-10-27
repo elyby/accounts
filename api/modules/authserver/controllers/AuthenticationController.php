@@ -17,10 +17,10 @@ class AuthenticationController extends Controller {
     public function verbs() {
         return [
             'authenticate' => ['POST'],
-            'refresh'      => ['POST'],
-            'validate'     => ['POST'],
-            'signout'      => ['POST'],
-            'invalidate'   => ['POST'],
+            'refresh' => ['POST'],
+            'validate' => ['POST'],
+            'signout' => ['POST'],
+            'invalidate' => ['POST'],
         ];
     }
 

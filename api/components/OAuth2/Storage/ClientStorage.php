@@ -11,8 +11,8 @@ use yii\helpers\StringHelper;
 
 class ClientStorage extends AbstractStorage implements ClientInterface {
 
-    const REDIRECT_STATIC_PAGE = 'static_page';
-    const REDIRECT_STATIC_PAGE_WITH_CODE = 'static_page_with_code';
+    private const REDIRECT_STATIC_PAGE = 'static_page';
+    private const REDIRECT_STATIC_PAGE_WITH_CODE = 'static_page_with_code';
 
     /**
      * @inheritdoc
@@ -66,7 +66,7 @@ class ClientStorage extends AbstractStorage implements ClientInterface {
         return $this->hydrate($model);
     }
 
-    private function hydrate(OauthClient $model) : ClientEntity {
+    private function hydrate(OauthClient $model): ClientEntity {
         $entity = new ClientEntity($this->server);
         $entity->setId($model->id);
         $entity->setName($model->name);

@@ -17,7 +17,7 @@ require_once __DIR__ . '/../../../api/config/bootstrap.php';
 // the entry script file path for functional tests
 $_SERVER['SCRIPT_FILENAME'] = API_ENTRY_FILE;
 $_SERVER['SCRIPT_NAME'] = API_ENTRY_URL;
-$_SERVER['SERVER_NAME'] =  parse_url(Configuration::config()['config']['test_entry_url'], PHP_URL_HOST);
-$_SERVER['SERVER_PORT'] =  parse_url(Configuration::config()['config']['test_entry_url'], PHP_URL_PORT) ?: '80';
+$_SERVER['SERVER_NAME'] = parse_url(Configuration::config()['config']['test_entry_url'], PHP_URL_HOST);
+$_SERVER['SERVER_PORT'] = parse_url(Configuration::config()['config']['test_entry_url'], PHP_URL_PORT) ?: '80';
 
 Yii::setAlias('@tests', dirname(__DIR__, 2));

@@ -136,7 +136,8 @@ class ClientsController extends Controller {
             throw new NotFoundHttpException();
         }
 
-        $clients = $account->oauthClients;
+        /** @var OauthClient[] $clients */
+        $clients = $account->getOauthClients()->orderBy(['created_at' => SORT_ASC])->all();
         $result = array_map(function(OauthClient $client) {
             return $this->formatClient($client);
         }, $clients);
@@ -152,13 +153,13 @@ class ClientsController extends Controller {
             'name' => $client->name,
             'websiteUrl' => $client->website_url,
             'createdAt' => $client->created_at,
-            'countUsers' => (int)$client->getSessions()->count(),
         ];
 
         switch ($client->type) {
             case OauthClient::TYPE_APPLICATION:
                 $result['description'] = $client->description;
                 $result['redirectUri'] = $client->redirect_uri;
+                $result['countUsers'] = (int)$client->getSessions()->count();
                 break;
             case OauthClient::TYPE_MINECRAFT_SERVER:
                 $result['minecraftServerIp'] = $client->minecraft_server_ip;

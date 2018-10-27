@@ -21,7 +21,7 @@ class Textures {
     }
 
     public function getMinecraftResponse() {
-        $response =  [
+        $response = [
             'name' => $this->account->username,
             'id' => str_replace('-', '', $this->account->uuid),
             'properties' => [
@@ -54,9 +54,9 @@ class Textures {
 
         if (!$encrypted) {
             return $array;
-        } else {
-            return static::encrypt($array);
         }
+
+        return static::encrypt($array);
     }
 
     public function getTextures(): array {

@@ -42,7 +42,7 @@ class OauthClientOwnerTest extends TestCase {
 
         $this->assertFalse($rule->execute('token', $item, []));
         $this->assertTrue($rule->execute('token', $item, ['clientId' => 'admin-oauth-client']));
-        $this->assertFalse($rule->execute('token', $item, ['clientId' => 'not-exists-client']));
+        $this->assertTrue($rule->execute('token', $item, ['clientId' => 'not-exists-client']));
         $account->id = 2;
         $this->assertFalse($rule->execute('token', $item, ['clientId' => 'admin-oauth-client']));
         $item->name = P::VIEW_OWN_OAUTH_CLIENTS;

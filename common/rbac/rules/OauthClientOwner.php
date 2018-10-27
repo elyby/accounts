@@ -38,7 +38,7 @@ class OauthClientOwner extends Rule {
         /** @var OauthClient|null $client */
         $client = OauthClient::findOne($clientId);
         if ($client === null) {
-            return false;
+            return true;
         }
 
         $identity = Yii::$app->user->findIdentityByAccessToken($accessToken);

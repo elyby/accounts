@@ -10,6 +10,7 @@ use yii\web\TooManyRequestsHttpException;
 class RateLimiter extends \yii\filters\RateLimiter {
 
     public $limit = 180;
+
     public $limitTime = 3600; // 1h
 
     public $authserverDomain;
@@ -55,22 +56,14 @@ class RateLimiter extends \yii\filters\RateLimiter {
         $ip = $request->getUserIP();
         $key = $this->buildKey($ip);
 
-        $redis = $this->getRedis();
-        $countRequests = (int)$redis->incr($key);
+        $countRequests = (int)Yii::$app->redis->incr($key);
         if ($countRequests === 1) {
-            $redis->executeCommand('EXPIRE', [$key, $this->limitTime]);
+            Yii::$app->redis->expire($key, $this->limitTime);
         }
 
         if ($countRequests > $this->limit) {
             throw new TooManyRequestsHttpException($this->errorMessage);
         }
-    }
-
-    /**
-     * @return \common\components\Redis\Connection
-     */
-    public function getRedis() {
-        return Yii::$app->redis;
     }
 
     /**
@@ -100,7 +93,7 @@ class RateLimiter extends \yii\filters\RateLimiter {
         return $this->server;
     }
 
-    protected function buildKey($ip) : string {
+    protected function buildKey($ip): string {
         return 'sessionserver:ratelimit:' . $ip;
     }
 

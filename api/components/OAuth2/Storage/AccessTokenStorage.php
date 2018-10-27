@@ -31,7 +31,7 @@ class AccessTokenStorage extends AbstractStorage implements AccessTokenInterface
     public function getScopes(OriginalAccessTokenEntity $token) {
         $scopes = $this->scopes($token->getId());
         $entities = [];
-        foreach($scopes as $scope) {
+        foreach ($scopes as $scope) {
             if ($this->server->getScopeStorage()->get($scope) !== null) {
                 $entities[] = (new ScopeEntity($this->server))->hydrate(['id' => $scope]);
             }
@@ -59,11 +59,11 @@ class AccessTokenStorage extends AbstractStorage implements AccessTokenInterface
         $this->scopes($token->getId())->delete();
     }
 
-    private function key(string $token) : Key {
+    private function key(string $token): Key {
         return new Key($this->dataTable, $token);
     }
 
-    private function scopes(string $token) : Set {
+    private function scopes(string $token): Set {
         return new Set($this->dataTable, $token, 'scopes');
     }
 

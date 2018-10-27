@@ -214,7 +214,7 @@ class Component extends YiiUserComponent {
 
     protected function createToken(Account $account): Token {
         $token = new Token();
-        foreach($this->getClaims($account) as $claim) {
+        foreach ($this->getClaims($account) as $claim) {
             $token->addClaim($claim);
         }
 

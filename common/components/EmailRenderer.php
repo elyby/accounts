@@ -43,7 +43,7 @@ class EmailRenderer extends Component {
         $this->renderer->setBaseDomain($this->buildBasePath());
     }
 
-    public function getBaseDomain() : string {
+    public function getBaseDomain(): string {
         return $this->_baseDomain;
     }
 

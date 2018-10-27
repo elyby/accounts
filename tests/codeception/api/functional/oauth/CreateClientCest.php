@@ -81,7 +81,6 @@ class CreateClientCest {
                 'clientId' => 'my-amazing-server',
                 'name' => 'My amazing server',
                 'websiteUrl' => 'http://some-site.com',
-                'countUsers' => 0,
                 'minecraftServerIp' => 'hypixel.com:25565',
             ],
         ]);

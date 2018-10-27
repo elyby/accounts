@@ -1,8 +1,8 @@
 <?php
 namespace tests\codeception\api\functional\authserver;
 
-use tests\codeception\api\_pages\AuthserverRoute;
 use Ramsey\Uuid\Uuid;
+use tests\codeception\api\_pages\AuthserverRoute;
 use tests\codeception\api\FunctionalTester;
 
 class AuthorizationCest {

@@ -68,7 +68,6 @@ class GetClientsCest {
                 'name' => 'Another test oauth client',
                 'websiteUrl' => '',
                 'minecraftServerIp' => '136.243.88.97:25565',
-                'countUsers' => 0,
                 'createdAt' => 1519487472,
             ],
         ]);

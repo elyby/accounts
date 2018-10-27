@@ -1,14 +1,20 @@
 <?php
+declare(strict_types=1);
+
 namespace tests\codeception\common\unit\models;
 
 use Codeception\Specify;
 use common\components\UserPass;
 use common\models\Account;
+use common\tasks\CreateWebHooksDeliveries;
 use tests\codeception\common\fixtures\MojangUsernameFixture;
 use tests\codeception\common\unit\TestCase;
 use Yii;
 use const common\LATEST_RULES_VERSION;
 
+/**
+ * @covers \common\models\Account
+ */
 class AccountTest extends TestCase {
     use Specify;
 
@@ -117,6 +123,39 @@ class AccountTest extends TestCase {
         $this->assertEquals('2001:1620:28:1:b6f:8bca:93:a116', $account->getRegistrationIp());
         $account->setRegistrationIp(null);
         $this->assertNull($account->getRegistrationIp());
+    }
+
+    public function testAfterSaveInsertEvent() {
+        $account = new Account();
+        $account->afterSave(true, [
+            'username' => 'old-username',
+        ]);
+        $this->assertNull($this->tester->grabLastQueuedJob());
+    }
+
+    public function testAfterSaveNotMeaningfulAttributes() {
+        $account = new Account();
+        $account->afterSave(false, [
+            'updatedAt' => time(),
+        ]);
+        $this->assertNull($this->tester->grabLastQueuedJob());
+    }
+
+    public function testAfterSavePushEvent() {
+        $changedAttributes = [
+            'username' => 'old-username',
+            'email' => 'old-email@ely.by',
+            'uuid' => 'c3cc0121-fa87-4818-9c0e-4acb7f9a28c5',
+            'status' => 10,
+            'lang' => 'en',
+        ];
+
+        $account = new Account();
+        $account->afterSave(false, $changedAttributes);
+        /** @var CreateWebHooksDeliveries $job */
+        $job = $this->tester->grabLastQueuedJob();
+        $this->assertInstanceOf(CreateWebHooksDeliveries::class, $job);
+        $this->assertSame($job->payloads['changedAttributes'], $changedAttributes);
     }
 
 }

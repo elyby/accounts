@@ -14,17 +14,17 @@ class PrimaryKeyValueBehaviorTest extends TestCase {
             $model = new DummyModel();
             /** @var PrimaryKeyValueBehavior|\PHPUnit_Framework_MockObject_MockObject $behavior */
             $behavior = $this->getMockBuilder(PrimaryKeyValueBehavior::class)
-                 ->setMethods(['isValueExists'])
-                 ->setConstructorArgs([[
-                     'value' => function() {
-                         return 'mock';
-                     },
-                 ]])
-                 ->getMock();
+                ->setMethods(['isValueExists'])
+                ->setConstructorArgs([[
+                    'value' => function() {
+                        return 'mock';
+                    },
+                ]])
+                ->getMock();
 
             $behavior->expects($this->once())
-                     ->method('isValueExists')
-                     ->will($this->returnValue(false));
+                ->method('isValueExists')
+                ->will($this->returnValue(false));
 
             $model->attachBehavior('primary-key-value-behavior', $behavior);
             $behavior->setPrimaryKeyValue();
@@ -44,12 +44,12 @@ class PrimaryKeyValueBehaviorTest extends TestCase {
                 ->getMock();
 
             $behavior->expects($this->exactly(3))
-                  ->method('generateValue')
-                  ->will($this->onConsecutiveCalls('1', '2', '3'));
+                ->method('generateValue')
+                ->will($this->onConsecutiveCalls('1', '2', '3'));
 
             $behavior->expects($this->exactly(3))
-                  ->method('isValueExists')
-                  ->will($this->onConsecutiveCalls(true, true, false));
+                ->method('isValueExists')
+                ->will($this->onConsecutiveCalls(true, true, false));
 
             $model->attachBehavior('primary-key-value-behavior', $behavior);
             $behavior->setPrimaryKeyValue();

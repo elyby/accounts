@@ -1,13 +1,42 @@
 version: '2'
 services:
     app:
+        image: registry.ely.by/elyby/accounts:dev
         build:
-            dockerfile: Dockerfile-dev
             context: .
+            args:
+                build_env: dev
         depends_on:
             - db
             - redis
-            - rabbitmq
+        volumes:
+            - ./:/var/www/html/
+        env_file: .env
+
+    worker:
+        image: registry.ely.by/elyby/accounts:dev
+        build:
+            context: .
+            args:
+                build_env: dev
+        command: ['php', 'yii', 'queue/listen', '-v']
+        depends_on:
+            - db
+            - redis
+        volumes:
+            - ./:/var/www/html/
+        env_file: .env
+
+    cron:
+        image: registry.ely.by/elyby/accounts:dev
+        build:
+            context: .
+            args:
+                build_env: dev
+        command: ['crond', '-s', '/etc/cron.d', '-f', '-L', '/var/log/cron.log']
+        depends_on:
+            - db
+            - redis
         volumes:
             - ./:/var/www/html/
         env_file: .env
@@ -34,16 +63,6 @@ services:
         volumes:
             - ./data/redis:/data
 
-    rabbitmq:
-        image: rabbitmq:3.6-management
-        env_file: .env
-        environment:
-            - VIRTUAL_HOST=rabbitmq.account.ely.by.local
-            - VIRTUAL_PORT=15672
-        networks:
-            - default
-            - nginx-proxy
-
     phpmyadmin:
         build: ./docker/phpmyadmin
         environment:
@@ -56,17 +75,6 @@ services:
         networks:
             - default
             - nginx-proxy
-
-    # Эта штука работает дико медленно, грузит процессор и т.д. и т.п.
-    # Раскоментировать только в случае лютой надобности
-    #node-dev-server:
-    #    build: ./frontend
-    #    ports:
-    #        - "8080:8080"
-    #    volumes:
-    #        - ./frontend/:/usr/src/app/
-    #    environment:
-    #        DOCKERIZED: "true"
 
 networks:
     nginx-proxy:

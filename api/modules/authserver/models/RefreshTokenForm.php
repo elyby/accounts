@@ -10,6 +10,7 @@ use common\models\MinecraftAccessKey;
 class RefreshTokenForm extends ApiForm {
 
     public $accessToken;
+
     public $clientToken;
 
     public function rules() {

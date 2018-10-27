@@ -7,9 +7,9 @@ use api\modules\session\models\protocols\JoinInterface;
 use api\modules\session\Module as Session;
 use api\modules\session\validators\RequiredValidator;
 use common\helpers\StringHelper;
-use common\rbac\Permissions as P;
 use common\models\Account;
 use common\models\MinecraftAccessKey;
+use common\rbac\Permissions as P;
 use Ramsey\Uuid\Uuid;
 use Yii;
 use yii\base\ErrorException;
@@ -19,7 +19,9 @@ use yii\web\UnauthorizedHttpException;
 class JoinForm extends Model {
 
     public $accessToken;
+
     public $selectedProfile;
+
     public $serverId;
 
     /**

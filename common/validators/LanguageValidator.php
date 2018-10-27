@@ -1,39 +1,37 @@
 <?php
+declare(strict_types=1);
+
 namespace common\validators;
 
 use common\helpers\Error as E;
-use Yii;
+use Locale;
+use ResourceBundle;
 use yii\validators\Validator;
 
 class LanguageValidator extends Validator {
 
     public $message = E::UNSUPPORTED_LANGUAGE;
 
-    protected function validateValue($value) {
+    /**
+     * The idea of this validator belongs to
+     * https://github.com/lunetics/LocaleBundle/blob/1f5ee7f1802/Validator/LocaleValidator.php#L82-L88
+     *
+     * @param mixed $value
+     * @return array|null
+     */
+    protected function validateValue($value): ?array {
         if (empty($value)) {
             return null;
         }
 
-        $files = $this->getFilesNames();
-        if (in_array($value, $files)) {
-            return null;
+        $primary = Locale::getPrimaryLanguage($value);
+        $region = Locale::getRegion($value);
+        $locales = ResourceBundle::getLocales(''); // http://php.net/manual/ru/resourcebundle.locales.php#115965
+        if (($region !== '' && strtolower($primary) !== strtolower($region)) && !in_array($value, $locales)) {
+            return [$this->message, []];
         }
 
-        return [$this->message, []];
-    }
-
-    protected function getFilesNames() {
-        $files = array_values(array_filter(scandir($this->getFolderPath()), function(&$value) {
-            return $value !== '..' && $value !== '.';
-        }));
-
-        return array_map(function($value) {
-            return basename($value, '.json');
-        }, $files);
-    }
-
-    protected function getFolderPath() {
-        return Yii::getAlias('@frontend/src/i18n');
+        return null;
     }
 
 }
