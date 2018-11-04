@@ -2,14 +2,33 @@ version: '2'
 services:
     app:
         image: registry.ely.by/elyby/accounts:latest
+        restart: always
         depends_on:
             - db
             - redis
-            - rabbitmq
+        env_file: .env
+
+    worker:
+        image: registry.ely.by/elyby/accounts:latest
+        restart: always
+        command: ['php', 'yii', 'queue/listen', '-v']
+        depends_on:
+            - db
+            - redis
+        env_file: .env
+
+    worker:
+        image: registry.ely.by/elyby/accounts:latest
+        restart: always
+        command: ['crond', '-s', '/etc/cron.d', '-f', '-L', '/var/log/cron.log']
+        depends_on:
+            - db
+            - redis
         env_file: .env
 
     web:
         image: registry.ely.by/elyby/accounts-nginx:1.0.3
+        restart: always
         volumes_from:
             - app
         links:
@@ -21,18 +40,16 @@ services:
 
     db:
         build: ./docker/mariadb
+        restart: always
         env_file: .env
         volumes:
             - ./data/mysql:/var/lib/mysql
 
     redis:
         image: redis:3.0-alpine
+        restart: always
         volumes:
             - ./data/redis:/data
-
-    rabbitmq:
-        image: rabbitmq:3.6
-        env_file: .env
 
 networks:
     nginx-proxy:

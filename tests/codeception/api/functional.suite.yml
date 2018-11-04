@@ -4,7 +4,6 @@ modules:
         - Filesystem
         - Yii2
         - tests\codeception\common\_support\FixtureHelper
-        - tests\codeception\common\_support\amqp\Helper
         - tests\codeception\common\_support\Mockery
         - Redis
         - Asserts

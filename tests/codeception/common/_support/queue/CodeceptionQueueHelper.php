@@ -14,7 +14,12 @@ class CodeceptionQueueHelper extends Module {
      */
     public function grabLastQueuedJob() {
         $messages = $this->grabQueueJobs();
-        return end($messages);
+        $last = end($messages);
+        if ($last === false) {
+            return null;
+        }
+
+        return $last;
     }
 
     /**

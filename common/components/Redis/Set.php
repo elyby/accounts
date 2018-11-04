@@ -3,23 +3,22 @@ namespace common\components\Redis;
 
 use ArrayIterator;
 use IteratorAggregate;
+use Yii;
 
 class Set extends Key implements IteratorAggregate {
 
     public function add($value): self {
-        $this->getRedis()->sadd($this->getKey(), $value);
-
+        Yii::$app->redis->sadd($this->getKey(), $value);
         return $this;
     }
 
     public function remove($value): self {
-        $this->getRedis()->srem($this->getKey(), $value);
-
+        Yii::$app->redis->srem($this->getKey(), $value);
         return $this;
     }
 
     public function members(): array {
-        return $this->getRedis()->smembers($this->getKey());
+        return Yii::$app->redis->smembers($this->getKey());
     }
 
     public function getValue(): array {
@@ -31,11 +30,11 @@ class Set extends Key implements IteratorAggregate {
             return parent::exists();
         }
 
-        return (bool)$this->getRedis()->sismember($this->getKey(), $value);
+        return (bool)Yii::$app->redis->sismember($this->getKey(), $value);
     }
 
     public function diff(array $sets): array {
-        return $this->getRedis()->sdiff([$this->getKey(), implode(' ', $sets)]);
+        return Yii::$app->redis->sdiff([$this->getKey(), implode(' ', $sets)]);
     }
 
     /**

@@ -1,4 +1,4 @@
-FROM phpmyadmin/phpmyadmin
+FROM phpmyadmin/phpmyadmin:4.7.9-1
 
 RUN printf "\n\nrequire('./config.local.php');\n" >> /www/config.inc.php
 

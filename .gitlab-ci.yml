@@ -6,50 +6,52 @@ stages:
 variables:
     CONTAINER_IMAGE: "registry.ely.by/elyby/accounts"
 
-test:backend:
-    image: docker:18.02
+check backend codestyle:
+    image: edbizarro/gitlab-ci-pipeline-php:7.2-alpine
+    stage: test
+    cache:
+        key: backend-vendor
+        paths:
+            - vendor
+    script:
+        - composer install
+        - vendor/bin/php-cs-fixer fix -v --dry-run
+
+test backend:
+    image: edbizarro/gitlab-ci-pipeline-php:7.2-alpine
     services:
-        - mariadb:10.2.11
-        - redis:3.0-alpine
+        - name: redis:4.0.10-alpine
+          alias: redis
+        - name: mariadb:10.2.11
+          alias: db
     variables:
-        # mariadb config
+        # App config
+        DB_HOST: "db"
+        DB_DATABASE: "ely_accounts_test"
+        DB_USER: "ely_accounts_tester"
+        DB_PASSWORD: "ely_accounts_tester_password"
+        REDIS_HOST: "redis"
+        REDIS_PORT: "6379"
+        # MariaDB config
         MYSQL_RANDOM_ROOT_PASSWORD: "true"
         MYSQL_DATABASE: "ely_accounts_test"
         MYSQL_USER: "ely_accounts_tester"
         MYSQL_PASSWORD: "ely_accounts_tester_password"
     stage: test
+    cache:
+        key: backend-vendor
+        paths:
+            - vendor
     before_script:
-        - docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
-        - echo "$SSH_PRIVATE_KEY" > id_rsa
+        # While we not counting coverage, xdebug only slow down tests
+        - sudo rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
     script:
-        - export TEMP_DEV_IMAGE="${CONTAINER_IMAGE}:ci-${CI_BUILD_ID}"
-        - docker build --pull -f Dockerfile-dev -t $TEMP_DEV_IMAGE .
-        - >
-            docker run --rm
-            $TEMP_DEV_IMAGE
-            bash -c "
-            rm /usr/local/etc/php/conf.d/xdebug.ini &&
-            cp -r /var/www/vendor /var/www/html/vendor &&
-            vendor/bin/php-cs-fixer fix -v --dry-run
-            "
-        - >
-            docker run --rm
-            --add-host=mariadb:`getent hosts mariadb | awk '{ print $1 ; exit }'`
-            --add-host=redis:`getent hosts redis | awk '{ print $1 ; exit }'`
-            -e YII_DEBUG="true"
-            -e YII_ENV="test"
-            -e DB_HOST="mariadb"
-            -e DB_DATABASE="ely_accounts_test"
-            -e DB_USER="ely_accounts_tester"
-            -e DB_PASSWORD="ely_accounts_tester_password"
-            -e REDIS_HOST="redis"
-            $TEMP_DEV_IMAGE
-            bash -c "
-            rm /usr/local/etc/php/conf.d/xdebug.ini &&
-            docker-entrypoint.sh php vendor/bin/codecept run -c tests
-            "
+        - composer install
+        - php tests/codeception/bin/yii rbac/generate
+        - ./docker/php/wait-for-it.sh "${DB_HOST}:3306" -s -t 0 -- "php tests/codeception/bin/yii migrate/up --interactive=0"
+        - vendor/bin/codecept run -c tests
 
-test:frontend:
+test frontend:
     image: node:9.2.1-alpine
     stage: test
     cache:
@@ -58,10 +60,10 @@ test:frontend:
     before_script:
         # Enable SSL support for wget
         - apk add --update openssl
-        # https://github.com/facebook/flow/issues/3649#issuecomment-308070179
-        - wget -O /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub
-        - wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.25-r0/glibc-2.25-r0.apk
-        - apk add glibc-2.25-r0.apk
+        # https://github.com/facebook/flow/issues/3649#issuecomment-414691014
+        - wget -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
+        - wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.28-r0/glibc-2.28-r0.apk
+        - apk add glibc-2.28-r0.apk
     script:
         - cd frontend
         - yarn run build:install
@@ -90,7 +92,7 @@ build:production:
         - sed -i"" -e "s/{{PLACE_VERSION_HERE}}/$VERSION/g" common/config/config.php
     script:
         - export IMAGE_NAME="$CONTAINER_IMAGE:latest"
-        - docker build --pull -t $IMAGE_NAME .
+        - docker build --pull --build-arg build_env=prod -t $IMAGE_NAME .
     only:
         - develop
         - tags

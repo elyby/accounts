@@ -1,9 +1,10 @@
 <?php
+declare(strict_types=1);
+
 namespace api\models\authentication;
 
 use api\aop\annotations\CollectModelMetrics;
 use api\models\base\ApiForm;
-use api\modules\accounts\models\ChangeUsernameForm;
 use api\validators\EmailActivationKeyValidator;
 use common\models\Account;
 use common\models\EmailActivation;
@@ -43,9 +44,6 @@ class ConfirmEmailForm extends ApiForm {
         if (!$account->save()) {
             throw new ErrorException('Unable activate user account.');
         }
-
-        $changeUsernameForm = new ChangeUsernameForm($account);
-        $changeUsernameForm->createEventTask($account->id, $account->username, null);
 
         $transaction->commit();
 

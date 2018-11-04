@@ -4,8 +4,7 @@ return [
     'vendorPath' => dirname(__DIR__, 2) . '/vendor',
     'components' => [
         'cache' => [
-            'class' => common\components\Redis\Cache::class,
-            'redis' => 'redis',
+            'class' => yii\redis\Cache::class,
         ],
         'db' => [
             'class' => yii\db\Connection::class,
@@ -61,19 +60,11 @@ return [
             'passwordHashStrategy' => 'password_hash',
         ],
         'redis' => [
-            'class' => common\components\Redis\Connection::class,
+            'class' => yii\redis\Connection::class,
             'hostname' => getenv('REDIS_HOST') ?: 'redis',
             'password' => getenv('REDIS_PASS') ?: null,
             'port' => getenv('REDIS_PORT') ?: 6379,
             'database' => getenv('REDIS_DATABASE') ?: 0,
-        ],
-        'amqp' => [
-            'class' => common\components\RabbitMQ\Component::class,
-            'host' => getenv('RABBITMQ_HOST') ?: 'rabbitmq',
-            'port' => getenv('RABBITMQ_PORT') ?: 5672,
-            'user' => getenv('RABBITMQ_USER'),
-            'password' => getenv('RABBITMQ_PASS'),
-            'vhost' => getenv('RABBITMQ_VHOST'),
         ],
         'guzzle' => [
             'class' => GuzzleHttp\Client::class,
@@ -97,15 +88,7 @@ return [
             'namespace' => getenv('STATSD_NAMESPACE') ?: 'ely.accounts.' . gethostname() . '.app',
         ],
         'queue' => [
-            'class' => yii\queue\amqp_interop\Queue::class,
-            'driver' => yii\queue\amqp_interop\Queue::ENQUEUE_AMQP_LIB,
-            'host' => getenv('RABBITMQ_HOST') ?: 'rabbitmq',
-            'port' => getenv('RABBITMQ_PORT') ?: 5672,
-            'user' => getenv('RABBITMQ_USER'),
-            'password' => getenv('RABBITMQ_PASS'),
-            'vhost' => getenv('RABBITMQ_VHOST'),
-            'queueName' => 'worker',
-            'exchangeName' => 'tasks',
+            'class' => yii\queue\redis\Queue::class,
         ],
     ],
     'container' => [
