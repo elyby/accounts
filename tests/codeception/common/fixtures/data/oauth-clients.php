@@ -116,7 +116,7 @@ return [
         'id' => 'deleted-oauth-client',
         'secret' => 'YISLDvIHlLbhsvYoIJScUzTURVXK32Q58sHWSFKyO71iCIlv4YM2Zt1kEK7DQLXX',
         'type' => 'application',
-        'name' => 'I was deleted :(',
+        'name' => 'Deleted OAuth Client',
         'description' => null,
         'redirect_uri' => 'http://not-exists-site.com/oauth/ely',
         'website_url' => '',

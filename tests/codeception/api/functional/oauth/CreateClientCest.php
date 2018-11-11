@@ -88,4 +88,23 @@ class CreateClientCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.data.createdAt');
     }
 
+    public function testCreateApplicationWithTheSameNameAsDeletedApp(FunctionalTester $I) {
+        $I->wantTo('create application with the same name as the recently deleted application');
+        $I->amAuthenticated('admin');
+        $this->route->createClient('application', [
+            'name' => 'Deleted OAuth Client',
+            'description' => '',
+            'redirectUri' => 'http://some-site.com/oauth/ely',
+            'websiteUrl' => 'http://some-site.com',
+        ]);
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseIsJson();
+        $I->canSeeResponseContainsJson([
+            'success' => true,
+            'data' => [
+                'clientId' => 'deleted-oauth-client1',
+            ],
+        ]);
+    }
+
 }
