@@ -36,6 +36,28 @@ class GetCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.passwordChangedAt');
     }
 
+    public function testGetInfoAboutCurrentUser(FunctionalTester $I) {
+        $I->wantTo('get info about user with 0 id, e.g. current');
+        $I->amAuthenticated();
+
+        $this->route->get(0);
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseIsJson();
+        $I->canSeeResponseContainsJson([
+            'id' => 1,
+            'uuid' => 'df936908-b2e1-544d-96f8-2977ec213022',
+            'username' => 'Admin',
+            'isOtpEnabled' => false,
+            'email' => 'admin@ely.by',
+            'lang' => 'en',
+            'isActive' => true,
+            'hasMojangUsernameCollision' => false,
+            'shouldAcceptRules' => false,
+            'elyProfileLink' => 'http://ely.by/u1',
+        ]);
+        $I->canSeeResponseJsonMatchesJsonPath('$.passwordChangedAt');
+    }
+
     public function testGetWithNotAcceptedLatestRules(FunctionalTester $I) {
         $accountId = $I->amAuthenticated('Veleyaba');
 

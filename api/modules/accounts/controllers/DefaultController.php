@@ -15,9 +15,9 @@ use yii\web\NotFoundHttpException;
 class DefaultController extends Controller {
 
     public function behaviors(): array {
-        $paramsCallback = function() {
-            $id = Yii::$app->request->get('id');
-            if ($id === null) {
+        $paramsCallback = function(): array {
+            $id = (int)Yii::$app->request->get('id');
+            if ($id === 0) {
                 $identity = Yii::$app->user->getIdentity();
                 if ($identity !== null) {
                     $account = $identity->getAccount();
@@ -132,7 +132,7 @@ class DefaultController extends Controller {
         return (new TwoFactorAuthInfo($this->findAccount($id)))->getCredentials();
     }
 
-    public function bindActionParams($action, $params) {
+    public function bindActionParams($action, $params): array {
         if (!isset($params['id'])) {
             /** @noinspection NullPointerExceptionInspection */
             $account = Yii::$app->user->getIdentity()->getAccount();
@@ -145,7 +145,13 @@ class DefaultController extends Controller {
     }
 
     private function findAccount(int $id): Account {
-        $account = Account::findOne($id);
+        if ($id === 0) {
+            /** @noinspection NullPointerExceptionInspection */
+            $account = Yii::$app->user->getIdentity()->getAccount();
+        } else {
+            $account = Account::findOne($id);
+        }
+
         if ($account === null) {
             throw new NotFoundHttpException();
         }
