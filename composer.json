@@ -1,11 +1,15 @@
 {
     "name": "elyby/accounts",
-    "description": "Authentication service for Ely.by",
+    "description": "Authentication service for the Ely.by",
     "homepage": "https://account.ely.by",
     "type": "project",
     "minimum-stability": "stable",
     "require": {
-        "php": "^7.1",
+        "php": "^7.2",
+        "ext-json": "*",
+        "ext-pdo": "*",
+        "ext-libxml": "*",
+        "ext-simplexml": "*",
         "yiisoft/yii2": "2.0.15.1",
         "yiisoft/yii2-swiftmailer": "~2.1.0",
         "ramsey/uuid": "^3.5",
@@ -29,7 +33,7 @@
         "yiisoft/yii2-faker": "*",
         "flow/jsonpath": "^0.4.0",
         "phpunit/phpunit": "^6.0",
-        "codeception/codeception": "2.3.8",
+        "codeception/codeception": "2.5.3",
         "codeception/specify": "^1.0.0",
         "codeception/verify": "*",
         "mockery/mockery": "^1.0.0",
@@ -49,6 +53,9 @@
             "url": "https://gitlab+deploy-token-1:FDGgmcnLdykcsyJJ_8Uv@gitlab.ely.by/elyby/email-renderer.git"
         }
     ],
+    "config": {
+        "sort-packages": true
+    },
     "autoload": {
         "psr-4": {
             "api\\": "api",
@@ -58,5 +65,12 @@
         "files": [
             "common/consts.php"
         ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "api\\tests\\": "api/tests",
+            "common\\tests\\": "common/tests",
+            "console\\tests\\": "console/tests"
+        }
     }
 }

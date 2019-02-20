@@ -23,7 +23,6 @@ AspectKernel::getInstance()->init([
 ]);
 
 require __DIR__ . '/../../vendor/yiisoft/yii2/Yii.php';
-spl_autoload_unregister(['Yii', 'autoload']);
 require __DIR__ . '/../../common/config/bootstrap.php';
 require __DIR__ . '/../config/bootstrap.php';
 

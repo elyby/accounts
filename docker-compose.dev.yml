@@ -1,82 +1,136 @@
 version: '2'
 services:
-    app:
-        image: registry.ely.by/elyby/accounts:dev
-        build:
-            context: .
-            args:
-                build_env: dev
-        depends_on:
-            - db
-            - redis
-        volumes:
-            - ./:/var/www/html/
-        env_file: .env
+  app:
+    image: registry.ely.by/elyby/accounts:dev
+    build:
+      context: .
+      args:
+        build_env: dev
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./:/var/www/html/
+    env_file: .env
 
-    worker:
-        image: registry.ely.by/elyby/accounts:dev
-        build:
-            context: .
-            args:
-                build_env: dev
-        command: ['php', 'yii', 'queue/listen', '-v']
-        depends_on:
-            - db
-            - redis
-        volumes:
-            - ./:/var/www/html/
-        env_file: .env
+  worker:
+    image: registry.ely.by/elyby/accounts:dev
+    build:
+      context: .
+      args:
+        build_env: dev
+    command: ['php', 'yii', 'queue/listen', '-v']
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./:/var/www/html/
+    env_file: .env
 
-    cron:
-        image: registry.ely.by/elyby/accounts:dev
-        build:
-            context: .
-            args:
-                build_env: dev
-        command: ['crond', '-s', '/etc/cron.d', '-f', '-L', '/var/log/cron.log']
-        depends_on:
-            - db
-            - redis
-        volumes:
-            - ./:/var/www/html/
-        env_file: .env
+  cron:
+    image: registry.ely.by/elyby/accounts:dev
+    build:
+      context: .
+      args:
+        build_env: dev
+    command: ['crond', '-s', '/etc/cron.d', '-f', '-L', '/var/log/cron.log']
+    stop_signal: SIGKILL
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./:/var/www/html/
+    env_file: .env
 
-    web:
-        image: registry.ely.by/elyby/accounts-nginx:latest
-        volumes_from:
-            - app
-        links:
-            - app:php
-        env_file: .env
-        networks:
-            - default
-            - nginx-proxy
+  web:
+    image: registry.ely.by/elyby/accounts-nginx:latest
+    volumes_from:
+      - app
+    links:
+      - app:php
+    env_file: .env
+    networks:
+      - default
+      - nginx-proxy
 
-    db:
-        build: ./docker/mariadb
-        env_file: .env
-        volumes:
-            - ./data/mysql:/var/lib/mysql
+  db:
+    build: ./docker/mariadb
+    env_file: .env
+    volumes:
+      - ./data/mysql:/var/lib/mysql
 
-    redis:
-        image: redis:3.0-alpine
-        volumes:
-            - ./data/redis:/data
+  redis:
+    image: redis:3.0-alpine
+    volumes:
+      - ./data/redis:/data
 
-    phpmyadmin:
-        build: ./docker/phpmyadmin
-        environment:
-            - PMA_ARBITRARY=1
-            - PMA_USER=root
-            - PMA_PASSWORD=
-            - VIRTUAL_HOST=pma.account.ely.by.local
-        depends_on:
-            - db
-        networks:
-            - default
-            - nginx-proxy
+  # If you want to use separate databases for the tests follow the next steps:
+  # 1) Create a file common/config/config-local.php with the next containment:
+  #
+  # <?php
+  # if (YII_ENV !== 'test') {
+  #     return [];
+  # }
+  #
+  # return [
+  #     'components' => [
+  #         'db' => [
+  #             'dsn' => 'mysql:host=testdb;dbname=test',
+  #             'username' => 'test',
+  #             'password' => 'test',
+  #         ],
+  #         'unbufferedDb' => [
+  #             'dsn' => 'mysql:host=testdb;dbname=test',
+  #             'username' => 'test',
+  #             'password' => 'test',
+  #         ],
+  #         'redis' => [
+  #             'hostname' => 'testredis',
+  #             'password' => null,
+  #             'port' => 6379,
+  #             'database' => 0,
+  #         ],
+  #     ],
+  # ];
+  #
+  # 2) Clone api/tests/functional.suite.dist.yml into api/test/functional.suite.yml
+  #    and adjust Redis module host value to the "testredis".
+  #
+  # 3) Uncomment the next 2 services (testdb and testredis):
+  #
+  # testdb:
+  #   build: ./docker/mariadb
+  #   volumes:
+  #     - ./data/mysql-test:/var/lib/mysql
+  #   environment:
+  #     - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+  #     - MYSQL_ROOT_PASSWORD=
+  #     - MYSQL_DATABASE=test
+  #     - MYSQL_USER=test
+  #     - MYSQL_PASSWORD=test
+  #
+  # testredis:
+  #   image: redis:3.0-alpine
+  #   volumes:
+  #     - ./data/redis-test:/data
+  #
+  # 4) To run migrations on tests database you must execute slightly adjusted
+  #    migrate command: env YII_ENV=test yii migrate
+
+  phpmyadmin:
+    build: ./docker/phpmyadmin
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_USER=root
+      - PMA_PASSWORD=
+      - VIRTUAL_HOST=pma.account.ely.by.local # Feel free to adjust this domain
+    depends_on:
+      - db
+    networks:
+      - default
+      - nginx-proxy
 
 networks:
-    nginx-proxy:
-        external:
-            name: nginx-proxy
+  nginx-proxy:
+    external:
+      name: nginx-proxy
