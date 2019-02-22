@@ -3,9 +3,9 @@ namespace common\tests\unit\emails;
 
 use common\components\EmailRenderer;
 use common\emails\TemplateWithRenderer;
-use Ely\Email\TemplateBuilder;
 use common\tests\_support\ProtectedCaller;
 use common\tests\unit\TestCase;
+use Ely\Email\TemplateBuilder;
 use yii\mail\MailerInterface;
 use yii\mail\MessageInterface;
 

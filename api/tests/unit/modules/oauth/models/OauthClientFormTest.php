@@ -3,9 +3,9 @@ namespace api\tests\unit\modules\oauth\models;
 
 use api\modules\oauth\models\OauthClientForm;
 use api\modules\oauth\models\OauthClientTypeForm;
+use api\tests\unit\TestCase;
 use common\models\OauthClient;
 use common\tasks\ClearOauthSessions;
-use api\tests\unit\TestCase;
 
 class OauthClientFormTest extends TestCase {
 

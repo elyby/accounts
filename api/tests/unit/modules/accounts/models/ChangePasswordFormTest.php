@@ -4,10 +4,10 @@ namespace api\tests\unit\modules\accounts\models;
 use api\components\User\Component;
 use api\components\User\Identity;
 use api\modules\accounts\models\ChangePasswordForm;
+use api\tests\unit\TestCase;
 use common\components\UserPass;
 use common\helpers\Error as E;
 use common\models\Account;
-use api\tests\unit\TestCase;
 use Yii;
 use yii\db\Transaction;
 

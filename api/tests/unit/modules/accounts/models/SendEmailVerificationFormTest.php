@@ -2,11 +2,11 @@
 namespace api\tests\unit\modules\accounts\models;
 
 use api\modules\accounts\models\SendEmailVerificationForm;
+use api\tests\unit\TestCase;
 use common\models\Account;
 use common\models\confirmations\CurrentEmailConfirmation;
 use common\models\EmailActivation;
 use common\tasks\SendCurrentEmailConfirmation;
-use api\tests\unit\TestCase;
 use common\tests\fixtures\AccountFixture;
 use common\tests\fixtures\EmailActivationFixture;
 

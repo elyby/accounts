@@ -2,8 +2,8 @@
 namespace api\tests\unit\modules\accounts\models;
 
 use api\modules\accounts\models\ChangeLanguageForm;
-use common\models\Account;
 use api\tests\unit\TestCase;
+use common\models\Account;
 
 class ChangeLanguageFormTest extends TestCase {
 

@@ -2,10 +2,10 @@
 namespace api\tests\unit\modules\accounts\models;
 
 use api\modules\accounts\models\ChangeUsernameForm;
+use api\tests\unit\TestCase;
 use common\models\Account;
 use common\models\UsernameHistory;
 use common\tasks\PullMojangUsername;
-use api\tests\unit\TestCase;
 use common\tests\fixtures\AccountFixture;
 use common\tests\fixtures\UsernameHistoryFixture;
 

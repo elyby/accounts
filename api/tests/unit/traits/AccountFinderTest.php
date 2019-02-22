@@ -1,10 +1,10 @@
 <?php
 namespace api\tests\_support\traits;
 
+use api\tests\unit\TestCase;
 use api\traits\AccountFinder;
 use Codeception\Specify;
 use common\models\Account;
-use api\tests\unit\TestCase;
 use common\tests\fixtures\AccountFixture;
 
 class AccountFinderTest extends TestCase {

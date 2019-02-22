@@ -2,8 +2,8 @@
 namespace api\tests\unit\modules\accounts\models;
 
 use api\modules\accounts\models\AcceptRulesForm;
-use common\models\Account;
 use api\tests\unit\TestCase;
+use common\models\Account;
 use const common\LATEST_RULES_VERSION;
 
 class AcceptRulesFormTest extends TestCase {

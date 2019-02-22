@@ -1,8 +1,8 @@
 <?php
 namespace common\tests\unit\validators;
 
-use common\validators\MinecraftServerAddressValidator;
 use common\tests\unit\TestCase;
+use common\validators\MinecraftServerAddressValidator;
 
 class MinecraftServerAddressValidatorTest extends TestCase {
 

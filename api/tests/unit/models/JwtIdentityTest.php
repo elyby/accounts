@@ -4,13 +4,13 @@ namespace codeception\api\unit\models;
 use api\components\User\IdentityInterface;
 use api\components\User\Jwt;
 use api\components\User\JwtIdentity;
+use api\tests\unit\TestCase;
 use Codeception\Specify;
+use common\tests\_support\ProtectedCaller;
+use common\tests\fixtures\AccountFixture;
 use Emarref\Jwt\Claim;
 use Emarref\Jwt\Encryption\Factory as EncryptionFactory;
 use Emarref\Jwt\Token;
-use api\tests\unit\TestCase;
-use common\tests\_support\ProtectedCaller;
-use common\tests\fixtures\AccountFixture;
 use Yii;
 
 class JwtIdentityTest extends TestCase {

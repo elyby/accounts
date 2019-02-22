@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace api\tests\unit\modules\session\filters;
 
 use api\modules\session\filters\RateLimiter;
+use api\tests\unit\TestCase;
 use common\models\OauthClient;
 use Faker\Provider\Internet;
-use api\tests\unit\TestCase;
 use Yii;
 use yii\redis\Connection;
 use yii\web\Request;

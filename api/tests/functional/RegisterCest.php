@@ -1,9 +1,9 @@
 <?php
 namespace api\tests\functional;
 
-use Codeception\Example;
 use api\tests\_pages\SignupRoute;
 use api\tests\FunctionalTester;
+use Codeception\Example;
 
 class RegisterCest {
 

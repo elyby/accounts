@@ -1,9 +1,9 @@
 <?php
 namespace api\tests\functional\authserver;
 
-use Faker\Provider\Uuid;
 use api\tests\_pages\MojangApiRoute;
 use api\tests\FunctionalTester;
+use Faker\Provider\Uuid;
 
 class UuidToUsernamesHistoryCest {
 

@@ -3,11 +3,11 @@ namespace common\tests\unit\components\Mojang;
 
 use common\components\Mojang\Api;
 use common\components\Mojang\response\UsernameToUUIDResponse;
+use common\tests\unit\TestCase;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
-use common\tests\unit\TestCase;
 use Yii;
 
 class ApiTest extends TestCase {

@@ -1,12 +1,12 @@
 <?php
 namespace codeception\api\unit\validators;
 
+use api\tests\unit\TestCase;
 use api\validators\EmailActivationKeyValidator;
 use Codeception\Specify;
 use common\helpers\Error as E;
 use common\models\confirmations\ForgotPassword;
 use common\models\EmailActivation;
-use api\tests\unit\TestCase;
 use common\tests\_support\ProtectedCaller;
 use common\tests\fixtures\EmailActivationFixture;
 use yii\base\Model;

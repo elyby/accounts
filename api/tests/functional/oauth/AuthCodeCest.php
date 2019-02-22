@@ -1,9 +1,9 @@
 <?php
 namespace api\tests\functional\oauth;
 
-use common\rbac\Permissions as P;
 use api\tests\_pages\OauthRoute;
 use api\tests\FunctionalTester;
+use common\rbac\Permissions as P;
 
 class AuthCodeCest {
 

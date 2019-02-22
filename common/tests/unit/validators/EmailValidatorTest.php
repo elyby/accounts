@@ -1,10 +1,10 @@
 <?php
 namespace common\tests\unit\validators;
 
-use common\validators\EmailValidator;
 use common\tests\fixtures\AccountFixture;
 use common\tests\helpers\Mock;
 use common\tests\unit\TestCase;
+use common\validators\EmailValidator;
 use yii\base\Model;
 use yii\validators\EmailValidator as YiiEmailValidator;
 

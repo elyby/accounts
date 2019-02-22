@@ -2,8 +2,8 @@
 namespace codeception\api\unit\models;
 
 use api\models\FeedbackForm;
-use common\models\Account;
 use api\tests\unit\TestCase;
+use common\models\Account;
 use yii\swiftmailer\Message;
 
 class FeedbackFormTest extends TestCase {

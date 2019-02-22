@@ -4,9 +4,9 @@ namespace api\tests\_support\models\authentication;
 use api\components\User\Component;
 use api\components\User\Identity;
 use api\models\authentication\LogoutForm;
+use api\tests\unit\TestCase;
 use Codeception\Specify;
 use common\models\AccountSession;
-use api\tests\unit\TestCase;
 use Yii;
 
 class LogoutFormTest extends TestCase {

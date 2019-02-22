@@ -1,10 +1,10 @@
 <?php
 namespace api\tests\functional\sessionserver;
 
-use Faker\Provider\Uuid;
 use api\tests\_pages\SessionServerRoute;
 use api\tests\functional\_steps\SessionServerSteps;
 use api\tests\FunctionalTester;
+use Faker\Provider\Uuid;
 
 class ProfileCest {
 

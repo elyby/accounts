@@ -3,11 +3,11 @@ namespace api\tests\_support\models\authentication;
 
 use api\components\User\AuthenticationResult;
 use api\models\authentication\LoginForm;
+use api\tests\unit\TestCase;
 use Codeception\Specify;
 use common\models\Account;
-use OTPHP\TOTP;
-use api\tests\unit\TestCase;
 use common\tests\fixtures\AccountFixture;
+use OTPHP\TOTP;
 
 class LoginFormTest extends TestCase {
     use Specify;

@@ -1,11 +1,11 @@
 <?php
 namespace codeception\api\unit\validators;
 
+use api\tests\unit\TestCase;
 use api\validators\PasswordRequiredValidator;
 use common\helpers\Error as E;
 use common\models\Account;
 use common\rbac\Permissions as P;
-use api\tests\unit\TestCase;
 use common\tests\_support\ProtectedCaller;
 use yii\web\User;
 

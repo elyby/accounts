@@ -1,9 +1,9 @@
 <?php
 namespace api\tests\functional;
 
+use api\tests\_pages\AuthenticationRoute;
 use api\tests\FunctionalTester;
 use OTPHP\TOTP;
-use api\tests\_pages\AuthenticationRoute;
 
 class LoginCest {
 

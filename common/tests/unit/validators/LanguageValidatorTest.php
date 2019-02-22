@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace common\tests\unit\validators;
 
-use common\validators\LanguageValidator;
 use common\tests\unit\TestCase;
+use common\validators\LanguageValidator;
 
 /**
  * @covers \common\validators\LanguageValidator

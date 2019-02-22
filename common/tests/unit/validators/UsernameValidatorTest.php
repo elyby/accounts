@@ -1,9 +1,9 @@
 <?php
 namespace common\tests\unit\validators;
 
-use common\validators\UsernameValidator;
 use common\tests\fixtures\AccountFixture;
 use common\tests\unit\TestCase;
+use common\validators\UsernameValidator;
 use yii\base\Model;
 
 class UsernameValidatorTest extends TestCase {

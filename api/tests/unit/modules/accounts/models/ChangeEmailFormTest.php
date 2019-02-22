@@ -2,9 +2,9 @@
 namespace api\tests\unit\modules\accounts\models;
 
 use api\modules\accounts\models\ChangeEmailForm;
+use api\tests\unit\TestCase;
 use common\models\Account;
 use common\models\EmailActivation;
-use api\tests\unit\TestCase;
 use common\tests\fixtures\AccountFixture;
 use common\tests\fixtures\EmailActivationFixture;
 

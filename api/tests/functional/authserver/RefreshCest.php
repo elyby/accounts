@@ -1,9 +1,9 @@
 <?php
 namespace api\tests\functional\authserver;
 
-use Ramsey\Uuid\Uuid;
 use api\tests\_pages\AuthserverRoute;
 use api\tests\functional\_steps\AuthserverSteps;
+use Ramsey\Uuid\Uuid;
 
 class RefreshCest {
 

@@ -2,12 +2,12 @@
 namespace codeception\api\unit\components\ReCaptcha;
 
 use api\components\ReCaptcha\Validator;
+use api\tests\unit\TestCase;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Response;
 use phpmock\mockery\PHPMockery;
 use ReflectionClass;
-use api\tests\unit\TestCase;
 
 class ValidatorTest extends TestCase {
 

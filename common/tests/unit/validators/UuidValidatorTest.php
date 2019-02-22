@@ -2,9 +2,9 @@
 namespace common\tests\unit\validators;
 
 use Codeception\Specify;
+use common\tests\unit\TestCase;
 use common\validators\UuidValidator;
 use Faker\Provider\Uuid;
-use common\tests\unit\TestCase;
 use yii\base\Model;
 
 class UuidValidatorTest extends TestCase {

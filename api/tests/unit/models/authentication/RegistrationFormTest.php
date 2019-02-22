@@ -3,16 +3,16 @@ namespace api\tests\_support\models\authentication;
 
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\authentication\RegistrationForm;
+use api\tests\unit\TestCase;
 use common\models\Account;
 use common\models\EmailActivation;
 use common\models\UsernameHistory;
 use common\tasks\SendRegistrationEmail;
-use GuzzleHttp\ClientInterface;
-use api\tests\unit\TestCase;
 use common\tests\fixtures\AccountFixture;
 use common\tests\fixtures\EmailActivationFixture;
 use common\tests\fixtures\UsernameHistoryFixture;
 use common\tests\helpers\Mock;
+use GuzzleHttp\ClientInterface;
 use Yii;
 use yii\validators\EmailValidator;
 use yii\web\Request;

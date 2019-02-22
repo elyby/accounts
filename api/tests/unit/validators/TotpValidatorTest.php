@@ -1,12 +1,12 @@
 <?php
 namespace api\tests\unit\validators;
 
+use api\tests\unit\TestCase;
 use api\validators\TotpValidator;
 use common\helpers\Error as E;
 use common\models\Account;
-use OTPHP\TOTP;
-use api\tests\unit\TestCase;
 use common\tests\_support\ProtectedCaller;
+use OTPHP\TOTP;
 
 class TotpValidatorTest extends TestCase {
     use ProtectedCaller;

@@ -1,10 +1,10 @@
 <?php
 namespace api\tests\functional\_steps;
 
-use common\rbac\Permissions as P;
-use Faker\Provider\Uuid;
 use api\tests\_pages\SessionServerRoute;
 use api\tests\FunctionalTester;
+use common\rbac\Permissions as P;
+use Faker\Provider\Uuid;
 
 class SessionServerSteps extends FunctionalTester {
 

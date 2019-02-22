@@ -2,6 +2,7 @@
 namespace api\tests\unit\components\User;
 
 use api\components\User\AuthenticationResult;
+use api\tests\unit\TestCase;
 use common\models\Account;
 use common\models\AccountSession;
 use Emarref\Jwt\Algorithm\Hs256;
@@ -9,7 +10,6 @@ use Emarref\Jwt\Claim\Expiration;
 use Emarref\Jwt\Encryption\Factory as EncryptionFactory;
 use Emarref\Jwt\Jwt;
 use Emarref\Jwt\Token;
-use api\tests\unit\TestCase;
 
 class JwtAuthenticationResultTest extends TestCase {
 

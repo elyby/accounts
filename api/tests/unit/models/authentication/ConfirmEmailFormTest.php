@@ -3,10 +3,10 @@ namespace api\tests\_support\models\authentication;
 
 use api\components\User\AuthenticationResult;
 use api\models\authentication\ConfirmEmailForm;
+use api\tests\unit\TestCase;
 use common\models\Account;
 use common\models\AccountSession;
 use common\models\EmailActivation;
-use api\tests\unit\TestCase;
 use common\tests\fixtures\EmailActivationFixture;
 
 class ConfirmEmailFormTest extends TestCase {

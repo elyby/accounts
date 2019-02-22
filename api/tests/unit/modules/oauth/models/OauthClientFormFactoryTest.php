@@ -4,8 +4,8 @@ namespace api\tests\unit\modules\oauth\models;
 use api\modules\oauth\models\ApplicationType;
 use api\modules\oauth\models\MinecraftServerType;
 use api\modules\oauth\models\OauthClientFormFactory;
-use common\models\OauthClient;
 use api\tests\unit\TestCase;
+use common\models\OauthClient;
 
 class OauthClientFormFactoryTest extends TestCase {
 

@@ -1,10 +1,10 @@
 <?php
 namespace api\tests\functional\accounts;
 
-use common\rbac\Permissions as P;
 use api\tests\_pages\AccountsRoute;
 use api\tests\functional\_steps\OauthSteps;
 use api\tests\FunctionalTester;
+use common\rbac\Permissions as P;
 
 class PardonCest {
 

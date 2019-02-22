@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace api\tests\functional\_steps;
 
-use Ramsey\Uuid\Uuid;
 use api\tests\_pages\AuthserverRoute;
 use api\tests\FunctionalTester;
+use Ramsey\Uuid\Uuid;
 
 class AuthserverSteps extends FunctionalTester {
 

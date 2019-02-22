@@ -3,8 +3,8 @@ namespace api\tests\unit\modules\internal\models;
 
 use api\modules\accounts\models\PardonAccountForm;
 use api\modules\internal\helpers\Error as E;
-use common\models\Account;
 use api\tests\unit\TestCase;
+use common\models\Account;
 
 class PardonFormTest extends TestCase {
 

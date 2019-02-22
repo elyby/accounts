@@ -3,9 +3,9 @@ namespace codeception\api\unit\models\authentication;
 
 use api\components\User\AuthenticationResult;
 use api\models\authentication\RefreshTokenForm;
+use api\tests\unit\TestCase;
 use Codeception\Specify;
 use common\models\AccountSession;
-use api\tests\unit\TestCase;
 use common\tests\fixtures\AccountSessionFixture;
 
 class RefreshTokenFormTest extends TestCase {

@@ -2,8 +2,8 @@
 namespace api\tests\unit\modules\oauth\models;
 
 use api\modules\oauth\models\MinecraftServerType;
-use common\models\OauthClient;
 use api\tests\unit\TestCase;
+use common\models\OauthClient;
 
 class MinecraftServerTypeTest extends TestCase {
 

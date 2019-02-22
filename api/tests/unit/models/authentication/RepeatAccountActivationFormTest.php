@@ -3,13 +3,13 @@ namespace api\tests\_support\models\authentication;
 
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\authentication\RepeatAccountActivationForm;
+use api\tests\unit\TestCase;
 use Codeception\Specify;
 use common\models\EmailActivation;
 use common\tasks\SendRegistrationEmail;
-use GuzzleHttp\ClientInterface;
-use api\tests\unit\TestCase;
 use common\tests\fixtures\AccountFixture;
 use common\tests\fixtures\EmailActivationFixture;
+use GuzzleHttp\ClientInterface;
 use Yii;
 
 class RepeatAccountActivationFormTest extends TestCase {

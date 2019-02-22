@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace common\tests\unit\tasks;
 
 use common\tasks\DeliveryWebHook;
+use common\tests\unit\TestCase;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Handler\MockHandler;
@@ -11,7 +12,6 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use common\tests\unit\TestCase;
 use yii\queue\Queue;
 
 /**

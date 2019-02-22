@@ -4,13 +4,13 @@ namespace codeception\api\unit\modules\authserver\models;
 use api\models\authentication\LoginForm;
 use api\modules\authserver\models\AuthenticateData;
 use api\modules\authserver\models\AuthenticationForm;
+use api\tests\unit\TestCase;
 use common\models\Account;
 use common\models\MinecraftAccessKey;
-use Ramsey\Uuid\Uuid;
-use api\tests\unit\TestCase;
 use common\tests\_support\ProtectedCaller;
 use common\tests\fixtures\AccountFixture;
 use common\tests\fixtures\MinecraftAccessKeyFixture;
+use Ramsey\Uuid\Uuid;
 
 class AuthenticationFormTest extends TestCase {
     use ProtectedCaller;

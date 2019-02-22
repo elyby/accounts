@@ -3,9 +3,9 @@ namespace api\tests\unit\modules\internal\models;
 
 use api\modules\accounts\models\BanAccountForm;
 use api\modules\internal\helpers\Error as E;
+use api\tests\unit\TestCase;
 use common\models\Account;
 use common\tasks\ClearAccountSessions;
-use api\tests\unit\TestCase;
 
 class BanFormTest extends TestCase {
 

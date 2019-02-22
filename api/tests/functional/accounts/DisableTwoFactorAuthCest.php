@@ -1,9 +1,9 @@
 <?php
 namespace api\tests\functional\accounts;
 
-use OTPHP\TOTP;
 use api\tests\_pages\AccountsRoute;
 use api\tests\FunctionalTester;
+use OTPHP\TOTP;
 
 class DisableTwoFactorAuthCest {
 

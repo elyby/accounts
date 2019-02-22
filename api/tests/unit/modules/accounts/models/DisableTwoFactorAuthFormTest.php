@@ -2,9 +2,9 @@
 namespace api\tests\unit\modules\accounts\models;
 
 use api\modules\accounts\models\DisableTwoFactorAuthForm;
+use api\tests\unit\TestCase;
 use common\helpers\Error as E;
 use common\models\Account;
-use api\tests\unit\TestCase;
 
 class DisableTwoFactorAuthFormTest extends TestCase {
 

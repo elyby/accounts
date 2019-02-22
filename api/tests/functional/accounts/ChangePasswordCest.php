@@ -1,11 +1,11 @@
 <?php
 namespace api\tests\functional\accounts;
 
-use common\models\Account;
 use api\tests\_pages\AccountsRoute;
 use api\tests\_pages\AuthenticationRoute;
 use api\tests\functional\_steps\OauthSteps;
 use api\tests\FunctionalTester;
+use common\models\Account;
 
 class ChangePasswordCest {
 
