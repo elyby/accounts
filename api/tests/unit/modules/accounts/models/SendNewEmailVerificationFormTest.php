@@ -50,7 +50,7 @@ class SendNewEmailVerificationFormTest extends TestCase {
             'account_id' => $account->id,
             'type' => EmailActivation::TYPE_NEW_EMAIL_CONFIRMATION,
         ]);
-        $this->assertNotNull(EmailActivation::class, $activation);
+        $this->assertInstanceOf(EmailActivation::class, $activation);
 
         /** @var SendNewEmailConfirmation $job */
         $job = $this->tester->grabLastQueuedJob();
