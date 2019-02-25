@@ -27,8 +27,8 @@ class JwtIdentityTest extends TestCase {
         $token = $this->generateToken();
         $identity = JwtIdentity::findIdentityByAccessToken($token);
         $this->assertInstanceOf(IdentityInterface::class, $identity);
-        $this->assertEquals($token, $identity->getId());
-        $this->assertEquals($this->tester->grabFixture('accounts', 'admin')['id'], $identity->getAccount()->id);
+        $this->assertSame($token, $identity->getId());
+        $this->assertSame($this->tester->grabFixture('accounts', 'admin')['id'], $identity->getAccount()->id);
     }
 
     /**

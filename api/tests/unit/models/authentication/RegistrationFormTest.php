@@ -20,7 +20,7 @@ use const common\LATEST_RULES_VERSION;
 
 class RegistrationFormTest extends TestCase {
 
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
         $this->mockRequest();
         Yii::$container->set(ReCaptchaValidator::class, new class(mock(ClientInterface::class)) extends ReCaptchaValidator {
@@ -68,7 +68,7 @@ class RegistrationFormTest extends TestCase {
         $account = $model->signup();
 
         $this->expectSuccessRegistration($account);
-        $this->assertEquals('ru', $account->lang, 'lang is set');
+        $this->assertSame('ru', $account->lang, 'lang is set');
     }
 
     public function testSignupWithDefaultLanguage() {
@@ -84,7 +84,7 @@ class RegistrationFormTest extends TestCase {
         $account = $model->signup();
 
         $this->expectSuccessRegistration($account);
-        $this->assertEquals('en', $account->lang, 'lang is set');
+        $this->assertSame('en', $account->lang, 'lang is set');
     }
 
     /**
@@ -95,7 +95,7 @@ class RegistrationFormTest extends TestCase {
         $this->assertTrue($account->validatePassword('some_password'), 'password should be correct');
         $this->assertNotEmpty($account->uuid, 'uuid is set');
         $this->assertNotNull($account->registration_ip, 'registration_ip is set');
-        $this->assertEquals(LATEST_RULES_VERSION, $account->rules_agreement_version, 'actual rules version is set');
+        $this->assertSame(LATEST_RULES_VERSION, $account->rules_agreement_version, 'actual rules version is set');
         $this->assertTrue(Account::find()->andWhere([
             'username' => 'some_username',
             'email' => 'some_email@example.com',

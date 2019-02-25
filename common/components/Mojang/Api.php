@@ -26,7 +26,9 @@ class Api {
         $response = $this->getClient()->get($this->buildUsernameToUUIDRoute($username), $query);
         if ($response->getStatusCode() === 204) {
             throw new NoContentException('Username not found');
-        } elseif ($response->getStatusCode() !== 200) {
+        }
+
+        if ($response->getStatusCode() !== 200) {
             throw new MojangApiException('Unexpected request result');
         }
 

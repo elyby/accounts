@@ -16,7 +16,7 @@ use Yii;
 class ForgotPasswordFormTest extends TestCase {
     use Specify;
 
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
         Yii::$container->set(ReCaptchaValidator::class, new class(mock(ClientInterface::class)) extends ReCaptchaValidator {
             public function validateValue($value) {
@@ -35,7 +35,7 @@ class ForgotPasswordFormTest extends TestCase {
     public function testValidateLogin() {
         $model = new ForgotPasswordForm(['login' => 'unexist']);
         $model->validateLogin('login');
-        $this->assertEquals(['error.login_not_exist'], $model->getErrors('login'), 'error.login_not_exist if login is invalid');
+        $this->assertSame(['error.login_not_exist'], $model->getErrors('login'), 'error.login_not_exist if login is invalid');
 
         $model = new ForgotPasswordForm(['login' => $this->tester->grabFixture('accounts', 'admin')['username']]);
         $model->validateLogin('login');
@@ -47,7 +47,7 @@ class ForgotPasswordFormTest extends TestCase {
             'login' => $this->tester->grabFixture('accounts', 'not-activated-account')['username'],
         ]);
         $model->validateActivity('login');
-        $this->assertEquals(['error.account_not_activated'], $model->getErrors('login'), 'expected error if account is not confirmed');
+        $this->assertSame(['error.account_not_activated'], $model->getErrors('login'), 'expected error if account is not confirmed');
 
         $model = new ForgotPasswordForm([
             'login' => $this->tester->grabFixture('accounts', 'admin')['username'],
@@ -62,7 +62,7 @@ class ForgotPasswordFormTest extends TestCase {
             'key' => $this->tester->grabFixture('emailActivations', 'freshPasswordRecovery')['key'],
         ]);
         $model->validateFrequency('login');
-        $this->assertEquals(['error.recently_sent_message'], $model->getErrors('login'), 'error.account_not_activated if recently was message');
+        $this->assertSame(['error.recently_sent_message'], $model->getErrors('login'), 'error.account_not_activated if recently was message');
 
         $model = $this->createModel([
             'login' => $this->tester->grabFixture('accounts', 'admin')['username'],

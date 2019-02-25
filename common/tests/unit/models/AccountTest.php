@@ -23,7 +23,7 @@ class AccountTest extends TestCase {
         $model->setPassword('12345678');
         $this->assertNotEmpty($model->password_hash, 'hash should be set');
         $this->assertTrue($model->validatePassword('12345678'), 'validation should be passed');
-        $this->assertEquals(Account::PASS_HASH_STRATEGY_YII2, $model->password_hash_strategy, 'latest password hash should be used');
+        $this->assertSame(Account::PASS_HASH_STRATEGY_YII2, $model->password_hash_strategy, 'latest password hash should be used');
     }
 
     public function testValidatePassword() {
@@ -83,7 +83,7 @@ class AccountTest extends TestCase {
     public function testGetProfileLink() {
         $model = new Account();
         $model->id = '123';
-        $this->assertEquals('http://ely.by/u123', $model->getProfileLink());
+        $this->assertSame('http://ely.by/u123', $model->getProfileLink());
     }
 
     public function testIsAgreedWithActualRules() {
@@ -108,9 +108,9 @@ class AccountTest extends TestCase {
     public function testSetRegistrationIp() {
         $account = new Account();
         $account->setRegistrationIp('42.72.205.204');
-        $this->assertEquals('42.72.205.204', inet_ntop($account->registration_ip));
+        $this->assertSame('42.72.205.204', inet_ntop($account->registration_ip));
         $account->setRegistrationIp('2001:1620:28:1:b6f:8bca:93:a116');
-        $this->assertEquals('2001:1620:28:1:b6f:8bca:93:a116', inet_ntop($account->registration_ip));
+        $this->assertSame('2001:1620:28:1:b6f:8bca:93:a116', inet_ntop($account->registration_ip));
         $account->setRegistrationIp(null);
         $this->assertNull($account->registration_ip);
     }
@@ -118,9 +118,9 @@ class AccountTest extends TestCase {
     public function testGetRegistrationIp() {
         $account = new Account();
         $account->setRegistrationIp('42.72.205.204');
-        $this->assertEquals('42.72.205.204', $account->getRegistrationIp());
+        $this->assertSame('42.72.205.204', $account->getRegistrationIp());
         $account->setRegistrationIp('2001:1620:28:1:b6f:8bca:93:a116');
-        $this->assertEquals('2001:1620:28:1:b6f:8bca:93:a116', $account->getRegistrationIp());
+        $this->assertSame('2001:1620:28:1:b6f:8bca:93:a116', $account->getRegistrationIp());
         $account->setRegistrationIp(null);
         $this->assertNull($account->getRegistrationIp());
     }

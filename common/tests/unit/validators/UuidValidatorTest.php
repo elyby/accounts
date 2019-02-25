@@ -16,7 +16,7 @@ class UuidValidatorTest extends TestCase {
             $model = $this->createModel();
             $validator->validateAttribute($model, 'attribute');
             $this->assertTrue($model->hasErrors());
-            $this->assertEquals(['Attribute must be valid uuid'], $model->getErrors('attribute'));
+            $this->assertSame(['Attribute must be valid uuid'], $model->getErrors('attribute'));
         });
 
         $this->specify('expected error if passed invalid string', function() {
@@ -25,7 +25,7 @@ class UuidValidatorTest extends TestCase {
             $model->attribute = '123456789';
             $validator->validateAttribute($model, 'attribute');
             $this->assertTrue($model->hasErrors());
-            $this->assertEquals(['Attribute must be valid uuid'], $model->getErrors('attribute'));
+            $this->assertSame(['Attribute must be valid uuid'], $model->getErrors('attribute'));
         });
 
         $this->specify('no errors if passed nil uuid and allowNil is set to true', function() {
@@ -43,7 +43,7 @@ class UuidValidatorTest extends TestCase {
             $model->attribute = '00000000-0000-0000-0000-000000000000';
             $validator->validateAttribute($model, 'attribute');
             $this->assertTrue($model->hasErrors());
-            $this->assertEquals(['Attribute must be valid uuid'], $model->getErrors('attribute'));
+            $this->assertSame(['Attribute must be valid uuid'], $model->getErrors('attribute'));
         });
 
         $this->specify('no errors if passed valid uuid', function() {
@@ -61,7 +61,7 @@ class UuidValidatorTest extends TestCase {
             $model->attribute = str_replace('-', '', $originalUuid);
             $validator->validateAttribute($model, 'attribute');
             $this->assertFalse($model->hasErrors());
-            $this->assertEquals($originalUuid, $model->attribute);
+            $this->assertSame($originalUuid, $model->attribute);
         });
     }
 

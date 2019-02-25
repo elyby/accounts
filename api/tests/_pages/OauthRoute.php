@@ -28,15 +28,15 @@ class OauthRoute extends BasePage {
     }
 
     public function resetClient(string $clientId, bool $regenerateSecret = false): void {
-        $this->getActor()->sendPOST("/api/v1/oauth2/$clientId/reset" . ($regenerateSecret ? '?regenerateSecret' : ''));
+        $this->getActor()->sendPOST("/api/v1/oauth2/{$clientId}/reset" . ($regenerateSecret ? '?regenerateSecret' : ''));
     }
 
     public function getClient(string $clientId): void {
-        $this->getActor()->sendGET("/api/v1/oauth2/$clientId");
+        $this->getActor()->sendGET("/api/v1/oauth2/{$clientId}");
     }
 
     public function getPerAccount(int $accountId): void {
-        $this->getActor()->sendGET("/api/v1/accounts/$accountId/oauth2/clients");
+        $this->getActor()->sendGET("/api/v1/accounts/{$accountId}/oauth2/clients");
     }
 
 }

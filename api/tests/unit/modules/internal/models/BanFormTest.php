@@ -20,7 +20,7 @@ class BanFormTest extends TestCase {
         $account->status = Account::STATUS_BANNED;
         $form = new BanAccountForm($account);
         $form->validateAccountActivity();
-        $this->assertEquals([E::ACCOUNT_ALREADY_BANNED], $form->getErrors('account'));
+        $this->assertSame([E::ACCOUNT_ALREADY_BANNED], $form->getErrors('account'));
     }
 
     public function testBan() {
@@ -35,7 +35,7 @@ class BanFormTest extends TestCase {
 
         $model = new BanAccountForm($account);
         $this->assertTrue($model->performAction());
-        $this->assertEquals(Account::STATUS_BANNED, $account->status);
+        $this->assertSame(Account::STATUS_BANNED, $account->status);
         /** @var ClearAccountSessions $job */
         $job = $this->tester->grabLastQueuedJob();
         $this->assertInstanceOf(ClearAccountSessions::class, $job);

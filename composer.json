@@ -7,6 +7,7 @@
     "require": {
         "php": "^7.2",
         "ext-json": "*",
+        "ext-mbstring": "*",
         "ext-pdo": "*",
         "ext-libxml": "*",
         "ext-simplexml": "*",
@@ -37,7 +38,7 @@
         "codeception/verify": "*",
         "mockery/mockery": "^1.0.0",
         "php-mock/php-mock-mockery": "^1.2.0",
-        "ely/php-code-style": "^0.1.0",
+        "ely/php-code-style": "^0.3.0",
         "predis/predis": "^1.1",
         "roave/security-advisories": "dev-master"
     },

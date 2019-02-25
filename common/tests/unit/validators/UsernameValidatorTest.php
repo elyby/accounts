@@ -21,33 +21,33 @@ class UsernameValidatorTest extends TestCase {
     public function testValidateTrimming() {
         $model = $this->createModel("HereIsJohnny#\u{feff}"); // Zero width no-break space (U+FEFF)
         $this->validator->validateAttribute($model, 'field');
-        $this->assertEquals(['error.username_invalid'], $model->getErrors('field'));
-        $this->assertEquals('HereIsJohnny#', $model->field);
+        $this->assertSame(['error.username_invalid'], $model->getErrors('field'));
+        $this->assertSame('HereIsJohnny#', $model->field);
     }
 
     public function testValidateAttributeRequired() {
         $model = $this->createModel('');
         $this->validator->validateAttribute($model, 'field');
-        $this->assertEquals(['error.username_required'], $model->getErrors('field'));
+        $this->assertSame(['error.username_required'], $model->getErrors('field'));
 
         $model = $this->createModel('username');
         $this->validator->validateAttribute($model, 'field');
-        $this->assertNotEquals(['error.username_required'], $model->getErrors('field'));
+        $this->assertNotSame(['error.username_required'], $model->getErrors('field'));
     }
 
     public function testValidateAttributeLength() {
         $model = $this->createModel('at');
         $this->validator->validateAttribute($model, 'field');
-        $this->assertEquals(['error.username_too_short'], $model->getErrors('field'));
+        $this->assertSame(['error.username_too_short'], $model->getErrors('field'));
 
         $model = $this->createModel('erickskrauch_erickskrauch');
         $this->validator->validateAttribute($model, 'field');
-        $this->assertEquals(['error.username_too_long'], $model->getErrors('field'));
+        $this->assertSame(['error.username_too_long'], $model->getErrors('field'));
 
         $model = $this->createModel('username');
         $this->validator->validateAttribute($model, 'field');
-        $this->assertNotEquals(['error.username_too_short'], $model->getErrors('field'));
-        $this->assertNotEquals(['error.username_too_long'], $model->getErrors('field'));
+        $this->assertNotSame(['error.username_too_short'], $model->getErrors('field'));
+        $this->assertNotSame(['error.username_too_long'], $model->getErrors('field'));
     }
 
     // TODO: rewrite this test with @provider usage
@@ -59,7 +59,7 @@ class UsernameValidatorTest extends TestCase {
         foreach ($shouldBeValid as $nickname) {
             $model = $this->createModel($nickname);
             $this->validator->validateAttribute($model, 'field');
-            $this->assertNotEquals(['error.username_invalid'], $model->getErrors('field'));
+            $this->assertNotSame(['error.username_invalid'], $model->getErrors('field'));
         }
 
         $shouldBeInvalid = [
@@ -68,7 +68,7 @@ class UsernameValidatorTest extends TestCase {
         foreach ($shouldBeInvalid as $nickname) {
             $model = $this->createModel($nickname);
             $this->validator->validateAttribute($model, 'field');
-            $this->assertEquals(['error.username_invalid'], $model->getErrors('field'));
+            $this->assertSame(['error.username_invalid'], $model->getErrors('field'));
         }
     }
 
@@ -82,19 +82,19 @@ class UsernameValidatorTest extends TestCase {
 
         $model = $this->createModel($accountFixture->username);
         $this->validator->validateAttribute($model, 'field');
-        $this->assertEquals(['error.username_not_available'], $model->getErrors('field'));
+        $this->assertSame(['error.username_not_available'], $model->getErrors('field'));
 
         $model = $this->createModel($accountFixture->username);
         $this->validator->accountCallback = function() use ($accountFixture) {
             return $accountFixture->id;
         };
         $this->validator->validateAttribute($model, 'field');
-        $this->assertNotEquals(['error.username_not_available'], $model->getErrors('field'));
+        $this->assertNotSame(['error.username_not_available'], $model->getErrors('field'));
         $this->validator->accountCallback = null;
 
         $model = $this->createModel('some-unique-username');
         $this->validator->validateAttribute($model, 'field');
-        $this->assertNotEquals(['error.username_not_available'], $model->getErrors('field'));
+        $this->assertNotSame(['error.username_not_available'], $model->getErrors('field'));
     }
 
     /**

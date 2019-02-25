@@ -26,18 +26,18 @@ class EmailValidatorTest extends TestCase {
 
         $model = $this->createModel("testemail@ely.by\u{feff}"); // Zero width no-break space (U+FEFF)
         $this->validator->validateAttribute($model, 'field');
-        $this->assertEquals(['error.email_invalid'], $model->getErrors('field'));
-        $this->assertEquals('testemail@ely.by', $model->field);
+        $this->assertSame(['error.email_invalid'], $model->getErrors('field'));
+        $this->assertSame('testemail@ely.by', $model->field);
     }
 
     public function testValidateAttributeRequired() {
         $model = $this->createModel('');
         $this->validator->validateAttribute($model, 'field');
-        $this->assertEquals(['error.email_required'], $model->getErrors('field'));
+        $this->assertSame(['error.email_required'], $model->getErrors('field'));
 
         $model = $this->createModel('email');
         $this->validator->validateAttribute($model, 'field');
-        $this->assertNotEquals(['error.email_required'], $model->getErrors('field'));
+        $this->assertNotSame(['error.email_required'], $model->getErrors('field'));
     }
 
     public function testValidateAttributeLength() {
@@ -49,11 +49,11 @@ class EmailValidatorTest extends TestCase {
             '@gmail.com' // = 256 symbols
         );
         $this->validator->validateAttribute($model, 'field');
-        $this->assertEquals(['error.email_too_long'], $model->getErrors('field'));
+        $this->assertSame(['error.email_too_long'], $model->getErrors('field'));
 
         $model = $this->createModel('some-email@gmail.com');
         $this->validator->validateAttribute($model, 'field');
-        $this->assertNotEquals(['error.email_too_long'], $model->getErrors('field'));
+        $this->assertNotSame(['error.email_too_long'], $model->getErrors('field'));
     }
 
     public function testValidateAttributeEmail() {
@@ -61,15 +61,15 @@ class EmailValidatorTest extends TestCase {
 
         $model = $this->createModel('non-email');
         $this->validator->validateAttribute($model, 'field');
-        $this->assertEquals(['error.email_invalid'], $model->getErrors('field'));
+        $this->assertSame(['error.email_invalid'], $model->getErrors('field'));
 
         $model = $this->createModel('non-email@etot-domen-ne-suschestrvyet.de');
         $this->validator->validateAttribute($model, 'field');
-        $this->assertEquals(['error.email_invalid'], $model->getErrors('field'));
+        $this->assertSame(['error.email_invalid'], $model->getErrors('field'));
 
         $model = $this->createModel('valid-email@gmail.com');
         $this->validator->validateAttribute($model, 'field');
-        $this->assertNotEquals(['error.email_invalid'], $model->getErrors('field'));
+        $this->assertNotSame(['error.email_invalid'], $model->getErrors('field'));
     }
 
     public function testValidateAttributeTempmail() {
@@ -77,11 +77,11 @@ class EmailValidatorTest extends TestCase {
 
         $model = $this->createModel('ibrpycwyjdnt@dropmail.me');
         $this->validator->validateAttribute($model, 'field');
-        $this->assertEquals(['error.email_is_tempmail'], $model->getErrors('field'));
+        $this->assertSame(['error.email_is_tempmail'], $model->getErrors('field'));
 
         $model = $this->createModel('valid-email@gmail.com');
         $this->validator->validateAttribute($model, 'field');
-        $this->assertNotEquals(['error.email_is_tempmail'], $model->getErrors('field'));
+        $this->assertNotSame(['error.email_is_tempmail'], $model->getErrors('field'));
     }
 
     public function testValidateAttributeIdna() {
@@ -108,19 +108,19 @@ class EmailValidatorTest extends TestCase {
 
         $model = $this->createModel($accountFixture->email);
         $this->validator->validateAttribute($model, 'field');
-        $this->assertEquals(['error.email_not_available'], $model->getErrors('field'));
+        $this->assertSame(['error.email_not_available'], $model->getErrors('field'));
 
         $model = $this->createModel($accountFixture->email);
         $this->validator->accountCallback = function() use ($accountFixture) {
             return $accountFixture->id;
         };
         $this->validator->validateAttribute($model, 'field');
-        $this->assertNotEquals(['error.email_not_available'], $model->getErrors('field'));
+        $this->assertNotSame(['error.email_not_available'], $model->getErrors('field'));
         $this->validator->accountCallback = null;
 
         $model = $this->createModel('some-unique-email@gmail.com');
         $this->validator->validateAttribute($model, 'field');
-        $this->assertNotEquals(['error.email_not_available'], $model->getErrors('field'));
+        $this->assertNotSame(['error.email_not_available'], $model->getErrors('field'));
     }
 
     /**

@@ -25,7 +25,7 @@ class SendEmailVerificationFormTest extends TestCase {
         $model = new SendEmailVerificationForm($account);
         $activationModel = $model->createCode();
         $this->assertInstanceOf(CurrentEmailConfirmation::class, $activationModel);
-        $this->assertEquals($account->id, $activationModel->account_id);
+        $this->assertSame($account->id, $activationModel->account_id);
         $this->assertNotNull(EmailActivation::findOne($activationModel->key));
     }
 

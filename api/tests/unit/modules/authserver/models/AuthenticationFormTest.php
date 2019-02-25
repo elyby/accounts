@@ -79,7 +79,7 @@ class AuthenticationFormTest extends TestCase {
 
         $result = $authForm->authenticate();
         $this->assertInstanceOf(AuthenticateData::class, $result);
-        $this->assertEquals($minecraftAccessKey->access_token, $result->getMinecraftAccessKey()->access_token);
+        $this->assertSame($minecraftAccessKey->access_token, $result->getMinecraftAccessKey()->access_token);
     }
 
     public function testCreateMinecraftAccessToken() {
@@ -90,8 +90,8 @@ class AuthenticationFormTest extends TestCase {
         /** @var MinecraftAccessKey $result */
         $result = $this->callProtected($authForm, 'createMinecraftAccessToken', $account);
         $this->assertInstanceOf(MinecraftAccessKey::class, $result);
-        $this->assertEquals($account->id, $result->account_id);
-        $this->assertEquals($authForm->clientToken, $result->client_token);
+        $this->assertSame($account->id, $result->account_id);
+        $this->assertSame($authForm->clientToken, $result->client_token);
         $this->assertInstanceOf(MinecraftAccessKey::class, MinecraftAccessKey::findOne($result->access_token));
     }
 
@@ -104,8 +104,8 @@ class AuthenticationFormTest extends TestCase {
         /** @var MinecraftAccessKey $result */
         $result = $this->callProtected($authForm, 'createMinecraftAccessToken', $account);
         $this->assertInstanceOf(MinecraftAccessKey::class, $result);
-        $this->assertEquals($account->id, $result->account_id);
-        $this->assertEquals($authForm->clientToken, $result->client_token);
+        $this->assertSame($account->id, $result->account_id);
+        $this->assertSame($authForm->clientToken, $result->client_token);
         $this->assertNull(MinecraftAccessKey::findOne($minecraftFixture['access_token']));
         $this->assertInstanceOf(MinecraftAccessKey::class, MinecraftAccessKey::findOne($result->access_token));
     }

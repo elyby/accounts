@@ -15,7 +15,7 @@ class ChangeLanguageFormTest extends TestCase {
         $model = new ChangeLanguageForm($account);
         $model->lang = 'ru';
         $this->assertTrue($model->performAction());
-        $this->assertEquals('ru', $account->lang);
+        $this->assertSame('ru', $account->lang);
     }
 
 }

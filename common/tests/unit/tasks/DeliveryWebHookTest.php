@@ -53,7 +53,7 @@ class DeliveryWebHookTest extends TestCase {
         $this->assertSame('account.edit', $request->getHeaders()['X-Ely-Accounts-Event'][0]);
         $this->assertSame('application/x-www-form-urlencoded', $request->getHeaders()['Content-Type'][0]);
         $this->assertArrayNotHasKey('X-Hub-Signature', $request->getHeaders());
-        $this->assertEquals('key=value&another=value', (string)$request->getBody());
+        $this->assertSame('key=value&another=value', (string)$request->getBody());
     }
 
     public function testExecuteSuccessDeliveryWithSignature() {
@@ -74,7 +74,7 @@ class DeliveryWebHookTest extends TestCase {
         $this->assertSame('account.edit', $request->getHeaders()['X-Ely-Accounts-Event'][0]);
         $this->assertSame('application/x-www-form-urlencoded', $request->getHeaders()['Content-Type'][0]);
         $this->assertSame('sha1=3c0b1eef564b2d3a5e9c0f2a8302b1b42b3d4784', $request->getHeaders()['X-Hub-Signature'][0]);
-        $this->assertEquals('key=value&another=value', (string)$request->getBody());
+        $this->assertSame('key=value&another=value', (string)$request->getBody());
     }
 
     public function testExecuteHandleClientException() {

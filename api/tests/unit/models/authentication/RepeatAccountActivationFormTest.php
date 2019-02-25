@@ -15,7 +15,7 @@ use Yii;
 class RepeatAccountActivationFormTest extends TestCase {
     use Specify;
 
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
         Yii::$container->set(ReCaptchaValidator::class, new class(mock(ClientInterface::class)) extends ReCaptchaValidator {
             public function validateValue($value) {

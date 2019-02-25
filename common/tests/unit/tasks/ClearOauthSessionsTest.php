@@ -29,7 +29,7 @@ class ClearOauthSessionsTest extends TestCase {
         $result = ClearOauthSessions::createFromOauthClient($client, time());
         $this->assertInstanceOf(ClearOauthSessions::class, $result);
         $this->assertSame('mocked-id', $result->clientId);
-        $this->assertEquals(time(), $result->notSince, '', 1);
+        $this->assertEqualsWithDelta(time(), $result->notSince, 1);
     }
 
     public function testExecute() {

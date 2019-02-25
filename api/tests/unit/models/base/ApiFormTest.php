@@ -9,7 +9,7 @@ class ApiFormTest extends TestCase {
     public function testLoad() {
         $model = new DummyApiForm();
         $this->assertTrue($model->load(['field' => 'test-data']), 'model successful load data without prefix');
-        $this->assertEquals('test-data', $model->field, 'field is set as passed data');
+        $this->assertSame('test-data', $model->field, 'field is set as passed data');
     }
 
 }

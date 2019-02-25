@@ -8,8 +8,8 @@ $time = microtime(true);
 
 require __DIR__ . '/../../vendor/autoload.php';
 
-defined('YII_DEBUG') or define('YII_DEBUG', in_array(getenv('YII_DEBUG'), ['true', '1']));
-defined('YII_ENV') or define('YII_ENV', getenv('YII_ENV'));
+defined('YII_DEBUG') || define('YII_DEBUG', in_array(getenv('YII_DEBUG'), ['true', '1']));
+defined('YII_ENV') || define('YII_ENV', getenv('YII_ENV'));
 
 // Initialize an application aspect container
 AspectKernel::getInstance()->init([

@@ -16,7 +16,7 @@ class AcceptRulesFormTest extends TestCase {
 
         $model = new AcceptRulesForm($account);
         $this->assertTrue($model->performAction());
-        $this->assertEquals(LATEST_RULES_VERSION, $account->rules_agreement_version);
+        $this->assertSame(LATEST_RULES_VERSION, $account->rules_agreement_version);
     }
 
 }

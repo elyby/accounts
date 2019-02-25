@@ -45,17 +45,17 @@ class ComponentTest extends TestCase {
         $result = $this->component->createJwtAuthenticationToken($account, false);
         $this->assertInstanceOf(AuthenticationResult::class, $result);
         $this->assertNull($result->getSession());
-        $this->assertEquals($account, $result->getAccount());
+        $this->assertSame($account, $result->getAccount());
         $payloads = (new Jwt())->deserialize($result->getJwt())->getPayload();
         /** @noinspection NullPointerExceptionInspection */
-        $this->assertEquals(time(), $payloads->findClaimByName(Claim\IssuedAt::NAME)->getValue(), '', 3);
+        $this->assertEqualsWithDelta(time(), $payloads->findClaimByName(Claim\IssuedAt::NAME)->getValue(), 3);
         /** @noinspection SummerTimeUnsafeTimeManipulationInspection */
         /** @noinspection NullPointerExceptionInspection */
-        $this->assertEquals(time() + 60 * 60 * 24 * 7, $payloads->findClaimByName('exp')->getValue(), '', 3);
+        $this->assertEqualsWithDelta(time() + 60 * 60 * 24 * 7, $payloads->findClaimByName('exp')->getValue(), 3);
         /** @noinspection NullPointerExceptionInspection */
-        $this->assertEquals('ely|1', $payloads->findClaimByName('sub')->getValue());
+        $this->assertSame('ely|1', $payloads->findClaimByName('sub')->getValue());
         /** @noinspection NullPointerExceptionInspection */
-        $this->assertEquals('accounts_web_user', $payloads->findClaimByName('ely-scopes')->getValue());
+        $this->assertSame('accounts_web_user', $payloads->findClaimByName('ely-scopes')->getValue());
         $this->assertNull($payloads->findClaimByName('jti'));
 
         /** @var Account $account */
@@ -63,20 +63,20 @@ class ComponentTest extends TestCase {
         $result = $this->component->createJwtAuthenticationToken($account, true);
         $this->assertInstanceOf(AuthenticationResult::class, $result);
         $this->assertInstanceOf(AccountSession::class, $result->getSession());
-        $this->assertEquals($account, $result->getAccount());
+        $this->assertSame($account, $result->getAccount());
         /** @noinspection NullPointerExceptionInspection */
         $this->assertTrue($result->getSession()->refresh());
         $payloads = (new Jwt())->deserialize($result->getJwt())->getPayload();
         /** @noinspection NullPointerExceptionInspection */
-        $this->assertEquals(time(), $payloads->findClaimByName(Claim\IssuedAt::NAME)->getValue(), '', 3);
+        $this->assertEqualsWithDelta(time(), $payloads->findClaimByName(Claim\IssuedAt::NAME)->getValue(), 3);
         /** @noinspection NullPointerExceptionInspection */
-        $this->assertEquals(time() + 3600, $payloads->findClaimByName('exp')->getValue(), '', 3);
+        $this->assertEqualsWithDelta(time() + 3600, $payloads->findClaimByName('exp')->getValue(), 3);
         /** @noinspection NullPointerExceptionInspection */
-        $this->assertEquals('ely|1', $payloads->findClaimByName('sub')->getValue());
+        $this->assertSame('ely|1', $payloads->findClaimByName('sub')->getValue());
         /** @noinspection NullPointerExceptionInspection */
-        $this->assertEquals('accounts_web_user', $payloads->findClaimByName('ely-scopes')->getValue());
+        $this->assertSame('accounts_web_user', $payloads->findClaimByName('ely-scopes')->getValue());
         /** @noinspection NullPointerExceptionInspection */
-        $this->assertEquals($result->getSession()->id, $payloads->findClaimByName('jti')->getValue());
+        $this->assertSame($result->getSession()->id, $payloads->findClaimByName('jti')->getValue());
     }
 
     public function testRenewJwtAuthenticationToken() {
@@ -85,23 +85,22 @@ class ComponentTest extends TestCase {
         /** @var AccountSession $session */
         $session = $this->tester->grabFixture('sessions', 'admin');
         $result = $this->component->renewJwtAuthenticationToken($session);
-        $this->assertInstanceOf(AuthenticationResult::class, $result);
-        $this->assertEquals($session, $result->getSession());
-        $this->assertEquals($session->account_id, $result->getAccount()->id);
+        $this->assertSame($session, $result->getSession());
+        $this->assertSame($session->account_id, $result->getAccount()->id);
         $session->refresh(); // reload data from db
-        $this->assertEquals(time(), $session->last_refreshed_at, '', 3);
-        $this->assertEquals($userIP, $session->getReadableIp());
+        $this->assertEqualsWithDelta(time(), $session->last_refreshed_at, 3);
+        $this->assertSame($userIP, $session->getReadableIp());
         $payloads = (new Jwt())->deserialize($result->getJwt())->getPayload();
         /** @noinspection NullPointerExceptionInspection */
-        $this->assertEquals(time(), $payloads->findClaimByName(Claim\IssuedAt::NAME)->getValue(), '', 3);
+        $this->assertEqualsWithDelta(time(), $payloads->findClaimByName(Claim\IssuedAt::NAME)->getValue(), 3);
         /** @noinspection NullPointerExceptionInspection */
-        $this->assertEquals(time() + 3600, $payloads->findClaimByName('exp')->getValue(), '', 3);
+        $this->assertEqualsWithDelta(time() + 3600, $payloads->findClaimByName('exp')->getValue(), 3);
         /** @noinspection NullPointerExceptionInspection */
-        $this->assertEquals('ely|1', $payloads->findClaimByName('sub')->getValue());
+        $this->assertSame('ely|1', $payloads->findClaimByName('sub')->getValue());
         /** @noinspection NullPointerExceptionInspection */
-        $this->assertEquals('accounts_web_user', $payloads->findClaimByName('ely-scopes')->getValue());
+        $this->assertSame('accounts_web_user', $payloads->findClaimByName('ely-scopes')->getValue());
         /** @noinspection NullPointerExceptionInspection */
-        $this->assertEquals($session->id, $payloads->findClaimByName('jti')->getValue(), 'session has not changed');
+        $this->assertSame($session->id, $payloads->findClaimByName('jti')->getValue(), 'session has not changed');
     }
 
     public function testParseToken() {
@@ -123,7 +122,6 @@ class ComponentTest extends TestCase {
             ->getMock();
 
         $component
-            ->expects($this->any())
             ->method('getIsGuest')
             ->willReturn(false);
 
@@ -132,7 +130,7 @@ class ComponentTest extends TestCase {
         $session = $component->getActiveSession();
         $this->assertInstanceOf(AccountSession::class, $session);
         /** @noinspection NullPointerExceptionInspection */
-        $this->assertEquals($session->id, $result->getSession()->id);
+        $this->assertSame($session->id, $result->getSession()->id);
     }
 
     public function testTerminateSessions() {
@@ -157,8 +155,8 @@ class ComponentTest extends TestCase {
 
         $component->terminateSessions($account, Component::KEEP_CURRENT_SESSION);
         $sessions = $account->getSessions()->all();
-        $this->assertEquals(1, count($sessions));
-        $this->assertTrue($sessions[0]->id === $session->id);
+        $this->assertCount(1, $sessions);
+        $this->assertSame($session->id, $sessions[0]->id);
 
         $component->terminateSessions($account);
         $this->assertEmpty($account->getSessions()->all());

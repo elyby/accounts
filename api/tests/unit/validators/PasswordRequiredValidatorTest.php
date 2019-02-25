@@ -17,10 +17,10 @@ class PasswordRequiredValidatorTest extends TestCase {
         $model = new PasswordRequiredValidator(['account' => $account]);
 
         // Get error.password_required if password is empty
-        $this->assertEquals([E::PASSWORD_REQUIRED, []], $this->callProtected($model, 'validateValue', ''));
+        $this->assertSame([E::PASSWORD_REQUIRED, []], $this->callProtected($model, 'validateValue', ''));
 
         // Get error.password_incorrect if password is incorrect
-        $this->assertEquals([E::PASSWORD_INCORRECT, []], $this->callProtected($model, 'validateValue', '87654321'));
+        $this->assertSame([E::PASSWORD_INCORRECT, []], $this->callProtected($model, 'validateValue', '87654321'));
 
         // No errors, if password is correct for provided account
         $this->assertNull($this->callProtected($model, 'validateValue', '12345678'));

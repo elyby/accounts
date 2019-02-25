@@ -142,7 +142,7 @@ class PullMojangUsernameTest extends TestCase {
         /** @var MojangUsername|null $mojangUsername */
         $mojangUsername = MojangUsername::findOne($username);
         $this->assertInstanceOf(MojangUsername::class, $mojangUsername);
-        $this->assertNotEquals($mojangInfo->uuid, $mojangUsername->uuid);
+        $this->assertNotSame($mojangInfo->uuid, $mojangUsername->uuid);
     }
 
 }

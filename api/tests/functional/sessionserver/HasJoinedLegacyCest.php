@@ -19,7 +19,7 @@ class HasJoinedLegacyCest {
 
     public function hasJoined(SessionServerSteps $I) {
         $I->wantTo('test hasJoined user to some server by legacy version');
-        list($username, $serverId) = $I->amJoined(true);
+        [$username, $serverId] = $I->amJoined(true);
 
         $this->route->hasJoinedLegacy([
             'user' => $username,

@@ -15,13 +15,13 @@ class AccountSessionTest extends TestCase {
     public function testSetIp() {
         $model = new AccountSession();
         $model->setIp('127.0.0.1');
-        $this->assertEquals(2130706433, $model->last_used_ip, 'method should convert passed ip string to long');
+        $this->assertSame(2130706433, $model->last_used_ip, 'method should convert passed ip string to long');
     }
 
     public function testGetReadableIp() {
         $model = new AccountSession();
         $model->last_used_ip = 2130706433;
-        $this->assertEquals('127.0.0.1', $model->getReadableIp(), 'method should convert stored long into readable ip');
+        $this->assertSame('127.0.0.1', $model->getReadableIp(), 'method should convert stored long into readable ip');
     }
 
 }

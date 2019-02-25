@@ -54,8 +54,8 @@ class SessionServerSteps extends FunctionalTester {
         $decoded = json_decode(base64_decode($value), true);
         $this->assertArrayHasKey('timestamp', $decoded);
         $this->assertArrayHasKey('textures', $decoded);
-        $this->assertEquals($expectedUuid, $decoded['profileId']);
-        $this->assertEquals($expectedUsername, $decoded['profileName']);
+        $this->assertSame($expectedUuid, $decoded['profileId']);
+        $this->assertSame($expectedUsername, $decoded['profileName']);
         $this->assertTrue($decoded['ely']);
         $textures = $decoded['textures'];
         $this->assertArrayHasKey('SKIN', $textures);

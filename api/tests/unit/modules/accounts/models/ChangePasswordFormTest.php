@@ -22,7 +22,7 @@ class ChangePasswordFormTest extends TestCase {
             'newRePassword' => 'another-password',
         ]);
         $model->validatePasswordAndRePasswordMatch('newRePassword');
-        $this->assertEquals(
+        $this->assertSame(
             [E::NEW_RE_PASSWORD_DOES_NOT_MATCH],
             $model->getErrors('newRePassword'),
             'error.rePassword_does_not_match expected if passwords not match'
@@ -47,7 +47,7 @@ class ChangePasswordFormTest extends TestCase {
             'newRePassword' => 'another-password',
         ]);
         $model->validate();
-        $this->assertEquals(
+        $this->assertSame(
             [E::NEW_RE_PASSWORD_DOES_NOT_MATCH],
             $model->getErrors('newRePassword'),
             'error.rePassword_does_not_match expected even if there are errors on other attributes'
@@ -106,7 +106,7 @@ class ChangePasswordFormTest extends TestCase {
         $this->assertTrue($model->performAction(), 'successfully change password with legacy hash strategy');
         $this->assertTrue($account->validatePassword('my-new-password'));
         $this->assertGreaterThanOrEqual($callTime, $account->password_changed_at);
-        $this->assertEquals(Account::PASS_HASH_STRATEGY_YII2, $account->password_hash_strategy);
+        $this->assertSame(Account::PASS_HASH_STRATEGY_YII2, $account->password_hash_strategy);
     }
 
     public function testPerformActionWithLogout() {

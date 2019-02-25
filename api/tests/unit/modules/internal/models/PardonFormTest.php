@@ -19,7 +19,7 @@ class PardonFormTest extends TestCase {
         $account->status = Account::STATUS_ACTIVE;
         $form = new PardonAccountForm($account);
         $form->validateAccountBanned();
-        $this->assertEquals([E::ACCOUNT_NOT_BANNED], $form->getErrors('account'));
+        $this->assertSame([E::ACCOUNT_NOT_BANNED], $form->getErrors('account'));
     }
 
     public function testPardon() {
@@ -35,7 +35,7 @@ class PardonFormTest extends TestCase {
         $account->status = Account::STATUS_BANNED;
         $model = new PardonAccountForm($account);
         $this->assertTrue($model->performAction());
-        $this->assertEquals(Account::STATUS_ACTIVE, $account->status);
+        $this->assertSame(Account::STATUS_ACTIVE, $account->status);
     }
 
 }

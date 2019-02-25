@@ -28,8 +28,8 @@ class SendNewEmailVerificationFormTest extends TestCase {
         $model->email = 'my-new-email@ely.by';
         $activationModel = $model->createCode();
         $this->assertInstanceOf(NewEmailConfirmation::class, $activationModel);
-        $this->assertEquals($account->id, $activationModel->account_id);
-        $this->assertEquals($model->email, $activationModel->newEmail);
+        $this->assertSame($account->id, $activationModel->account_id);
+        $this->assertSame($model->email, $activationModel->newEmail);
         $this->assertNotNull(EmailActivation::findOne($activationModel->key));
     }
 

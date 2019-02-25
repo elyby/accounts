@@ -17,12 +17,12 @@ class JwtAuthenticationResultTest extends TestCase {
         $account = new Account();
         $account->id = 123;
         $model = new AuthenticationResult($account, '', null);
-        $this->assertEquals($account, $model->getAccount());
+        $this->assertSame($account, $model->getAccount());
     }
 
     public function testGetJwt() {
         $model = new AuthenticationResult(new Account(), 'mocked jwt', null);
-        $this->assertEquals('mocked jwt', $model->getJwt());
+        $this->assertSame('mocked jwt', $model->getJwt());
     }
 
     public function testGetSession() {
@@ -32,14 +32,14 @@ class JwtAuthenticationResultTest extends TestCase {
         $session = new AccountSession();
         $session->id = 321;
         $model = new AuthenticationResult(new Account(), '', $session);
-        $this->assertEquals($session, $model->getSession());
+        $this->assertSame($session, $model->getSession());
     }
 
     public function testGetAsResponse() {
         $jwtToken = $this->createJwtToken(time() + 3600);
         $model = new AuthenticationResult(new Account(), $jwtToken, null);
         $result = $model->getAsResponse();
-        $this->assertEquals($jwtToken, $result['access_token']);
+        $this->assertSame($jwtToken, $result['access_token']);
         $this->assertSame(3600, $result['expires_in']);
 
         /** @noinspection SummerTimeUnsafeTimeManipulationInspection */
@@ -48,8 +48,8 @@ class JwtAuthenticationResultTest extends TestCase {
         $session->refresh_token = 'refresh token';
         $model = new AuthenticationResult(new Account(), $jwtToken, $session);
         $result = $model->getAsResponse();
-        $this->assertEquals($jwtToken, $result['access_token']);
-        $this->assertEquals('refresh token', $result['refresh_token']);
+        $this->assertSame($jwtToken, $result['access_token']);
+        $this->assertSame('refresh token', $result['refresh_token']);
         $this->assertSame(86400, $result['expires_in']);
     }
 

@@ -31,7 +31,7 @@ class ChangeEmailFormTest extends TestCase {
         ]));
         /** @noinspection UnserializeExploitsInspection */
         $data = unserialize($newEmailConfirmationFixture['_data']);
-        $this->assertEquals($data['newEmail'], $account->email);
+        $this->assertSame($data['newEmail'], $account->email);
     }
 
     private function getAccountId() {

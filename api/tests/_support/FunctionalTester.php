@@ -16,7 +16,7 @@ class FunctionalTester extends Actor {
         /** @var Account $account */
         $account = Account::findOne(['username' => $asUsername]);
         if ($account === null) {
-            throw new InvalidArgumentException("Cannot find account for username \"$asUsername\"");
+            throw new InvalidArgumentException("Cannot find account for username \"{$asUsername}\"");
         }
 
         $result = Yii::$app->user->createJwtAuthenticationToken($account, false);

@@ -17,7 +17,7 @@ class DataBehaviorTest extends TestCase {
         /** @var DataBehavior $behavior */
         $behavior = $model->behaviors['dataBehavior'];
         $this->callProtected($behavior, 'setKey', 'my-key', 'my-value');
-        $this->assertEquals(serialize(['my-key' => 'my-value']), $model->_data);
+        $this->assertSame(serialize(['my-key' => 'my-value']), $model->_data);
     }
 
     public function testGetKey() {
@@ -25,7 +25,7 @@ class DataBehaviorTest extends TestCase {
         $model->_data = serialize(['some-key' => 'some-value']);
         /** @var DataBehavior $behavior */
         $behavior = $model->behaviors['dataBehavior'];
-        $this->assertEquals('some-value', $this->callProtected($behavior, 'getKey', 'some-key'));
+        $this->assertSame('some-value', $this->callProtected($behavior, 'getKey', 'some-key'));
     }
 
     public function testGetData() {

@@ -12,7 +12,7 @@ interface IdentityInterface extends \yii\web\IdentityInterface {
      * @throws \yii\web\UnauthorizedHttpException
      * @return IdentityInterface
      */
-    public static function findIdentityByAccessToken($token, $type = null): IdentityInterface;
+    public static function findIdentityByAccessToken($token, $type = null): self;
 
     /**
      * Этот метод используется для получения токена, к которому привязаны права.

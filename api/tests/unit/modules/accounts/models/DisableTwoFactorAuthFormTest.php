@@ -30,7 +30,7 @@ class DisableTwoFactorAuthFormTest extends TestCase {
         $account->is_otp_enabled = false;
         $model = new DisableTwoFactorAuthForm($account);
         $model->validateOtpEnabled('account');
-        $this->assertEquals([E::OTP_NOT_ENABLED], $model->getErrors('account'));
+        $this->assertSame([E::OTP_NOT_ENABLED], $model->getErrors('account'));
 
         $account = new Account();
         $account->is_otp_enabled = true;

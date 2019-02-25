@@ -15,8 +15,8 @@ class TemplateWithRendererTest extends TestCase {
     public function testConstructor() {
         /** @var TemplateWithRenderer|\Mockery\MockInterface $template */
         $template = mock(TemplateWithRenderer::class, ['mock-to', 'mock-locale'])->makePartial();
-        $this->assertEquals('mock-to', $template->getTo());
-        $this->assertEquals('mock-locale', $template->getLocale());
+        $this->assertSame('mock-to', $template->getTo());
+        $this->assertSame('mock-locale', $template->getLocale());
         $this->assertInstanceOf(MailerInterface::class, $template->getMailer());
         $this->assertInstanceOf(EmailRenderer::class, $template->getEmailRenderer());
     }
@@ -40,10 +40,10 @@ class TemplateWithRendererTest extends TestCase {
         /** @var \yii\swiftmailer\Message $message */
         $message = $this->callProtected($template, 'createMessage');
         $this->assertInstanceOf(MessageInterface::class, $message);
-        $this->assertEquals(['to@ely.by' => 'To'], $message->getTo());
-        $this->assertEquals(['from@ely.by' => 'From'], $message->getFrom());
-        $this->assertEquals('mock-subject', $message->getSubject());
-        $this->assertEquals('mock-html', $message->getSwiftMessage()->getBody());
+        $this->assertSame(['to@ely.by' => 'To'], $message->getTo());
+        $this->assertSame(['from@ely.by' => 'From'], $message->getFrom());
+        $this->assertSame('mock-subject', $message->getSubject());
+        $this->assertSame('mock-html', $message->getSwiftMessage()->getBody());
     }
 
 }

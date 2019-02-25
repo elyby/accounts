@@ -14,13 +14,13 @@ class LoginFormTest extends TestCase {
 
     private $originalRemoteAddr;
 
-    public function setUp() {
+    protected function setUp() {
         $this->originalRemoteAddr = $_SERVER['REMOTE_ADDR'] ?? null;
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
         parent::setUp();
     }
 
-    public function tearDown() {
+    protected function tearDown() {
         parent::tearDown();
         $_SERVER['REMOTE_ADDR'] = $this->originalRemoteAddr;
     }
@@ -38,7 +38,7 @@ class LoginFormTest extends TestCase {
                 'account' => null,
             ]);
             $model->validateLogin('login');
-            $this->assertEquals(['error.login_not_exist'], $model->getErrors('login'));
+            $this->assertSame(['error.login_not_exist'], $model->getErrors('login'));
         });
 
         $this->specify('no errors if login exists', function() {
@@ -58,7 +58,7 @@ class LoginFormTest extends TestCase {
                 'account' => new Account(['password' => '12345678']),
             ]);
             $model->validatePassword('password');
-            $this->assertEquals(['error.password_incorrect'], $model->getErrors('password'));
+            $this->assertSame(['error.password_incorrect'], $model->getErrors('password'));
         });
 
         $this->specify('no errors if password valid', function() {
@@ -84,7 +84,7 @@ class LoginFormTest extends TestCase {
                 'account' => $account,
             ]);
             $model->validateTotp('totp');
-            $this->assertEquals(['error.totp_incorrect'], $model->getErrors('totp'));
+            $this->assertSame(['error.totp_incorrect'], $model->getErrors('totp'));
         });
 
         $totp = TOTP::create($account->otp_secret);
@@ -105,7 +105,7 @@ class LoginFormTest extends TestCase {
                 'account' => new Account(['status' => Account::STATUS_REGISTERED]),
             ]);
             $model->validateActivity('login');
-            $this->assertEquals(['error.account_not_activated'], $model->getErrors('login'));
+            $this->assertSame(['error.account_not_activated'], $model->getErrors('login'));
         });
 
         $this->specify('error.account_banned if account has banned status', function() {
@@ -113,7 +113,7 @@ class LoginFormTest extends TestCase {
                 'account' => new Account(['status' => Account::STATUS_BANNED]),
             ]);
             $model->validateActivity('login');
-            $this->assertEquals(['error.account_banned'], $model->getErrors('login'));
+            $this->assertSame(['error.account_banned'], $model->getErrors('login'));
         });
 
         $this->specify('no errors if account active', function() {
@@ -146,7 +146,7 @@ class LoginFormTest extends TestCase {
         ]);
         $this->assertInstanceOf(AuthenticationResult::class, $model->login());
         $this->assertEmpty($model->getErrors());
-        $this->assertEquals(
+        $this->assertSame(
             Account::PASS_HASH_STRATEGY_YII2,
             $model->getAccount()->password_hash_strategy,
             'user, that login using account with old pass hash strategy should update it automatically'

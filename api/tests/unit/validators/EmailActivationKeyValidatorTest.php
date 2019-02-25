@@ -36,24 +36,24 @@ class EmailActivationKeyValidatorTest extends TestCase {
             ->willReturnOnConsecutiveCalls(null, $expiredActivation, $validActivation);
 
         $validator->validateAttribute($model, 'key');
-        $this->assertEquals([E::KEY_REQUIRED], $model->getErrors('key'));
+        $this->assertSame([E::KEY_REQUIRED], $model->getErrors('key'));
         $this->assertNull($model->key);
 
         $model->clearErrors();
         $model->key = 'original value';
         $validator->validateAttribute($model, 'key');
-        $this->assertEquals([E::KEY_NOT_EXISTS], $model->getErrors('key'));
-        $this->assertEquals('original value', $model->key);
+        $this->assertSame([E::KEY_NOT_EXISTS], $model->getErrors('key'));
+        $this->assertSame('original value', $model->key);
 
         $model->clearErrors();
         $validator->validateAttribute($model, 'key');
-        $this->assertEquals([E::KEY_EXPIRE], $model->getErrors('key'));
-        $this->assertEquals('original value', $model->key);
+        $this->assertSame([E::KEY_EXPIRE], $model->getErrors('key'));
+        $this->assertSame('original value', $model->key);
 
         $model->clearErrors();
         $validator->validateAttribute($model, 'key');
         $this->assertEmpty($model->getErrors('key'));
-        $this->assertEquals($validActivation, $model->key);
+        $this->assertSame($validActivation, $model->key);
     }
 
     public function testFindEmailActivationModel() {
@@ -64,7 +64,7 @@ class EmailActivationKeyValidatorTest extends TestCase {
         /** @var EmailActivation $result */
         $result = $this->callProtected($model, 'findEmailActivationModel', $key);
         $this->assertInstanceOf(EmailActivation::class, $result, 'valid key without specifying type must return model');
-        $this->assertEquals($key, $result->key);
+        $this->assertSame($key, $result->key);
 
         /** @var EmailActivation $result */
         $result = $this->callProtected($model, 'findEmailActivationModel', $key, 0);

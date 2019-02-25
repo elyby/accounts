@@ -14,7 +14,7 @@ class TemplateTest extends TestCase {
     public function testConstructor() {
         /** @var Template|\Mockery\MockInterface $template */
         $template = mock(Template::class, ['find-me'])->makePartial();
-        $this->assertEquals('find-me', $template->getTo());
+        $this->assertSame('find-me', $template->getTo());
         $this->assertInstanceOf(MailerInterface::class, $template->getMailer());
     }
 
@@ -22,13 +22,13 @@ class TemplateTest extends TestCase {
         Yii::$app->params['fromEmail'] = 'find-me';
         /** @var Template|\Mockery\MockInterface $template */
         $template = mock(Template::class)->makePartial();
-        $this->assertEquals(['find-me' => 'Ely.by Accounts'], $template->getFrom());
+        $this->assertSame(['find-me' => 'Ely.by Accounts'], $template->getFrom());
     }
 
     public function testGetParams() {
         /** @var Template|\Mockery\MockInterface $template */
         $template = mock(Template::class)->makePartial();
-        $this->assertEquals([], $template->getParams());
+        $this->assertSame([], $template->getParams());
     }
 
     public function testCreateMessage() {
@@ -39,9 +39,9 @@ class TemplateTest extends TestCase {
         /** @var MessageInterface $message */
         $message = $this->callProtected($template, 'createMessage');
         $this->assertInstanceOf(MessageInterface::class, $message);
-        $this->assertEquals(['to@ely.by' => 'To'], $message->getTo());
-        $this->assertEquals(['from@ely.by' => 'Ely.by Accounts'], $message->getFrom());
-        $this->assertEquals('mock-subject', $message->getSubject());
+        $this->assertSame(['to@ely.by' => 'To'], $message->getTo());
+        $this->assertSame(['from@ely.by' => 'Ely.by Accounts'], $message->getFrom());
+        $this->assertSame('mock-subject', $message->getSubject());
     }
 
 }

@@ -114,7 +114,7 @@ class OauthClientFormTest extends TestCase {
         $job = $this->tester->grabLastQueuedJob();
         $this->assertInstanceOf(ClearOauthSessions::class, $job);
         $this->assertSame('mocked-id', $job->clientId);
-        $this->assertEquals(time(), $job->notSince, '', 2);
+        $this->assertEqualsWithDelta(time(), $job->notSince, 2);
     }
 
     public function testResetWithSecret() {
@@ -132,7 +132,7 @@ class OauthClientFormTest extends TestCase {
         $job = $this->tester->grabLastQueuedJob();
         $this->assertInstanceOf(ClearOauthSessions::class, $job);
         $this->assertSame('mocked-id', $job->clientId);
-        $this->assertEquals(time(), $job->notSince, '', 2);
+        $this->assertEqualsWithDelta(time(), $job->notSince, 2);
     }
 
 }

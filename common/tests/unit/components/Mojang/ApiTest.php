@@ -31,8 +31,8 @@ class ApiTest extends TestCase {
         $this->handler->append(new Response(200, [], '{"id": "7125ba8b1c864508b92bb5c042ccfe2b","name": "KrisJelbring"}'));
         $response = (new Api())->usernameToUUID('KrisJelbring');
         $this->assertInstanceOf(UsernameToUUIDResponse::class, $response);
-        $this->assertEquals('7125ba8b1c864508b92bb5c042ccfe2b', $response->id);
-        $this->assertEquals('KrisJelbring', $response->name);
+        $this->assertSame('7125ba8b1c864508b92bb5c042ccfe2b', $response->id);
+        $this->assertSame('KrisJelbring', $response->name);
     }
 
     /**

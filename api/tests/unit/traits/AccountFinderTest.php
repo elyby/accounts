@@ -33,11 +33,11 @@ class AccountFinderTest extends TestCase {
     public function testGetLoginAttribute() {
         $model = new AccountFinderTestTestClass();
         $model->login = 'erickskrauch@ely.by';
-        $this->assertEquals('email', $model->getLoginAttribute(), 'if login look like email value, then \'email\'');
+        $this->assertSame('email', $model->getLoginAttribute(), 'if login look like email value, then \'email\'');
 
         $model = new AccountFinderTestTestClass();
         $model->login = 'erickskrauch';
-        $this->assertEquals('username', $model->getLoginAttribute(), 'username in any other case');
+        $this->assertSame('username', $model->getLoginAttribute(), 'username in any other case');
     }
 
 }

@@ -41,7 +41,7 @@ class TwoFactorAuthInfoTest extends TestCase {
         $model = new TwoFactorAuthInfo($account);
 
         $result = $model->getCredentials();
-        $this->assertEquals('AAAA', $result['secret']);
+        $this->assertSame('AAAA', $result['secret']);
     }
 
 }

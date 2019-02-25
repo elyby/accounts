@@ -26,7 +26,7 @@ class RefreshTokenFormTest extends TestCase {
                 }
             };
             $model->validateRefreshToken();
-            $this->assertEquals(['error.refresh_token_not_exist'], $model->getErrors('refresh_token'));
+            $this->assertSame(['error.refresh_token_not_exist'], $model->getErrors('refresh_token'));
         });
 
         $this->specify('no errors if token exists', function() {

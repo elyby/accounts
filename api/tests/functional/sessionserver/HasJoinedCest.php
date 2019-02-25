@@ -19,7 +19,7 @@ class HasJoinedCest {
 
     public function hasJoined(SessionServerSteps $I) {
         $I->wantTo('check hasJoined user to some server');
-        list($username, $serverId) = $I->amJoined();
+        [$username, $serverId] = $I->amJoined();
 
         $this->route->hasJoined([
             'username' => $username,

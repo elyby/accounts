@@ -15,7 +15,7 @@ class EmailActivationExpirationBehaviorTest extends TestCase {
         $behavior = $this->createBehavior();
         $time = time();
         $behavior->owner->created_at = $time;
-        $this->assertEquals($time + 10, $this->callProtected($behavior, 'calculateTime', 10));
+        $this->assertSame($time + 10, $this->callProtected($behavior, 'calculateTime', 10));
     }
 
     public function testCompareTime() {

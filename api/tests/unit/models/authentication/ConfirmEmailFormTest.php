@@ -27,7 +27,7 @@ class ConfirmEmailFormTest extends TestCase {
         $this->assertFalse($activationExists, 'email activation key is not exist');
         /** @var Account $account */
         $account = Account::findOne($fixture['account_id']);
-        $this->assertEquals(Account::STATUS_ACTIVE, $account->status, 'user status changed to active');
+        $this->assertSame(Account::STATUS_ACTIVE, $account->status, 'user status changed to active');
     }
 
     private function createModel($key) {

@@ -14,7 +14,7 @@ class ValidatorTest extends TestCase {
     public function testValidateEmptyValue() {
         $validator = new Validator(mock(ClientInterface::class));
         $this->assertFalse($validator->validate('', $error));
-        $this->assertEquals('error.captcha_required', $error, 'Get error.captcha_required, if passed empty value');
+        $this->assertSame('error.captcha_required', $error, 'Get error.captcha_required, if passed empty value');
     }
 
     public function testValidateInvalidValue() {
@@ -28,7 +28,7 @@ class ValidatorTest extends TestCase {
 
         $validator = new Validator($mockClient);
         $this->assertFalse($validator->validate('12341234', $error));
-        $this->assertEquals('error.captcha_invalid', $error, 'Get error.captcha_invalid, if passed wrong value');
+        $this->assertSame('error.captcha_invalid', $error, 'Get error.captcha_invalid, if passed wrong value');
     }
 
     public function testValidateWithNetworkTroubles() {
