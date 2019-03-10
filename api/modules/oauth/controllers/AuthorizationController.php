@@ -55,7 +55,10 @@ class AuthorizationController extends Controller {
     }
 
     private function createOauthProcess(): OauthProcess {
-        return new OauthProcess(Yii::$app->oauth->authServer);
+        $server = Yii::$app->oauth->authServer;
+        $server->setRequest(null); // Enforce request recreation (test environment bug)
+
+        return new OauthProcess($server);
     }
 
 }

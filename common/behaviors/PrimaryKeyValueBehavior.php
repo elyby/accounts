@@ -18,7 +18,7 @@ class PrimaryKeyValueBehavior extends Behavior {
      */
     public $value;
 
-    public function events() {
+    public function events(): array {
         return [
             ActiveRecord::EVENT_BEFORE_INSERT => 'setPrimaryKeyValue',
         ];
@@ -32,7 +32,7 @@ class PrimaryKeyValueBehavior extends Behavior {
         return true;
     }
 
-    public function refreshPrimaryKeyValue() {
+    public function refreshPrimaryKeyValue(): void {
         do {
             $key = $this->generateValue();
         } while ($this->isValueExists($key));
@@ -45,15 +45,18 @@ class PrimaryKeyValueBehavior extends Behavior {
     }
 
     protected function isValueExists(string $key): bool {
-        return $this->owner->find()->andWhere([$this->getPrimaryKeyName() => $key])->exists();
+        $owner = $this->owner;
+        return $owner::find()->andWhere([$this->getPrimaryKeyName() => $key])->exists();
     }
 
     protected function getPrimaryKeyName(): string {
         $owner = $this->owner;
-        $primaryKeys = $owner->primaryKey();
+        $primaryKeys = $owner::primaryKey();
         if (!isset($primaryKeys[0])) {
             throw new InvalidConfigException('"' . get_class($owner) . '" must have a primary key.');
-        } elseif (count($primaryKeys) > 1) {
+        }
+
+        if (count($primaryKeys) > 1) {
             throw new InvalidConfigException('Current behavior don\'t support models with more then one primary key.');
         }
 

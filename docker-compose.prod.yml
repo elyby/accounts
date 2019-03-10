@@ -1,57 +1,58 @@
 version: '2'
 services:
-    app:
-        image: registry.ely.by/elyby/accounts:latest
-        restart: always
-        depends_on:
-            - db
-            - redis
-        env_file: .env
+  app:
+    image: registry.ely.by/elyby/accounts:latest
+    restart: always
+    depends_on:
+      - db
+      - redis
+    env_file: .env
 
-    worker:
-        image: registry.ely.by/elyby/accounts:latest
-        restart: always
-        command: ['php', 'yii', 'queue/listen', '-v']
-        depends_on:
-            - db
-            - redis
-        env_file: .env
+  worker:
+    image: registry.ely.by/elyby/accounts:latest
+    restart: always
+    command: ['php', 'yii', 'queue/listen', '-v']
+    depends_on:
+      - db
+      - redis
+    env_file: .env
 
-    worker:
-        image: registry.ely.by/elyby/accounts:latest
-        restart: always
-        command: ['crond', '-s', '/etc/cron.d', '-f', '-L', '/var/log/cron.log']
-        depends_on:
-            - db
-            - redis
-        env_file: .env
+  cron:
+    image: registry.ely.by/elyby/accounts:latest
+    restart: always
+    command: ['crond', '-s', '/etc/cron.d', '-f', '-L', '/var/log/cron.log']
+    stop_signal: SIGKILL
+    depends_on:
+      - db
+      - redis
+    env_file: .env
 
-    web:
-        image: registry.ely.by/elyby/accounts-nginx:1.0.3
-        restart: always
-        volumes_from:
-            - app
-        links:
-            - app:php
-        env_file: .env
-        networks:
-            - default
-            - nginx-proxy
+  web:
+    image: registry.ely.by/elyby/accounts-nginx:1.0.3
+    restart: always
+    volumes_from:
+      - app
+    links:
+      - app:php
+    env_file: .env
+    networks:
+      - default
+      - nginx-proxy
 
-    db:
-        build: ./docker/mariadb
-        restart: always
-        env_file: .env
-        volumes:
-            - ./data/mysql:/var/lib/mysql
+  db:
+    build: ./docker/mariadb
+    restart: always
+    env_file: .env
+    volumes:
+      - ./data/mysql:/var/lib/mysql
 
-    redis:
-        image: redis:3.0-alpine
-        restart: always
-        volumes:
-            - ./data/redis:/data
+  redis:
+    image: redis:3.0-alpine
+    restart: always
+    volumes:
+      - ./data/redis:/data
 
 networks:
-    nginx-proxy:
-        external:
-            name: nginx-proxy
+  nginx-proxy:
+    external:
+      name: nginx-proxy

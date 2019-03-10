@@ -1,11 +1,16 @@
 {
     "name": "elyby/accounts",
-    "description": "Authentication service for Ely.by",
+    "description": "Authentication service for the Ely.by",
     "homepage": "https://account.ely.by",
     "type": "project",
     "minimum-stability": "stable",
     "require": {
-        "php": "^7.1",
+        "php": "^7.2",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-pdo": "*",
+        "ext-libxml": "*",
+        "ext-simplexml": "*",
         "yiisoft/yii2": "2.0.15.1",
         "yiisoft/yii2-swiftmailer": "~2.1.0",
         "ramsey/uuid": "^3.5",
@@ -20,7 +25,7 @@
         "bacon/bacon-qr-code": "^1.0",
         "paragonie/constant_time_encoding": "^2.0",
         "webmozart/assert": "^1.2.0",
-        "goaop/framework": "~2.2.0",
+        "goaop/framework": "^2.2.0",
         "domnikl/statsd": "^2.6",
         "yiisoft/yii2-queue": "~2.1.0"
     },
@@ -28,16 +33,21 @@
         "yiisoft/yii2-debug": "*",
         "yiisoft/yii2-faker": "*",
         "flow/jsonpath": "^0.4.0",
-        "phpunit/phpunit": "^6.0",
-        "codeception/codeception": "2.3.8",
+        "codeception/codeception": "^2.5.3",
         "codeception/specify": "^1.0.0",
         "codeception/verify": "*",
         "mockery/mockery": "^1.0.0",
         "php-mock/php-mock-mockery": "^1.2.0",
-        "friendsofphp/php-cs-fixer": "^2.11",
-        "ely/php-code-style": "^0.1.0",
+        "ely/php-code-style": "^0.3.0",
         "predis/predis": "^1.1",
         "roave/security-advisories": "dev-master"
+    },
+    "replace": {
+        "paragonie/random_compat": "2.99.99",
+        "symfony/polyfill-ctype": "*",
+        "symfony/polyfill-mbstring": "*",
+        "symfony/polyfill-php70": "*",
+        "symfony/polyfill-php72": "*"
     },
     "repositories": [
         {
@@ -49,6 +59,9 @@
             "url": "https://gitlab+deploy-token-1:FDGgmcnLdykcsyJJ_8Uv@gitlab.ely.by/elyby/email-renderer.git"
         }
     ],
+    "config": {
+        "sort-packages": true
+    },
     "autoload": {
         "psr-4": {
             "api\\": "api",
@@ -58,5 +71,12 @@
         "files": [
             "common/consts.php"
         ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "api\\tests\\": "api/tests",
+            "common\\tests\\": "common/tests",
+            "console\\tests\\": "console/tests"
+        }
     }
 }

@@ -1,0 +1,10 @@
+include:
+  - common
+  - api
+  - console
+
+paths:
+  log: console/runtime/logs
+
+settings:
+  colors: true

@@ -1,0 +1,26 @@
+namespace: api\tests
+actor_suffix: Tester
+paths:
+  tests: tests
+  log: tests/_output
+  data: tests/_data
+  helpers: tests/_support
+settings:
+  bootstrap: _bootstrap.php
+  colors: true
+  memory_limit: 1024M
+coverage:
+  enabled: true
+  remote: true
+  whitelist:
+    include:
+      - ./*
+    exclude:
+      - aop/*
+      - config/*
+      - runtime/*
+      - tests/*
+      - web/*
+      - codeception.dist.yml
+      - codeception.yml
+  c3url: 'http://localhost/api/web/index.php'

@@ -2,6 +2,24 @@
 return [
     'version' => '{{PLACE_VERSION_HERE}}', // This will be replaced by build tool
     'vendorPath' => dirname(__DIR__, 2) . '/vendor',
+    'aliases' => [
+        '@bower' => '@vendor/bower-asset',
+        '@npm' => '@vendor/npm-asset',
+
+        '@root' => dirname(__DIR__, 2),
+        '@api' => '@root/api',
+        '@common' => '@root/common',
+        '@console' => '@root/console',
+    ],
+    'params' => [
+        'fromEmail' => 'ely@ely.by',
+        'supportEmail' => 'support@ely.by',
+    ],
+    'container' => [
+        'definitions' => [
+            GuzzleHttp\ClientInterface::class => GuzzleHttp\Client::class,
+        ],
+    ],
     'components' => [
         'cache' => [
             'class' => yii\redis\Cache::class,
@@ -90,14 +108,5 @@ return [
         'queue' => [
             'class' => yii\queue\redis\Queue::class,
         ],
-    ],
-    'container' => [
-        'definitions' => [
-            GuzzleHttp\ClientInterface::class => GuzzleHttp\Client::class,
-        ],
-    ],
-    'aliases' => [
-        '@bower' => '@vendor/bower-asset',
-        '@npm' => '@vendor/npm-asset',
     ],
 ];

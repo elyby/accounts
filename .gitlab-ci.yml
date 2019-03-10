@@ -47,9 +47,9 @@ test backend:
         - sudo rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
     script:
         - composer install
-        - php tests/codeception/bin/yii rbac/generate
-        - ./docker/php/wait-for-it.sh "${DB_HOST}:3306" -s -t 0 -- "php tests/codeception/bin/yii migrate/up --interactive=0"
-        - vendor/bin/codecept run -c tests
+        - php yii rbac/generate
+        - ./docker/php/wait-for-it.sh "${DB_HOST}:3306" -s -t 0 -- "php yii migrate/up --interactive=0"
+        - vendor/bin/codecept run
 
 test frontend:
     image: node:9.2.1-alpine

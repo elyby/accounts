@@ -1,15 +1,12 @@
 <?php
-$params = array_merge(
-    require __DIR__ . '/../../common/config/params.php',
-    require __DIR__ . '/params.php'
-);
-
 return [
     'id' => 'accounts-site-api',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log', 'authserver', 'internal'],
+    'bootstrap' => ['log', 'authserver', 'internal', 'mojang'],
     'controllerNamespace' => 'api\controllers',
-    'params' => $params,
+    'params' => [
+        'authserverHost' => getenv('AUTHSERVER_HOST'),
+    ],
     'components' => [
         'user' => [
             'class' => api\components\User\Component::class,
@@ -79,10 +76,7 @@ return [
         ],
     ],
     'modules' => [
-        'authserver' => [
-            'class' => api\modules\authserver\Module::class,
-            'host' => $params['authserverHost'],
-        ],
+        'authserver' => api\modules\authserver\Module::class,
         'session' => api\modules\session\Module::class,
         'mojang' => api\modules\mojang\Module::class,
         'internal' => api\modules\internal\Module::class,

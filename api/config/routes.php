@@ -1,7 +1,4 @@
 <?php
-/**
- * @var array $params
- */
 return [
     // Oauth module routes
     '/oauth2/v1/<action>' => 'oauth/authorization/<action>',
@@ -46,8 +43,4 @@ return [
     '/mojang/profiles/<username>' => 'mojang/api/uuid-by-username',
     '/mojang/profiles/<uuid>/names' => 'mojang/api/usernames-by-uuid',
     'POST /mojang/profiles' => 'mojang/api/uuids-by-usernames',
-
-    "//{$params['authserverHost']}/mojang/api/users/profiles/minecraft/<username>" => 'mojang/api/uuid-by-username',
-    "//{$params['authserverHost']}/mojang/api/user/profiles/<uuid>/names" => 'mojang/api/usernames-by-uuid',
-    "POST //{$params['authserverHost']}/mojang/api/profiles/minecraft" => 'mojang/api/uuids-by-usernames',
 ];

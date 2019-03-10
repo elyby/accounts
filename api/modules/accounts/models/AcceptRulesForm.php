@@ -3,7 +3,7 @@ namespace api\modules\accounts\models;
 
 use api\aop\annotations\CollectModelMetrics;
 use yii\base\ErrorException;
-use const \common\LATEST_RULES_VERSION;
+use const common\LATEST_RULES_VERSION;
 
 class AcceptRulesForm extends AccountActionForm {
 

@@ -1,4 +1,3 @@
 <?php
-Yii::setAlias('common', dirname(__DIR__));
-Yii::setAlias('api', dirname(__DIR__, 2) . '/api');
-Yii::setAlias('console', dirname(__DIR__, 2) . '/console');
+// Do not use Yii2 autoloader and left it to the composer
+spl_autoload_unregister(['Yii', 'autoload']);

@@ -8,8 +8,8 @@ $time = microtime(true);
 
 require __DIR__ . '/../../vendor/autoload.php';
 
-defined('YII_DEBUG') or define('YII_DEBUG', in_array(getenv('YII_DEBUG'), ['true', '1']));
-defined('YII_ENV') or define('YII_ENV', getenv('YII_ENV'));
+defined('YII_DEBUG') || define('YII_DEBUG', in_array(getenv('YII_DEBUG'), ['true', '1']));
+defined('YII_ENV') || define('YII_ENV', getenv('YII_ENV'));
 
 // Initialize an application aspect container
 AspectKernel::getInstance()->init([
@@ -23,7 +23,6 @@ AspectKernel::getInstance()->init([
 ]);
 
 require __DIR__ . '/../../vendor/yiisoft/yii2/Yii.php';
-spl_autoload_unregister(['Yii', 'autoload']);
 require __DIR__ . '/../../common/config/bootstrap.php';
 require __DIR__ . '/../config/bootstrap.php';
 

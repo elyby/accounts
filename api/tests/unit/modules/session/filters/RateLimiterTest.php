@@ -1,0 +1,106 @@
+<?php
+declare(strict_types=1);
+
+namespace api\tests\unit\modules\session\filters;
+
+use api\modules\session\filters\RateLimiter;
+use api\tests\unit\TestCase;
+use common\models\OauthClient;
+use Faker\Provider\Internet;
+use Yii;
+use yii\redis\Connection;
+use yii\web\Request;
+
+class RateLimiterTest extends TestCase {
+
+    public function testCheckRateLimiterWithOldAuthserver() {
+        /** @var Connection|\PHPUnit\Framework\MockObject\MockObject $redis */
+        $redis = $this->getMockBuilder(Connection::class)
+            ->setMethods(['executeCommand'])
+            ->getMock();
+
+        $redis->expects($this->never())
+            ->method('executeCommand');
+
+        Yii::$app->set('redis', $redis);
+
+        /** @var RateLimiter|\PHPUnit\Framework\MockObject\MockObject $filter */
+        $filter = $this->getMockBuilder(RateLimiter::class)
+            ->setConstructorArgs([[
+                'authserverDomain' => 'authserver.ely.by',
+            ]])
+            ->setMethods(['getServer'])
+            ->getMock();
+
+        $filter->method('getServer')
+            ->willReturn(new OauthClient());
+
+        $filter->checkRateLimit(null, new Request(), null, null);
+    }
+
+    public function testCheckRateLimiterWithValidServerId() {
+        /** @var Connection|\PHPUnit\Framework\MockObject\MockObject $redis */
+        $redis = $this->getMockBuilder(Connection::class)
+            ->setMethods(['executeCommand'])
+            ->getMock();
+
+        $redis->expects($this->never())
+            ->method('executeCommand');
+
+        Yii::$app->set('redis', $redis);
+
+        /** @var Request|\PHPUnit\Framework\MockObject\MockObject $request */
+        $request = $this->getMockBuilder(Request::class)
+            ->setMethods(['getHostInfo'])
+            ->getMock();
+
+        $request->method('getHostInfo')
+            ->willReturn('http://authserver.ely.by');
+
+        $filter = new RateLimiter([
+            'authserverDomain' => 'authserver.ely.by',
+        ]);
+        $filter->checkRateLimit(null, $request, null, null);
+    }
+
+    /**
+     * @expectedException \yii\web\TooManyRequestsHttpException
+     */
+    public function testCheckRateLimiter() {
+        /** @var Connection|\PHPUnit\Framework\MockObject\MockObject $redis */
+        $redis = $this->getMockBuilder(Connection::class)
+            ->setMethods(['executeCommand'])
+            ->getMock();
+
+        $redis->expects($this->exactly(5))
+            ->method('executeCommand')
+            ->will($this->onConsecutiveCalls('1', '1', '2', '3', '4'));
+
+        Yii::$app->set('redis', $redis);
+
+        /** @var Request|\PHPUnit\Framework\MockObject\MockObject $request */
+        $request = $this->getMockBuilder(Request::class)
+            ->setMethods(['getUserIP'])
+            ->getMock();
+
+        $request->method('getUserIp')
+            ->willReturn(Internet::localIpv4());
+
+        /** @var RateLimiter|\PHPUnit\Framework\MockObject\MockObject $filter */
+        $filter = $this->getMockBuilder(RateLimiter::class)
+            ->setConstructorArgs([[
+                'limit' => 3,
+                'authserverDomain' => 'authserver.ely.by',
+            ]])
+            ->setMethods(['getServer'])
+            ->getMock();
+
+        $filter->method('getServer')
+            ->willReturn(null);
+
+        for ($i = 0; $i < 5; $i++) {
+            $filter->checkRateLimit(null, $request, null, null);
+        }
+    }
+
+}

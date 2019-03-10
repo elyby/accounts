@@ -90,7 +90,10 @@ class OauthClientForm {
     }
 
     protected function isClientExists(string $id): bool {
-        return OauthClient::find()->andWhere(['id' => $id])->exists();
+        return OauthClient::find()
+            ->includeDeleted()
+            ->andWhere(['id' => $id])
+            ->exists();
     }
 
 }

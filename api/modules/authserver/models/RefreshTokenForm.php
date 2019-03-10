@@ -42,9 +42,7 @@ class RefreshTokenForm extends ApiForm {
         $accessToken->refreshPrimaryKeyValue();
         $accessToken->update();
 
-        $dataModel = new AuthenticateData($accessToken);
-
-        return $dataModel;
+        return new AuthenticateData($accessToken);
     }
 
 }
