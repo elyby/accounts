@@ -51,44 +51,13 @@ test backend:
         - ./docker/php/wait-for-it.sh "${DB_HOST}:3306" -s -t 0 -- "php yii migrate/up --interactive=0"
         - vendor/bin/codecept run
 
-test frontend:
-    image: node:9.2.1-alpine
-    stage: test
-    cache:
-        paths:
-            - frontend/node_modules
-    before_script:
-        # Enable SSL support for wget
-        - apk add --update openssl
-        # https://github.com/facebook/flow/issues/3649#issuecomment-414691014
-        - wget -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
-        - wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.28-r0/glibc-2.28-r0.apk
-        - apk add glibc-2.28-r0.apk
-    script:
-        - cd frontend
-        - yarn run build:install
-        - yarn run lint
-        - yarn flow
-        - yarn test
-
 build:production:
     image: docker:18.02
     stage: build
-    variables:
-        GA_ID: "UA-45299905-3"
-        SENTRY_CDN: "https://088e7718236a4f91937a81fb319a93f6@sentry.ely.by/2"
     before_script:
         - docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
         - export VERSION="${CI_COMMIT_TAG:-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA:0:7}}"
         - echo "$SSH_PRIVATE_KEY" > id_rsa
-        - |
-            echo "
-                module.exports = {
-                    version: '$VERSION',
-                    ga: {id: '$GA_ID'},
-                    sentryCdn: '$SENTRY_CDN',
-                };
-            " > frontend/config/env.js
         - sed -i"" -e "s/{{PLACE_VERSION_HERE}}/$VERSION/g" common/config/config.php
     script:
         - export IMAGE_NAME="$CONTAINER_IMAGE:latest"

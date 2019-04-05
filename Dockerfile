@@ -1,17 +1,3 @@
-FROM node:9.11.2-alpine as frontend
-
-WORKDIR /app
-
-COPY ./frontend/package.json ./
-COPY ./frontend/scripts ./scripts
-COPY ./frontend/webpack-utils ./webpack-utils
-COPY ./frontend/yarn.lock ./
-RUN yarn build:install
-
-COPY ./frontend .
-RUN yarn build:quiet
-
-
 FROM php:7.2.7-fpm-alpine3.7
 
 # bash needed to support wait-for-it script
@@ -70,8 +56,6 @@ RUN if [ "$build_env" = "prod" ] ; then \
 COPY ./docker/php/*.ini /usr/local/etc/php/conf.d/
 COPY ./docker/php/docker-entrypoint.sh /usr/local/bin/
 COPY ./docker/cron/* /etc/cron.d/
-
-COPY --from=frontend /app/dist /var/www/html/frontend/dist
 
 COPY ./api /var/www/html/api/
 COPY ./common /var/www/html/common/
