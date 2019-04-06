@@ -67,6 +67,8 @@ return [
         ],
         'reCaptcha' => [
             'class' => api\components\ReCaptcha\Component::class,
+            'public' => getenv('RECAPTCHA_PUBLIC'),
+            'secret' => getenv('RECAPTCHA_SECRET'),
         ],
         'response' => [
             'format' => yii\web\Response::FORMAT_JSON,

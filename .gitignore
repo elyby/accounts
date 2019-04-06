@@ -27,3 +27,6 @@ npm-debug*
 # Codeception
 codeception.yml
 */codeception.yml
+
+# Frontend
+frontend

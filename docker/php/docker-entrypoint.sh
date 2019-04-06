@@ -18,8 +18,8 @@ fi
 cd /var/www/html
 
 # Create all necessary folders
-mkdir -p api/runtime api/web/assets console/runtime
-chown -R www-data:www-data api/runtime api/web/assets console/runtime
+mkdir -p api/runtime console/runtime
+chown -R www-data:www-data api/runtime console/runtime
 
 if [ "$YII_ENV" = "test" ]
 then
