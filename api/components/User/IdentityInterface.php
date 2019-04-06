@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\components\User;
 
 use common\models\Account;
@@ -12,7 +14,7 @@ interface IdentityInterface extends \yii\web\IdentityInterface {
      * @throws \yii\web\UnauthorizedHttpException
      * @return IdentityInterface
      */
-    public static function findIdentityByAccessToken($token, $type = null): self;
+    public static function findIdentityByAccessToken($token, $type = null): IdentityInterface;
 
     /**
      * Этот метод используется для получения токена, к которому привязаны права.

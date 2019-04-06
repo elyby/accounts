@@ -6,8 +6,8 @@ stages:
 variables:
     CONTAINER_IMAGE: "registry.ely.by/elyby/accounts"
 
-check backend codestyle:
-    image: edbizarro/gitlab-ci-pipeline-php:7.2-alpine
+php-cs-fixer:
+    image: edbizarro/gitlab-ci-pipeline-php:7.3-alpine
     stage: test
     cache:
         key: backend-vendor
@@ -17,8 +17,8 @@ check backend codestyle:
         - composer install
         - vendor/bin/php-cs-fixer fix -v --dry-run
 
-test backend:
-    image: edbizarro/gitlab-ci-pipeline-php:7.2-alpine
+codeception:
+    image: edbizarro/gitlab-ci-pipeline-php:7.3-alpine
     services:
         - name: redis:4.0.10-alpine
           alias: redis

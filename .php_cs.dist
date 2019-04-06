@@ -12,5 +12,6 @@ $finder = \PhpCsFixer\Finder::create()
     ->notPath('/.*\/tests\/_support\/_generated/')
     ->name('yii');
 
-return \Ely\CS\Config::create()
-    ->setFinder($finder);
+return \Ely\CS\Config::create([
+    'self_accessor' => false,
+])->setFinder($finder);

@@ -30,15 +30,14 @@
         "yiisoft/yii2-queue": "~2.1.0"
     },
     "require-dev": {
-        "yiisoft/yii2-debug": "*",
-        "yiisoft/yii2-faker": "*",
-        "flow/jsonpath": "^0.4.0",
         "codeception/codeception": "^2.5.3",
         "codeception/specify": "^1.0.0",
         "codeception/verify": "*",
+        "ely/php-code-style": "^0.3.0",
+        "flow/jsonpath": "^0.4.0",
+        "fzaninotto/faker": "^1.8",
         "mockery/mockery": "^1.0.0",
         "php-mock/php-mock-mockery": "^1.2.0",
-        "ely/php-code-style": "^0.3.0",
         "predis/predis": "^1.1",
         "roave/security-advisories": "dev-master"
     },
