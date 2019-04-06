@@ -31,7 +31,7 @@ class UsernameValidator extends Validator {
         $length->tooShort = E::USERNAME_TOO_SHORT;
         $length->tooLong = E::USERNAME_TOO_LONG;
 
-        $pattern = new validators\RegularExpressionValidator(['pattern' => '/^[\p{L}\d-_\.!$%^&*()\[\]:;]+$/u']);
+        $pattern = new validators\RegularExpressionValidator(['pattern' => '/^[\p{L}\d\-_.!$%^&*()\[\]:;]+$/u']);
         $pattern->message = E::USERNAME_INVALID;
 
         $unique = new validators\UniqueValidator();

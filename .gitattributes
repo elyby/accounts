@@ -1,0 +1,3 @@
+# Fix EOL for all files, that should be executed inside Docker container
+*.sh text eol=lf
+yii text eol=lf

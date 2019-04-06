@@ -2,12 +2,16 @@ stages:
     - test
     - build
     - release
+    - cleanup
 
 variables:
-    CONTAINER_IMAGE: "registry.ely.by/elyby/accounts"
+    VERSION: "${CI_COMMIT_TAG:-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA:0:7}}"
+    APP_IMAGE_NAME: "registry.ely.by/elyby/accounts"
+    WEB_IMAGE_NAME: "registry.ely.by/elyby/accounts-nginx"
+    DB_IMAGE_NAME: "registry.ely.by/elyby/accounts-mariadb"
 
-check backend codestyle:
-    image: edbizarro/gitlab-ci-pipeline-php:7.2-alpine
+php-cs-fixer:
+    image: edbizarro/gitlab-ci-pipeline-php:7.3-alpine
     stage: test
     cache:
         key: backend-vendor
@@ -17,8 +21,8 @@ check backend codestyle:
         - composer install
         - vendor/bin/php-cs-fixer fix -v --dry-run
 
-test backend:
-    image: edbizarro/gitlab-ci-pipeline-php:7.2-alpine
+codeception:
+    image: edbizarro/gitlab-ci-pipeline-php:7.3-alpine
     services:
         - name: redis:4.0.10-alpine
           alias: redis
@@ -51,50 +55,32 @@ test backend:
         - ./docker/php/wait-for-it.sh "${DB_HOST}:3306" -s -t 0 -- "php yii migrate/up --interactive=0"
         - vendor/bin/codecept run
 
-test frontend:
-    image: node:9.2.1-alpine
-    stage: test
-    cache:
-        paths:
-            - frontend/node_modules
-    before_script:
-        # Enable SSL support for wget
-        - apk add --update openssl
-        # https://github.com/facebook/flow/issues/3649#issuecomment-414691014
-        - wget -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
-        - wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.28-r0/glibc-2.28-r0.apk
-        - apk add glibc-2.28-r0.apk
-    script:
-        - cd frontend
-        - yarn run build:install
-        - yarn run lint
-        - yarn flow
-        - yarn test
-
 build:production:
     image: docker:18.02
     stage: build
-    variables:
-        GA_ID: "UA-45299905-3"
-        SENTRY_CDN: "https://088e7718236a4f91937a81fb319a93f6@sentry.ely.by/2"
     before_script:
-        - docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
-        - export VERSION="${CI_COMMIT_TAG:-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA:0:7}}"
-        - echo "$SSH_PRIVATE_KEY" > id_rsa
-        - |
-            echo "
-                module.exports = {
-                    version: '$VERSION',
-                    ga: {id: '$GA_ID'},
-                    sentryCdn: '$SENTRY_CDN',
-                };
-            " > frontend/config/env.js
-        - sed -i"" -e "s/{{PLACE_VERSION_HERE}}/$VERSION/g" common/config/config.php
+        - sed -i -e "s/{{PLACE_VERSION_HERE}}/$VERSION/g" common/config/config.php
     script:
-        - export IMAGE_NAME="$CONTAINER_IMAGE:latest"
-        - docker build --pull --build-arg build_env=prod -t $IMAGE_NAME .
+        - >
+          docker build
+          --pull
+          --target app
+          --build-arg "build_env=prod"
+          -t "$APP_IMAGE_NAME:$CI_PIPELINE_ID" .
+        - >
+          docker build
+          --pull
+          --target web
+          --build-arg "build_env=prod"
+          -t "$WEB_IMAGE_NAME:$CI_PIPELINE_ID" .
+        - >
+          docker build
+          --pull
+          --target db
+          --build-arg "build_env=prod"
+          -t "$DB_IMAGE_NAME:$CI_PIPELINE_ID" .
     only:
-        - develop
+        - master
         - tags
 
 release:latest:
@@ -105,9 +91,16 @@ release:latest:
     before_script:
         - docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
     script:
-        - docker push $CONTAINER_IMAGE:latest
+        - docker tag "$APP_IMAGE_NAME:$CI_PIPELINE_ID" "$APP_IMAGE_NAME:latest"
+        - docker push "$APP_IMAGE_NAME:latest"
+
+        - docker tag "$WEB_IMAGE_NAME:$CI_PIPELINE_ID" "$WEB_IMAGE_NAME:latest"
+        - docker push "$WEB_IMAGE_NAME:latest"
+
+        - docker tag "$DB_IMAGE_NAME:$CI_PIPELINE_ID" "$DB_IMAGE_NAME:latest"
+        - docker push "$DB_IMAGE_NAME:latest"
     only:
-        - develop
+        - master
         - tags
 
 release:tag:
@@ -118,8 +111,21 @@ release:tag:
     before_script:
         - docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
     script:
-        - export IMAGE_NAME="$CONTAINER_IMAGE:$CI_BUILD_TAG"
-        - docker tag $CONTAINER_IMAGE:latest $IMAGE_NAME
-        - docker push $IMAGE_NAME
+        - docker tag "$APP_IMAGE_NAME:$CI_PIPELINE_ID" "$APP_IMAGE_NAME:$VERSION"
+        - docker push "$APP_IMAGE_NAME:$VERSION"
+
+        - docker tag "$WEB_IMAGE_NAME:$CI_PIPELINE_ID" "$WEB_IMAGE_NAME:$VERSION"
+        - docker push "$WEB_IMAGE_NAME:$VERSION"
+
+        - docker tag "$DB_IMAGE_NAME:$CI_PIPELINE_ID" "$DB_IMAGE_NAME:$VERSION"
+        - docker push "$DB_IMAGE_NAME:$VERSION"
     only:
         - tags
+
+cleanup:
+    stage: cleanup
+    script:
+        - docker rmi "$APP_IMAGE_NAME:$CI_PIPELINE_ID" "$APP_IMAGE_NAME:$VERSION" "$APP_IMAGE_NAME:latest" || true
+        - docker rmi "$WEB_IMAGE_NAME:$CI_PIPELINE_ID" "$WEB_IMAGE_NAME:$VERSION" "$WEB_IMAGE_NAME:latest" || true
+        - docker rmi "$DB_IMAGE_NAME:$CI_PIPELINE_ID" "$DB_IMAGE_NAME:$VERSION" "$DB_IMAGE_NAME:latest" || true
+    when: always
