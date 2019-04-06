@@ -1,5 +1,24 @@
-version: '2'
+version: '3.4'
+
+x-logging:
+  &default-logging
+  options:
+    max-size: 50m
+
 services:
+  web:
+    image: registry.ely.by/elyby/accounts-nginx:latest
+    restart: always
+    depends_on:
+      - app
+    env_file: .env
+    volumes:
+      - ./frontend:/var/www/html/frontend
+    networks:
+      - default
+      - nginx-proxy
+    logging: *default-logging
+
   app:
     image: registry.ely.by/elyby/accounts:latest
     restart: always
@@ -7,6 +26,11 @@ services:
       - db
       - redis
     env_file: .env
+    networks:
+      default:
+        aliases:
+          - php
+    logging: *default-logging
 
   worker:
     image: registry.ely.by/elyby/accounts:latest
@@ -16,6 +40,7 @@ services:
       - db
       - redis
     env_file: .env
+    logging: *default-logging
 
   cron:
     image: registry.ely.by/elyby/accounts:latest
@@ -26,21 +51,10 @@ services:
       - db
       - redis
     env_file: .env
-
-  web:
-    image: registry.ely.by/elyby/accounts-nginx:1.0.3
-    restart: always
-    volumes_from:
-      - app
-    links:
-      - app:php
-    env_file: .env
-    networks:
-      - default
-      - nginx-proxy
+    logging: *default-logging
 
   db:
-    build: ./docker/mariadb
+    image: registry.ely.by/elyby/accounts-mariadb:latest
     restart: always
     env_file: .env
     volumes:

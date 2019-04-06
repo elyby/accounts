@@ -1,5 +1,21 @@
-version: '2'
+version: '3.4'
 services:
+  web:
+    image: registry.ely.by/elyby/accounts-nginx:latest
+    build:
+      context: .
+      target: web
+      args:
+        build_env: dev
+    depends_on:
+      - app
+    env_file: .env
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - default
+      - nginx-proxy
+
   app:
     image: registry.ely.by/elyby/accounts:dev
     build:
@@ -10,8 +26,12 @@ services:
       - db
       - redis
     volumes:
-      - ./:/var/www/html/
+      - ./:/var/www/html
     env_file: .env
+    networks:
+      default:
+        aliases:
+          - php
 
   worker:
     image: registry.ely.by/elyby/accounts:dev
@@ -24,7 +44,7 @@ services:
       - db
       - redis
     volumes:
-      - ./:/var/www/html/
+      - ./:/var/www/html
     env_file: .env
 
   cron:
@@ -39,22 +59,15 @@ services:
       - db
       - redis
     volumes:
-      - ./:/var/www/html/
+      - ./:/var/www/html
     env_file: .env
-
-  web:
-    image: registry.ely.by/elyby/accounts-nginx:latest
-    volumes_from:
-      - app
-    links:
-      - app:php
-    env_file: .env
-    networks:
-      - default
-      - nginx-proxy
 
   db:
-    build: ./docker/mariadb
+    build:
+      context: .
+      target: db
+      args:
+        build_env: dev
     env_file: .env
     volumes:
       - ./data/mysql:/var/lib/mysql
@@ -99,7 +112,11 @@ services:
   # 3) Uncomment the next 2 services (testdb and testredis):
   #
   # testdb:
-  #   build: ./docker/mariadb
+  #   build:
+  #     context: .
+  #     target: db
+  #     args:
+  #       build_env: dev
   #   volumes:
   #     - ./data/mysql-test:/var/lib/mysql
   #   environment:

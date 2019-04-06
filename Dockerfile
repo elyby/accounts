@@ -63,9 +63,57 @@ COPY ./common /var/www/html/common/
 COPY ./console /var/www/html/console/
 COPY ./yii /var/www/html/yii
 
-# Expose everything under /var/www/html to share it with nginx
-VOLUME ["/var/www/html"]
-
-WORKDIR /var/www/html
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["php-fpm"]
+
+# ================================================================================
+
+FROM nginx:1.15.10-alpine AS web
+
+ENV PHP_SERVERS php:9000
+
+RUN rm /etc/nginx/conf.d/default.conf \
+ && mkdir -p /data/nginx/cache \
+ && mkdir -p /var/www/html
+
+WORKDIR /var/www/html
+
+COPY ./docker/nginx/docker-entrypoint.sh /
+COPY ./docker/nginx/generate-upstream.sh /usr/bin/generate-upstream
+COPY ./docker/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY ./docker/nginx/account.ely.by.conf.template /etc/nginx/conf.d/
+
+COPY --from=app /var/www/html/vendor/ely/email-renderer/dist/assets /var/www/html/vendor/ely/email-renderer/dist/assets
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["nginx", "-g", "daemon off;"]
+
+# ================================================================================
+
+FROM mariadb:10.3.14-bionic AS db
+
+COPY ./docker/mariadb/config.cnf /etc/mysql/conf.d/
+
+RUN set -ex \
+ && fetchDeps='ca-certificates wget' \
+ && apt-get update \
+ && apt-get install -y --no-install-recommends $fetchDeps \
+ && rm -rf /var/lib/apt/lists/* \
+ && wget -O /mysql-sys.tar.gz 'https://github.com/mysql/mysql-sys/archive/1.5.1.tar.gz' \
+ && mkdir /mysql-sys \
+ && tar -zxf /mysql-sys.tar.gz -C /mysql-sys \
+ && rm /mysql-sys.tar.gz \
+ && cd /mysql-sys/*/ \
+ && ./generate_sql_file.sh -v 56 -m \
+ # Fix mysql-sys for MariaDB according to the https://www.fromdual.com/mysql-sys-schema-in-mariadb-10-2 notes
+ # and https://mariadb.com/kb/en/library/system-variable-differences-between-mariadb-100-and-mysql-56/ reference
+ && sed -i -e "s/@@global.server_uuid/@@global.server_id/g" gen/*.sql \
+ && sed -i -e "s/@@master_info_repository/NULL/g" gen/*.sql \
+ && sed -i -e "s/@@relay_log_info_repository/NULL/g" gen/*.sql \
+ && mv gen/*.sql /docker-entrypoint-initdb.d/ \
+ && cd / \
+ && rm -rf /mysql-sys \
+ && apt-get purge -y --auto-remove $fetchDeps
+
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["mysqld"]

@@ -1,8 +1,3 @@
-FROM phpmyadmin/phpmyadmin:4.7.9-1
+FROM phpmyadmin/phpmyadmin:4.8.5
 
-RUN printf "\n\nrequire('./config.local.php');\n" >> /www/config.inc.php
-
-COPY config.local.php /www/
-
-ENTRYPOINT [ "/run.sh" ]
-CMD ["phpmyadmin"]
+COPY config.inc.php /usr/src/phpmyadmin/
