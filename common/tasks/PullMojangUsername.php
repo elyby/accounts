@@ -4,12 +4,12 @@ declare(strict_types=1);
 namespace common\tasks;
 
 use api\exceptions\ThisShouldNotHappenException;
-use common\components\Mojang\Api as MojangApi;
-use common\components\Mojang\exceptions\MojangApiException;
-use common\components\Mojang\exceptions\NoContentException;
 use common\models\Account;
 use common\models\MojangUsername;
-use GuzzleHttp\Exception\RequestException;
+use Ely\Mojang\Api as MojangApi;
+use Ely\Mojang\Exception\MojangApiException;
+use Ely\Mojang\Exception\NoContentException;
+use GuzzleHttp\Exception\GuzzleException;
 use Yii;
 use yii\queue\JobInterface;
 
@@ -31,14 +31,15 @@ class PullMojangUsername implements JobInterface {
      */
     public function execute($queue) {
         Yii::$app->statsd->inc('queue.pullMojangUsername.attempt');
-        $mojangApi = $this->createMojangApi();
+        /** @var MojangApi $mojangApi */
+        $mojangApi = Yii::$app->get(MojangApi::class);
         try {
             $response = $mojangApi->usernameToUUID($this->username);
             Yii::$app->statsd->inc('queue.pullMojangUsername.found');
         } catch (NoContentException $e) {
             $response = false;
             Yii::$app->statsd->inc('queue.pullMojangUsername.not_found');
-        } catch (RequestException | MojangApiException $e) {
+        } catch (GuzzleException | MojangApiException $e) {
             Yii::$app->statsd->inc('queue.pullMojangUsername.error');
             return;
         }
@@ -52,10 +53,10 @@ class PullMojangUsername implements JobInterface {
         } else {
             if ($mojangUsername === null) {
                 $mojangUsername = new MojangUsername();
-                $mojangUsername->username = $response->name;
-                $mojangUsername->uuid = $response->id;
+                $mojangUsername->username = $response->getName();
+                $mojangUsername->uuid = $response->getId();
             } else {
-                $mojangUsername->uuid = $response->id;
+                $mojangUsername->uuid = $response->getId();
                 $mojangUsername->touch('last_pulled_at');
             }
 
@@ -63,10 +64,6 @@ class PullMojangUsername implements JobInterface {
                 throw new ThisShouldNotHappenException('Cannot save mojang username');
             }
         }
-    }
-
-    protected function createMojangApi(): MojangApi {
-        return new MojangApi();
     }
 
 }
