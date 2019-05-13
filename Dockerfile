@@ -110,6 +110,9 @@ RUN set -ex \
  && sed -i -e "s/@@global.server_uuid/@@global.server_id/g" gen/*.sql \
  && sed -i -e "s/@@master_info_repository/NULL/g" gen/*.sql \
  && sed -i -e "s/@@relay_log_info_repository/NULL/g" gen/*.sql \
+ # Wrap each command, that contains more than one ; terminator into DELIMITER
+ # and replace the last one to avoid mysql errors
+ && sed -i -E 's/^(.+;.+);$/DELIMITER $$\n\n\1$$\n\nDELIMITER ;/g' gen/*.sql \
  && mv gen/*.sql /docker-entrypoint-initdb.d/ \
  && cd / \
  && rm -rf /mysql-sys \
