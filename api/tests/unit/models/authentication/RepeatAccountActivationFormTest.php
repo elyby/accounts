@@ -24,7 +24,7 @@ class RepeatAccountActivationFormTest extends TestCase {
         });
     }
 
-    public function _fixtures() {
+    public function _fixtures(): array {
         return [
             'accounts' => AccountFixture::class,
             'activations' => EmailActivationFixture::class,
@@ -35,21 +35,21 @@ class RepeatAccountActivationFormTest extends TestCase {
         $this->specify('error.email_not_found if passed valid email, but it don\'t exists in database', function() {
             $model = new RepeatAccountActivationForm(['email' => 'me-is-not@exists.net']);
             $model->validateEmailForAccount('email');
-            expect($model->getErrors('email'))->equals(['error.email_not_found']);
+            $this->assertSame(['error.email_not_found'], $model->getErrors('email'));
         });
 
         $this->specify('error.account_already_activated if passed valid email, but account already activated', function() {
             $fixture = $this->tester->grabFixture('accounts', 'admin');
             $model = new RepeatAccountActivationForm(['email' => $fixture['email']]);
             $model->validateEmailForAccount('email');
-            expect($model->getErrors('email'))->equals(['error.account_already_activated']);
+            $this->assertSame(['error.account_already_activated'], $model->getErrors('email'));
         });
 
         $this->specify('no errors if passed valid email for not activated account', function() {
             $fixture = $this->tester->grabFixture('accounts', 'not-activated-account');
             $model = new RepeatAccountActivationForm(['email' => $fixture['email']]);
             $model->validateEmailForAccount('email');
-            expect($model->getErrors('email'))->isEmpty();
+            $this->assertEmpty($model->getErrors('email'));
         });
     }
 
@@ -58,14 +58,14 @@ class RepeatAccountActivationFormTest extends TestCase {
             $fixture = $this->tester->grabFixture('activations', 'freshRegistrationConfirmation');
             $model = $this->createModel(['emailKey' => $fixture['key']]);
             $model->validateExistsActivation('email');
-            expect($model->getErrors('email'))->equals(['error.recently_sent_message']);
+            $this->assertSame(['error.recently_sent_message'], $model->getErrors('email'));
         });
 
         $this->specify('no errors if passed email has expired activation message', function() {
             $fixture = $this->tester->grabFixture('activations', 'oldRegistrationConfirmation');
             $model = $this->createModel(['emailKey' => $fixture['key']]);
             $model->validateExistsActivation('email');
-            expect($model->getErrors('email'))->isEmpty();
+            $this->assertEmpty($model->getErrors('email'));
         });
     }
 

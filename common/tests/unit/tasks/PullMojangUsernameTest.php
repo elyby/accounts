@@ -24,7 +24,7 @@ class PullMojangUsernameTest extends TestCase {
     /** @var \PHPUnit\Framework\MockObject\Builder\InvocationMocker */
     private $mockedMethod;
 
-    public function _fixtures() {
+    public function _fixtures(): array {
         return [
             'mojangUsernames' => MojangUsernameFixture::class,
         ];

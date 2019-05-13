@@ -12,7 +12,7 @@ use common\tests\fixtures\EmailActivationFixture;
 
 class SendEmailVerificationFormTest extends TestCase {
 
-    public function _fixtures() {
+    public function _fixtures(): array {
         return [
             'accounts' => AccountFixture::class,
             'emailActivations' => EmailActivationFixture::class,

@@ -23,7 +23,7 @@ class PardonFormTest extends TestCase {
     }
 
     public function testPardon() {
-        /** @var Account|\PHPUnit_Framework_MockObject_MockObject $account */
+        /** @var Account|\PHPUnit\Framework\MockObject\MockObject $account */
         $account = $this->getMockBuilder(Account::class)
             ->setMethods(['save'])
             ->getMock();

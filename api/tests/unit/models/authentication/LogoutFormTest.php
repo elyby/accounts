@@ -27,7 +27,7 @@ class LogoutFormTest extends TestCase {
             Yii::$app->set('user', $userComp);
 
             $model = new LogoutForm();
-            expect($model->logout())->true();
+            $this->assertTrue($model->logout());
         });
 
         $this->specify('if active session is presented, then delete should be called', function() {

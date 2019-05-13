@@ -32,16 +32,16 @@ class AccountTest extends TestCase {
                 'email' => 'erick@skrauch.net',
                 'password_hash' => UserPass::make('erick@skrauch.net', '12345678'),
             ]);
-            expect('valid password should pass', $model->validatePassword('12345678', Account::PASS_HASH_STRATEGY_OLD_ELY))->true();
-            expect('invalid password should fail', $model->validatePassword('87654321', Account::PASS_HASH_STRATEGY_OLD_ELY))->false();
+            $this->assertTrue($model->validatePassword('12345678', Account::PASS_HASH_STRATEGY_OLD_ELY), 'valid password should pass');
+            $this->assertFalse($model->validatePassword('87654321', Account::PASS_HASH_STRATEGY_OLD_ELY), 'invalid password should fail');
         });
 
         $this->specify('modern hash algorithm should work', function() {
             $model = new Account([
                 'password_hash' => Yii::$app->security->generatePasswordHash('12345678'),
             ]);
-            expect('valid password should pass', $model->validatePassword('12345678', Account::PASS_HASH_STRATEGY_YII2))->true();
-            expect('invalid password should fail', $model->validatePassword('87654321', Account::PASS_HASH_STRATEGY_YII2))->false();
+            $this->assertTrue($model->validatePassword('12345678', Account::PASS_HASH_STRATEGY_YII2), 'valid password should pass');
+            $this->assertFalse($model->validatePassword('87654321', Account::PASS_HASH_STRATEGY_YII2), 'invalid password should fail');
         });
 
         $this->specify('if second argument is not pass model value should be used', function() {
@@ -50,15 +50,15 @@ class AccountTest extends TestCase {
                 'password_hash_strategy' => Account::PASS_HASH_STRATEGY_OLD_ELY,
                 'password_hash' => UserPass::make('erick@skrauch.net', '12345678'),
             ]);
-            expect('valid password should pass', $model->validatePassword('12345678'))->true();
-            expect('invalid password should fail', $model->validatePassword('87654321'))->false();
+            $this->assertTrue($model->validatePassword('12345678'), 'valid password should pass');
+            $this->assertFalse($model->validatePassword('87654321'), 'invalid password should fail');
 
             $model = new Account([
                 'password_hash_strategy' => Account::PASS_HASH_STRATEGY_YII2,
                 'password_hash' => Yii::$app->security->generatePasswordHash('12345678'),
             ]);
-            expect('valid password should pass', $model->validatePassword('12345678'))->true();
-            expect('invalid password should fail', $model->validatePassword('87654321'))->false();
+            $this->assertTrue($model->validatePassword('12345678'), 'valid password should pass');
+            $this->assertFalse($model->validatePassword('87654321'), 'invalid password should fail');
         });
     }
 
@@ -70,13 +70,13 @@ class AccountTest extends TestCase {
         $this->specify('Expect true if collision with current username', function() {
             $model = new Account();
             $model->username = 'ErickSkrauch';
-            expect($model->hasMojangUsernameCollision())->true();
+            $this->assertTrue($model->hasMojangUsernameCollision());
         });
 
         $this->specify('Expect false if some rare username without any collision on Mojang', function() {
             $model = new Account();
             $model->username = 'rare-username';
-            expect($model->hasMojangUsernameCollision())->false();
+            $this->assertFalse($model->hasMojangUsernameCollision());
         });
     }
 
@@ -89,19 +89,19 @@ class AccountTest extends TestCase {
     public function testIsAgreedWithActualRules() {
         $this->specify('get false, if rules field set in null', function() {
             $model = new Account();
-            expect($model->isAgreedWithActualRules())->false();
+            $this->assertFalse($model->isAgreedWithActualRules());
         });
 
         $this->specify('get false, if rules field have version less, then actual', function() {
             $model = new Account();
             $model->rules_agreement_version = 0;
-            expect($model->isAgreedWithActualRules())->false();
+            $this->assertFalse($model->isAgreedWithActualRules());
         });
 
         $this->specify('get true, if rules field have equals rules version', function() {
             $model = new Account();
             $model->rules_agreement_version = LATEST_RULES_VERSION;
-            expect($model->isAgreedWithActualRules())->true();
+            $this->assertTrue($model->isAgreedWithActualRules());
         });
     }
 

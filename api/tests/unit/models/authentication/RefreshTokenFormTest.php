@@ -11,7 +11,7 @@ use common\tests\fixtures\AccountSessionFixture;
 class RefreshTokenFormTest extends TestCase {
     use Specify;
 
-    public function _fixtures() {
+    public function _fixtures(): array {
         return [
             'sessions' => AccountSessionFixture::class,
         ];

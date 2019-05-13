@@ -21,24 +21,24 @@ class EmailActivationExpirationBehaviorTest extends TestCase {
     public function testCompareTime() {
         $this->specify('expect false, if passed value is less then 0', function() {
             $behavior = $this->createBehavior();
-            expect($this->callProtected($behavior, 'compareTime', -1))->false();
+            $this->assertFalse($this->callProtected($behavior, 'compareTime', -1));
         });
 
         $this->specify('expect true, if passed value is equals 0', function() {
             $behavior = $this->createBehavior();
-            expect($this->callProtected($behavior, 'compareTime', 0))->true();
+            $this->assertTrue($this->callProtected($behavior, 'compareTime', 0));
         });
 
         $this->specify('expect true, if passed value is more than 0 and current time is greater then calculated', function() {
             $behavior = $this->createBehavior();
             $behavior->owner->created_at = time() - 10;
-            expect($this->callProtected($behavior, 'compareTime', 5))->true();
+            $this->assertTrue($this->callProtected($behavior, 'compareTime', 5));
         });
 
         $this->specify('expect false, if passed value is more than 0 and current time is less then calculated', function() {
             $behavior = $this->createBehavior();
             $behavior->owner->created_at = time() - 2;
-            expect($this->callProtected($behavior, 'compareTime', 7))->false();
+            $this->assertFalse($this->callProtected($behavior, 'compareTime', 7));
         });
     }
 
@@ -47,14 +47,14 @@ class EmailActivationExpirationBehaviorTest extends TestCase {
             $behavior = $this->createBehavior();
             $behavior->repeatTimeout = 30;
             $behavior->owner->created_at = time() - 60;
-            expect($behavior->canRepeat())->true();
+            $this->assertTrue($behavior->canRepeat());
         });
 
         $this->specify('we cannot repeat, if created_at + repeatTimeout is less, then current time', function() {
             $behavior = $this->createBehavior();
             $behavior->repeatTimeout = 60;
             $behavior->owner->created_at = time() - 30;
-            expect($behavior->canRepeat())->false();
+            $this->assertFalse($behavior->canRepeat());
         });
     }
 
@@ -63,14 +63,14 @@ class EmailActivationExpirationBehaviorTest extends TestCase {
             $behavior = $this->createBehavior();
             $behavior->expirationTimeout = 30;
             $behavior->owner->created_at = time() - 60;
-            expect($behavior->isExpired())->true();
+            $this->assertTrue($behavior->isExpired());
         });
 
         $this->specify('key is not expired, if created_at + expirationTimeout is less, then current time', function() {
             $behavior = $this->createBehavior();
             $behavior->expirationTimeout = 60;
             $behavior->owner->created_at = time() - 30;
-            expect($behavior->isExpired())->false();
+            $this->assertFalse($behavior->isExpired());
         });
     }
 
@@ -79,7 +79,7 @@ class EmailActivationExpirationBehaviorTest extends TestCase {
             $behavior = $this->createBehavior();
             $behavior->repeatTimeout = 30;
             $behavior->owner->created_at = time() - 60;
-            expect($behavior->canRepeatIn())->equals($behavior->owner->created_at + $behavior->repeatTimeout);
+            $this->assertSame($behavior->owner->created_at + $behavior->repeatTimeout, $behavior->canRepeatIn());
         });
     }
 
@@ -88,7 +88,7 @@ class EmailActivationExpirationBehaviorTest extends TestCase {
             $behavior = $this->createBehavior();
             $behavior->expirationTimeout = 30;
             $behavior->owner->created_at = time() - 60;
-            expect($behavior->expireIn())->equals($behavior->owner->created_at + $behavior->expirationTimeout);
+            $this->assertSame($behavior->owner->created_at + $behavior->expirationTimeout, $behavior->expireIn());
         });
     }
 

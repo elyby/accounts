@@ -12,7 +12,7 @@ class PrimaryKeyValueBehaviorTest extends TestCase {
     public function testRefreshPrimaryKeyValue() {
         $this->specify('method should generate value for primary key field on call', function() {
             $model = new DummyModel();
-            /** @var PrimaryKeyValueBehavior|\PHPUnit_Framework_MockObject_MockObject $behavior */
+            /** @var PrimaryKeyValueBehavior|\PHPUnit\Framework\MockObject\MockObject $behavior */
             $behavior = $this->getMockBuilder(PrimaryKeyValueBehavior::class)
                 ->setMethods(['isValueExists'])
                 ->setConstructorArgs([[
@@ -28,12 +28,12 @@ class PrimaryKeyValueBehaviorTest extends TestCase {
 
             $model->attachBehavior('primary-key-value-behavior', $behavior);
             $behavior->setPrimaryKeyValue();
-            expect($model->id)->equals('mock');
+            $this->assertSame('mock', $model->id);
         });
 
         $this->specify('method should repeat value generation if generated value duplicate with exists', function() {
             $model = new DummyModel();
-            /** @var PrimaryKeyValueBehavior|\PHPUnit_Framework_MockObject_MockObject $behavior */
+            /** @var PrimaryKeyValueBehavior|\PHPUnit\Framework\MockObject\MockObject $behavior */
             $behavior = $this->getMockBuilder(PrimaryKeyValueBehavior::class)
                 ->setMethods(['isValueExists', 'generateValue'])
                 ->setConstructorArgs([[
@@ -53,7 +53,7 @@ class PrimaryKeyValueBehaviorTest extends TestCase {
 
             $model->attachBehavior('primary-key-value-behavior', $behavior);
             $behavior->setPrimaryKeyValue();
-            expect($model->id)->equals('3');
+            $this->assertSame('3', $model->id);
         });
     }
 

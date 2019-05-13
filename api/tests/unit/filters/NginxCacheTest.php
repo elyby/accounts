@@ -20,7 +20,7 @@ class NginxCacheTest extends TestCase {
     }
 
     private function testAfterActionInternal($ruleConfig, $expected) {
-        /** @var HeaderCollection|\PHPUnit_Framework_MockObject_MockObject $headers */
+        /** @var HeaderCollection|\PHPUnit\Framework\MockObject\MockObject $headers */
         $headers = $this->getMockBuilder(HeaderCollection::class)
             ->setMethods(['set'])
             ->getMock();
@@ -29,7 +29,7 @@ class NginxCacheTest extends TestCase {
             ->method('set')
             ->with('X-Accel-Expires', $expected);
 
-        /** @var Request|\PHPUnit_Framework_MockObject_MockObject $request */
+        /** @var Request|\PHPUnit\Framework\MockObject\MockObject $request */
         $request = $this->getMockBuilder(Request::class)
             ->setMethods(['getHeaders'])
             ->getMock();
@@ -40,7 +40,7 @@ class NginxCacheTest extends TestCase {
 
         Yii::$app->set('response', $request);
 
-        /** @var Controller|\PHPUnit_Framework_MockObject_MockObject $controller */
+        /** @var Controller|\PHPUnit\Framework\MockObject\MockObject $controller */
         $controller = $this->getMockBuilder(Controller::class)
             ->setConstructorArgs(['mock', Yii::$app])
             ->getMock();

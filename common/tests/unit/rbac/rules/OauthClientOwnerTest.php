@@ -14,7 +14,7 @@ use const common\LATEST_RULES_VERSION;
 
 class OauthClientOwnerTest extends TestCase {
 
-    public function _fixtures() {
+    public function _fixtures(): array {
         return [
             'oauthClients' => OauthClientFixture::class,
         ];

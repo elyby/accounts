@@ -14,7 +14,7 @@ use yii\queue\Queue;
  */
 class ClearAccountSessionsTest extends TestCase {
 
-    public function _fixtures() {
+    public function _fixtures(): array {
         return [
             'accounts' => fixtures\AccountFixture::class,
             'oauthSessions' => fixtures\OauthSessionFixture::class,

@@ -1,11 +1,9 @@
 <?php
 namespace codeception\api\unit\models;
 
-use api\components\User\IdentityInterface;
 use api\components\User\Jwt;
 use api\components\User\JwtIdentity;
 use api\tests\unit\TestCase;
-use Codeception\Specify;
 use common\tests\_support\ProtectedCaller;
 use common\tests\fixtures\AccountFixture;
 use Emarref\Jwt\Claim;
@@ -14,7 +12,6 @@ use Emarref\Jwt\Token;
 use Yii;
 
 class JwtIdentityTest extends TestCase {
-    use Specify;
     use ProtectedCaller;
 
     public function _fixtures(): array {
@@ -26,7 +23,6 @@ class JwtIdentityTest extends TestCase {
     public function testFindIdentityByAccessToken() {
         $token = $this->generateToken();
         $identity = JwtIdentity::findIdentityByAccessToken($token);
-        $this->assertInstanceOf(IdentityInterface::class, $identity);
         $this->assertSame($token, $identity->getId());
         $this->assertSame($this->tester->grabFixture('accounts', 'admin')['id'], $identity->getAccount()->id);
     }

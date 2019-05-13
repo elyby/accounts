@@ -11,7 +11,7 @@ use common\tests\fixtures\EmailActivationFixture;
 
 class ConfirmEmailFormTest extends TestCase {
 
-    public function _fixtures() {
+    public function _fixtures(): array {
         return [
             'emailActivations' => EmailActivationFixture::class,
         ];

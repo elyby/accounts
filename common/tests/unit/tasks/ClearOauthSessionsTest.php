@@ -10,7 +10,7 @@ use yii\queue\Queue;
 
 class ClearOauthSessionsTest extends TestCase {
 
-    public function _fixtures() {
+    public function _fixtures(): array {
         return [
             'oauthClients' => fixtures\OauthClientFixture::class,
             'oauthSessions' => fixtures\OauthSessionFixture::class,

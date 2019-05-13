@@ -3,7 +3,6 @@ namespace codeception\api\unit\validators;
 
 use api\tests\unit\TestCase;
 use api\validators\EmailActivationKeyValidator;
-use Codeception\Specify;
 use common\helpers\Error as E;
 use common\models\confirmations\ForgotPassword;
 use common\models\EmailActivation;
@@ -12,7 +11,6 @@ use common\tests\fixtures\EmailActivationFixture;
 use yii\base\Model;
 
 class EmailActivationKeyValidatorTest extends TestCase {
-    use Specify;
     use ProtectedCaller;
 
     public function testValidateAttribute() {
@@ -21,7 +19,7 @@ class EmailActivationKeyValidatorTest extends TestCase {
             public $key;
         };
 
-        /** @var EmailActivationKeyValidator|\PHPUnit_Framework_MockObject_MockObject $validator */
+        /** @var EmailActivationKeyValidator|\PHPUnit\Framework\MockObject\MockObject $validator */
         $validator = $this->getMockBuilder(EmailActivationKeyValidator::class)
             ->setMethods(['findEmailActivationModel'])
             ->getMock();

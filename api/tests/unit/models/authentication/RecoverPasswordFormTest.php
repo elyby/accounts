@@ -4,15 +4,13 @@ namespace api\tests\_support\models\authentication;
 use api\components\User\AuthenticationResult;
 use api\models\authentication\RecoverPasswordForm;
 use api\tests\unit\TestCase;
-use Codeception\Specify;
 use common\models\Account;
 use common\models\EmailActivation;
 use common\tests\fixtures\EmailActivationFixture;
 
 class RecoverPasswordFormTest extends TestCase {
-    use Specify;
 
-    public function _fixtures() {
+    public function _fixtures(): array {
         return [
             'emailActivations' => EmailActivationFixture::class,
         ];

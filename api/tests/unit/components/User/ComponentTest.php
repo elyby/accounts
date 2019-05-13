@@ -21,7 +21,7 @@ class ComponentTest extends TestCase {
     use ProtectedCaller;
 
     /**
-     * @var Component|\PHPUnit_Framework_MockObject_MockObject
+     * @var Component|\PHPUnit\Framework\MockObject\MockObject
      */
     private $component;
 
@@ -30,7 +30,7 @@ class ComponentTest extends TestCase {
         $this->component = new Component($this->getComponentConfig());
     }
 
-    public function _fixtures() {
+    public function _fixtures(): array {
         return [
             'accounts' => AccountFixture::class,
             'sessions' => AccountSessionFixture::class,
@@ -115,7 +115,7 @@ class ComponentTest extends TestCase {
         $result = $this->component->createJwtAuthenticationToken($account, true);
         $this->component->logout();
 
-        /** @var Component|\PHPUnit_Framework_MockObject_MockObject $component */
+        /** @var Component|\PHPUnit\Framework\MockObject\MockObject $component */
         $component = $this->getMockBuilder(Component::class)
             ->setMethods(['getIsGuest'])
             ->setConstructorArgs([$this->getComponentConfig()])

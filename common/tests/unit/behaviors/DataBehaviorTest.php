@@ -33,7 +33,7 @@ class DataBehaviorTest extends TestCase {
             $model = $this->createModel();
             /** @var DataBehavior $behavior */
             $behavior = $model->behaviors['dataBehavior'];
-            expect($this->callProtected($behavior, 'getData'))->equals([]);
+            $this->assertSame([], $this->callProtected($behavior, 'getData'));
         });
 
         $this->specify('getting value from serialized data field should return encoded value', function() {
@@ -42,7 +42,7 @@ class DataBehaviorTest extends TestCase {
             $model->_data = serialize($data);
             /** @var DataBehavior $behavior */
             $behavior = $model->behaviors['dataBehavior'];
-            expect($this->callProtected($behavior, 'getData'))->equals($data);
+            $this->assertSame($data, $this->callProtected($behavior, 'getData'));
         });
 
         $this->specify('getting value from invalid serialization string', function() {

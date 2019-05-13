@@ -1,9 +1,12 @@
 <?php
+declare(strict_types=1);
+
 namespace common\tests\unit;
 
+use Codeception\Test\Unit;
 use Mockery;
 
-class TestCase extends \Codeception\Test\Unit {
+class TestCase extends Unit {
 
     /**
      * @var \common\tests\UnitTester
@@ -22,7 +25,7 @@ class TestCase extends \Codeception\Test\Unit {
      *
      * @return array
      */
-    public function _fixtures() {
+    public function _fixtures(): array {
         return [];
     }
 

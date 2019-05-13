@@ -25,7 +25,7 @@ class LoginFormTest extends TestCase {
         $_SERVER['REMOTE_ADDR'] = $this->originalRemoteAddr;
     }
 
-    public function _fixtures() {
+    public function _fixtures(): array {
         return [
             'accounts' => AccountFixture::class,
         ];

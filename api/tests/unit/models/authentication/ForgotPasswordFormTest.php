@@ -4,7 +4,6 @@ namespace codeception\api\unit\models\authentication;
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\authentication\ForgotPasswordForm;
 use api\tests\unit\TestCase;
-use Codeception\Specify;
 use common\models\Account;
 use common\models\EmailActivation;
 use common\tasks\SendPasswordRecoveryEmail;
@@ -14,7 +13,6 @@ use GuzzleHttp\ClientInterface;
 use Yii;
 
 class ForgotPasswordFormTest extends TestCase {
-    use Specify;
 
     protected function setUp() {
         parent::setUp();
@@ -25,7 +23,7 @@ class ForgotPasswordFormTest extends TestCase {
         });
     }
 
-    public function _fixtures() {
+    public function _fixtures(): array {
         return [
             'accounts' => AccountFixture::class,
             'emailActivations' => EmailActivationFixture::class,
@@ -104,12 +102,13 @@ class ForgotPasswordFormTest extends TestCase {
     }
 
     /**
-     * @param SendPasswordRecoveryEmail $job
+     * @param \yii\queue\JobInterface $job
      * @param Account $account
      * @param EmailActivation $activation
      */
     private function assertTaskCreated($job, Account $account, EmailActivation $activation) {
         $this->assertInstanceOf(SendPasswordRecoveryEmail::class, $job);
+        /** @var SendPasswordRecoveryEmail $job */
         $this->assertSame($account->username, $job->username);
         $this->assertSame($account->email, $job->email);
         $this->assertSame($account->lang, $job->locale);

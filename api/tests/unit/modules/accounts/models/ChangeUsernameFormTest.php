@@ -11,7 +11,7 @@ use common\tests\fixtures\UsernameHistoryFixture;
 
 class ChangeUsernameFormTest extends TestCase {
 
-    public function _fixtures() {
+    public function _fixtures(): array {
         return [
             'accounts' => AccountFixture::class,
             'history' => UsernameHistoryFixture::class,

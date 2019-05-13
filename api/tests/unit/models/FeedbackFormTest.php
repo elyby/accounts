@@ -19,7 +19,7 @@ class FeedbackFormTest extends TestCase {
     }
 
     public function testSendMessageWithEmail() {
-        /** @var FeedbackForm|\PHPUnit_Framework_MockObject_MockObject $model */
+        /** @var FeedbackForm|\PHPUnit\Framework\MockObject\MockObject $model */
         $model = $this->getMockBuilder(FeedbackForm::class)
             ->setMethods(['getAccount'])
             ->setConstructorArgs([[

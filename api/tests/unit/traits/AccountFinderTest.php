@@ -3,14 +3,12 @@ namespace api\tests\_support\traits;
 
 use api\tests\unit\TestCase;
 use api\traits\AccountFinder;
-use Codeception\Specify;
 use common\models\Account;
 use common\tests\fixtures\AccountFixture;
 
 class AccountFinderTest extends TestCase {
-    use Specify;
 
-    public function _fixtures() {
+    public function _fixtures(): array {
         return [
             'accounts' => AccountFixture::class,
         ];

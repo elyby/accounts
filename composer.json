@@ -31,9 +31,8 @@
         "yiisoft/yii2-swiftmailer": "~2.1.0"
     },
     "require-dev": {
-        "codeception/codeception": "^2.5.3",
+        "codeception/base": "^3.0.0",
         "codeception/specify": "^1.0.0",
-        "codeception/verify": "*",
         "ely/php-code-style": "^0.3.0",
         "flow/jsonpath": "^0.4.0",
         "fzaninotto/faker": "^1.8",

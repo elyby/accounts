@@ -15,7 +15,7 @@ use Ramsey\Uuid\Uuid;
 class AuthenticationFormTest extends TestCase {
     use ProtectedCaller;
 
-    public function _fixtures() {
+    public function _fixtures(): array {
         return [
             'accounts' => AccountFixture::class,
             'minecraftAccessKeys' => MinecraftAccessKeyFixture::class,
@@ -111,7 +111,7 @@ class AuthenticationFormTest extends TestCase {
     }
 
     private function createAuthForm($status = Account::STATUS_ACTIVE) {
-        /** @var LoginForm|\PHPUnit_Framework_MockObject_MockObject $loginForm */
+        /** @var LoginForm|\PHPUnit\Framework\MockObject\MockObject $loginForm */
         $loginForm = $this->getMockBuilder(LoginForm::class)
             ->setMethods(['getAccount'])
             ->getMock();
@@ -126,7 +126,7 @@ class AuthenticationFormTest extends TestCase {
             ->method('getAccount')
             ->will($this->returnValue($account));
 
-        /** @var AuthenticationForm|\PHPUnit_Framework_MockObject_MockObject $authForm */
+        /** @var AuthenticationForm|\PHPUnit\Framework\MockObject\MockObject $authForm */
         $authForm = $this->getMockBuilder(AuthenticationForm::class)
             ->setMethods(['createLoginForm', 'createMinecraftAccessToken'])
             ->getMock();
