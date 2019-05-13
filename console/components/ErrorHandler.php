@@ -1,13 +1,15 @@
 <?php
+declare(strict_types=1);
+
 namespace console\components;
 
 use Swift_TransportException;
 use Yii;
-use yii\queue\ErrorEvent;
+use yii\queue\ExecEvent;
 
 class ErrorHandler {
 
-    public function handleQueueError(ErrorEvent $error): void {
+    public function handleQueueError(ExecEvent $error): void {
         $exception = $error->error;
         if ($exception instanceof Swift_TransportException) {
             Yii::warning($exception);

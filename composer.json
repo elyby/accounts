@@ -13,7 +13,7 @@
         "ext-simplexml": "*",
         "bacon/bacon-qr-code": "^1.0",
         "domnikl/statsd": "^2.6",
-        "ely/email-renderer": "dev-master#8aa2e71c5b3b8e4a726c3c090b2997030ba29f73",
+        "ely/email-renderer": "dev-master",
         "ely/mojang-api": "^0.2.0",
         "ely/yii2-tempmail-validator": "^2.0",
         "emarref/jwt": "~1.0.3",
@@ -26,7 +26,7 @@
         "spomky-labs/otphp": "^9.0.2",
         "webmozart/assert": "^1.2.0",
         "yiisoft/yii2": "2.0.15.1",
-        "yiisoft/yii2-queue": "~2.1.0",
+        "yiisoft/yii2-queue": "^2.2.0",
         "yiisoft/yii2-redis": "~2.0.0",
         "yiisoft/yii2-swiftmailer": "~2.1.0"
     },

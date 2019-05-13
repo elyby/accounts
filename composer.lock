@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ae2318fe3bd54e8c670c5969ba5c3e82",
+    "content-hash": "2b362e3d509b4daae68d7975355e32de",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -612,7 +612,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab+deploy-token-1:FDGgmcnLdykcsyJJ_8Uv@gitlab.ely.by/elyby/email-renderer.git",
-                "reference": "8aa2e71c5b3b8e4a726c3c090b2997030ba29f73"
+                "reference": "3b06c19b39a298e6cb00f711b5fed40c315cd95e"
             },
             "require": {
                 "php": ">=5.6.0"
@@ -644,7 +644,7 @@
             "keywords": [
                 ""
             ],
-            "time": "2017-10-04T17:17:10+00:00"
+            "time": "2019-05-13T21:56:45+00:00"
         },
         {
             "name": "ely/mojang-api",
@@ -832,16 +832,16 @@
         },
         {
             "name": "goaop/framework",
-            "version": "2.3.0",
+            "version": "2.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/goaop/framework.git",
-                "reference": "00cf1d7271b9746411646500c83348f0b30bfe28"
+                "reference": "6f81f063385e7d7d7f01ef5048815fee89639952"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/goaop/framework/zipball/00cf1d7271b9746411646500c83348f0b30bfe28",
-                "reference": "00cf1d7271b9746411646500c83348f0b30bfe28",
+                "url": "https://api.github.com/repos/goaop/framework/zipball/6f81f063385e7d7d7f01ef5048815fee89639952",
+                "reference": "6f81f063385e7d7d7f01ef5048815fee89639952",
                 "shasum": ""
             },
             "require": {
@@ -849,7 +849,7 @@
                 "doctrine/cache": "^1.5",
                 "goaop/parser-reflection": "~2.0",
                 "jakubledl/dissect": "~1.0",
-                "php": ">=5.6.0",
+                "php": "~7.0",
                 "symfony/finder": "^3.4|^4.2"
             },
             "require-dev": {
@@ -895,7 +895,7 @@
                 "library",
                 "php"
             ],
-            "time": "2019-01-05T21:55:35+00:00"
+            "time": "2019-02-14T16:19:48+00:00"
         },
         {
             "name": "goaop/parser-reflection",
@@ -2182,28 +2182,28 @@
         },
         {
             "name": "yiisoft/yii2-queue",
-            "version": "2.1.0",
+            "version": "2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/yii2-queue.git",
-                "reference": "d04b4b3c932081200876a351cc6c3502e89e11b8"
+                "reference": "d365e6f3222a0fdb150b1ea9f17bda2a4ddac61d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-queue/zipball/d04b4b3c932081200876a351cc6c3502e89e11b8",
-                "reference": "d04b4b3c932081200876a351cc6c3502e89e11b8",
+                "url": "https://api.github.com/repos/yiisoft/yii2-queue/zipball/d365e6f3222a0fdb150b1ea9f17bda2a4ddac61d",
+                "reference": "d365e6f3222a0fdb150b1ea9f17bda2a4ddac61d",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.5.0",
-                "symfony/process": "*",
+                "symfony/process": "^3.3||^4.0",
                 "yiisoft/yii2": "~2.0.14"
             },
             "require-dev": {
                 "aws/aws-sdk-php": ">=2.4",
                 "enqueue/amqp-lib": "^0.8",
                 "jeremeamia/superclosure": "*",
-                "pda/pheanstalk": "*",
+                "pda/pheanstalk": "v3.*",
                 "php-amqplib/php-amqplib": "*",
                 "phpunit/phpunit": "~4.4",
                 "yiisoft/yii2-debug": "*",
@@ -2222,7 +2222,7 @@
             "type": "yii2-extension",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0.x-dev"
+                    "dev-master": "2.x-dev"
                 }
             },
             "autoload": {
@@ -2262,7 +2262,7 @@
                 "sqs",
                 "yii"
             ],
-            "time": "2018-05-23T21:04:57+00:00"
+            "time": "2019-03-19T22:36:41+00:00"
         },
         {
             "name": "yiisoft/yii2-redis",
