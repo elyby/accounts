@@ -37,7 +37,7 @@ class PullMojangUsernameTest extends TestCase {
         $mockApi = $this->createMock(MojangApi::class);
         $this->mockedMethod = $mockApi->method('usernameToUUID');
 
-        Yii::$app->set(MojangApi::class, $mockApi);
+        Yii::$container->set(MojangApi::class, $mockApi);
     }
 
     public function testCreateFromAccount() {

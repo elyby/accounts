@@ -32,7 +32,7 @@ class PullMojangUsername implements JobInterface {
     public function execute($queue) {
         Yii::$app->statsd->inc('queue.pullMojangUsername.attempt');
         /** @var MojangApi $mojangApi */
-        $mojangApi = Yii::$app->get(MojangApi::class);
+        $mojangApi = Yii::$container->get(MojangApi::class);
         try {
             $response = $mojangApi->usernameToUUID($this->username);
             Yii::$app->statsd->inc('queue.pullMojangUsername.found');
