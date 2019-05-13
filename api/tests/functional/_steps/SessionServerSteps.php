@@ -50,7 +50,7 @@ class SessionServerSteps extends FunctionalTester {
             ],
         ]);
         $this->canSeeResponseJsonMatchesJsonPath('$.properties[0].value');
-        $value = json_decode($this->grabResponse(), true)['properties'][0]['value'];
+        $value = $this->grabDataFromResponseByJsonPath('$.properties[0].value')[0];
         $decoded = json_decode(base64_decode($value), true);
         $this->assertArrayHasKey('timestamp', $decoded);
         $this->assertArrayHasKey('textures', $decoded);
@@ -61,7 +61,6 @@ class SessionServerSteps extends FunctionalTester {
         $this->assertArrayHasKey('SKIN', $textures);
         $skinTextures = $textures['SKIN'];
         $this->assertArrayHasKey('url', $skinTextures);
-        $this->assertArrayHasKey('hash', $skinTextures);
     }
 
 }

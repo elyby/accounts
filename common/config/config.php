@@ -19,6 +19,7 @@ return [
         'definitions' => [
             GuzzleHttp\ClientInterface::class => GuzzleHttp\Client::class,
             Ely\Mojang\Api::class => Ely\Mojang\Api::class,
+            common\components\SkinSystem\Api::class => common\components\SkinSystem\Api::class,
         ],
     ],
     'components' => [

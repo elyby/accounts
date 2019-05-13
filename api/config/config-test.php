@@ -21,6 +21,17 @@ return [
                     }
                 };
             },
+            common\components\SkinSystem\Api::class => function() {
+                return new class extends common\components\SkinSystem\Api {
+                    public function textures(string $username): ?array {
+                        return [
+                            'SKIN' => [
+                                'url' => 'http://localhost/skin.png',
+                            ],
+                        ];
+                    }
+                };
+            },
         ],
     ],
 ];

@@ -1,9 +1,12 @@
 <?php
+declare(strict_types=1);
+
 namespace common\models;
 
 use common\components\SkinSystem\Api as SkinSystemApi;
 use DateInterval;
 use DateTime;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use Yii;
 
@@ -20,7 +23,7 @@ class Textures {
         $this->account = $account;
     }
 
-    public function getMinecraftResponse() {
+    public function getMinecraftResponse(): array {
         $response = [
             'name' => $this->account->username,
             'id' => str_replace('-', '', $this->account->uuid),
@@ -60,31 +63,25 @@ class Textures {
     }
 
     public function getTextures(): array {
+        /** @var SkinSystemApi $api */
+        $api = Yii::$container->get(SkinSystemApi::class);
         try {
-            $textures = $this->getSkinsystemApi()->textures($this->account->username);
+            $textures = $api->textures($this->account->username);
         } catch (RequestException $e) {
             Yii::warning('Cannot get textures from skinsystem.ely.by. Exception message is ' . $e->getMessage());
-            $textures = [
-                'SKIN' => [
-                    'url' => 'http://skins.minecraft.net/MinecraftSkins/' . $this->account->username . '.png',
-                    'hash' => md5(uniqid('random, please', true)),
-                ],
-            ];
+        } catch (GuzzleException $e) {
+            Yii::error($e);
         }
 
-        return $textures;
+        return $textures ?? [];
     }
 
-    public static function encrypt(array $data) {
+    public static function encrypt(array $data): string {
         return base64_encode(stripcslashes(json_encode($data)));
     }
 
     public static function decrypt($string, $assoc = true) {
         return json_decode(base64_decode($string), $assoc);
-    }
-
-    protected function getSkinsystemApi(): SkinSystemApi {
-        return new SkinSystemApi();
     }
 
 }
