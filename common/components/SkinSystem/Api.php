@@ -26,7 +26,7 @@ class Api {
             return null;
         }
 
-        return json_decode($response->getBody(), true);
+        return json_decode($response->getBody()->getContents(), true);
     }
 
     public function setClient(ClientInterface $client): void {
