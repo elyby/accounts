@@ -41,13 +41,14 @@ server {
         try_files  $uri /index.html =404;
     }
 
-    location /api {
-        try_files $uri /api/index.php$is_args$args;
+    location /images/emails/assets {
+        proxy_pass http://emails-renderer:3000/assets/;
+        expires    $cache_duration;
+        access_log off;
     }
 
-    location /images/emails/assets {
-        alias '${root_path}/vendor/ely/email-renderer/dist/assets';
-        access_log off;
+    location /api {
+        try_files $uri /api/index.php$is_args$args;
     }
 
     location ~* \.php$ {
