@@ -1,7 +1,7 @@
 <?php
 namespace common\tests\unit\emails;
 
-use common\components\EmailRenderer;
+use common\components\EmailsRenderer\Component;
 use common\emails\TemplateWithRenderer;
 use common\tests\_support\ProtectedCaller;
 use common\tests\unit\TestCase;
@@ -18,7 +18,7 @@ class TemplateWithRendererTest extends TestCase {
         $this->assertSame('mock-to', $template->getTo());
         $this->assertSame('mock-locale', $template->getLocale());
         $this->assertInstanceOf(MailerInterface::class, $template->getMailer());
-        $this->assertInstanceOf(EmailRenderer::class, $template->getEmailRenderer());
+        $this->assertInstanceOf(Component::class, $template->getRenderer());
     }
 
     public function testCreateMessage() {
@@ -26,8 +26,8 @@ class TemplateWithRendererTest extends TestCase {
         $templateBuilder = mock(TemplateBuilder::class)->makePartial();
         $templateBuilder->shouldReceive('render')->andReturn('mock-html');
 
-        /** @var EmailRenderer|\Mockery\MockInterface $renderer */
-        $renderer = mock(EmailRenderer::class)->makePartial();
+        /** @var Component|\Mockery\MockInterface $renderer */
+        $renderer = mock(Component::class)->makePartial();
         $renderer->shouldReceive('getTemplate')->with('mock-template')->andReturn($templateBuilder);
 
         /** @var TemplateWithRenderer|\Mockery\MockInterface $template */

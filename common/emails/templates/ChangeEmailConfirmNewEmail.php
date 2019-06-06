@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace common\emails\templates;
 
 use common\emails\Template;

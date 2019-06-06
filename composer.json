@@ -13,7 +13,6 @@
         "ext-simplexml": "*",
         "bacon/bacon-qr-code": "^1.0",
         "domnikl/statsd": "^2.6",
-        "ely/email-renderer": "dev-master",
         "ely/mojang-api": "^0.2.0",
         "ely/yii2-tempmail-validator": "^2.0",
         "emarref/jwt": "~1.0.3",
@@ -52,10 +51,6 @@
         {
             "type": "composer",
             "url": "https://asset-packagist.org"
-        },
-        {
-            "type": "git",
-            "url": "https://gitlab+deploy-token-1:FDGgmcnLdykcsyJJ_8Uv@gitlab.ely.by/elyby/email-renderer.git"
         }
     ],
     "config": {

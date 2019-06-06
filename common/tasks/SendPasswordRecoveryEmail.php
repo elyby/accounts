@@ -50,7 +50,7 @@ class SendPasswordRecoveryEmail implements RetryableJobInterface {
         Yii::$app->statsd->inc('queue.sendPasswordRecovery.attempt');
         $params = new ForgotPasswordParams($this->username, $this->code, $this->link);
         $to = EmailHelper::buildTo($this->username, $this->email);
-        $template = new ForgotPasswordEmail($to, $this->locale, $params);
+        $template = new ForgotPasswordEmail($to, $this->locale, $params, Yii::$app->emailsRenderer);
         $template->send();
     }
 

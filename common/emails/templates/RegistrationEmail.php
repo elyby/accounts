@@ -1,6 +1,9 @@
 <?php
+declare(strict_types=1);
+
 namespace common\emails\templates;
 
+use common\components\EmailsRenderer\RendererInterface;
 use common\emails\TemplateWithRenderer;
 
 class RegistrationEmail extends TemplateWithRenderer {
@@ -10,8 +13,8 @@ class RegistrationEmail extends TemplateWithRenderer {
     /**
      * @inheritdoc
      */
-    public function __construct($to, string $locale, RegistrationEmailParams $params) {
-        TemplateWithRenderer::__construct($to, $locale);
+    public function __construct($to, string $locale, RegistrationEmailParams $params, RendererInterface $renderer) {
+        parent::__construct($to, $locale, $renderer);
         $this->params = $params;
     }
 

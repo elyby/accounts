@@ -1,16 +1,19 @@
 <?php
+declare(strict_types=1);
+
 namespace common\emails;
 
-use common\components\EmailRenderer;
-use Yii;
+use common\components\EmailsRenderer\RendererInterface;
+use ErrorException;
+use Exception;
 use yii\mail\MessageInterface;
 
 abstract class TemplateWithRenderer extends Template {
 
     /**
-     * @var EmailRenderer
+     * @var RendererInterface
      */
-    private $emailRenderer;
+    private $renderer;
 
     /**
      * @var string
@@ -20,18 +23,18 @@ abstract class TemplateWithRenderer extends Template {
     /**
      * @inheritdoc
      */
-    public function __construct($to, string $locale) {
+    public function __construct($to, string $locale, RendererInterface $renderer) {
         parent::__construct($to);
-        $this->emailRenderer = Yii::$app->emailRenderer;
         $this->locale = $locale;
+        $this->renderer = $renderer;
     }
 
     public function getLocale(): string {
         return $this->locale;
     }
 
-    public function getEmailRenderer(): EmailRenderer {
-        return $this->emailRenderer;
+    public function getRenderer(): RendererInterface {
+        return $this->renderer;
     }
 
     /**
@@ -46,6 +49,10 @@ abstract class TemplateWithRenderer extends Template {
         return $this->getTemplateName();
     }
 
+    /**
+     * @return MessageInterface
+     * @throws ErrorException
+     */
     protected function createMessage(): MessageInterface {
         return $this->getMailer()
             ->compose()
@@ -55,12 +62,16 @@ abstract class TemplateWithRenderer extends Template {
             ->setSubject($this->getSubject());
     }
 
+    /**
+     * @return string
+     * @throws ErrorException
+     */
     private function render(): string {
-        return $this->getEmailRenderer()
-            ->getTemplate($this->getTemplateName())
-            ->setLocale($this->getLocale())
-            ->setParams($this->getParams())
-            ->render();
+        try {
+            return $this->getRenderer()->render($this->getTemplateName(), $this->getLocale(), $this->getParams());
+        } catch (Exception $e) {
+            throw new ErrorException('Unable to render the template', 0, 1, __FILE__, __LINE__, $e);
+        }
     }
 
 }

@@ -89,8 +89,9 @@ return [
         'guzzle' => [
             'class' => GuzzleHttp\Client::class,
         ],
-        'emailRenderer' => [
-            'class' => common\components\EmailRenderer::class,
+        'emailsRenderer' => [
+            'class' => common\components\EmailsRenderer\Component::class,
+            'serviceUrl' => getenv('EMAILS_RENDERER_HOST'),
             'basePath' => '/images/emails',
         ],
         'oauth' => [

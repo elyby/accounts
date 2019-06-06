@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace common\emails;
 
 use common\emails\exceptions\CannotSendEmailException;
@@ -20,7 +22,8 @@ abstract class Template {
     private $to;
 
     /**
-     * @param string|array $to получатель письма. Задаётся как Email или как массив [email => name]
+     * @param string|array $to message receiver. Can be passed as string (pure email)
+     *                         or as an array [email => user's name]
      */
     public function __construct($to) {
         $this->mailer = Yii::$app->mailer;
