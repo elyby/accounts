@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace common\components\EmailsRenderer;
+namespace common\emails;
 
 interface RendererInterface {
 

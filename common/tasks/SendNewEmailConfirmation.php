@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
+
 namespace common\tasks;
 
 use common\emails\EmailHelper;
-use common\emails\templates\ChangeEmailConfirmNewEmail;
+use common\emails\templates\ConfirmNewEmail;
 use common\models\confirmations\NewEmailConfirmation;
 use Yii;
 use yii\queue\RetryableJobInterface;
@@ -25,22 +26,24 @@ class SendNewEmailConfirmation implements RetryableJobInterface {
         return $result;
     }
 
-    public function getTtr() {
+    public function getTtr(): int {
         return 30;
     }
 
-    public function canRetry($attempt, $error) {
+    public function canRetry($attempt, $error): bool {
         return true;
     }
 
     /**
      * @param \yii\queue\Queue $queue
+     * @throws \common\emails\exceptions\CannotSendEmailException
      */
     public function execute($queue) {
         Yii::$app->statsd->inc('queue.sendNewEmailConfirmation.attempt');
-        $to = EmailHelper::buildTo($this->username, $this->email);
-        $template = new ChangeEmailConfirmNewEmail($to, $this->username, $this->code);
-        $template->send();
+        $template = new ConfirmNewEmail(Yii::$app->mailer);
+        $template->setKey($this->code);
+        $template->setUsername($this->username);
+        $template->send(EmailHelper::buildTo($this->username, $this->email));
     }
 
 }

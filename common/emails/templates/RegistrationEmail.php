@@ -3,20 +3,15 @@ declare(strict_types=1);
 
 namespace common\emails\templates;
 
-use common\components\EmailsRenderer\RendererInterface;
 use common\emails\TemplateWithRenderer;
+use yii\base\InvalidCallException;
 
 class RegistrationEmail extends TemplateWithRenderer {
 
-    private $params;
-
     /**
-     * @inheritdoc
+     * @var RegistrationEmailParams|null
      */
-    public function __construct($to, string $locale, RegistrationEmailParams $params, RendererInterface $renderer) {
-        parent::__construct($to, $locale, $renderer);
-        $this->params = $params;
-    }
+    private $params;
 
     public function getSubject(): string {
         return 'Ely.by Account registration';
@@ -26,7 +21,15 @@ class RegistrationEmail extends TemplateWithRenderer {
         return 'register';
     }
 
+    public function setParams(RegistrationEmailParams $params): void {
+        $this->params = $params;
+    }
+
     public function getParams(): array {
+        if ($this->params === null) {
+            throw new InvalidCallException('You need to set params first');
+        }
+
         return [
             'username' => $this->params->getUsername(),
             'code' => $this->params->getCode(),

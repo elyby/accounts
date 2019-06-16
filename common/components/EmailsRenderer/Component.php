@@ -4,14 +4,12 @@ declare(strict_types=1);
 namespace common\components\EmailsRenderer;
 
 use common\components\EmailsRenderer\Request\TemplateRequest;
+use common\emails\RendererInterface;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\helpers\ArrayHelper;
 use yii\helpers\FileHelper;
 
-/**
- * @property string $baseDomain
- */
 class Component extends \yii\base\Component implements RendererInterface {
 
     /**
@@ -20,8 +18,12 @@ class Component extends \yii\base\Component implements RendererInterface {
     public $serviceUrl;
 
     /**
-     * @var string базовый путь после хоста. Должен начинаться слешем и заканчиваться без него.
-     * Например "/email-images"
+     * @var string application base domain. Can be omitted for web applications (will be extracted from request)
+     */
+    public $baseDomain;
+
+    /**
+     * @var string base path after the host. For example "/emails-images"
      */
     public $basePath = '';
 
@@ -30,11 +32,6 @@ class Component extends \yii\base\Component implements RendererInterface {
      */
     private $api;
 
-    /**
-     * @var string
-     */
-    private $_baseDomain;
-
     public function init(): void {
         parent::init();
 
@@ -42,20 +39,12 @@ class Component extends \yii\base\Component implements RendererInterface {
             throw new InvalidConfigException('serviceUrl is required');
         }
 
-        if ($this->_baseDomain === null) {
-            $this->_baseDomain = Yii::$app->urlManager->getHostInfo();
-            if ($this->_baseDomain === null) {
+        if ($this->baseDomain === null) {
+            $this->baseDomain = Yii::$app->urlManager->getHostInfo();
+            if ($this->baseDomain === null) {
                 throw new InvalidConfigException('Cannot automatically obtain base domain');
             }
         }
-    }
-
-    public function setBaseDomain(string $baseDomain): void {
-        $this->_baseDomain = $baseDomain;
-    }
-
-    public function getBaseDomain(): string {
-        return $this->_baseDomain;
     }
 
     /**
@@ -83,7 +72,7 @@ class Component extends \yii\base\Component implements RendererInterface {
     }
 
     private function buildBasePath(): string {
-        return FileHelper::normalizePath($this->_baseDomain . '/' . $this->basePath, '/');
+        return FileHelper::normalizePath($this->baseDomain . '/' . $this->basePath, '/');
     }
 
 }

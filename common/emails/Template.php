@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace common\emails;
 
-use common\emails\exceptions\CannotSendEmailException;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\mail\MailerInterface;
@@ -12,29 +11,12 @@ use yii\mail\MessageInterface;
 abstract class Template {
 
     /**
-     * @var \yii\swiftmailer\Mailer
+     * @var MailerInterface
      */
     private $mailer;
 
-    /**
-     * @var string|array
-     */
-    private $to;
-
-    /**
-     * @param string|array $to message receiver. Can be passed as string (pure email)
-     *                         or as an array [email => user's name]
-     */
-    public function __construct($to) {
-        $this->mailer = Yii::$app->mailer;
-        $this->to = $to;
-    }
-
-    /**
-     * @return array|string
-     */
-    public function getTo() {
-        return $this->to;
+    public function __construct(MailerInterface $mailer) {
+        $this->mailer = $mailer;
     }
 
     abstract public function getSubject(): string;
@@ -44,7 +26,7 @@ abstract class Template {
      * @throws InvalidConfigException
      */
     public function getFrom() {
-        $fromEmail = Yii::$app->params['fromEmail'];
+        $fromEmail = Yii::$app->params['fromEmail'] ?? '';
         if (!$fromEmail) {
             throw new InvalidConfigException('Please specify fromEmail app in app params');
         }
@@ -56,13 +38,14 @@ abstract class Template {
         return [];
     }
 
-    public function getMailer(): MailerInterface {
-        return $this->mailer;
-    }
-
-    public function send(): void {
-        if (!$this->createMessage()->send()) {
-            throw new CannotSendEmailException('Unable send email.');
+    /**
+     * @param string|array $to see \yii\mail\MessageInterface::setTo to know the format.
+     *
+     * @throws \common\emails\exceptions\CannotSendEmailException
+     */
+    public function send($to): void {
+        if (!$this->createMessage($to)->send()) {
+            throw new exceptions\CannotSendEmailException();
         }
     }
 
@@ -71,10 +54,14 @@ abstract class Template {
      */
     abstract protected function getView();
 
-    protected function createMessage(): MessageInterface {
+    final protected function getMailer(): MailerInterface {
+        return $this->mailer;
+    }
+
+    protected function createMessage($for): MessageInterface {
         return $this->getMailer()
             ->compose($this->getView(), $this->getParams())
-            ->setTo($this->getTo())
+            ->setTo($for)
             ->setFrom($this->getFrom())
             ->setSubject($this->getSubject());
     }

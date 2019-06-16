@@ -19,5 +19,8 @@ return [
         'mailer' => [
             'useFileTransport' => true,
         ],
+        'emailsRenderer' => [
+            'class' => common\tests\_support\EmailsRenderer::class,
+        ],
     ],
 ];

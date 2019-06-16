@@ -3,20 +3,15 @@ declare(strict_types=1);
 
 namespace common\emails\templates;
 
-use common\components\EmailsRenderer\RendererInterface;
 use common\emails\TemplateWithRenderer;
+use yii\base\InvalidCallException;
 
 class ForgotPasswordEmail extends TemplateWithRenderer {
 
-    private $params;
-
     /**
-     * @inheritdoc
+     * @var ForgotPasswordParams|null
      */
-    public function __construct($to, string $locale, ForgotPasswordParams $params, RendererInterface $renderer) {
-        parent::__construct($to, $locale, $renderer);
-        $this->params = $params;
-    }
+    private $params;
 
     public function getSubject(): string {
         return 'Ely.by Account forgot password';
@@ -26,7 +21,15 @@ class ForgotPasswordEmail extends TemplateWithRenderer {
         return 'forgotPassword';
     }
 
+    public function setParams(ForgotPasswordParams $params): void {
+        $this->params = $params;
+    }
+
     public function getParams(): array {
+        if ($this->params === null) {
+            throw new InvalidCallException('You need to set params first');
+        }
+
         return [
             'username' => $this->params->getUsername(),
             'code' => $this->params->getCode(),
