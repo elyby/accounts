@@ -8,7 +8,6 @@ use common\emails\RendererInterface;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\helpers\ArrayHelper;
-use yii\helpers\FileHelper;
 
 class Component extends \yii\base\Component implements RendererInterface {
 
@@ -63,7 +62,7 @@ class Component extends \yii\base\Component implements RendererInterface {
         return $this->getApi()->getTemplate($request);
     }
 
-    private function getApi(): Api {
+    protected function getApi(): Api {
         if ($this->api === null) {
             $this->api = new Api($this->serviceUrl);
         }
@@ -72,7 +71,7 @@ class Component extends \yii\base\Component implements RendererInterface {
     }
 
     private function buildBasePath(): string {
-        return FileHelper::normalizePath($this->baseDomain . '/' . $this->basePath, '/');
+        return trim($this->baseDomain, '/') . '/' . trim($this->basePath, '/');
     }
 
 }
