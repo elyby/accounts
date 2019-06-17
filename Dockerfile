@@ -83,8 +83,6 @@ COPY ./docker/nginx/generate-upstream.sh /usr/bin/generate-upstream
 COPY ./docker/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY ./docker/nginx/account.ely.by.conf.template /etc/nginx/conf.d/
 
-COPY --from=app /var/www/html/vendor/ely/email-renderer/dist/assets /var/www/html/vendor/ely/email-renderer/dist/assets
-
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
 
