@@ -1,17 +1,28 @@
 <?php
+declare(strict_types=1);
+
 namespace common\emails\templates;
 
 use common\emails\Template;
+use yii\base\InvalidCallException;
 
-class ChangeEmailConfirmNewEmail extends Template {
+class ConfirmNewEmail extends Template {
 
+    /**
+     * @var string|null
+     */
     private $username;
 
+    /**
+     * @var string|null
+     */
     private $key;
 
-    public function __construct($to, string $username, string $key) {
-        parent::__construct($to);
+    public function setUsername(string $username): void {
         $this->username = $username;
+    }
+
+    public function setKey(string $key): void {
         $this->key = $key;
     }
 
@@ -20,15 +31,16 @@ class ChangeEmailConfirmNewEmail extends Template {
     }
 
     public function getParams(): array {
+        if ($this->username === null || $this->key === null) {
+            throw new InvalidCallException('You need to set username and key params first');
+        }
+
         return [
-            'key' => $this->key,
             'username' => $this->username,
+            'key' => $this->key,
         ];
     }
 
-    /**
-     * @return string|array
-     */
     protected function getView() {
         return [
             'html' => '@common/emails/views/new-email-confirmation-html',

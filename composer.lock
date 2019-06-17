@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "68086c7aa86b976c390b02cc53b182f9",
+    "content-hash": "752322170e3433ba42cb90c1dd6122a2",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -166,7 +166,7 @@
             "version": "3.27.0",
             "source": {
                 "type": "git",
-                "url": "git@github.com:getsentry/raven-js-bower.git",
+                "url": "https://github.com/getsentry/raven-js-bower.git",
                 "reference": "c8b3a6040be6928e2f57fa5eec4d7afc31750235"
             },
             "dist": {
@@ -605,46 +605,6 @@
                 "validator"
             ],
             "time": "2018-12-04T22:38:24+00:00"
-        },
-        {
-            "name": "ely/email-renderer",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://gitlab+deploy-token-1:FDGgmcnLdykcsyJJ_8Uv@gitlab.ely.by/elyby/email-renderer.git",
-                "reference": "3b06c19b39a298e6cb00f711b5fed40c315cd95e"
-            },
-            "require": {
-                "php": ">=5.6.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Ely\\Email\\": "src-php/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Ely.by team",
-                    "email": "team@ely.by"
-                },
-                {
-                    "name": "ErickSkrauch",
-                    "email": "erickskrauch@ely.by"
-                },
-                {
-                    "name": "SleepWalker",
-                    "email": "dev@udf.su"
-                }
-            ],
-            "homepage": "http://ely.by",
-            "keywords": [
-                ""
-            ],
-            "time": "2019-05-13T21:56:45+00:00"
         },
         {
             "name": "ely/mojang-api",
@@ -6180,7 +6140,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "ely/email-renderer": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,

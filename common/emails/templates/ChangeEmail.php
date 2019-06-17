@@ -1,14 +1,19 @@
 <?php
+declare(strict_types=1);
+
 namespace common\emails\templates;
 
 use common\emails\Template;
+use yii\base\InvalidCallException;
 
-class ChangeEmailConfirmCurrentEmail extends Template {
+class ChangeEmail extends Template {
 
+    /**
+     * @var string|null
+     */
     private $key;
 
-    public function __construct($to, string $key) {
-        parent::__construct($to);
+    public function setKey(string $key): void {
         $this->key = $key;
     }
 
@@ -17,14 +22,15 @@ class ChangeEmailConfirmCurrentEmail extends Template {
     }
 
     public function getParams(): array {
+        if ($this->key === null) {
+            throw new InvalidCallException('You need to set key param first');
+        }
+
         return [
             'key' => $this->key,
         ];
     }
 
-    /**
-     * @return string|array
-     */
     protected function getView() {
         return [
             'html' => '@common/emails/views/current-email-confirmation-html',

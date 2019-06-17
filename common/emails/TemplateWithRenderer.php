@@ -1,28 +1,30 @@
 <?php
+declare(strict_types=1);
+
 namespace common\emails;
 
-use common\components\EmailRenderer;
-use Yii;
+use Exception;
+use yii\mail\MailerInterface;
 use yii\mail\MessageInterface;
 
 abstract class TemplateWithRenderer extends Template {
 
     /**
-     * @var EmailRenderer
+     * @var RendererInterface
      */
-    private $emailRenderer;
+    private $renderer;
 
     /**
      * @var string
      */
-    private $locale;
+    private $locale = 'en';
 
-    /**
-     * @inheritdoc
-     */
-    public function __construct($to, string $locale) {
-        parent::__construct($to);
-        $this->emailRenderer = Yii::$app->emailRenderer;
+    public function __construct(MailerInterface $mailer, RendererInterface $renderer) {
+        parent::__construct($mailer);
+        $this->renderer = $renderer;
+    }
+
+    public function setLocale(string $locale): void {
         $this->locale = $locale;
     }
 
@@ -30,37 +32,47 @@ abstract class TemplateWithRenderer extends Template {
         return $this->locale;
     }
 
-    public function getEmailRenderer(): EmailRenderer {
-        return $this->emailRenderer;
-    }
-
     /**
-     * Метод должен возвращать имя шаблона, который должен быть использован.
-     * Имена можно взять в репозитории elyby/email-renderer
+     * This method should return the template's name, which will be rendered.
+     * List of available templates names can be found at https://github.com/elyby/emails-renderer
      *
      * @return string
      */
     abstract public function getTemplateName(): string;
 
+    final protected function getRenderer(): RendererInterface {
+        return $this->renderer;
+    }
+
     final protected function getView() {
         return $this->getTemplateName();
     }
 
-    protected function createMessage(): MessageInterface {
+    /**
+     * @param string|array $for
+     *
+     * @return MessageInterface
+     * @throws \common\emails\exceptions\CannotRenderEmailException
+     */
+    protected function createMessage($for): MessageInterface {
         return $this->getMailer()
             ->compose()
             ->setHtmlBody($this->render())
-            ->setTo($this->getTo())
+            ->setTo($for)
             ->setFrom($this->getFrom())
             ->setSubject($this->getSubject());
     }
 
+    /**
+     * @return string
+     * @throws \common\emails\exceptions\CannotRenderEmailException
+     */
     private function render(): string {
-        return $this->getEmailRenderer()
-            ->getTemplate($this->getTemplateName())
-            ->setLocale($this->getLocale())
-            ->setParams($this->getParams())
-            ->render();
+        try {
+            return $this->getRenderer()->render($this->getTemplateName(), $this->getLocale(), $this->getParams());
+        } catch (Exception $e) {
+            throw new exceptions\CannotRenderEmailException($e);
+        }
     }
 
 }

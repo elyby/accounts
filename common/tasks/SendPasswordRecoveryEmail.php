@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 namespace common\tasks;
 
 use common\emails\EmailHelper;
@@ -34,11 +35,11 @@ class SendPasswordRecoveryEmail implements RetryableJobInterface {
         return $result;
     }
 
-    public function getTtr() {
+    public function getTtr(): int {
         return 30;
     }
 
-    public function canRetry($attempt, $error) {
+    public function canRetry($attempt, $error): bool {
         return true;
     }
 
@@ -48,10 +49,10 @@ class SendPasswordRecoveryEmail implements RetryableJobInterface {
      */
     public function execute($queue) {
         Yii::$app->statsd->inc('queue.sendPasswordRecovery.attempt');
-        $params = new ForgotPasswordParams($this->username, $this->code, $this->link);
-        $to = EmailHelper::buildTo($this->username, $this->email);
-        $template = new ForgotPasswordEmail($to, $this->locale, $params);
-        $template->send();
+        $template = new ForgotPasswordEmail(Yii::$app->mailer, Yii::$app->emailsRenderer);
+        $template->setLocale($this->locale);
+        $template->setParams(new ForgotPasswordParams($this->username, $this->code, $this->link));
+        $template->send(EmailHelper::buildTo($this->username, $this->email));
     }
 
 }

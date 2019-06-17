@@ -11,6 +11,7 @@ services:
     restart: always
     depends_on:
       - app
+      - emails-renderer
     env_file: .env
     volumes:
       - ./frontend:/var/www/html/frontend
@@ -51,6 +52,10 @@ services:
       - db
       - redis
     env_file: .env
+    logging: *default-logging
+
+  emails-renderer:
+    image: elyby/emails-renderer:dev
     logging: *default-logging
 
   db:

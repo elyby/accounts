@@ -20,7 +20,7 @@ class Yii extends \yii\BaseYii {
  * @property \yii\swiftmailer\Mailer          $mailer
  * @property \yii\redis\Connection            $redis
  * @property \GuzzleHttp\Client               $guzzle
- * @property \common\components\EmailRenderer $emailRenderer
+ * @property \common\components\EmailsRenderer\Component $emailsRenderer
  * @property \mito\sentry\Component           $sentry
  * @property \api\components\OAuth2\Component $oauth
  * @property \common\components\StatsD        $statsd

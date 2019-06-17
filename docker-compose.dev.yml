@@ -9,6 +9,7 @@ services:
         build_env: dev
     depends_on:
       - app
+      - emails-renderer
     env_file: .env
     volumes:
       - ./:/var/www/html
@@ -61,6 +62,9 @@ services:
     volumes:
       - ./:/var/www/html
     env_file: .env
+
+  emails-renderer:
+    image: elyby/emails-renderer:dev
 
   db:
     build:
