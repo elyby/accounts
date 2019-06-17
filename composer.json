@@ -6,6 +6,7 @@
     "minimum-stability": "stable",
     "require": {
         "php": "^7.2",
+        "ext-intl": "*",
         "ext-json": "*",
         "ext-libxml": "*",
         "ext-mbstring": "*",
@@ -24,7 +25,7 @@
         "ramsey/uuid": "^3.5",
         "spomky-labs/otphp": "^9.0.2",
         "webmozart/assert": "^1.2.0",
-        "yiisoft/yii2": "2.0.15.1",
+        "yiisoft/yii2": "~2.0.20",
         "yiisoft/yii2-queue": "^2.2.0",
         "yiisoft/yii2-redis": "~2.0.0",
         "yiisoft/yii2-swiftmailer": "~2.1.0"

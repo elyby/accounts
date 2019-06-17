@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\functional\authserver;
 
 use api\tests\_pages\AuthserverRoute;

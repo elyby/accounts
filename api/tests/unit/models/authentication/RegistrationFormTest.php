@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\_support\models\authentication;
 
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
@@ -55,7 +57,8 @@ class RegistrationFormTest extends TestCase {
     }
 
     public function testSignup() {
-        Mock::func(EmailValidator::class, 'checkdnsrr')->andReturnTrue();
+        Mock::func(EmailValidator::class, 'checkdnsrr')->andReturn(true);
+        Mock::func(EmailValidator::class, 'dns_get_record')->andReturn(['']);
         $model = new RegistrationForm([
             'username' => 'some_username',
             'email' => 'some_email@example.com',
@@ -72,7 +75,8 @@ class RegistrationFormTest extends TestCase {
     }
 
     public function testSignupWithDefaultLanguage() {
-        Mock::func(EmailValidator::class, 'checkdnsrr')->andReturnTrue();
+        Mock::func(EmailValidator::class, 'checkdnsrr')->andReturn(true);
+        Mock::func(EmailValidator::class, 'dns_get_record')->andReturn(['']);
         $model = new RegistrationForm([
             'username' => 'some_username',
             'email' => 'some_email@example.com',
