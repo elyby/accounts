@@ -19,7 +19,7 @@ class TestCase extends Unit {
     }
 
     /**
-     * Список фикстур, что будут загружены перед тестом, но после зачистки базы данных
+     * A list of fixtures that will be loaded before the test, but after the database is cleaned up
      *
      * @url http://codeception.com/docs/modules/Yii2#fixtures
      *

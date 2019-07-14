@@ -43,12 +43,12 @@ class CleanupController extends Controller {
     }
 
     /**
-     * Нужно удалить те сессии, которые не рефрешились 90 дней,
-     * а также сессии, которые ни разу не рефрешились с момента своей выписки
-     * более чем 2 недели назад.
+     * Sessions that have not been refreshed for 90 days and those
+     * that have not been refreshed since they were issued more than 2 weeks ago
+     * should be deleted.
      *
-     * У модели AccountSession нет внешних связей, так что целевые записи
-     * могут быть удалены без использования циклов.
+     * The AccountSession model doesn't have any relations,
+     * so the records can be deleted just with mass delete operation.
      */
     public function actionWebSessions(): int {
         AccountSession::deleteAll([
@@ -89,8 +89,8 @@ class CleanupController extends Controller {
             /** @var \common\behaviors\EmailActivationExpirationBehavior $behavior */
             $behavior = $object->getBehavior('expirationBehavior');
             /** @noinspection NullPointerExceptionInspection */
-            $expiration = $behavior->expirationTimeout ?? 1123200; // 13d по умолчанию
-            // Приращаем 1 день, чтобы пользователи ещё могли получать сообщения об истечении кода активации
+            $expiration = $behavior->expirationTimeout ?? 1123200; // 13d by default
+            // We increment 1 day so that users can still receive notifications about the expiry of the activation code
             /** @noinspection SummerTimeUnsafeTimeManipulationInspection */
             $durationsMap[$typeId] = $expiration + 86400;
         }

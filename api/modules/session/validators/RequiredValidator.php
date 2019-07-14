@@ -4,8 +4,8 @@ namespace api\modules\session\validators;
 use api\modules\session\exceptions\IllegalArgumentException;
 
 /**
- * Для данного модуля нам не принципиально, что там за ошибка: если не хватает хотя бы одного
- * параметра - тут же отправляем исключение и дело с концом
+ * For this module, it is not important for us what the error is: if at least one parameter is missing,
+ * we immediately throw an exception and that's it.
  */
 class RequiredValidator extends \yii\validators\RequiredValidator {
 

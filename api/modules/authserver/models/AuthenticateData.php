@@ -33,7 +33,7 @@ class AuthenticateData {
         ];
 
         if ($includeAvailableProfiles) {
-            // Сами моянги ещё ничего не придумали с этими availableProfiles
+            // The Moiangs themselves haven't come up with anything yet with these availableProfiles
             $availableProfiles[0] = $result['selectedProfile'];
             $result['availableProfiles'] = $availableProfiles;
         }

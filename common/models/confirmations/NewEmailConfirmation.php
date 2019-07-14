@@ -5,7 +5,7 @@ use common\models\EmailActivation;
 use yii\helpers\ArrayHelper;
 
 /**
- * Поведения:
+ * Behaviors:
  * @mixin NewEmailConfirmationBehavior
  */
 class NewEmailConfirmation extends EmailActivation {

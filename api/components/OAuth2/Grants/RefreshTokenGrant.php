@@ -48,8 +48,9 @@ class RefreshTokenGrant extends AbstractGrant {
     }
 
     /**
-     * По стандарту OAuth2 scopes должны разделяться пробелом, а не запятой. Косяк.
-     * Так что оборачиваем функцию разбора скоупов, заменяя запятые на пробелы.
+     * In the earlier versions of Accounts Ely.by backend we had a comma-separated scopes
+     * list, while by OAuth2 standard it they should be separated by a space. Shit happens :)
+     * So override scopes validation function to reformat passed value.
      *
      * @param string       $scopeParam
      * @param BaseClientEntity $client
@@ -62,9 +63,9 @@ class RefreshTokenGrant extends AbstractGrant {
     }
 
     /**
-     * Метод таки пришлось переписать по той причине, что нынче мы храним access_token в redis с expire значением,
-     * так что он может банально несуществовать на тот момент, когда к нему через refresh_token попытаются обратиться.
-     * Поэтому мы расширили логику RefreshTokenEntity и она теперь знает о сессии, в рамках которой была создана
+     * The method has been overridden because we stores access_tokens in Redis with expire value,
+     * so they might not exists at the moment, when it will be requested via refresh_token.
+     * That's why we extends RefreshTokenEntity to give it knowledge about related session.
      *
      * @inheritdoc
      * @throws \League\OAuth2\Server\Exception\OAuthException

@@ -8,22 +8,21 @@ use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
- * Это временный класс, куда мигрирует вся логика ныне существующего authserver.ely.by.
- * Поскольку там допускался вход по логину и паролю, а формат хранения выданных токенов был
- * иным, то на период, пока мы окончательно не мигрируем, нужно сохранить старую логику
- * и структуру под неё.
+ * This is a temporary class where all the logic of the authserver.ely.by service.
+ * Since the login and password were allowed there, and the format of storage of the issued tokens was different,
+ * we need to keep the legacy logic and structure under it for the period until we finally migrate.
  *
- * Поля модели:
+ * Fields:
  * @property string  $access_token
  * @property string  $client_token
  * @property integer $account_id
  * @property integer $created_at
  * @property integer $updated_at
  *
- * Отношения:
+ * Relations:
  * @property Account $account
  *
- * Поведения:
+ * Behaviors:
  * @mixin TimestampBehavior
  * @mixin PrimaryKeyValueBehavior
  */

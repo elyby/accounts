@@ -52,7 +52,7 @@ class SessionStorage extends AbstractStorage implements SessionInterface {
             ->andWhere([
                 'client_id' => $clientId,
                 'owner_type' => $ownerType,
-                'owner_id' => (string)$ownerId, // Переводим в строку, чтобы работали индексы, т.к. поле varchar
+                'owner_id' => (string)$ownerId, // Casts as a string to make the indexes work, because the varchar field
             ])->scalar();
 
         if ($sessionId === false) {

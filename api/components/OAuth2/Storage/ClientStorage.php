@@ -27,16 +27,12 @@ class ClientStorage extends AbstractStorage implements ClientInterface {
             return null;
         }
 
-        // TODO: нужно учитывать тип приложения
-        /*
-         * Для приложений типа "настольный" redirect_uri необязателем - он должен быть по умолчанию равен
-         * статичному редиректу на страницу сайта
-         * А для приложений типа "сайт" редирект должен быть всегда.
-         * Короче это нужно учесть
-         */
+        // TODO: should check application type
+        //       For "desktop" app type redirect_uri is not required and should be by default set
+        //       to the static redirect, but for "site" it's required always.
         if ($redirectUri !== null) {
             if (in_array($redirectUri, [self::REDIRECT_STATIC_PAGE, self::REDIRECT_STATIC_PAGE_WITH_CODE], true)) {
-                // Тут, наверное, нужно проверить тип приложения
+                // I think we should check the type of application here
             } else {
                 if (!StringHelper::startsWith($redirectUri, $model->redirect_uri, false)) {
                     return null;

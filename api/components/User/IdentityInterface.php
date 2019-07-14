@@ -17,17 +17,17 @@ interface IdentityInterface extends \yii\web\IdentityInterface {
     public static function findIdentityByAccessToken($token, $type = null): IdentityInterface;
 
     /**
-     * Этот метод используется для получения токена, к которому привязаны права.
-     * У нас права привязываются к токенам, так что возвращаем именно его id.
+     * This method is used to obtain a token to which scopes are attached.
+     * Our permissions are attached to tokens itself, so we return its id.
      *
      * @return string
      */
     public function getId(): string;
 
     /**
-     * Метод возвращает аккаунт, который привязан к текущему токену.
-     * Но не исключено, что токен был выдан и без привязки к аккаунту, так что
-     * следует это учитывать.
+     * The method returns an account that is attached to the current token.
+     * But it's possible that the token was issued without binding to the account,
+     * so you should handle it.
      *
      * @return Account|null
      */

@@ -6,13 +6,13 @@ use common\models\EmailActivation;
 use yii\validators\Validator;
 
 /**
- * Валидатор для проверки полученного от пользователя кода активации.
- * В случае успешной валидации подменяет значение поля на актуальную модель
+ * Validator to check the activation code received from the user.
+ * In case of success it replaces the field value with the corresponding model.
  */
 class EmailActivationKeyValidator extends Validator {
 
     /**
-     * @var int тип ключа. Если не указан, то валидирует по всем ключам.
+     * @var int the type of key. If not specified, it validates over all keys.
      */
     public $type;
 

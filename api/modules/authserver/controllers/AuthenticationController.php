@@ -42,24 +42,24 @@ class AuthenticationController extends Controller {
         $model = new models\ValidateForm();
         $model->load(Yii::$app->request->post());
         $model->validateToken();
-        // В случае успеха ожидается пустой ответ. В случае ошибки же бросается исключение,
-        // которое обработает ErrorHandler
+        // If successful, an empty answer is expected.
+        // In case of an error, an exception is thrown which will be processed by ErrorHandler
     }
 
     public function actionSignout() {
         $model = new models\SignoutForm();
         $model->load(Yii::$app->request->post());
         $model->signout();
-        // В случае успеха ожидается пустой ответ. В случае ошибки же бросается исключение,
-        // которое обработает ErrorHandler
+        // If successful, an empty answer is expected.
+        // In case of an error, an exception is thrown which will be processed by ErrorHandler
     }
 
     public function actionInvalidate() {
         $model = new models\InvalidateForm();
         $model->load(Yii::$app->request->post());
         $model->invalidateToken();
-        // В случае успеха ожидается пустой ответ. В случае ошибки же бросается исключение,
-        // которое обработает ErrorHandler
+        // If successful, an empty answer is expected.
+        // In case of an error, an exception is thrown which will be processed by ErrorHandler
     }
 
 }

@@ -2,8 +2,9 @@
 namespace common\components;
 
 /**
- * Этот класс был использован для изначальной генерации паролей на Ely.by и сейчас должен быть планомерно выпилен
- * с проекта с целью заменить этот алгоритм каким-нибудь посерьёзнее.
+ * This class was used for the first generation of passwords on the Ely.by
+ * and should now be systematically cut from the project in order to replace this algorithm
+ * with a more secure one.
  */
 class UserPass {
 

@@ -13,7 +13,7 @@ use yii\db\ActiveRecord;
 use const common\LATEST_RULES_VERSION;
 
 /**
- * Поля модели:
+ * Fields:
  * @property integer $id
  * @property string  $uuid
  * @property string  $username
@@ -30,11 +30,11 @@ use const common\LATEST_RULES_VERSION;
  * @property integer $updated_at
  * @property integer $password_changed_at
  *
- * Геттеры-сеттеры:
- * @property string  $password пароль пользователя (только для записи)
- * @property string  $profileLink ссылка на профиль на Ely без поддержки static url (только для записи)
+ * Getters-setters:
+ * @property-write string $password plain user's password
+ * @property-read string $profileLink link to the user's Ely.by profile
  *
- * Отношения:
+ * Relations:
  * @property EmailActivation[]    $emailActivations
  * @property OauthSession[]       $oauthSessions
  * @property OauthClient[]        $oauthClients
@@ -42,7 +42,7 @@ use const common\LATEST_RULES_VERSION;
  * @property AccountSession[]     $sessions
  * @property MinecraftAccessKey[] $minecraftAccessKeys
  *
- * Поведения:
+ * Behaviors:
  * @mixin TimestampBehavior
  */
 class Account extends ActiveRecord {
@@ -113,11 +113,6 @@ class Account extends ActiveRecord {
         return $this->hasMany(MinecraftAccessKey::class, ['account_id' => 'id']);
     }
 
-    /**
-     * Выполняет проверку, принадлежит ли этому нику аккаунт у Mojang
-     *
-     * @return bool
-     */
     public function hasMojangUsernameCollision(): bool {
         return MojangUsername::find()
             ->andWhere(['username' => $this->username])
@@ -125,9 +120,8 @@ class Account extends ActiveRecord {
     }
 
     /**
-     * Т.к. у нас нет инфы по static_url пользователя, то пока генерируем самый простой вариант
-     * с ссылкой на профиль по id. На Ely он всё равно редиректнется на static, а мы так или
-     * иначе обеспечим отдачу этой инфы.
+     * Since we don't have info about the user's static_url, we still generate the simplest
+     * version with a link to the profile by it's id. On Ely.by, it will be redirected to static url.
      *
      * @return string
      */
@@ -136,10 +130,10 @@ class Account extends ActiveRecord {
     }
 
     /**
-     * При создании структуры БД все аккаунты получают null значение в это поле, однако оно
-     * обязательно для заполнения. Все мигрировавшие с Ely аккаунты будут иметь null значение,
-     * а актуальной версией будет 1 версия правил сайта (т.к. раньше их просто не было). Ну а
-     * дальше уже будем инкрементить.
+     * Initially, the table of users we got from the main site, where there were no rules.
+     * All existing users at the time of migration received an empty value in this field.
+     * They will have to confirm their agreement with the rules at the first login.
+     * All new users automatically agree with the current version of the rules.
      *
      * @return bool
      */

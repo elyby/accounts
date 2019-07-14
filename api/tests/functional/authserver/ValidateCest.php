@@ -55,7 +55,7 @@ class ValidateCest {
     public function expiredAccessToken(AuthserverSteps $I) {
         $I->wantTo('get error on expired accessToken');
         $this->route->validate([
-            // Заведомо истёкший токен из дампа
+            // Knowingly expired token from the dump
             'accessToken' => '6042634a-a1e2-4aed-866c-c661fe4e63e2',
         ]);
         $I->canSeeResponseCodeIs(401);

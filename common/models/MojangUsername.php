@@ -5,12 +5,12 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
 /**
- * Поля модели:
+ * Fields:
  * @property string  $username
  * @property string  $uuid
  * @property integer $last_pulled_at
  *
- * Поведения:
+ * Behaviors:
  * @mixin TimestampBehavior
  */
 class MojangUsername extends ActiveRecord {

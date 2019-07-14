@@ -17,17 +17,16 @@ class TotpValidator extends Validator {
     public $account;
 
     /**
-     * @var int|null Задаёт окно, в промежуток которого будет проверяться код.
-     * Позволяет избежать ситуации, когда пользователь ввёл код в последнюю секунду
-     * его существования и пока шёл запрос, тот протух.
-     * Значение задаётся в +- периодах, а не секундах.
+     * @var int|null Specifies the window in the interval of which the code will be checked.
+     * Allows you to avoid the situation when the user entered the code in the last second of its existence
+     * and while the request was being sent, it has changed. The value is set in +- periods, not seconds.
      */
     public $window;
 
     /**
-     * @var int|callable|null Позволяет задать точное время, относительно которого будет
-     * выполняться проверка. Это может быть собственно время или функция, возвращающая значение.
-     * Если не задано, то будет использовано текущее время.
+     * @var int|callable|null Allows you to set the exact time against which the validation will be performed.
+     * It may be the unix time or a function returning a unix time.
+     * If not specified, the current time will be used.
      */
     public $timestamp;
 

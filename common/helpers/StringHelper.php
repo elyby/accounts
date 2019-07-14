@@ -24,12 +24,6 @@ class StringHelper {
         return $mask . mb_substr($email, $usernameLength);
     }
 
-    /**
-     * Проверяет на то, что переданная строка является валидным UUID
-     *
-     * @param string $uuid
-     * @return bool
-     */
     public static function isUuid(string $uuid): bool {
         try {
             Uuid::fromString($uuid);

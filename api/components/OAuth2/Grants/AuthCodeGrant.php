@@ -196,7 +196,7 @@ class AuthCodeGrant extends AbstractGrant {
         $this->server->getTokenType()->setParam('access_token', $accessToken->getId());
         $this->server->getTokenType()->setParam('expires_in', $this->getAccessTokenTTL());
 
-        // Выдаём refresh_token, если запрошен offline_access
+        // Set refresh_token param only in case when offline_access requested
         if (isset($accessToken->getScopes()[ScopeStorage::OFFLINE_ACCESS])) {
             /** @var RefreshTokenGrant $refreshTokenGrant */
             $refreshTokenGrant = $this->server->getGrantType('refresh_token');
@@ -222,8 +222,9 @@ class AuthCodeGrant extends AbstractGrant {
     }
 
     /**
-     * По стандарту OAuth2 scopes должны разделяться пробелом, а не запятой. Косяк.
-     * Так что оборачиваем функцию разбора скоупов, заменяя запятые на пробелы.
+     * In the earlier versions of Accounts Ely.by backend we had a comma-separated scopes
+     * list, while by OAuth2 standard it they should be separated by a space. Shit happens :)
+     * So override scopes validation function to reformat passed value.
      *
      * @param string       $scopeParam
      * @param BaseClientEntity $client

@@ -69,8 +69,9 @@ class ClientCredentialsGrant extends AbstractGrant {
     }
 
     /**
-     * По стандарту OAuth2 scopes должны разделяться пробелом, а не запятой. Косяк.
-     * Так что оборачиваем функцию разбора скоупов, заменяя запятые на пробелы.
+     * In the earlier versions of Accounts Ely.by backend we had a comma-separated scopes
+     * list, while by OAuth2 standard it they should be separated by a space. Shit happens :)
+     * So override scopes validation function to reformat passed value.
      *
      * @param string       $scopeParam
      * @param BaseClientEntity $client

@@ -39,8 +39,8 @@ class ScopeStorage extends AbstractStorage implements ScopeInterface {
 
     /**
      * @param string $scope
-     * @param string $grantType передаётся, если запрос поступает из grant. В этом случае нужно отфильтровать
-     *                          только те права, которые можно получить на этом grant.
+     * @param string $grantType is passed on if called from the grant.
+     *                          In this case, you only need to filter out the rights that you can get on this grant.
      * @param string $clientId
      *
      * @return ScopeEntity|null

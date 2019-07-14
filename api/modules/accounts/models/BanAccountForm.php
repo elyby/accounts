@@ -12,17 +12,16 @@ class BanAccountForm extends AccountActionForm {
     public const DURATION_FOREVER = -1;
 
     /**
-     * Нереализованный функционал блокировки аккаунта на определённый период времени.
-     * Сейчас установка этого параметра ничего не даст, аккаунт будет заблокирован навечно,
-     * но, по задумке, здесь можно передать количество секунд, на которое будет
-     * заблокирован аккаунт пользователя.
+     * Unimplemented account blocking functionality for a certain period of time.
+     * Setting this parameter currently will do nothing, the account will be blocked forever,
+     * but the idea is to pass the number of seconds for which the user's account will be blocked.
      *
      * @var int
      */
     public $duration = self::DURATION_FOREVER;
 
     /**
-     * Нереализованный функционал указания причины блокировки аккаунта.
+     * Unimplemented functionality to indicate the reason for account blocking.
      *
      * @var string
      */

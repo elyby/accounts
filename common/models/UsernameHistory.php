@@ -5,16 +5,16 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
 /**
- * Поля модели:
+ * Fields:
  * @property integer $id
  * @property string  $username
  * @property integer $account_id
  * @property integer $applied_in
  *
- * Отношения:
+ * Relations:
  * @property Account $account
  *
- * Поведения:
+ * Behaviors:
  * @mixin TimestampBehavior
  */
 class UsernameHistory extends ActiveRecord {

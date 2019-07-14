@@ -11,17 +11,17 @@ use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 
 /**
- * Поля модели:
+ * Fields:
  * @property string  $key
  * @property integer $account_id
  * @property integer $type
  * @property string  $_data
  * @property integer $created_at
  *
- * Отношения:
+ * Relations:
  * @property Account $account
  *
- * Поведения:
+ * Behaviors:
  * @mixin TimestampBehavior
  * @mixin EmailActivationExpirationBehavior
  * @mixin DataBehavior

@@ -32,10 +32,10 @@ class OauthProcess {
     }
 
     /**
-     * Запрос, который должен проверить переданные параметры oAuth авторизации
-     * и сформировать ответ для нашего приложения на фронте
+     * A request that should check the passed OAuth2 authorization params and build a response
+     * for our frontend application.
      *
-     * Входными данными является стандартный список GET параметров по стандарту oAuth:
+     * The input data is the standard GET parameters list according to the OAuth2 standard:
      * $_GET = [
      *     client_id,
      *     redirect_uri,
@@ -44,7 +44,7 @@ class OauthProcess {
      *     state,
      * ];
      *
-     * Кроме того можно передать значения description для переопределения описания приложения.
+     * In addition, you can pass the description value to override the application's description.
      *
      * @return array
      */
@@ -67,10 +67,10 @@ class OauthProcess {
     }
 
     /**
-     * Метод выполняется генерацию авторизационного кода (authorization_code) и формирование
-     * ссылки для дальнейшнешл редиректа пользователя назад на сайт клиента
+     * This method generates authorization_code and a link
+     * for the user's further redirect to the client's site.
      *
-     * Входными данными является всё те же параметры, что были необходимы для валидации:
+     * The input data are the same parameters that were necessary for validation request:
      * $_GET = [
      *     client_id,
      *     redirect_uri,
@@ -79,9 +79,9 @@ class OauthProcess {
      *     state,
      * ];
      *
-     * А также поле accept, которое показывает, что пользователь нажал на кнопку "Принять".
-     * Если поле присутствует, то оно будет интерпретироваться как любое приводимое к false значение.
-     * В ином случае, значение будет интерпретировано, как положительный исход.
+     * Also, the accept field, which shows that the user has clicked on the "Accept" button.
+     * If the field is present, it will be interpreted as any value resulting in false positives.
+     * Otherwise, the value will be interpreted as "true".
      *
      * @return array
      */
@@ -125,9 +125,9 @@ class OauthProcess {
     }
 
     /**
-     * Метод выполняется сервером приложения, которому был выдан auth_token или refresh_token.
+     * The method is executed by the application server to which auth_token or refresh_token was given.
      *
-     * Входными данными является стандартный список POST параметров по стандарту oAuth:
+     * Input data is a standard list of POST parameters according to the OAuth2 standard:
      * $_POST = [
      *     client_id,
      *     client_secret,
@@ -135,7 +135,7 @@ class OauthProcess {
      *     code,
      *     grant_type,
      * ]
-     * для запроса grant_type = authentication_code.
+     * for request with grant_type = authentication_code:
      * $_POST = [
      *     client_id,
      *     client_secret,
@@ -170,8 +170,8 @@ class OauthProcess {
     }
 
     /**
-     * Метод проверяет, может ли текущий пользователь быть автоматически авторизован
-     * для указанного клиента без запроса доступа к необходимому списку прав
+     * The method checks whether the current user can be automatically authorized for the specified client
+     * without requesting access to the necessary list of scopes
      *
      * @param Account $account
      * @param OauthClient $client
@@ -206,7 +206,7 @@ class OauthProcess {
     private function buildSuccessResponse(array $queryParams, OauthClient $client, array $scopes): array {
         return [
             'success' => true,
-            // Возвращаем только те ключи, которые имеют реальное отношение к oAuth параметрам
+            // We return only those keys which are related to the OAuth2 standard parameters
             'oAuth' => array_intersect_key($queryParams, array_flip([
                 'client_id',
                 'redirect_uri',

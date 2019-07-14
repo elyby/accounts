@@ -6,16 +6,15 @@ use yii\web\JsonParser;
 use yii\web\RequestParserInterface;
 
 /**
- * Т.к. Yii2 не предоставляет возможности сделать fallback для неспаршенного
- * request, нужно полностью реимплементировать логику парсинга запроса.
+ * Since Yii2 doesn't provide an opportunity to make a fallback for an unparsed request,
+ * the query parsing logic must be fully reimplemented.
  *
- * Код взят из \yii\web\Request::getBodyParams() и вывернут таким образом,
- * чтобы по нисходящей пытаться спарсить запрос:
- * - сначала проверяем, если PHP справился сам, то возвращаем его значение
- * - дальше пробуем спарсить JSON, который закодирован в теле
- * - если не вышло, то предположим, что это PUT, DELETE или иной другой запрос,
- *   который PHP автоматически не осиливает спарсить, так что пытаемся его спарсить
- *   самостоятельно
+ * The code is taken from \yii\web\Request::getBodyParams() and reworked in such a way
+ * that it tries to parse the request by the next steps:
+ * - first check if PHP has managed to do it by itself, then we return its value;
+ * - then we try to parse JSON, which is encoded in the body;
+ * - if it doesn't work out, let's assume it's a PUT, DELETE or other request
+ *   that PHP doesn't automatically overpower to parse, so we try to parse it ourselves.
  */
 class RequestParser implements RequestParserInterface {
 

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\filters;
 
 use Yii;
@@ -7,13 +9,13 @@ use yii\base\ActionFilter;
 class NginxCache extends ActionFilter {
 
     /**
-     * @var array|callable массив или callback, содержащий пары роут -> сколько кэшировать.
+     * @var array|callable array or callback, contains pairs of route => cache duration.
      *
-     * Период можно задавать 2-умя путями:
-     * - если значение начинается с префикса @, оно задаёт абсолютное время в unix timestamp,
-     *   до которого ответ может быть закэширован.
-     * - в ином случае значение интерпретируется как количество секунд, на которое необходимо
-     *   закэшировать ответ
+     * Duration can be set in 2-ways:
+     * - if the value starts with the @ prefix, it sets the absolute time
+     *   in unix timestamp that the response can be cached to.
+     * - otherwise, the value is interpreted as the number of seconds
+     *   for which the response must be cached
      */
     public $rules;
 

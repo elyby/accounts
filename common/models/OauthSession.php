@@ -9,15 +9,15 @@ use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
- * Поля:
+ * Fields:
  * @property integer     $id
- * @property string      $owner_type содержит одну из констант OauthOwnerType
+ * @property string      $owner_type contains one of the OauthOwnerType constants
  * @property string|null $owner_id
  * @property string      $client_id
  * @property string      $client_redirect_uri
  * @property integer     $created_at
  *
- * Отношения
+ * Relations:
  * @property OauthClient $client
  * @property Account     $account
  * @property Set         $scopes

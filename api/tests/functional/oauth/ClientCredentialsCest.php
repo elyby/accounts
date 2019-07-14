@@ -59,7 +59,7 @@ class ClientCredentialsCest {
     }
 
     public function testIssueTokenWithPublicScopes(OauthSteps $I) {
-        // TODO: у нас пока нет публичных скоупов, поэтому тест прогоняется с пустым набором
+        // TODO: we don't have any public scopes yet for this grant, so the test runs with an empty set
         $this->route->issueToken($this->buildParams(
             'ely',
             'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',

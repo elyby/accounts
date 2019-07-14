@@ -7,12 +7,11 @@ use yii\rbac\PhpManager;
 class Manager extends PhpManager {
 
     /**
-     * В нашем приложении права выдаются не пользователям, а токенам, так что ожидаем
-     * здесь $accessToken и извлекаем из него все присвоенные права.
+     * In our application the permissions are given not to users but to tokens,
+     * so we receive $accessToken here and extract all the assigned scopes from it.
      *
-     * По каким-то причинам, в Yii механизм рекурсивной проверки прав требует, чтобы
-     * массив с правами был проиндексирован по ключам этих самых прав, так что в
-     * конце выворачиваем массив наизнанку.
+     * In Yii2, the mechanism of recursive permissions checking requires that the array with permissions
+     * is indexed by the keys of these rights, so at the end we turn the array inside out.
      *
      * @param string $accessToken
      * @return string[]

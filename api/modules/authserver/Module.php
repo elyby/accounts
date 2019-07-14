@@ -51,9 +51,8 @@ class Module extends \yii\base\Module implements BootstrapInterface {
     }
 
     /**
-     * Поскольку это legacy метод и документации в новой среде для него не будет,
-     * нет смысла выставлять на показ внутренние url, так что ограничиваем доступ
-     * только для заходов по старому домену
+     * Since this is a legacy method and there will be no documentation for it in the new environment,
+     * there is no point in displaying the internal API, so we are limiting access only to logons from the old domain.
      *
      * @throws NotFoundHttpException
      */

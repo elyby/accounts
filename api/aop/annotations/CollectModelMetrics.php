@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\aop\annotations;
 
 use Doctrine\Common\Annotations\Annotation;
@@ -12,7 +14,7 @@ class CollectModelMetrics {
 
     /**
      * @Required()
-     * @var string задаёт префикс для отправки метрик. Задаётся без ведущей и без завершающей точки.
+     * @var string sets the prefix for collected metrics. Should be specified without trailing dots
      */
     public $prefix = '';
 

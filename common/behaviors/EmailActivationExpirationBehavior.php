@@ -9,23 +9,23 @@ use yii\base\Behavior;
 class EmailActivationExpirationBehavior extends Behavior {
 
     /**
-     * @var int количество секунд, прежде чем можно будет повторить отправку кода
+     * @var int the number of seconds before the code can be sent again
      * @see EmailActivation::canRepeat()
      */
     public $repeatTimeout;
 
     /**
-     * @var int количество секунд, прежде чем это подтверждение истечёт
+     * @var int the number of seconds before this activation expires
      * @see EmailActivation::isExpired()
      */
     public $expirationTimeout;
 
     /**
-     * Можно ли повторить отправку письма текущего типа?
-     * Для проверки используется значение EmailActivation::$repeatTimeout и интерпретируется как:
-     * - <0 запретит повторную отправку этого кода
-     * - =0 позволит отправлять сообщения в любой момент
-     * - >0 будет проверять, сколько секунд прошло с момента создания модели
+     * Is it allowed to resend a message of the current type?
+     * The value of EmailActivation::$repeatTimeout is used for checking as follows:
+     * - <0 will forbid you to resend this activation
+     * - =0 allows you to send messages at any time
+     * - >0 will check how many seconds have passed since the model was created
      *
      * @see EmailActivation::compareTime()
      * @return bool
@@ -35,11 +35,11 @@ class EmailActivationExpirationBehavior extends Behavior {
     }
 
     /**
-     * Истёк ли срок кода?
-     * Для проверки используется значение EmailActivation::$expirationTimeout и интерпретируется как:
-     * - <0 означает, что код никогда не истечёт
-     * - =0 всегда будет говорить, что код истёк
-     * - >0 будет проверять, сколько секунд прошло с момента создания модели
+     * Did the code expire?
+     * The value of EmailActivation::$expirationTimeout is used for checking as follows:
+     * - <0 means the code will never expire
+     * - =0 will always say that the code has expired
+     * - >0 will check how many seconds have passed since the model was created
      *
      * @see EmailActivation::compareTime()
      * @return bool
@@ -48,25 +48,15 @@ class EmailActivationExpirationBehavior extends Behavior {
         return $this->compareTime($this->expirationTimeout);
     }
 
-    /**
-     * Вычисляет, во сколько можно будет выполнить повторную отправку кода
-     *
-     * @return int
-     */
     public function canRepeatIn(): int {
         return $this->calculateTime($this->repeatTimeout);
     }
 
-    /**
-     * Вычисляет, во сколько код истечёт
-     *
-     * @return int
-     */
     public function expireIn(): int {
         return $this->calculateTime($this->expirationTimeout);
     }
 
-    protected function compareTime(int $value): bool {
+    private function compareTime(int $value): bool {
         if ($value < 0) {
             return false;
         }
@@ -78,7 +68,7 @@ class EmailActivationExpirationBehavior extends Behavior {
         return time() > $this->calculateTime($value);
     }
 
-    protected function calculateTime(int $value): int {
+    private function calculateTime(int $value): int {
         return $this->owner->created_at + $value;
     }
 

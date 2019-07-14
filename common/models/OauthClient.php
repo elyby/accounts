@@ -7,7 +7,7 @@ use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
- * Поля модели:
+ * Fields:
  * @property string         $id
  * @property string         $secret
  * @property string         $type
@@ -21,7 +21,7 @@ use yii\db\ActiveRecord;
  * @property bool           $is_deleted
  * @property integer        $created_at
  *
- * Отношения:
+ * Behaviors:
  * @property Account|null   $account
  * @property OauthSession[] $sessions
  */

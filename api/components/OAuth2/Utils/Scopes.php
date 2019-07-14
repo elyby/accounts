@@ -1,15 +1,16 @@
 <?php
+declare(strict_types=1);
+
 namespace api\components\OAuth2\Utils;
 
 class Scopes {
 
     /**
-     * По стандарту OAuth2 scopes должны разделяться пробелом, а не запятой. Косяк.
-     * Так что оборачиваем функцию разбора скоупов, заменяя запятые на пробелы.
-     * Заодно учитываем возможность передать скоупы в виде массива.
+     * In the earlier versions of Accounts Ely.by backend we had a comma-separated scopes
+     * list, while by OAuth2 standard it they should be separated by a space. Shit happens :)
+     * So override scopes validation function to reformat passed value.
      *
      * @param string|array $scopes
-     *
      * @return string
      */
     public static function format($scopes): string {
@@ -21,7 +22,6 @@ class Scopes {
             return implode(' ', $scopes);
         }
 
-        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return str_replace(',', ' ', $scopes);
     }
 

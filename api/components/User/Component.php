@@ -92,8 +92,8 @@ class Component extends YiiUserComponent {
             $token->addClaim(new Claim\JwtId($session->id));
         } else {
             $session = null;
-            // Если мы не сохраняем сессию, то токен должен жить подольше,
-            // чтобы не прогорала сессия во время работы с аккаунтом
+            // If we don't remember a session, the token should live longer
+            // so that the session doesn't end while working with the account
             $token->addClaim(new Claim\Expiration((new DateTime())->add(new DateInterval($this->sessionTimeout))));
         }
 
@@ -125,8 +125,8 @@ class Component extends YiiUserComponent {
 
     /**
      * @param string $jwtString
-     * @return Token распаршенный токен
-     * @throws VerificationException если один из Claims не пройдёт проверку
+     * @return Token
+     * @throws VerificationException in case when some Claim not pass the validation
      */
     public function parseToken(string $jwtString): Token {
         $token = &self::$parsedTokensCache[$jwtString];
@@ -149,13 +149,13 @@ class Component extends YiiUserComponent {
     }
 
     /**
-     * Метод находит AccountSession модель, относительно которой был выдан текущий JWT токен.
-     * В случае, если на пути поиска встретится ошибка, будет возвращено значение null. Возможные кейсы:
-     * - Юзер не авторизован
-     * - Почему-то нет заголовка с токеном
-     * - Во время проверки токена возникла ошибка, что привело к исключению
-     * - В токене не найдено ключа сессии. Такое возможно, если юзер выбрал "не запоминать меня"
-     * или просто старые токены, без поддержки сохранения используемой сессии
+     * The method searches AccountSession model, which one has been used to create current JWT token.
+     * null will be returned in case when any of the following situations occurred:
+     * - The user isn't authorized
+     * - There is no header with a token
+     * - Token validation isn't passed and some exception has been thrown
+     * - No session key found in the token. This is possible if the user chose not to remember me
+     *   or just some old tokens, without the support of saving the used session
      *
      * @return AccountSession|null
      */

@@ -15,7 +15,7 @@ class SendEmailVerificationForm extends AccountActionForm {
     public $password;
 
     /**
-     * @var null meta-поле, чтобы заставить yii валидировать и публиковать ошибки, связанные с отправленными email
+     * @var null meta-field to force yii to validate and publish errors related to sent emails
      */
     public $email;
 
@@ -76,10 +76,10 @@ class SendEmailVerificationForm extends AccountActionForm {
     }
 
     /**
-     * Возвращает E-mail активацию, которая использовалась внутри процесса для перехода на следующий шаг.
-     * Метод предназначен для проверки, не слишком ли часто отправляются письма о смене E-mail.
-     * Проверяем тип подтверждения нового E-mail, поскольку при переходе на этот этап, активация предыдущего
-     * шага удаляется.
+     * Returns the E-mail activation that was used within the process to move on to the next step.
+     * The method is designed to check if the E-mail change messages are sent too often.
+     * Including checking for the confirmation of the new E-mail type, because when you go to this step,
+     * the activation of the previous step is removed.
      */
     public function getEmailActivation(): ?EmailActivation {
         return $this->getAccount()

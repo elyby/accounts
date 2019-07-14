@@ -30,11 +30,12 @@ class SignoutForm extends ApiForm {
         if (!$loginForm->validate()) {
             $errors = $loginForm->getFirstErrors();
             if (isset($errors['login']) && $errors['login'] === E::ACCOUNT_BANNED) {
-                // Считаем, что заблокированный может безболезненно выйти
+                // We believe that a blocked one can get out painlessly
                 return true;
             }
 
-            // На старом сервере авторизации использовалось поле nickname, а не username, так что сохраняем эту логику
+            // The previous authorization server implementation used the nickname field instead of username,
+            // so we keep such behavior
             $attribute = $loginForm->getLoginAttribute();
             if ($attribute === 'username') {
                 $attribute = 'nickname';

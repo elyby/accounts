@@ -116,14 +116,14 @@ class RegistrationForm extends ApiForm {
     }
 
     /**
-     * Метод проверяет, можно ли занять указанный при регистрации ник или e-mail. Так случается,
-     * что пользователи вводят неправильный e-mail или ник, после замечают это и пытаются вновь
-     * выпонить регистрацию. Мы не будем им мешать и просто удаляем существующие недозарегистрированные
-     * аккаунты, позволяя им зарегистрироваться.
+     * The method checks whether the username or E-mail specified during registration
+     * can be occupied. It happens that users enter the wrong E-mail or username,
+     * then notice it and try to re-register. We'll not interfere with them
+     * and simply delete existing not-finished-registration account,
+     * allowing them to take it.
      *
-     * @param array $errors массив, где ключ - это поле, а значение - первая ошибка из нашего
-     * стандартного словаря ошибок
-     *
+     * @param array $errors an array where the key is a field and the value is
+     *                      the first error from our standard error dictionary
      * @return bool
      */
     protected function canContinue(array $errors): bool {

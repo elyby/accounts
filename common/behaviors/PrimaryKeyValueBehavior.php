@@ -11,10 +11,11 @@ use yii\db\ActiveRecord;
 class PrimaryKeyValueBehavior extends Behavior {
 
     /**
-     * @var callable Функция, что будет вызвана для генерации ключа.
-     * Должна возвращать случайное значение, подходящее для логики модели. Функция будет вызываться
-     * в цикле do-while с целью избежания дубликатов строк по первичному ключу, так что если функция
-     * станет возвращать статичное значение, то программа зациклится и что-нибудь здохнет. Не делайте так.
+     * @var callable The function that will be called to generate the key.
+     * Must return a random value suitable for model logic.
+     * The function will be called in the do-while loop to avoid duplicate strings by the primary key,
+     * so if the function returns a static value, the program will loop forever and something will die.
+     * Don't do so.
      */
     public $value;
 
@@ -60,7 +61,6 @@ class PrimaryKeyValueBehavior extends Behavior {
             throw new InvalidConfigException('Current behavior don\'t support models with more then one primary key.');
         }
 
-        /** @noinspection PhpIncompatibleReturnTypeInspection да как бы оно всё нормально, но шторм мне не верит */
         return $primaryKeys[0];
     }
 

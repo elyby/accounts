@@ -10,11 +10,9 @@
 # npm debug
 npm-debug*
 
-# Docker и его override файлы
+# Docker and related files
 /docker-compose.yml
 /docker-compose.override.yml
-
-# Локальный .env
 /.env
 
 # id_rsa

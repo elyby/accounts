@@ -12,8 +12,8 @@ use yii\validators\Validator;
 class UsernameValidator extends Validator {
 
     /**
-     * @var \Closure функция должна возвращать id аккаунта, относительно которого проводится
-     * текущая валидация. Позволяет пропустить проверку ника для текущего аккаунта.
+     * @var \Closure the function must return the account id for which the current validation is being performed.
+     * Allows you to skip the username check for the current account.
      */
     public $accountCallback;
 

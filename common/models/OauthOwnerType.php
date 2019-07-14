@@ -4,19 +4,19 @@ namespace common\models;
 final class OauthOwnerType {
 
     /**
-     * Используется для сессий, принадлежащих непосредственно пользователям account.ely.by,
-     * выполнивших парольную авторизацию и использующих web интерфейс
+     * Used for sessions belonging directly to account.ely.by users
+     * who have performed password authentication and are using the web interface
      */
     public const ACCOUNT = 'accounts';
 
     /**
-     * Используется когда пользователь по протоколу oAuth2 authorization_code
-     * разрешает приложению получить доступ и выполнять действия от своего имени
+     * Used when a user uses OAuth2 authorization_code protocol to allow an application
+     * to access and perform actions on its own behalf
      */
     public const USER = 'user';
 
     /**
-     * Используется для авторизованных по протоколу oAuth2 client_credentials
+     * Used for clients authorized via OAuth2 client_credentials protocol
      */
     public const CLIENT = 'client';
 

@@ -7,7 +7,7 @@ use yii\helpers\ArrayHelper;
 class DataBehavior extends Behavior {
 
     /**
-     * @var string имя атрибута, к которому будет применяться поведение
+     * @var string attribute name to which this behavior will be applied
      */
     public $attribute = '_data';
 
@@ -31,8 +31,8 @@ class DataBehavior extends Behavior {
 
     /**
      * @return array
-     * @throws \yii\base\ErrorException Yii2 подхватит Notice от неправильной десериализаци и превратит его
-     * в свой Exception, благодаря чему программа сможем продолжить нормально работать (вернее ловить Exception)
+     * @throws \yii\base\ErrorException Yii2 will catch Notice from the wrong deserialization and turn it
+     * into its own Exception, so that the program can continue to work normally (you still should catch an Exception)
      */
     private function getData() {
         $data = $this->owner->{$this->attribute};

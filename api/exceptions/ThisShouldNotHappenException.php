@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
 namespace api\exceptions;
 
 /**
- * Исключение можно использовать для тех кейсов, где вроде указанных исход не продполагается,
- * но теоретически может произойти. Целью является отлавливание таких участков и доработка логики,
- * если такие ситуации всё же будут иметь место случаться.
+ * The exception can be used for cases where the outcome doesn't seem to be expected,
+ * but can theoretically happen. The goal is to capture these areas and refine the logic
+ * if such situations do occur.
  */
 class ThisShouldNotHappenException extends Exception {
 

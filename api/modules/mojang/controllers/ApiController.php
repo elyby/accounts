@@ -26,10 +26,10 @@ class ApiController extends Controller {
                 ->andWhere(['<=', 'applied_in', $at])
                 ->one();
 
-            // Запрос выше находит просто последний случай использования, не учитывая то, что ник
-            // мог быть сменён с тех пор. Поэтому дополнительно проводим проверку, чтобы ник находился
-            // в каком-либо периоде (т.е. существовала последующая запись) или последний использовавший
-            // ник пользователь не сменил его на нечто иное
+            // The query above simply finds the latest case of usage, without taking into account the fact
+            // that the nickname may have been changed since then. Therefore, we additionally check
+            // that the nickname is in some period (i.e. there is a subsequent entry) or that the last user
+            // who used the nickname has not changed it to something else
             $account = null;
             if ($record !== null) {
                 if ($record->account->username === $record->username || $record->findNext($at) !== null) {
@@ -76,8 +76,8 @@ class ApiController extends Controller {
             ];
         }
 
-        // У первого элемента не должно быть времени, когда он был применён
-        // Хотя мы в принципе эту инфу знаем. А вот Mojang, вероятно, нет
+        // The first element shouldn't have time when it was applied.
+        // Although we know this information in fact. But Mojang probably doesn't.
         unset($data[0]['changedToAt']);
 
         return $data;

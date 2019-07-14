@@ -41,11 +41,10 @@ class LegacyJoin extends BaseJoin {
     }
 
     /**
-     * Метод проводит инициализацию значений полей для соотвествия общим канонам
-     * именования в проекте
+     * The method initializes field values to meet the general naming conventions in the project
      *
-     * Бьём по ':' для учёта авторизации в современных лаунчерах и входе на более старую
-     * версию игры. Там sessionId передаётся как "token:{accessToken}:{uuid}", так что это нужно обработать
+     * Split by ':' to take into account authorization in modern launchers and login to an legacy version of the game.
+     * The sessionId is passed on as "token:{accessToken}:{uuid}", so it needs to be processed
      */
     private function parseSessionId(string $sessionId) {
         $parts = explode(':', $sessionId);

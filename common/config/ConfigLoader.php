@@ -24,31 +24,31 @@ class ConfigLoader {
             require __DIR__ . '/config.php',
         ];
 
-        // Общие окружение-зависимые настройки
+        // Common env-dependent configuration
         $path = __DIR__ . '/config-' . YII_ENV . '.php';
         if (file_exists($path)) {
             $toMerge[] = require $path;
         }
 
-        // Общие локальные настройки
+        // Common local configuration
         $path = __DIR__ . '/config-local.php';
         if (file_exists($path)) {
             $toMerge[] = require $path;
         }
 
-        // Настройки конкретного приложения
+        // App-related base configuration
         $path = self::ROOT_PATH . '/' . $this->application . '/config/config.php';
         if (file_exists($path)) {
             $toMerge[] = require $path;
         }
 
-        // Настройки конкретного приложения для действующего окружения
+        // App-related env-dependent configuration
         $path = self::ROOT_PATH . '/' . $this->application . '/config/config-' . YII_ENV . '.php';
         if (file_exists($path)) {
             $toMerge[] = require $path;
         }
 
-        // Локальные настройки конкретного приложения
+        // App-related local configuration
         $path = self::ROOT_PATH . '/' . $this->application . '/config/config-local.php';
         if (file_exists($path)) {
             $toMerge[] = require $path;

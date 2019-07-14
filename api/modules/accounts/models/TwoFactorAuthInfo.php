@@ -62,13 +62,14 @@ class TwoFactorAuthInfo extends BaseAccountForm {
     }
 
     /**
-     * В используемой либе для рендеринга QR кода нет возможности указать QR code version.
+     * In the used library for rendering QR codes there is no possibility to specify a QR code version.
      * http://www.qrcode.com/en/about/version.html
-     * По какой-то причине 7 и 8 версии не читаются вовсе, с логотипом или без.
-     * Поэтому нужно иначально привести строку к длинне 9 версии (91), добавляя к концу
-     * строки необходимое количество символов "#". Этот символ используется, т.к. нашим
-     * контентом является ссылка и чтобы не вводить лишние параметры мы помечаем добавочную
-     * часть как хеш часть и все программы для чтения QR кодов продолжают свою работу.
+     *
+     * For some reason, generated versions 7 and 8 are not readable at all, with or without a logo.
+     * Therefore, it is necessary to initially append the string to the length of version 9 (91),
+     * adding to the end of the string the necessary number of characters "#".
+     * This symbol is used because our content is a link and in order not to enter unnecessary parameters
+     * we mark the additional part as a hash part and all application for scanning QR codes continue their work.
      *
      * @param string $content
      * @return string
@@ -78,11 +79,11 @@ class TwoFactorAuthInfo extends BaseAccountForm {
     }
 
     /**
-     * otp_secret кодируется в Base32, но после кодирования в результурющей строке есть символы,
-     * которые можно перепутать (1 и l, O и 0, и т.д.). Т.к. целевая строка не предназначена для
-     * обратной расшифровки, то мы можем безжалостно их удалить. Итоговая строка составляет 160%
-     * от исходной. Поэтому, генерируя исходные случайные байты, мы должны обеспечить такую длину,
-     * чтобы 160% её было равно запрошенному значению.
+     * otp_secret is encoded in Base32, but after encoding there are characters in the result line
+     * that can be mixed up (1 and l, O and 0, etc.). Since the target string isn't intended for
+     * reverse decryption, we can safely delete them. The resulting string is 160% of the source line.
+     * That's why, when generating the initial random bytes, we should provide such a length that
+     * 160% of it is equal to the requested length.
      *
      * @param int $length
      * @return string
@@ -91,6 +92,7 @@ class TwoFactorAuthInfo extends BaseAccountForm {
         $randomBytesLength = ceil($length / 1.6);
         $result = '';
         while (strlen($result) < $length) {
+            /** @noinspection PhpUnhandledExceptionInspection */
             $encoded = Base32::encodeUpper(random_bytes($randomBytesLength));
             $encoded = trim($encoded, '=');
             $encoded = str_replace(['I', 'L', 'O', 'U', '1', '0'], '', $encoded);

@@ -1,8 +1,8 @@
 .git/*
 .env
 
-# vendor будет заполнен уже внутри контейнера
+# vendor folder will be filled from the container
 vendor
 
-# Все временные файлы
+# Runtime data from any app module
 */runtime

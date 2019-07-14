@@ -7,7 +7,7 @@ use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
- * Поля модели:
+ * Fields:
  * @property integer $id
  * @property integer $account_id
  * @property string  $refresh_token
@@ -15,10 +15,10 @@ use yii\db\ActiveRecord;
  * @property integer $created_at
  * @property integer $last_refreshed_at
  *
- * Отношения:
+ * Relations:
  * @property Account $account
  *
- * Поведения:
+ * Behaviors:
  * @mixin TimestampBehavior
  */
 class AccountSession extends ActiveRecord {

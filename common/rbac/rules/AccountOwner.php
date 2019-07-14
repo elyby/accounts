@@ -10,15 +10,15 @@ class AccountOwner extends Rule {
     public $name = 'account_owner';
 
     /**
-     * В нашем приложении права выдаются не пользователям, а токенам, так что ожидаем
-     * здесь $accessToken, по которому дальше восстанавливаем аккаунт, если это возможно.
+     * In our application the permissions are given not to users but to tokens,
+     * so we receive $accessToken here and extract all the assigned scopes from it.
      *
      * @param string|int     $accessToken
      * @param \yii\rbac\Item $item
-     * @param array          $params параметр accountId нужно передать обязательно как id аккаунта,
-     *                               к которому выполняется запрос
-     *                               параметр optionalRules позволяет отключить обязательность
-     *                               принятия последней версии правил
+     * @param array          $params the "accountId" parameter must be passed as the id of the account
+     *                               to which the request is made
+     *                               the "optionalRules" parameter allows you to disable the mandatory acceptance
+     *                               of the latest version of the rules
      *
      * @return bool a value indicating whether the rule permits the auth item it is associated with.
      */

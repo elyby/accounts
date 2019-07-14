@@ -80,7 +80,7 @@ class GetCest {
     }
 
     public function testGetInfoWithExpiredToken(FunctionalTester $I) {
-        // Устанавливаем заведомо истёкший токен
+        // We're setting up a known expired token
         $I->amBearerAuthenticated(
             'eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0NjQ2Mjc1NDUsImV4cCI6MTQ2NDYzMTE0NSwic3ViIjoiZWx5fDEiLCJlbHktc' .
             '2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIifQ.v1u8V5wk2RkWmnZtH3jZvM3zO1Gpgbp2DQFfLfy8jHY'

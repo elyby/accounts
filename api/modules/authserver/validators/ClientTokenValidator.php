@@ -4,8 +4,8 @@ namespace api\modules\authserver\validators;
 use api\modules\authserver\exceptions\IllegalArgumentException;
 
 /**
- * Максимальная длина clientToken для нашей базы данных составляет 255.
- * После этого мы не принимаем указанный токен
+ * The maximum length of clientToken for our database is 255.
+ * If the token is longer, we do not accept the passed token at all.
  */
 class ClientTokenValidator extends \yii\validators\RequiredValidator {
 

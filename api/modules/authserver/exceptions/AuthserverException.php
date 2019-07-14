@@ -7,7 +7,7 @@ use yii\web\HttpException;
 class AuthserverException extends HttpException {
 
     /**
-     * Рефлексия быстрее, как ни странно:
+     * Reflection is faster, weird as it may seem:
      * @url https://coderwall.com/p/cpxxxw/php-get-class-name-without-namespace#comment_19313
      *
      * @return string
