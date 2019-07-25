@@ -11,6 +11,8 @@ return [
         'user' => [
             'class' => api\components\User\Component::class,
             'secret' => getenv('JWT_USER_SECRET'),
+            'publicKey' => getenv('JWT_PUBLIC_KEY') ?: '/data/certs/public.crt',
+            'privateKey' => getenv('JWT_PRIVATE_KEY') ?: '/data/certs/private.key',
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,

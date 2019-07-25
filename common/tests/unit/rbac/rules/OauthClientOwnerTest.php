@@ -34,7 +34,11 @@ class OauthClientOwnerTest extends TestCase {
         $identity->shouldReceive('getAccount')->andReturn($account);
 
         /** @var Component|\Mockery\MockInterface $component */
-        $component = mock(Component::class . '[findIdentityByAccessToken]', [['secret' => 'secret']]);
+        $component = mock(Component::class . '[findIdentityByAccessToken]', [[
+            'secret' => 'secret',
+            'publicKey' => 'data/certs/public.crt',
+            'privateKey' => 'data/certs/private.key',
+        ]]);
         $component->shouldDeferMissing();
         $component->shouldReceive('findIdentityByAccessToken')->withArgs(['token'])->andReturn($identity);
 

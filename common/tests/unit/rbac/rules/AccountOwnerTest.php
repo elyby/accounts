@@ -13,7 +13,11 @@ use const common\LATEST_RULES_VERSION;
 class AccountOwnerTest extends TestCase {
 
     public function testIdentityIsNull() {
-        $component = mock(Component::class . '[findIdentityByAccessToken]', [['secret' => 'secret']]);
+        $component = mock(Component::class . '[findIdentityByAccessToken]', [[
+            'secret' => 'secret',
+            'publicKey' => 'data/certs/public.crt',
+            'privateKey' => 'data/certs/private.key',
+        ]]);
         $component->shouldDeferMissing();
         $component->shouldReceive('findIdentityByAccessToken')->andReturn(null);
 
@@ -34,7 +38,11 @@ class AccountOwnerTest extends TestCase {
         $identity = mock(IdentityInterface::class);
         $identity->shouldReceive('getAccount')->andReturn($account);
 
-        $component = mock(Component::class . '[findIdentityByAccessToken]', [['secret' => 'secret']]);
+        $component = mock(Component::class . '[findIdentityByAccessToken]', [[
+            'secret' => 'secret',
+            'publicKey' => 'data/certs/public.crt',
+            'privateKey' => 'data/certs/private.key',
+        ]]);
         $component->shouldDeferMissing();
         $component->shouldReceive('findIdentityByAccessToken')->withArgs(['token'])->andReturn($identity);
 

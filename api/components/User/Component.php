@@ -9,12 +9,15 @@ use DateInterval;
 use DateTime;
 use Emarref\Jwt\Algorithm\AlgorithmInterface;
 use Emarref\Jwt\Algorithm\Hs256;
+use Emarref\Jwt\Algorithm\Rs256;
 use Emarref\Jwt\Claim;
 use Emarref\Jwt\Encryption\Factory as EncryptionFactory;
 use Emarref\Jwt\Exception\VerificationException;
+use Emarref\Jwt\HeaderParameter\Custom;
 use Emarref\Jwt\Token;
 use Emarref\Jwt\Verification\Context as VerificationContext;
 use Exception;
+use Webmozart\Assert\Assert;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\web\UnauthorizedHttpException;
@@ -43,6 +46,10 @@ class Component extends YiiUserComponent {
 
     public $secret;
 
+    public $publicKey;
+
+    public $privateKey;
+
     public $expirationTimeout = 'PT1H';
 
     public $sessionTimeout = 'P7D';
@@ -54,8 +61,16 @@ class Component extends YiiUserComponent {
 
     public function init() {
         parent::init();
-        if (!$this->secret) {
-            throw new InvalidConfigException('secret must be specified');
+        Assert::notEmpty($this->secret, 'secret must be specified');
+        Assert::notEmpty($this->publicKey, 'public key must be specified');
+        Assert::notEmpty($this->privateKey, 'private key must be specified');
+
+        if (!($this->publicKey = file_get_contents($this->publicKey))) {
+            throw new InvalidConfigException('invalid public key');
+        }
+
+        if (!($this->privateKey = file_get_contents($this->privateKey))) {
+            throw new InvalidConfigException('invalid private key');
         }
     }
 
@@ -138,7 +153,18 @@ class Component extends YiiUserComponent {
                 throw new VerificationException('Incorrect token encoding', 0, $e);
             }
 
-            $context = new VerificationContext(EncryptionFactory::create($this->getAlgorithm()));
+            $algorithm = $this->getAlgorithm();
+            $version = $notVerifiedToken->getHeader()->findParameterByName('v');
+            if ($version === null) {
+                $algorithm = new Hs256($this->secret);
+            }
+
+            $encryption = EncryptionFactory::create($algorithm);
+            if ($version !== null) {
+                $encryption->setPublicKey($this->publicKey);
+            }
+
+            $context = new VerificationContext($encryption);
             $context->setSubject(self::JWT_SUBJECT_PREFIX);
             $jwt->verify($notVerifiedToken, $context);
 
@@ -205,15 +231,18 @@ class Component extends YiiUserComponent {
     }
 
     public function getAlgorithm(): AlgorithmInterface {
-        return new Hs256($this->secret);
+        return new Rs256();
     }
 
     protected function serializeToken(Token $token): string {
-        return (new Jwt())->serialize($token, EncryptionFactory::create($this->getAlgorithm()));
+        $encryption = EncryptionFactory::create($this->getAlgorithm())->setPrivateKey($this->privateKey);
+
+        return (new Jwt())->serialize($token, $encryption);
     }
 
     protected function createToken(Account $account): Token {
         $token = new Token();
+        $token->addHeader(new Custom('v', 1));
         foreach ($this->getClaims($account) as $claim) {
             $token->addClaim($claim);
         }

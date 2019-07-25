@@ -63,6 +63,8 @@ class LogoutFormTest extends TestCase {
             'enableSession' => false,
             'loginUrl' => null,
             'secret' => 'secret',
+            'publicKey' => 'data/certs/public.crt',
+            'privateKey' => 'data/certs/private.key',
         ];
     }
 

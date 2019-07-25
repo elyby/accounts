@@ -8,6 +8,7 @@ use common\tests\_support\ProtectedCaller;
 use common\tests\fixtures\AccountFixture;
 use Emarref\Jwt\Claim;
 use Emarref\Jwt\Encryption\Factory as EncryptionFactory;
+use Emarref\Jwt\HeaderParameter\Custom;
 use Emarref\Jwt\Token;
 use Yii;
 
@@ -33,10 +34,11 @@ class JwtIdentityTest extends TestCase {
      */
     public function testFindIdentityByAccessTokenWithExpiredToken() {
         $token = new Token();
+        $token->addHeader(new Custom('v', 1));
         $token->addClaim(new Claim\IssuedAt(1464593193));
         $token->addClaim(new Claim\Expiration(1464596793));
         $token->addClaim(new Claim\Subject('ely|' . $this->tester->grabFixture('accounts', 'admin')['id']));
-        $expiredToken = (new Jwt())->serialize($token, EncryptionFactory::create(Yii::$app->user->getAlgorithm()));
+        $expiredToken = (new Jwt())->serialize($token, EncryptionFactory::create(Yii::$app->user->getAlgorithm())->setPrivateKey(Yii::$app->user->privateKey));
 
         JwtIdentity::findIdentityByAccessToken($expiredToken);
     }
