@@ -11,6 +11,7 @@ use Emarref\Jwt\Algorithm\AlgorithmInterface;
 use Emarref\Jwt\Algorithm\Hs256;
 use Emarref\Jwt\Algorithm\Rs256;
 use Emarref\Jwt\Claim;
+use Emarref\Jwt\Encryption\EncryptionInterface;
 use Emarref\Jwt\Encryption\Factory as EncryptionFactory;
 use Emarref\Jwt\Exception\VerificationException;
 use Emarref\Jwt\HeaderParameter\Custom;
@@ -46,13 +47,17 @@ class Component extends YiiUserComponent {
 
     public $secret;
 
-    public $publicKey;
+    public $publicKeyPath;
 
-    public $privateKey;
+    public $privateKeyPath;
 
     public $expirationTimeout = 'PT1H';
 
     public $sessionTimeout = 'P7D';
+
+    private $publicKey;
+
+    private $privateKey;
 
     /**
      * @var Token[]
@@ -62,16 +67,28 @@ class Component extends YiiUserComponent {
     public function init() {
         parent::init();
         Assert::notEmpty($this->secret, 'secret must be specified');
-        Assert::notEmpty($this->publicKey, 'public key must be specified');
-        Assert::notEmpty($this->privateKey, 'private key must be specified');
+        Assert::notEmpty($this->publicKeyPath, 'public key path must be specified');
+        Assert::notEmpty($this->privateKeyPath, 'private key path must be specified');
+    }
 
-        if (!($this->publicKey = file_get_contents($this->publicKey))) {
-            throw new InvalidConfigException('invalid public key');
+    public function getPublicKey() {
+        if (empty($this->publicKey)) {
+            if (!($this->publicKey = file_get_contents($this->publicKeyPath))) {
+                throw new InvalidConfigException('invalid public key path');
+            }
         }
 
-        if (!($this->privateKey = file_get_contents($this->privateKey))) {
-            throw new InvalidConfigException('invalid private key');
+        return $this->publicKey;
+    }
+
+    public function getPrivateKey() {
+        if (empty($this->privateKey)) {
+            if (!($this->privateKey = file_get_contents($this->privateKeyPath))) {
+                throw new InvalidConfigException('invalid private key path');
+            }
         }
+
+        return $this->privateKey;
     }
 
     public function findIdentityByAccessToken($accessToken): ?IdentityInterface {
@@ -153,16 +170,9 @@ class Component extends YiiUserComponent {
                 throw new VerificationException('Incorrect token encoding', 0, $e);
             }
 
-            $algorithm = $this->getAlgorithm();
             $version = $notVerifiedToken->getHeader()->findParameterByName('v');
-            if ($version === null) {
-                $algorithm = new Hs256($this->secret);
-            }
-
-            $encryption = EncryptionFactory::create($algorithm);
-            if ($version !== null) {
-                $encryption->setPublicKey($this->publicKey);
-            }
+            $version = $version ? $version->getValue() : null;
+            $encryption = $this->getEncryption($version);
 
             $context = new VerificationContext($encryption);
             $context->setSubject(self::JWT_SUBJECT_PREFIX);
@@ -234,8 +244,19 @@ class Component extends YiiUserComponent {
         return new Rs256();
     }
 
+    public function getEncryption(?int $version): EncryptionInterface {
+        $algorithm = $version ? new Rs256() : new Hs256($this->secret);
+        $encryption = EncryptionFactory::create($algorithm);
+
+        if ($version) {
+            $encryption->setPublicKey($this->getPublicKey())->setPrivateKey($this->getPrivateKey());
+        }
+
+        return $encryption;
+    }
+
     protected function serializeToken(Token $token): string {
-        $encryption = EncryptionFactory::create($this->getAlgorithm())->setPrivateKey($this->privateKey);
+        $encryption = $this->getEncryption(1);
 
         return (new Jwt())->serialize($token, $encryption);
     }

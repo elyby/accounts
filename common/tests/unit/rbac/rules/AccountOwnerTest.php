@@ -15,8 +15,8 @@ class AccountOwnerTest extends TestCase {
     public function testIdentityIsNull() {
         $component = mock(Component::class . '[findIdentityByAccessToken]', [[
             'secret' => 'secret',
-            'publicKey' => 'data/certs/public.crt',
-            'privateKey' => 'data/certs/private.key',
+            'publicKeyPath' => 'data/certs/public.crt',
+            'privateKeyPath' => 'data/certs/private.key',
         ]]);
         $component->shouldDeferMissing();
         $component->shouldReceive('findIdentityByAccessToken')->andReturn(null);
@@ -40,8 +40,8 @@ class AccountOwnerTest extends TestCase {
 
         $component = mock(Component::class . '[findIdentityByAccessToken]', [[
             'secret' => 'secret',
-            'publicKey' => 'data/certs/public.crt',
-            'privateKey' => 'data/certs/private.key',
+            'publicKeyPath' => 'data/certs/public.crt',
+            'privateKeyPath' => 'data/certs/private.key',
         ]]);
         $component->shouldDeferMissing();
         $component->shouldReceive('findIdentityByAccessToken')->withArgs(['token'])->andReturn($identity);

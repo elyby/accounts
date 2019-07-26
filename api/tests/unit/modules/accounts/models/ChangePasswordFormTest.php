@@ -61,8 +61,8 @@ class ChangePasswordFormTest extends TestCase {
             'enableSession' => false,
             'loginUrl' => null,
             'secret' => 'secret',
-            'publicKey' => 'data/certs/public.crt',
-            'privateKey' => 'data/certs/private.key',
+            'publicKeyPath' => 'data/certs/public.crt',
+            'privateKeyPath' => 'data/certs/private.key',
         ]]);
         $component->shouldNotReceive('terminateSessions');
 
@@ -123,8 +123,8 @@ class ChangePasswordFormTest extends TestCase {
             'enableSession' => false,
             'loginUrl' => null,
             'secret' => 'secret',
-            'publicKey' => 'data/certs/public.crt',
-            'privateKey' => 'data/certs/private.key',
+            'publicKeyPath' => 'data/certs/public.crt',
+            'privateKeyPath' => 'data/certs/private.key',
         ]]);
         $component->shouldReceive('terminateSessions')->once()->withArgs([$account, Component::KEEP_CURRENT_SESSION]);
 
