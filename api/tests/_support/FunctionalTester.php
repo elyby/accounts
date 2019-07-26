@@ -19,8 +19,9 @@ class FunctionalTester extends Actor {
             throw new InvalidArgumentException("Cannot find account for username \"{$asUsername}\"");
         }
 
-        $result = Yii::$app->user->createJwtAuthenticationToken($account, false);
-        $this->amBearerAuthenticated($result->getJwt());
+        $token = Yii::$app->user->createJwtAuthenticationToken($account);
+        $jwt = Yii::$app->user->serializeToken($token);
+        $this->amBearerAuthenticated($jwt);
 
         return $account->id;
     }

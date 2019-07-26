@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\components\User;
 
 use api\exceptions\ThisShouldNotHappenException;
@@ -11,6 +13,7 @@ use Emarref\Jwt\Algorithm\AlgorithmInterface;
 use Emarref\Jwt\Algorithm\Hs256;
 use Emarref\Jwt\Algorithm\Rs256;
 use Emarref\Jwt\Claim;
+use Emarref\Jwt\Encryption\Asymmetric as AsymmetricEncryption;
 use Emarref\Jwt\Encryption\EncryptionInterface;
 use Emarref\Jwt\Encryption\Factory as EncryptionFactory;
 use Emarref\Jwt\Exception\VerificationException;
@@ -18,6 +21,7 @@ use Emarref\Jwt\HeaderParameter\Custom;
 use Emarref\Jwt\Token;
 use Emarref\Jwt\Verification\Context as VerificationContext;
 use Exception;
+use InvalidArgumentException;
 use Webmozart\Assert\Assert;
 use Yii;
 use yii\base\InvalidConfigException;
@@ -38,6 +42,8 @@ class Component extends YiiUserComponent {
     public const KEEP_CURRENT_SESSION = 4;
 
     public const JWT_SUBJECT_PREFIX = 'ely|';
+
+    private const LATEST_JWT_VERSION = 1;
 
     public $enableSession = false;
 
@@ -71,26 +77,6 @@ class Component extends YiiUserComponent {
         Assert::notEmpty($this->privateKeyPath, 'private key path must be specified');
     }
 
-    public function getPublicKey() {
-        if (empty($this->publicKey)) {
-            if (!($this->publicKey = file_get_contents($this->publicKeyPath))) {
-                throw new InvalidConfigException('invalid public key path');
-            }
-        }
-
-        return $this->publicKey;
-    }
-
-    public function getPrivateKey() {
-        if (empty($this->privateKey)) {
-            if (!($this->privateKey = file_get_contents($this->privateKeyPath))) {
-                throw new InvalidConfigException('invalid private key path');
-            }
-        }
-
-        return $this->privateKey;
-    }
-
     public function findIdentityByAccessToken($accessToken): ?IdentityInterface {
         if (empty($accessToken)) {
             return null;
@@ -109,29 +95,17 @@ class Component extends YiiUserComponent {
         return null;
     }
 
-    public function createJwtAuthenticationToken(Account $account, bool $rememberMe): AuthenticationResult {
-        $ip = Yii::$app->request->userIP;
+    public function createJwtAuthenticationToken(Account $account, AccountSession $session = null): Token {
         $token = $this->createToken($account);
-        if ($rememberMe) {
-            $session = new AccountSession();
-            $session->account_id = $account->id;
-            $session->setIp($ip);
-            $session->generateRefreshToken();
-            if (!$session->save()) {
-                throw new ThisShouldNotHappenException('Cannot save account session model');
-            }
-
+        if ($session !== null) {
             $token->addClaim(new Claim\JwtId($session->id));
         } else {
-            $session = null;
             // If we don't remember a session, the token should live longer
             // so that the session doesn't end while working with the account
             $token->addClaim(new Claim\Expiration((new DateTime())->add(new DateInterval($this->sessionTimeout))));
         }
 
-        $jwt = $this->serializeToken($token);
-
-        return new AuthenticationResult($account, $jwt, $session);
+        return $token;
     }
 
     public function renewJwtAuthenticationToken(AccountSession $session): AuthenticationResult {
@@ -155,6 +129,13 @@ class Component extends YiiUserComponent {
         return $result;
     }
 
+    public function serializeToken(Token $token): string {
+        $encryption = $this->getEncryptionForVersion(self::LATEST_JWT_VERSION);
+        $this->prepareEncryptionForEncoding($encryption);
+
+        return (new Jwt())->serialize($token, $encryption);
+    }
+
     /**
      * @param string $jwtString
      * @return Token
@@ -170,9 +151,10 @@ class Component extends YiiUserComponent {
                 throw new VerificationException('Incorrect token encoding', 0, $e);
             }
 
-            $version = $notVerifiedToken->getHeader()->findParameterByName('v');
-            $version = $version ? $version->getValue() : null;
-            $encryption = $this->getEncryption($version);
+            $versionHeader = $notVerifiedToken->getHeader()->findParameterByName('v');
+            $version = $versionHeader ? $versionHeader->getValue() : 0;
+            $encryption = $this->getEncryptionForVersion($version);
+            $this->prepareEncryptionForDecoding($encryption);
 
             $context = new VerificationContext($encryption);
             $context->setSubject(self::JWT_SUBJECT_PREFIX);
@@ -240,28 +222,27 @@ class Component extends YiiUserComponent {
         }
     }
 
-    public function getAlgorithm(): AlgorithmInterface {
-        return new Rs256();
-    }
-
-    public function getEncryption(?int $version): EncryptionInterface {
-        $algorithm = $version ? new Rs256() : new Hs256($this->secret);
-        $encryption = EncryptionFactory::create($algorithm);
-
-        if ($version) {
-            $encryption->setPublicKey($this->getPublicKey())->setPrivateKey($this->getPrivateKey());
+    private function getPublicKey() {
+        if (empty($this->publicKey)) {
+            if (!($this->publicKey = file_get_contents($this->publicKeyPath))) {
+                throw new InvalidConfigException('invalid public key path');
+            }
         }
 
-        return $encryption;
+        return $this->publicKey;
     }
 
-    protected function serializeToken(Token $token): string {
-        $encryption = $this->getEncryption(1);
+    private function getPrivateKey() {
+        if (empty($this->privateKey)) {
+            if (!($this->privateKey = file_get_contents($this->privateKeyPath))) {
+                throw new InvalidConfigException('invalid private key path');
+            }
+        }
 
-        return (new Jwt())->serialize($token, $encryption);
+        return $this->privateKey;
     }
 
-    protected function createToken(Account $account): Token {
+    private function createToken(Account $account): Token {
         $token = new Token();
         $token->addHeader(new Custom('v', 1));
         foreach ($this->getClaims($account) as $claim) {
@@ -275,7 +256,7 @@ class Component extends YiiUserComponent {
      * @param Account $account
      * @return Claim\AbstractClaim[]
      */
-    protected function getClaims(Account $account): array {
+    private function getClaims(Account $account): array {
         $currentTime = new DateTime();
 
         return [
@@ -286,13 +267,40 @@ class Component extends YiiUserComponent {
         ];
     }
 
-    private function getBearerToken() {
+    private function getEncryptionForVersion(int $version): EncryptionInterface {
+        return EncryptionFactory::create($this->getAlgorithm($version ?? 0));
+    }
+
+    private function getAlgorithm(int $version): AlgorithmInterface {
+        switch ($version) {
+            case 0:
+                return new Hs256($this->secret);
+            case 1:
+                return new Rs256();
+        }
+
+        throw new InvalidArgumentException('Unsupported token version');
+    }
+
+    private function getBearerToken(): ?string {
         $authHeader = Yii::$app->request->getHeaders()->get('Authorization');
         if ($authHeader === null || !preg_match('/^Bearer\s+(.*?)$/', $authHeader, $matches)) {
             return null;
         }
 
         return $matches[1];
+    }
+
+    private function prepareEncryptionForEncoding(EncryptionInterface $encryption): void {
+        if ($encryption instanceof AsymmetricEncryption) {
+            $encryption->setPrivateKey($this->getPrivateKey());
+        }
+    }
+
+    private function prepareEncryptionForDecoding(EncryptionInterface $encryption) {
+        if ($encryption instanceof AsymmetricEncryption) {
+            $encryption->setPublicKey($this->getPublicKey());
+        }
     }
 
 }

@@ -1,12 +1,17 @@
 <?php
+declare(strict_types=1);
+
 namespace api\models\authentication;
 
 use api\aop\annotations\CollectModelMetrics;
+use api\components\User\AuthenticationResult;
 use api\models\base\ApiForm;
 use api\traits\AccountFinder;
 use api\validators\TotpValidator;
 use common\helpers\Error as E;
 use common\models\Account;
+use common\models\AccountSession;
+use Webmozart\Assert\Assert;
 use Yii;
 
 class LoginForm extends ApiForm {
@@ -41,15 +46,13 @@ class LoginForm extends ApiForm {
         ];
     }
 
-    public function validateLogin($attribute) {
-        if (!$this->hasErrors()) {
-            if ($this->getAccount() === null) {
-                $this->addError($attribute, E::LOGIN_NOT_EXIST);
-            }
+    public function validateLogin(string $attribute): void {
+        if (!$this->hasErrors() && $this->getAccount() === null) {
+            $this->addError($attribute, E::LOGIN_NOT_EXIST);
         }
     }
 
-    public function validatePassword($attribute) {
+    public function validatePassword(string $attribute): void {
         if (!$this->hasErrors()) {
             $account = $this->getAccount();
             if ($account === null || !$account->validatePassword($this->password)) {
@@ -58,11 +61,12 @@ class LoginForm extends ApiForm {
         }
     }
 
-    public function validateTotp($attribute) {
+    public function validateTotp(string $attribute): void {
         if ($this->hasErrors()) {
             return;
         }
 
+        /** @var Account $account */
         $account = $this->getAccount();
         if (!$account->is_otp_enabled) {
             return;
@@ -73,8 +77,9 @@ class LoginForm extends ApiForm {
         $validator->validateAttribute($this, $attribute);
     }
 
-    public function validateActivity($attribute) {
+    public function validateActivity(string $attribute): void {
         if (!$this->hasErrors()) {
+            /** @var Account $account */
             $account = $this->getAccount();
             if ($account->status === Account::STATUS_BANNED) {
                 $this->addError($attribute, E::ACCOUNT_BANNED);
@@ -92,20 +97,37 @@ class LoginForm extends ApiForm {
 
     /**
      * @CollectModelMetrics(prefix="authentication.login")
-     * @return \api\components\User\AuthenticationResult|bool
+     * @return AuthenticationResult|bool
      */
     public function login() {
         if (!$this->validate()) {
             return false;
         }
 
+        $transaction = Yii::$app->db->beginTransaction();
+
+        /** @var Account $account */
         $account = $this->getAccount();
         if ($account->password_hash_strategy !== Account::PASS_HASH_STRATEGY_YII2) {
             $account->setPassword($this->password);
-            $account->save();
+            Assert::true($account->save(), 'Unable to upgrade user\'s password');
         }
 
-        return Yii::$app->user->createJwtAuthenticationToken($account, $this->rememberMe);
+        $session = null;
+        if ($this->rememberMe) {
+            $session = new AccountSession();
+            $session->account_id = $account->id;
+            $session->setIp(Yii::$app->request->userIP);
+            $session->generateRefreshToken();
+            Assert::true($session->save(), 'Cannot save account session model');
+        }
+
+        $token = Yii::$app->user->createJwtAuthenticationToken($account, $session);
+        $jwt = Yii::$app->user->serializeToken($token);
+
+        $transaction->commit();
+
+        return new AuthenticationResult($account, $jwt, $session);
     }
 
 }

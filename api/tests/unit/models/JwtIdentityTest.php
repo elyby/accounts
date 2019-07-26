@@ -1,19 +1,15 @@
 <?php
+declare(strict_types=1);
+
 namespace codeception\api\unit\models;
 
-use api\components\User\Jwt;
 use api\components\User\JwtIdentity;
 use api\tests\unit\TestCase;
-use common\tests\_support\ProtectedCaller;
 use common\tests\fixtures\AccountFixture;
-use Emarref\Jwt\Claim;
-use Emarref\Jwt\Encryption\Factory as EncryptionFactory;
-use Emarref\Jwt\HeaderParameter\Custom;
-use Emarref\Jwt\Token;
+use Emarref\Jwt\Claim\Expiration as ExpirationClaim;
 use Yii;
 
 class JwtIdentityTest extends TestCase {
-    use ProtectedCaller;
 
     public function _fixtures(): array {
         return [
@@ -33,13 +29,7 @@ class JwtIdentityTest extends TestCase {
      * @expectedExceptionMessage Token expired
      */
     public function testFindIdentityByAccessTokenWithExpiredToken() {
-        $token = new Token();
-        $token->addHeader(new Custom('v', 1));
-        $token->addClaim(new Claim\IssuedAt(1464593193));
-        $token->addClaim(new Claim\Expiration(1464596793));
-        $token->addClaim(new Claim\Subject('ely|' . $this->tester->grabFixture('accounts', 'admin')['id']));
-        $expiredToken = (new Jwt())->serialize($token, EncryptionFactory::create(Yii::$app->user->getAlgorithm())->setPrivateKey(Yii::$app->user->privateKey));
-
+        $expiredToken = $this->generateToken(time() - 3600);
         JwtIdentity::findIdentityByAccessToken($expiredToken);
     }
 
@@ -51,14 +41,17 @@ class JwtIdentityTest extends TestCase {
         JwtIdentity::findIdentityByAccessToken('');
     }
 
-    protected function generateToken() {
+    private function generateToken(int $expiresAt = null): string {
         /** @var \api\components\User\Component $component */
         $component = Yii::$app->user;
         /** @var \common\models\Account $account */
         $account = $this->tester->grabFixture('accounts', 'admin');
-        $token = $this->callProtected($component, 'createToken', $account);
+        $token = $component->createJwtAuthenticationToken($account);
+        if ($expiresAt !== null) {
+            $token->addClaim(new ExpirationClaim($expiresAt));
+        }
 
-        return $this->callProtected($component, 'serializeToken', $token);
+        return $component->serializeToken($token);
     }
 
 }

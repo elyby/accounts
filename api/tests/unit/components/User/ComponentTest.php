@@ -1,24 +1,22 @@
 <?php
+declare(strict_types=1);
+
 namespace codeception\api\unit\components\User;
 
-use api\components\User\AuthenticationResult;
 use api\components\User\Component;
 use api\components\User\Identity;
 use api\tests\unit\TestCase;
 use common\models\Account;
 use common\models\AccountSession;
-use common\tests\_support\ProtectedCaller;
 use common\tests\fixtures\AccountFixture;
 use common\tests\fixtures\AccountSessionFixture;
 use common\tests\fixtures\MinecraftAccessKeyFixture;
 use Emarref\Jwt\Claim;
 use Emarref\Jwt\Jwt;
-use Emarref\Jwt\Token;
 use Yii;
 use yii\web\Request;
 
 class ComponentTest extends TestCase {
-    use ProtectedCaller;
 
     /**
      * @var Component|\PHPUnit\Framework\MockObject\MockObject
@@ -41,42 +39,24 @@ class ComponentTest extends TestCase {
     public function testCreateJwtAuthenticationToken() {
         $this->mockRequest();
 
+        // Token without session
         $account = new Account(['id' => 1]);
-        $result = $this->component->createJwtAuthenticationToken($account, false);
-        $this->assertInstanceOf(AuthenticationResult::class, $result);
-        $this->assertNull($result->getSession());
-        $this->assertSame($account, $result->getAccount());
-        $payloads = (new Jwt())->deserialize($result->getJwt())->getPayload();
-        /** @noinspection NullPointerExceptionInspection */
-        $this->assertEqualsWithDelta(time(), $payloads->findClaimByName(Claim\IssuedAt::NAME)->getValue(), 3);
-        /** @noinspection SummerTimeUnsafeTimeManipulationInspection */
-        /** @noinspection NullPointerExceptionInspection */
+        $token = $this->component->createJwtAuthenticationToken($account);
+        $payloads = $token->getPayload();
+        $this->assertEqualsWithDelta(time(), $payloads->findClaimByName('iat')->getValue(), 3);
         $this->assertEqualsWithDelta(time() + 60 * 60 * 24 * 7, $payloads->findClaimByName('exp')->getValue(), 3);
-        /** @noinspection NullPointerExceptionInspection */
         $this->assertSame('ely|1', $payloads->findClaimByName('sub')->getValue());
-        /** @noinspection NullPointerExceptionInspection */
         $this->assertSame('accounts_web_user', $payloads->findClaimByName('ely-scopes')->getValue());
         $this->assertNull($payloads->findClaimByName('jti'));
 
-        /** @var Account $account */
-        $account = $this->tester->grabFixture('accounts', 'admin');
-        $result = $this->component->createJwtAuthenticationToken($account, true);
-        $this->assertInstanceOf(AuthenticationResult::class, $result);
-        $this->assertInstanceOf(AccountSession::class, $result->getSession());
-        $this->assertSame($account, $result->getAccount());
-        /** @noinspection NullPointerExceptionInspection */
-        $this->assertTrue($result->getSession()->refresh());
-        $payloads = (new Jwt())->deserialize($result->getJwt())->getPayload();
-        /** @noinspection NullPointerExceptionInspection */
-        $this->assertEqualsWithDelta(time(), $payloads->findClaimByName(Claim\IssuedAt::NAME)->getValue(), 3);
-        /** @noinspection NullPointerExceptionInspection */
+        $session = new AccountSession(['id' => 2]);
+        $token = $this->component->createJwtAuthenticationToken($account, $session);
+        $payloads = $token->getPayload();
+        $this->assertEqualsWithDelta(time(), $payloads->findClaimByName('iat')->getValue(), 3);
         $this->assertEqualsWithDelta(time() + 3600, $payloads->findClaimByName('exp')->getValue(), 3);
-        /** @noinspection NullPointerExceptionInspection */
         $this->assertSame('ely|1', $payloads->findClaimByName('sub')->getValue());
-        /** @noinspection NullPointerExceptionInspection */
         $this->assertSame('accounts_web_user', $payloads->findClaimByName('ely-scopes')->getValue());
-        /** @noinspection NullPointerExceptionInspection */
-        $this->assertSame($result->getSession()->id, $payloads->findClaimByName('jti')->getValue());
+        $this->assertSame(2, $payloads->findClaimByName('jti')->getValue());
     }
 
     public function testRenewJwtAuthenticationToken() {
@@ -105,15 +85,19 @@ class ComponentTest extends TestCase {
 
     public function testParseToken() {
         $this->mockRequest();
-        $token = $this->callProtected($this->component, 'createToken', new Account(['id' => 1]));
-        $jwt = $this->callProtected($this->component, 'serializeToken', $token);
-        $this->assertInstanceOf(Token::class, $this->component->parseToken($jwt), 'success get RenewResult object');
+        $account = new Account(['id' => 1]);
+        $token = $this->component->createJwtAuthenticationToken($account);
+        $jwt = $this->component->serializeToken($token);
+        $this->component->parseToken($jwt);
     }
 
     public function testGetActiveSession() {
+        /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'admin');
-        $result = $this->component->createJwtAuthenticationToken($account, true);
-        $this->component->logout();
+        /** @var AccountSession $session */
+        $session = $this->tester->grabFixture('sessions', 'admin');
+        $token = $this->component->createJwtAuthenticationToken($account, $session);
+        $jwt = $this->component->serializeToken($token);
 
         /** @var Component|\PHPUnit\Framework\MockObject\MockObject $component */
         $component = $this->getMockBuilder(Component::class)
@@ -125,39 +109,42 @@ class ComponentTest extends TestCase {
             ->method('getIsGuest')
             ->willReturn(false);
 
-        $this->mockAuthorizationHeader($result->getJwt());
+        $this->mockAuthorizationHeader($jwt);
 
-        $session = $component->getActiveSession();
-        $this->assertInstanceOf(AccountSession::class, $session);
-        /** @noinspection NullPointerExceptionInspection */
-        $this->assertSame($session->id, $result->getSession()->id);
+        $foundSession = $component->getActiveSession();
+        $this->assertInstanceOf(AccountSession::class, $foundSession);
+        $this->assertSame($session->id, $foundSession->id);
     }
 
     public function testTerminateSessions() {
         /** @var AccountSession $session */
-        $session = AccountSession::findOne($this->tester->grabFixture('sessions', 'admin2')['id']);
+        $session = $this->tester->grabFixture('sessions', 'admin2');
 
         /** @var Component|\Mockery\MockInterface $component */
-        $component = mock(Component::class . '[getActiveSession]', [$this->getComponentConfig()])->shouldDeferMissing();
+        $component = mock(Component::class . '[getActiveSession]', [$this->getComponentConfig()])->makePartial();
         $component->shouldReceive('getActiveSession')->times(1)->andReturn($session);
 
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'admin');
-        $component->createJwtAuthenticationToken($account, true);
+        $component->createJwtAuthenticationToken($account);
 
+        // Dry run: no sessions should be removed
         $component->terminateSessions($account, Component::KEEP_MINECRAFT_SESSIONS | Component::KEEP_SITE_SESSIONS);
         $this->assertNotEmpty($account->getMinecraftAccessKeys()->all());
         $this->assertNotEmpty($account->getSessions()->all());
 
+        // All Minecraft sessions should be removed. Web sessions should be kept
         $component->terminateSessions($account, Component::KEEP_SITE_SESSIONS);
         $this->assertEmpty($account->getMinecraftAccessKeys()->all());
         $this->assertNotEmpty($account->getSessions()->all());
 
+        // All sessions should be removed except the current one
         $component->terminateSessions($account, Component::KEEP_CURRENT_SESSION);
         $sessions = $account->getSessions()->all();
         $this->assertCount(1, $sessions);
         $this->assertSame($session->id, $sessions[0]->id);
 
+        // With no arguments each and every session should be removed
         $component->terminateSessions($account);
         $this->assertEmpty($account->getSessions()->all());
         $this->assertEmpty($account->getMinecraftAccessKeys()->all());
@@ -165,7 +152,7 @@ class ComponentTest extends TestCase {
 
     private function mockRequest($userIP = '127.0.0.1') {
         /** @var Request|\Mockery\MockInterface $request */
-        $request = mock(Request::class . '[getHostInfo,getUserIP]')->shouldDeferMissing();
+        $request = mock(Request::class . '[getHostInfo,getUserIP]')->makePartial();
         $request->shouldReceive('getHostInfo')->andReturn('http://localhost');
         $request->shouldReceive('getUserIP')->andReturn($userIP);
 
