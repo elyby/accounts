@@ -46,7 +46,7 @@ class RefreshTokenCest {
             $refreshToken,
             'ely',
             'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
-            [P::MINECRAFT_SERVER_SESSION, S::OFFLINE_ACCESS]
+            [P::MINECRAFT_SERVER_SESSION, S::OFFLINE_ACCESS, S::CHANGE_SKIN]
         ));
         $this->canSeeRefreshTokenSuccess($I);
     }

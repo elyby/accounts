@@ -31,7 +31,7 @@ class OauthSteps extends FunctionalTester {
     }
 
     public function getRefreshToken(array $permissions = []) {
-        $authCode = $this->getAuthCode(array_merge([S::OFFLINE_ACCESS], $permissions));
+        $authCode = $this->getAuthCode(array_merge([S::OFFLINE_ACCESS, S::CHANGE_SKIN], $permissions));
         $response = $this->issueToken($authCode);
 
         return $response['refresh_token'];
