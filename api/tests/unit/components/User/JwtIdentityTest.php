@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace codeception\api\unit\models;
+namespace codeception\api\unit\components\User;
 
 use api\components\User\JwtIdentity;
 use api\tests\unit\TestCase;

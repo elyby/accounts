@@ -25,7 +25,7 @@ class ComponentTest extends TestCase {
 
     public function _before() {
         parent::_before();
-        $this->component = new Component($this->getComponentConfig());
+        $this->component = new Component();
     }
 
     public function _fixtures(): array {
@@ -72,7 +72,6 @@ class ComponentTest extends TestCase {
         /** @var Component|\PHPUnit\Framework\MockObject\MockObject $component */
         $component = $this->getMockBuilder(Component::class)
             ->setMethods(['getIsGuest'])
-            ->setConstructorArgs([$this->getComponentConfig()])
             ->getMock();
 
         $component
@@ -91,7 +90,7 @@ class ComponentTest extends TestCase {
         $session = $this->tester->grabFixture('sessions', 'admin2');
 
         /** @var Component|\Mockery\MockInterface $component */
-        $component = mock(Component::class . '[getActiveSession]', [$this->getComponentConfig()])->makePartial();
+        $component = mock(Component::class . '[getActiveSession]')->makePartial();
         $component->shouldReceive('getActiveSession')->times(1)->andReturn($session);
 
         /** @var Account $account */
@@ -138,17 +137,6 @@ class ComponentTest extends TestCase {
         }
 
         Yii::$app->request->headers->set('Authorization', $bearerToken);
-    }
-
-    private function getComponentConfig() {
-        return [
-            'identityClass' => IdentityFactory::class,
-            'enableSession' => false,
-            'loginUrl' => null,
-            'secret' => 'secret',
-            'publicKeyPath' => 'data/certs/public.crt',
-            'privateKeyPath' => 'data/certs/private.key',
-        ];
     }
 
 }

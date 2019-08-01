@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace common\tests\unit\rbac\rules;
 
 use api\components\User\Component;
@@ -34,12 +36,8 @@ class OauthClientOwnerTest extends TestCase {
         $identity->shouldReceive('getAccount')->andReturn($account);
 
         /** @var Component|\Mockery\MockInterface $component */
-        $component = mock(Component::class . '[findIdentityByAccessToken]', [[
-            'secret' => 'secret',
-            'publicKeyPath' => 'data/certs/public.crt',
-            'privateKeyPath' => 'data/certs/private.key',
-        ]]);
-        $component->shouldDeferMissing();
+        $component = mock(Component::class . '[findIdentityByAccessToken]');
+        $component->makePartial();
         $component->shouldReceive('findIdentityByAccessToken')->withArgs(['token'])->andReturn($identity);
 
         Yii::$app->set('user', $component);

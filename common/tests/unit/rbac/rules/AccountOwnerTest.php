@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace common\tests\unit\rbac\rules;
 
 use api\components\User\Component;
@@ -13,12 +15,8 @@ use const common\LATEST_RULES_VERSION;
 class AccountOwnerTest extends TestCase {
 
     public function testIdentityIsNull() {
-        $component = mock(Component::class . '[findIdentityByAccessToken]', [[
-            'secret' => 'secret',
-            'publicKeyPath' => 'data/certs/public.crt',
-            'privateKeyPath' => 'data/certs/private.key',
-        ]]);
-        $component->shouldDeferMissing();
+        $component = mock(Component::class . '[findIdentityByAccessToken]');
+        $component->makePartial();
         $component->shouldReceive('findIdentityByAccessToken')->andReturn(null);
 
         Yii::$app->set('user', $component);
@@ -38,12 +36,8 @@ class AccountOwnerTest extends TestCase {
         $identity = mock(IdentityInterface::class);
         $identity->shouldReceive('getAccount')->andReturn($account);
 
-        $component = mock(Component::class . '[findIdentityByAccessToken]', [[
-            'secret' => 'secret',
-            'publicKeyPath' => 'data/certs/public.crt',
-            'privateKeyPath' => 'data/certs/private.key',
-        ]]);
-        $component->shouldDeferMissing();
+        $component = mock(Component::class . '[findIdentityByAccessToken]');
+        $component->makePartial();
         $component->shouldReceive('findIdentityByAccessToken')->withArgs(['token'])->andReturn($identity);
 
         Yii::$app->set('user', $component);

@@ -112,22 +112,20 @@ class LoginForm extends ApiForm {
             Assert::true($account->save(), 'Unable to upgrade user\'s password');
         }
 
-        $refreshToken = null;
+        $session = null;
         if ($this->rememberMe) {
             $session = new AccountSession();
             $session->account_id = $account->id;
             $session->setIp(Yii::$app->request->userIP);
             $session->generateRefreshToken();
             Assert::true($session->save(), 'Cannot save account session model');
-
-            $refreshToken = $session->refresh_token;
         }
 
         $token = TokensFactory::createForAccount($account, $session);
 
         $transaction->commit();
 
-        return new AuthenticationResult($token, $refreshToken);
+        return new AuthenticationResult($token, $session ? $session->refresh_token : null);
     }
 
 }

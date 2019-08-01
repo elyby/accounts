@@ -13,7 +13,7 @@ use Yii;
 class FunctionalTester extends Actor {
     use FunctionalTesterActions;
 
-    public function amAuthenticated(string $asUsername = 'admin'): int {
+    public function amAuthenticated(string $asUsername = 'admin') { // Do not declare type
         /** @var Account $account */
         $account = Account::findOne(['username' => $asUsername]);
         if ($account === null) {
