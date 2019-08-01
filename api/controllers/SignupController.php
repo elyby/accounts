@@ -89,7 +89,7 @@ class SignupController extends Controller {
 
         return array_merge([
             'success' => true,
-        ], $result->getAsResponse());
+        ], $result->formatAsOAuth2Response());
     }
 
 }

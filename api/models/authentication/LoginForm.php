@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace api\models\authentication;
 
 use api\aop\annotations\CollectModelMetrics;
-use api\components\User\AuthenticationResult;
+use api\components\Tokens\TokensFactory;
 use api\models\base\ApiForm;
 use api\traits\AccountFinder;
 use api\validators\TotpValidator;
@@ -30,12 +30,12 @@ class LoginForm extends ApiForm {
             ['login', 'required', 'message' => E::LOGIN_REQUIRED],
             ['login', 'validateLogin'],
 
-            ['password', 'required', 'when' => function(self $model) {
+            ['password', 'required', 'when' => function(self $model): bool {
                 return !$model->hasErrors();
             }, 'message' => E::PASSWORD_REQUIRED],
             ['password', 'validatePassword'],
 
-            ['totp', 'required', 'when' => function(self $model) {
+            ['totp', 'required', 'when' => function(self $model): bool {
                 return !$model->hasErrors() && $model->getAccount()->is_otp_enabled;
             }, 'message' => E::TOTP_REQUIRED],
             ['totp', 'validateTotp'],
@@ -97,11 +97,10 @@ class LoginForm extends ApiForm {
 
     /**
      * @CollectModelMetrics(prefix="authentication.login")
-     * @return AuthenticationResult|bool
      */
-    public function login() {
+    public function login(): ?AuthenticationResult {
         if (!$this->validate()) {
-            return false;
+            return null;
         }
 
         $transaction = Yii::$app->db->beginTransaction();
@@ -113,21 +112,22 @@ class LoginForm extends ApiForm {
             Assert::true($account->save(), 'Unable to upgrade user\'s password');
         }
 
-        $session = null;
+        $refreshToken = null;
         if ($this->rememberMe) {
             $session = new AccountSession();
             $session->account_id = $account->id;
             $session->setIp(Yii::$app->request->userIP);
             $session->generateRefreshToken();
             Assert::true($session->save(), 'Cannot save account session model');
+
+            $refreshToken = $session->refresh_token;
         }
 
-        $token = Yii::$app->user->createJwtAuthenticationToken($account, $session);
-        $jwt = Yii::$app->user->serializeToken($token);
+        $token = TokensFactory::createForAccount($account, $session);
 
         $transaction->commit();
 
-        return new AuthenticationResult($account, $jwt, $session);
+        return new AuthenticationResult($token, $refreshToken);
     }
 
 }

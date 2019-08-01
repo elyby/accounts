@@ -51,7 +51,7 @@ class AuthenticationController extends Controller {
     public function actionLogin() {
         $model = new LoginForm();
         $model->load(Yii::$app->request->post());
-        if (($result = $model->login()) === false) {
+        if (($result = $model->login()) === null) {
             $data = [
                 'success' => false,
                 'errors' => $model->getFirstErrors(),
@@ -66,7 +66,7 @@ class AuthenticationController extends Controller {
 
         return array_merge([
             'success' => true,
-        ], $result->getAsResponse());
+        ], $result->formatAsOAuth2Response());
     }
 
     public function actionLogout() {
@@ -117,7 +117,7 @@ class AuthenticationController extends Controller {
     public function actionRecoverPassword() {
         $model = new RecoverPasswordForm();
         $model->load(Yii::$app->request->post());
-        if (($result = $model->recoverPassword()) === false) {
+        if (($result = $model->recoverPassword()) === null) {
             return [
                 'success' => false,
                 'errors' => $model->getFirstErrors(),
@@ -126,20 +126,20 @@ class AuthenticationController extends Controller {
 
         return array_merge([
             'success' => true,
-        ], $result->getAsResponse());
+        ], $result->formatAsOAuth2Response());
     }
 
     public function actionRefreshToken() {
         $model = new RefreshTokenForm();
         $model->load(Yii::$app->request->post());
-        if (($result = $model->renew()) === false) {
+        if (($result = $model->renew()) === null) {
             return [
                 'success' => false,
                 'errors' => $model->getFirstErrors(),
             ];
         }
 
-        $response = $result->getAsResponse();
+        $response = $result->formatAsOAuth2Response();
         unset($response['refresh_token']);
 
         return array_merge([

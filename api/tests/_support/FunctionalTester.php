@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace api\tests;
 
+use api\components\Tokens\TokensFactory;
 use api\tests\_generated\FunctionalTesterActions;
 use Codeception\Actor;
 use common\models\Account;
@@ -12,16 +13,15 @@ use Yii;
 class FunctionalTester extends Actor {
     use FunctionalTesterActions;
 
-    public function amAuthenticated(string $asUsername = 'admin') {
+    public function amAuthenticated(string $asUsername = 'admin'): int {
         /** @var Account $account */
         $account = Account::findOne(['username' => $asUsername]);
         if ($account === null) {
-            throw new InvalidArgumentException("Cannot find account for username \"{$asUsername}\"");
+            throw new InvalidArgumentException("Cannot find account with username \"{$asUsername}\"");
         }
 
-        $token = Yii::$app->user->createJwtAuthenticationToken($account);
-        $jwt = Yii::$app->user->serializeToken($token);
-        $this->amBearerAuthenticated($jwt);
+        $token = TokensFactory::createForAccount($account);
+        $this->amBearerAuthenticated((string)$token);
 
         return $account->id;
     }
@@ -31,10 +31,10 @@ class FunctionalTester extends Actor {
         Yii::$app->user->logout();
     }
 
-    public function canSeeAuthCredentials($expectRefresh = false): void {
+    public function canSeeAuthCredentials($expectRefreshToken = false): void {
         $this->canSeeResponseJsonMatchesJsonPath('$.access_token');
         $this->canSeeResponseJsonMatchesJsonPath('$.expires_in');
-        if ($expectRefresh) {
+        if ($expectRefreshToken) {
             $this->canSeeResponseJsonMatchesJsonPath('$.refresh_token');
         } else {
             $this->cantSeeResponseJsonMatchesJsonPath('$.refresh_token');

@@ -1,7 +1,8 @@
 <?php
+declare(strict_types=1);
+
 namespace codeception\api\unit\models\authentication;
 
-use api\components\User\AuthenticationResult;
 use api\models\authentication\RefreshTokenForm;
 use api\tests\unit\TestCase;
 use Codeception\Specify;
@@ -44,7 +45,7 @@ class RefreshTokenFormTest extends TestCase {
     public function testRenew() {
         $model = new RefreshTokenForm();
         $model->refresh_token = $this->tester->grabFixture('sessions', 'admin')['refresh_token'];
-        $this->assertInstanceOf(AuthenticationResult::class, $model->renew());
+        $this->assertNotNull($model->renew());
     }
 
 }

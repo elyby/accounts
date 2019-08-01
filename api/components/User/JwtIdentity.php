@@ -1,82 +1,80 @@
 <?php
+declare(strict_types=1);
+
 namespace api\components\User;
 
+use api\components\Tokens\TokensFactory;
 use common\models\Account;
-use Emarref\Jwt\Claim\Subject;
-use Emarref\Jwt\Exception\ExpiredException;
-use Emarref\Jwt\Token;
 use Exception;
+use Lcobucci\JWT\Token;
+use Lcobucci\JWT\ValidationData;
+use Webmozart\Assert\Assert;
 use Yii;
 use yii\base\NotSupportedException;
-use yii\helpers\StringHelper;
 use yii\web\UnauthorizedHttpException;
 
 class JwtIdentity implements IdentityInterface {
-
-    /**
-     * @var string
-     */
-    private $rawToken;
 
     /**
      * @var Token
      */
     private $token;
 
-    private function __construct(string $rawToken, Token $token) {
-        $this->rawToken = $rawToken;
+    private function __construct(Token $token) {
         $this->token = $token;
     }
 
     public static function findIdentityByAccessToken($rawToken, $type = null): IdentityInterface {
-        /** @var \api\components\User\Component $component */
-        $component = Yii::$app->user;
         try {
-            $token = $component->parseToken($rawToken);
-        } catch (ExpiredException $e) {
-            throw new UnauthorizedHttpException('Token expired');
+            $token = Yii::$app->tokens->parse($rawToken);
         } catch (Exception $e) {
             Yii::error($e);
             throw new UnauthorizedHttpException('Incorrect token');
         }
 
-        return new self($rawToken, $token);
+        if (!Yii::$app->tokens->verify($token)) {
+            throw new UnauthorizedHttpException('Incorrect token');
+        }
+
+        if ($token->isExpired()) {
+            throw new UnauthorizedHttpException('Token expired');
+        }
+
+        if (!$token->validate(new ValidationData())) {
+            throw new UnauthorizedHttpException('Incorrect token');
+        }
+
+        $sub = $token->getClaim('sub', false);
+        if ($sub !== false && strpos($sub, TokensFactory::SUB_ACCOUNT_PREFIX) !== 0) {
+            throw new UnauthorizedHttpException('Incorrect token');
+        }
+
+        return new self($token);
     }
 
     public function getAccount(): ?Account {
-        /** @var Subject $subject */
-        $subject = $this->token->getPayload()->findClaimByName(Subject::NAME);
-        if ($subject === null) {
+        $subject = $this->token->getClaim('sub', false);
+        if ($subject === false) {
             return null;
         }
 
-        $value = $subject->getValue();
-        if (!StringHelper::startsWith($value, Component::JWT_SUBJECT_PREFIX)) {
-            Yii::warning('Unknown jwt subject: ' . $value);
-            return null;
-        }
+        Assert::startsWith($subject, TokensFactory::SUB_ACCOUNT_PREFIX);
+        $accountId = (int)mb_substr($subject, mb_strlen(TokensFactory::SUB_ACCOUNT_PREFIX));
 
-        $accountId = (int)mb_substr($value, mb_strlen(Component::JWT_SUBJECT_PREFIX));
-        $account = Account::findOne($accountId);
-        if ($account === null) {
-            return null;
-        }
-
-        return $account;
+        return Account::findOne(['id' => $accountId]);
     }
 
     public function getAssignedPermissions(): array {
-        /** @var Subject $scopesClaim */
-        $scopesClaim = $this->token->getPayload()->findClaimByName(ScopesClaim::NAME);
-        if ($scopesClaim === null) {
+        $scopesClaim = $this->token->getClaim('ely-scopes', false);
+        if ($scopesClaim === false) {
             return [];
         }
 
-        return explode(',', $scopesClaim->getValue());
+        return explode(',', $scopesClaim);
     }
 
     public function getId(): string {
-        return $this->rawToken;
+        return (string)$this->token;
     }
 
     public function getAuthKey() {

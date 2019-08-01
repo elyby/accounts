@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace codeception\api\unit\components\User;
 
 use api\components\User\Component;
-use api\components\User\Identity;
+use api\components\User\IdentityFactory;
 use api\tests\unit\TestCase;
 use common\models\Account;
 use common\models\AccountSession;
@@ -36,29 +36,7 @@ class ComponentTest extends TestCase {
         ];
     }
 
-    public function testCreateJwtAuthenticationToken() {
-        $this->mockRequest();
-
-        // Token without session
-        $account = new Account(['id' => 1]);
-        $token = $this->component->createJwtAuthenticationToken($account);
-        $payloads = $token->getPayload();
-        $this->assertEqualsWithDelta(time(), $payloads->findClaimByName('iat')->getValue(), 3);
-        $this->assertEqualsWithDelta(time() + 60 * 60 * 24 * 7, $payloads->findClaimByName('exp')->getValue(), 3);
-        $this->assertSame('ely|1', $payloads->findClaimByName('sub')->getValue());
-        $this->assertSame('accounts_web_user', $payloads->findClaimByName('ely-scopes')->getValue());
-        $this->assertNull($payloads->findClaimByName('jti'));
-
-        $session = new AccountSession(['id' => 2]);
-        $token = $this->component->createJwtAuthenticationToken($account, $session);
-        $payloads = $token->getPayload();
-        $this->assertEqualsWithDelta(time(), $payloads->findClaimByName('iat')->getValue(), 3);
-        $this->assertEqualsWithDelta(time() + 3600, $payloads->findClaimByName('exp')->getValue(), 3);
-        $this->assertSame('ely|1', $payloads->findClaimByName('sub')->getValue());
-        $this->assertSame('accounts_web_user', $payloads->findClaimByName('ely-scopes')->getValue());
-        $this->assertSame(2, $payloads->findClaimByName('jti')->getValue());
-    }
-
+    // TODO: move test to refresh token form
     public function testRenewJwtAuthenticationToken() {
         $userIP = '192.168.0.1';
         $this->mockRequest($userIP);
@@ -81,14 +59,6 @@ class ComponentTest extends TestCase {
         $this->assertSame('accounts_web_user', $payloads->findClaimByName('ely-scopes')->getValue());
         /** @noinspection NullPointerExceptionInspection */
         $this->assertSame($session->id, $payloads->findClaimByName('jti')->getValue(), 'session has not changed');
-    }
-
-    public function testParseToken() {
-        $this->mockRequest();
-        $account = new Account(['id' => 1]);
-        $token = $this->component->createJwtAuthenticationToken($account);
-        $jwt = $this->component->serializeToken($token);
-        $this->component->parseToken($jwt);
     }
 
     public function testGetActiveSession() {
@@ -172,7 +142,7 @@ class ComponentTest extends TestCase {
 
     private function getComponentConfig() {
         return [
-            'identityClass' => Identity::class,
+            'identityClass' => IdentityFactory::class,
             'enableSession' => false,
             'loginUrl' => null,
             'secret' => 'secret',

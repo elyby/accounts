@@ -2,7 +2,7 @@
 namespace api\tests\unit\modules\accounts\models;
 
 use api\components\User\Component;
-use api\components\User\Identity;
+use api\components\User\IdentityFactory;
 use api\modules\accounts\models\ChangePasswordForm;
 use api\tests\unit\TestCase;
 use common\components\UserPass;
@@ -57,7 +57,7 @@ class ChangePasswordFormTest extends TestCase {
 
     public function testPerformAction() {
         $component = mock(Component::class . '[terminateSessions]', [[
-            'identityClass' => Identity::class,
+            'identityClass' => IdentityFactory::class,
             'enableSession' => false,
             'loginUrl' => null,
             'secret' => 'secret',
@@ -119,7 +119,7 @@ class ChangePasswordFormTest extends TestCase {
 
         /** @var Component|\Mockery\MockInterface $component */
         $component = mock(Component::class . '[terminateSessions]', [[
-            'identityClass' => Identity::class,
+            'identityClass' => IdentityFactory::class,
             'enableSession' => false,
             'loginUrl' => null,
             'secret' => 'secret',

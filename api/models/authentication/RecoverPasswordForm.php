@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace api\models\authentication;
 
 use api\aop\annotations\CollectModelMetrics;
+use api\components\Tokens\TokensFactory;
 use api\models\base\ApiForm;
 use api\validators\EmailActivationKeyValidator;
 use common\helpers\Error as E;
@@ -38,12 +39,10 @@ class RecoverPasswordForm extends ApiForm {
 
     /**
      * @CollectModelMetrics(prefix="authentication.recoverPassword")
-     * @return \api\components\User\AuthenticationResult|bool
-     * @throws \Throwable
      */
-    public function recoverPassword() {
+    public function recoverPassword(): ?AuthenticationResult {
         if (!$this->validate()) {
-            return false;
+            return null;
         }
 
         $transaction = Yii::$app->db->beginTransaction();
@@ -52,16 +51,16 @@ class RecoverPasswordForm extends ApiForm {
         $confirmModel = $this->key;
         $account = $confirmModel->account;
         $account->password = $this->newPassword;
+        /** @noinspection PhpUnhandledExceptionInspection */
         Assert::notSame($confirmModel->delete(), false, 'Unable remove activation key.');
 
         Assert::true($account->save(), 'Unable activate user account.');
 
-        $token = Yii::$app->user->createJwtAuthenticationToken($account);
-        $jwt = Yii::$app->user->serializeToken($token);
+        $token = TokensFactory::createForAccount($account);
 
         $transaction->commit();
 
-        return new \api\components\User\AuthenticationResult($account, $jwt, null);
+        return new AuthenticationResult($token);
     }
 
 }

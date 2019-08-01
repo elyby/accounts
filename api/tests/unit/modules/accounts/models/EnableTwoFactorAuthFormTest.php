@@ -2,7 +2,7 @@
 namespace api\tests\unit\modules\accounts\models;
 
 use api\components\User\Component;
-use api\components\User\Identity;
+use api\components\User\IdentityFactory;
 use api\modules\accounts\models\EnableTwoFactorAuthForm;
 use api\tests\unit\TestCase;
 use common\helpers\Error as E;
@@ -20,7 +20,7 @@ class EnableTwoFactorAuthFormTest extends TestCase {
 
         /** @var Component|\Mockery\MockInterface $component */
         $component = mock(Component::class . '[terminateSessions]', [[
-            'identityClass' => Identity::class,
+            'identityClass' => IdentityFactory::class,
             'enableSession' => false,
             'loginUrl' => null,
             'secret' => 'secret',
