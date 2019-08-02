@@ -8,6 +8,7 @@ use Exception;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Token;
+use Webmozart\Assert\Assert;
 use yii\base\Component as BaseComponent;
 
 class Component extends BaseComponent {
@@ -38,6 +39,13 @@ class Component extends BaseComponent {
      * @var AlgorithmsManager|null
      */
     private $algorithmManager;
+
+    public function init(): void {
+        parent::init();
+        Assert::notEmpty($this->hmacKey, 'hmacKey must be set');
+        Assert::notEmpty($this->privateKeyPath, 'privateKeyPath must be set');
+        Assert::notEmpty($this->publicKeyPath, 'publicKeyPath must be set');
+    }
 
     public function create(array $payloads = [], array $headers = []): Token {
         $now = Carbon::now();
