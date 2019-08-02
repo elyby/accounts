@@ -21,6 +21,7 @@ services:
     image: registry.ely.by/elyby/accounts:dev
     build:
       context: .
+      target: app
       args:
         build_env: dev
     depends_on:
@@ -38,6 +39,7 @@ services:
     image: registry.ely.by/elyby/accounts:dev
     build:
       context: .
+      target: app
       args:
         build_env: dev
     command: ['php', 'yii', 'queue/listen', '-v']
@@ -52,6 +54,7 @@ services:
     image: registry.ely.by/elyby/accounts:dev
     build:
       context: .
+      target: app
       args:
         build_env: dev
     command: ['crond', '-s', '/etc/cron.d', '-f', '-L', '/var/log/cron.log']
