@@ -10,7 +10,7 @@ use Yii;
 use yii\base\NotSupportedException;
 use yii\web\UnauthorizedHttpException;
 
-class Oauth2Identity implements IdentityInterface {
+class OAuth2Identity implements IdentityInterface {
 
     /**
      * @var AccessTokenEntity
@@ -55,6 +55,7 @@ class Oauth2Identity implements IdentityInterface {
         return $this->_accessToken->getId();
     }
 
+    // @codeCoverageIgnoreStart
     public function getAuthKey() {
         throw new NotSupportedException('This method used for cookie auth, except we using Bearer auth');
     }
@@ -67,8 +68,10 @@ class Oauth2Identity implements IdentityInterface {
         throw new NotSupportedException('This method used for cookie auth, except we using Bearer auth');
     }
 
+    // @codeCoverageIgnoreEnd
+
     private function getSession(): OauthSession {
-        return OauthSession::findOne($this->_accessToken->getSessionId());
+        return OauthSession::findOne(['id' => $this->_accessToken->getSessionId()]);
     }
 
 }

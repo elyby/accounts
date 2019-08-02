@@ -20,7 +20,7 @@ class IdentityFactory {
             return JwtIdentity::findIdentityByAccessToken($token, $type);
         }
 
-        return Oauth2Identity::findIdentityByAccessToken($token, $type);
+        return OAuth2Identity::findIdentityByAccessToken($token, $type);
     }
 
 }

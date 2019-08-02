@@ -5,7 +5,7 @@ namespace codeception\api\unit\components\User;
 
 use api\components\User\Component;
 use api\components\User\JwtIdentity;
-use api\components\User\Oauth2Identity;
+use api\components\User\OAuth2Identity;
 use api\tests\unit\TestCase;
 use common\models\Account;
 use common\models\AccountSession;
@@ -41,7 +41,7 @@ class ComponentTest extends TestCase {
         $this->assertNull($component->getActiveSession());
 
         // Identity is a Oauth2Identity
-        $component->setIdentity(mock(Oauth2Identity::class));
+        $component->setIdentity(mock(OAuth2Identity::class));
         $this->assertNull($component->getActiveSession());
 
         // Identity is correct, but have no jti claim
