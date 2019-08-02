@@ -1,7 +1,10 @@
 <?php
-namespace common\rbac\rules;
+declare(strict_types=1);
+
+namespace api\rbac\rules;
 
 use common\models\Account;
+use Webmozart\Assert\Assert;
 use Yii;
 use yii\rbac\Rule;
 
@@ -23,12 +26,10 @@ class AccountOwner extends Rule {
      * @return bool a value indicating whether the rule permits the auth item it is associated with.
      */
     public function execute($accessToken, $item, $params): bool {
+        Assert::keyExists($params, 'accountId');
         $accountId = $params['accountId'] ?? null;
-        if ($accountId === null) {
-            return false;
-        }
 
-        $identity = Yii::$app->user->findIdentityByAccessToken($accessToken);
+        $identity = Yii::$app->user->getIdentity();
         if ($identity === null) {
             return false;
         }

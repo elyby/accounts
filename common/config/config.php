@@ -98,7 +98,7 @@ return [
             'class' => api\components\OAuth2\Component::class,
         ],
         'authManager' => [
-            'class' => common\rbac\Manager::class,
+            'class' => \api\rbac\Manager::class,
             'itemFile' => '@common/rbac/.generated/items.php',
             'ruleFile' => '@common/rbac/.generated/rules.php',
         ],

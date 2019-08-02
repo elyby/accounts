@@ -1,13 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace common\tests\unit\rbac\rules;
+namespace api\tests\unit\rbac\rules;
 
-use api\components\User\Component;
 use api\components\User\IdentityInterface;
+use api\rbac\Permissions as P;
+use api\rbac\rules\OauthClientOwner;
 use common\models\Account;
-use common\rbac\Permissions as P;
-use common\rbac\rules\OauthClientOwner;
 use common\tests\fixtures\OauthClientFixture;
 use common\tests\unit\TestCase;
 use Yii;
@@ -26,6 +25,21 @@ class OauthClientOwnerTest extends TestCase {
         $rule = new OauthClientOwner();
         $item = new Item();
 
+        // Client not exists (we expect true to let controller throw corresponding 404 exception)
+        $this->assertTrue($rule->execute('some token', $item, ['clientId' => 'not exists client id']));
+
+        // Client exists, but identity is null
+        $this->assertFalse($rule->execute('some token', $item, ['clientId' => 'ely']));
+
+        // Client exists, identity presented, but have no account
+        /** @var IdentityInterface|\Mockery\MockInterface $identity */
+        $identity = mock(IdentityInterface::class);
+        $identity->shouldReceive('getAccount')->andReturn(null);
+        Yii::$app->user->setIdentity($identity);
+
+        $this->assertFalse($rule->execute('some token', $item, ['clientId' => 'ely']));
+
+        // Identity has an account
         $account = new Account();
         $account->id = 1;
         $account->status = Account::STATUS_ACTIVE;
@@ -34,15 +48,8 @@ class OauthClientOwnerTest extends TestCase {
         /** @var IdentityInterface|\Mockery\MockInterface $identity */
         $identity = mock(IdentityInterface::class);
         $identity->shouldReceive('getAccount')->andReturn($account);
+        Yii::$app->user->setIdentity($identity);
 
-        /** @var Component|\Mockery\MockInterface $component */
-        $component = mock(Component::class . '[findIdentityByAccessToken]');
-        $component->makePartial();
-        $component->shouldReceive('findIdentityByAccessToken')->withArgs(['token'])->andReturn($identity);
-
-        Yii::$app->set('user', $component);
-
-        $this->assertFalse($rule->execute('token', $item, []));
         $this->assertTrue($rule->execute('token', $item, ['clientId' => 'admin-oauth-client']));
         $this->assertTrue($rule->execute('token', $item, ['clientId' => 'not-exists-client']));
         $account->id = 2;
@@ -50,6 +57,14 @@ class OauthClientOwnerTest extends TestCase {
         $item->name = P::VIEW_OWN_OAUTH_CLIENTS;
         $this->assertTrue($rule->execute('token', $item, ['accountId' => 2]));
         $this->assertFalse($rule->execute('token', $item, ['accountId' => 1]));
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testExecuteWithoutClientId() {
+        $rule = new OauthClientOwner();
+        $this->assertFalse($rule->execute('token', new Item(), []));
     }
 
 }

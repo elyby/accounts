@@ -2,8 +2,8 @@
 namespace api\modules\accounts\models;
 
 use api\models\base\BaseAccountForm;
+use api\rbac\Permissions as P;
 use common\models\Account;
-use common\rbac\Permissions as P;
 use yii\di\Instance;
 use yii\web\User;
 

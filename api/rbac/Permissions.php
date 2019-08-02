@@ -1,5 +1,7 @@
 <?php
-namespace common\rbac;
+declare(strict_types=1);
+
+namespace api\rbac;
 
 final class Permissions {
 

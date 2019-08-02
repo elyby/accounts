@@ -22,4 +22,5 @@ coverage:
       - tests/*
       - codeception.dist.yml
       - codeception.yml
+      - index.php
   c3url: 'http://localhost/api/web/index.php'

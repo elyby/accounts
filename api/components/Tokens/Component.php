@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace api\components\Tokens;
 
+use Carbon\Carbon;
 use Exception;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
@@ -10,8 +11,6 @@ use Lcobucci\JWT\Token;
 use yii\base\Component as BaseComponent;
 
 class Component extends BaseComponent {
-
-    private const EXPIRATION_TIMEOUT = 3600; // 1h
 
     private const PREFERRED_ALGORITHM = 'ES256';
 
@@ -41,10 +40,10 @@ class Component extends BaseComponent {
     private $algorithmManager;
 
     public function create(array $payloads = [], array $headers = []): Token {
-        $time = time();
+        $now = Carbon::now();
         $builder = (new Builder())
-            ->issuedAt($time)
-            ->expiresAt($time + self::EXPIRATION_TIMEOUT);
+            ->issuedAt($now->getTimestamp())
+            ->expiresAt($now->addHour()->getTimestamp());
         foreach ($payloads as $claim => $value) {
             $builder->withClaim($claim, $value);
         }

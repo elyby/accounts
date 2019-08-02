@@ -3,7 +3,7 @@ namespace api\modules\oauth\controllers;
 
 use api\controllers\Controller;
 use api\modules\oauth\models\OauthProcess;
-use common\rbac\Permissions as P;
+use api\rbac\Permissions as P;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;

@@ -5,10 +5,6 @@ namespace api\components\User;
 
 use common\models\Account;
 use common\models\AccountSession;
-use Exception;
-use InvalidArgumentException;
-use Yii;
-use yii\web\UnauthorizedHttpException;
 use yii\web\User as YiiUserComponent;
 
 /**
@@ -38,29 +34,11 @@ class Component extends YiiUserComponent {
      */
     public $identityClass = IdentityFactory::class;
 
-    public function findIdentityByAccessToken($accessToken): ?IdentityInterface {
-        if (empty($accessToken)) {
-            return null;
-        }
-
-        try {
-            return IdentityFactory::findIdentityByAccessToken($accessToken);
-        } catch (UnauthorizedHttpException $e) {
-            // TODO: if this exception is catched there, how it forms "Token expired" exception?
-            // Do nothing. It's okay to catch this.
-        } catch (Exception $e) {
-            Yii::error($e);
-        }
-
-        return null;
-    }
-
     /**
      * The method searches AccountSession model, which one has been used to create current JWT token.
      * null will be returned in case when any of the following situations occurred:
      * - The user isn't authorized
-     * - There is no header with a token
-     * - Token validation isn't passed and some exception has been thrown
+     * - The user isn't authorized via JWT token
      * - No session key found in the token. This is possible if the user chose not to remember me
      *   or just some old tokens, without the support of saving the used session
      *
@@ -71,18 +49,13 @@ class Component extends YiiUserComponent {
             return null;
         }
 
-        $bearer = $this->getBearerToken();
-        if ($bearer === null) {
+        /** @var IdentityInterface $identity */
+        $identity = $this->getIdentity();
+        if (!$identity instanceof JwtIdentity) {
             return null;
         }
 
-        try {
-            $token = Yii::$app->tokens->parse($bearer);
-        } catch (InvalidArgumentException $e) {
-            return null;
-        }
-
-        $sessionId = $token->getClaim('jti', false);
+        $sessionId = $identity->getToken()->getClaim('jti', false);
         if ($sessionId === false) {
             return null;
         }
@@ -109,15 +82,6 @@ class Component extends YiiUserComponent {
                 $minecraftAccessKey->delete();
             }
         }
-    }
-
-    private function getBearerToken(): ?string {
-        $authHeader = Yii::$app->request->getHeaders()->get('Authorization');
-        if ($authHeader === null || !preg_match('/^Bearer\s+(.*?)$/', $authHeader, $matches)) {
-            return null;
-        }
-
-        return $matches[1];
     }
 
 }

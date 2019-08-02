@@ -2,8 +2,8 @@
 namespace api\modules\internal\controllers;
 
 use api\controllers\Controller;
+use api\rbac\Permissions as P;
 use common\models\Account;
-use common\rbac\Permissions as P;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 use yii\web\BadRequestHttpException;

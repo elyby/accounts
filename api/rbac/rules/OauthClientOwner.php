@@ -1,10 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace common\rbac\rules;
+namespace api\rbac\rules;
 
+use api\rbac\Permissions as P;
 use common\models\OauthClient;
-use common\rbac\Permissions as P;
+use Webmozart\Assert\Assert;
 use Yii;
 use yii\rbac\Rule;
 
@@ -30,18 +31,14 @@ class OauthClientOwner extends Rule {
             return (new AccountOwner())->execute($accessToken, $item, ['accountId' => $accountId]);
         }
 
-        $clientId = $params['clientId'] ?? null;
-        if ($clientId === null) {
-            return false;
-        }
-
+        Assert::keyExists($params, 'clientId');
         /** @var OauthClient|null $client */
-        $client = OauthClient::findOne($clientId);
+        $client = OauthClient::findOne(['id' => $params['clientId']]);
         if ($client === null) {
             return true;
         }
 
-        $identity = Yii::$app->user->findIdentityByAccessToken($accessToken);
+        $identity = Yii::$app->user->getIdentity();
         if ($identity === null) {
             return false;
         }

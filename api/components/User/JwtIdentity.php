@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace api\components\User;
 
 use api\components\Tokens\TokensFactory;
+use Carbon\Carbon;
 use common\models\Account;
 use Exception;
 use Lcobucci\JWT\Token;
@@ -36,20 +37,25 @@ class JwtIdentity implements IdentityInterface {
             throw new UnauthorizedHttpException('Incorrect token');
         }
 
-        if ($token->isExpired()) {
+        $now = Carbon::now();
+        if ($token->isExpired($now)) {
             throw new UnauthorizedHttpException('Token expired');
         }
 
-        if (!$token->validate(new ValidationData())) {
+        if (!$token->validate(new ValidationData($now->getTimestamp()))) {
             throw new UnauthorizedHttpException('Incorrect token');
         }
 
         $sub = $token->getClaim('sub', false);
-        if ($sub !== false && strpos($sub, TokensFactory::SUB_ACCOUNT_PREFIX) !== 0) {
+        if ($sub !== false && strpos((string)$sub, TokensFactory::SUB_ACCOUNT_PREFIX) !== 0) {
             throw new UnauthorizedHttpException('Incorrect token');
         }
 
         return new self($token);
+    }
+
+    public function getToken(): Token {
+        return $this->token;
     }
 
     public function getAccount(): ?Account {
@@ -77,6 +83,7 @@ class JwtIdentity implements IdentityInterface {
         return (string)$this->token;
     }
 
+    // @codeCoverageIgnoreStart
     public function getAuthKey() {
         throw new NotSupportedException('This method used for cookie auth, except we using Bearer auth');
     }
@@ -88,5 +95,7 @@ class JwtIdentity implements IdentityInterface {
     public static function findIdentity($id) {
         throw new NotSupportedException('This method used for cookie auth, except we using Bearer auth');
     }
+
+    // @codeCoverageIgnoreEnd
 
 }

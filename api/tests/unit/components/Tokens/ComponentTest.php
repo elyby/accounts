@@ -16,11 +16,6 @@ class ComponentTest extends TestCase {
      */
     private $component;
 
-    protected function _setUp() {
-        parent::_setUp();
-        $this->component = Yii::$app->tokens;
-    }
-
     public function testCreate() {
         // Run without any arguments
         $token = $this->component->create();
@@ -78,6 +73,11 @@ class ComponentTest extends TestCase {
             (new Parser())->parse('eyJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ1Mjc0NzYsImV4cCI6MTU2NDUzMTA3Niwic3ViIjoiZWx5fDEiLCJqdGkiOjMwNjk1OTJ9.xxx'),
             false,
         ];
+    }
+
+    protected function _setUp() {
+        parent::_setUp();
+        $this->component = Yii::$app->tokens;
     }
 
     private function assertValidParsedToken(Token $token, string $expectedAlg) {
