@@ -15,11 +15,23 @@ else
     mv ${PHP_PROD_INI}{.disabled,} 2> /dev/null || true
 fi
 
-cd /var/www/html
-
 # Create all necessary folders
-mkdir -p api/runtime console/runtime
-chown -R www-data:www-data api/runtime console/runtime
+APP_DIRS=(
+    "api/runtime"
+    "console/runtime"
+    "data/certs"
+)
+for path in ${APP_DIRS[*]}; do
+    if [ ! -d "$path" ]; then
+        echo "[bootstrap] Creating $path folder"
+        mkdir -p "$path"
+    fi
+
+    if [ $(ls -ld $path | awk '{print $3}' | tail -1) != "www-data" ]; then
+        echo "[bootstrap] Changing $path folder owner"
+        chown -R www-data:www-data "$path"
+    fi
+done
 
 if [ "$YII_ENV" = "test" ]
 then
@@ -34,9 +46,10 @@ chmod 644 /etc/cron.d/*
 JWT_PRIVATE_PEM_LOCATION="/var/www/html/data/certs/private.pem"
 JWT_PUBLIC_PEM_LOCATION="/var/www/html/data/certs/public.pem"
 if [ ! -f "$JWT_PRIVATE_PEM_LOCATION" ] ; then
-  echo "There is no private key. Generating the new one."
-  openssl ecparam -name prime256v1 -genkey -noout -out "$JWT_PRIVATE_PEM_LOCATION"
-  openssl ec -in "$JWT_PRIVATE_PEM_LOCATION" -pubout -out "$JWT_PUBLIC_PEM_LOCATION"
+    echo "There is no private key. Generating the new one."
+    openssl ecparam -name prime256v1 -genkey -noout -out "$JWT_PRIVATE_PEM_LOCATION"
+    openssl ec -in "$JWT_PRIVATE_PEM_LOCATION" -pubout -out "$JWT_PUBLIC_PEM_LOCATION"
+    chown www-data:www-data "$JWT_PRIVATE_PEM_LOCATION" "$JWT_PUBLIC_PEM_LOCATION"
 fi
 
 if [ "$1" = "crond" ] ; then
