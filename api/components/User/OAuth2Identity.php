@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\components\User;
 
 use api\components\OAuth2\Entities\AccessTokenEntity;
@@ -8,10 +10,7 @@ use Yii;
 use yii\base\NotSupportedException;
 use yii\web\UnauthorizedHttpException;
 
-/**
- * @property Account $account
- */
-class Identity implements IdentityInterface {
+class OAuth2Identity implements IdentityInterface {
 
     /**
      * @var AccessTokenEntity
@@ -24,19 +23,10 @@ class Identity implements IdentityInterface {
 
     /**
      * @inheritdoc
-     * @throws \yii\web\UnauthorizedHttpException
+     * @throws UnauthorizedHttpException
      * @return IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null): IdentityInterface {
-        if ($token === null) {
-            throw new UnauthorizedHttpException('Incorrect token');
-        }
-
-        // Speed-improved analogue of the `count(explode('.', $token)) === 3`
-        if (substr_count($token, '.') === 2) {
-            return JwtIdentity::findIdentityByAccessToken($token, $type);
-        }
-
         /** @var AccessTokenEntity|null $model */
         $model = Yii::$app->oauth->getAccessTokenStorage()->get($token);
         if ($model === null) {
@@ -65,6 +55,7 @@ class Identity implements IdentityInterface {
         return $this->_accessToken->getId();
     }
 
+    // @codeCoverageIgnoreStart
     public function getAuthKey() {
         throw new NotSupportedException('This method used for cookie auth, except we using Bearer auth');
     }
@@ -77,8 +68,10 @@ class Identity implements IdentityInterface {
         throw new NotSupportedException('This method used for cookie auth, except we using Bearer auth');
     }
 
+    // @codeCoverageIgnoreEnd
+
     private function getSession(): OauthSession {
-        return OauthSession::findOne($this->_accessToken->getSessionId());
+        return OauthSession::findOne(['id' => $this->_accessToken->getSessionId()]);
     }
 
 }

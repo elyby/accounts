@@ -1,9 +1,11 @@
 <?php
+declare(strict_types=1);
+
 namespace api\components\OAuth2\Entities;
 
 use api\components\OAuth2\Storage\SessionStorage;
-use ErrorException;
 use League\OAuth2\Server\Entity\SessionEntity as OriginalSessionEntity;
+use Webmozart\Assert\Assert;
 
 class RefreshTokenEntity extends \League\OAuth2\Server\Entity\RefreshTokenEntity {
 
@@ -18,10 +20,9 @@ class RefreshTokenEntity extends \League\OAuth2\Server\Entity\RefreshTokenEntity
             return $this->session;
         }
 
+        /** @var SessionStorage $sessionStorage */
         $sessionStorage = $this->server->getSessionStorage();
-        if (!$sessionStorage instanceof SessionStorage) {
-            throw new ErrorException('SessionStorage must be instance of ' . SessionStorage::class);
-        }
+        Assert::isInstanceOf($sessionStorage, SessionStorage::class);
 
         return $sessionStorage->getById($this->sessionId);
     }
@@ -32,7 +33,7 @@ class RefreshTokenEntity extends \League\OAuth2\Server\Entity\RefreshTokenEntity
 
     public function setSession(OriginalSessionEntity $session): self {
         parent::setSession($session);
-        $this->setSessionId($session->getId());
+        $this->setSessionId((int)$session->getId());
 
         return $this;
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace api\models\authentication;
 
 use api\aop\annotations\CollectModelMetrics;
-use api\components\User\AuthenticationResult;
+use api\components\Tokens\TokensFactory;
 use api\models\base\ApiForm;
 use api\validators\EmailActivationKeyValidator;
 use common\models\Account;
@@ -25,12 +25,10 @@ class ConfirmEmailForm extends ApiForm {
 
     /**
      * @CollectModelMetrics(prefix="signup.confirmEmail")
-     * @return AuthenticationResult|bool
-     * @throws \Throwable
      */
-    public function confirm() {
+    public function confirm(): ?AuthenticationResult {
         if (!$this->validate()) {
-            return false;
+            return null;
         }
 
         $transaction = Yii::$app->db->beginTransaction();
@@ -39,6 +37,7 @@ class ConfirmEmailForm extends ApiForm {
         $confirmModel = $this->key;
         $account = $confirmModel->account;
         $account->status = Account::STATUS_ACTIVE;
+        /** @noinspection PhpUnhandledExceptionInspection */
         Assert::notSame($confirmModel->delete(), false, 'Unable remove activation key.');
 
         Assert::true($account->save(), 'Unable activate user account.');
@@ -49,12 +48,11 @@ class ConfirmEmailForm extends ApiForm {
         $session->generateRefreshToken();
         Assert::true($session->save(), 'Cannot save account session model');
 
-        $token = Yii::$app->user->createJwtAuthenticationToken($account, $session);
-        $jwt = Yii::$app->user->serializeToken($token);
+        $token = TokensFactory::createForAccount($account, $session);
 
         $transaction->commit();
 
-        return new AuthenticationResult($account, $jwt, $session);
+        return new AuthenticationResult($token, $session->refresh_token);
     }
 
 }

@@ -1,7 +1,8 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\_support\models\authentication;
 
-use api\components\User\AuthenticationResult;
 use api\models\authentication\LoginForm;
 use api\tests\unit\TestCase;
 use Codeception\Specify;
@@ -14,13 +15,13 @@ class LoginFormTest extends TestCase {
 
     private $originalRemoteAddr;
 
-    protected function setUp() {
+    protected function setUp(): void {
         $this->originalRemoteAddr = $_SERVER['REMOTE_ADDR'] ?? null;
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
         parent::setUp();
     }
 
-    protected function tearDown() {
+    protected function tearDown(): void {
         parent::tearDown();
         $_SERVER['REMOTE_ADDR'] = $this->originalRemoteAddr;
     }
@@ -135,7 +136,7 @@ class LoginFormTest extends TestCase {
                 'status' => Account::STATUS_ACTIVE,
             ]),
         ]);
-        $this->assertInstanceOf(AuthenticationResult::class, $model->login(), 'model should login user');
+        $this->assertNotNull($model->login(), 'model should login user');
         $this->assertEmpty($model->getErrors(), 'error message should not be set');
     }
 
@@ -144,7 +145,7 @@ class LoginFormTest extends TestCase {
             'login' => $this->tester->grabFixture('accounts', 'user-with-old-password-type')['username'],
             'password' => '12345678',
         ]);
-        $this->assertInstanceOf(AuthenticationResult::class, $model->login());
+        $this->assertNotNull($model->login());
         $this->assertEmpty($model->getErrors());
         $this->assertSame(
             Account::PASS_HASH_STRATEGY_YII2,

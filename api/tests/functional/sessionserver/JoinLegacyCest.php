@@ -1,11 +1,11 @@
 <?php
 namespace api\tests\functional\sessionserver;
 
+use api\rbac\Permissions as P;
 use api\tests\_pages\SessionServerRoute;
 use api\tests\functional\_steps\AuthserverSteps;
 use api\tests\functional\_steps\OauthSteps;
 use api\tests\FunctionalTester;
-use common\rbac\Permissions as P;
 use Faker\Provider\Uuid;
 
 class JoinLegacyCest {

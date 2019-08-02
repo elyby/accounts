@@ -1,13 +1,14 @@
 <?php
+declare(strict_types=1);
+
 namespace console\controllers;
 
-use common\rbac\Permissions as P;
-use common\rbac\Roles as R;
-use common\rbac\rules\AccountOwner;
-use common\rbac\rules\OauthClientOwner;
-use InvalidArgumentException;
+use api\rbac\Permissions as P;
+use api\rbac\Roles as R;
+use api\rbac\rules\AccountOwner;
+use api\rbac\rules\OauthClientOwner;
+use Webmozart\Assert\Assert;
 use Yii;
-use yii\base\ErrorException;
 use yii\console\Controller;
 use yii\rbac\ManagerInterface;
 use yii\rbac\Permission;
@@ -84,9 +85,7 @@ class RbacController extends Controller {
     private function createRole(string $name): Role {
         $authManager = $this->getAuthManager();
         $role = $authManager->createRole($name);
-        if (!$authManager->add($role)) {
-            throw new ErrorException('Cannot save role in authManager');
-        }
+        Assert::true($authManager->add($role), 'Cannot save role in authManager');
 
         return $role;
     }
@@ -96,9 +95,7 @@ class RbacController extends Controller {
         $permission = $authManager->createPermission($name);
         if ($ruleClassName !== null) {
             $rule = new $ruleClassName();
-            if (!$rule instanceof Rule) {
-                throw new InvalidArgumentException('ruleClassName must be rule class name');
-            }
+            Assert::isInstanceOf($rule, Rule::class, 'ruleClassName must be rule class name');
 
             $ruleFromAuthManager = $authManager->getRule($rule->name);
             if ($ruleFromAuthManager === null) {
@@ -108,9 +105,7 @@ class RbacController extends Controller {
             $permission->ruleName = $rule->name;
         }
 
-        if (!$authManager->add($permission)) {
-            throw new ErrorException('Cannot save permission in authManager');
-        }
+        Assert::true($authManager->add($permission), 'Cannot save permission in authManager');
 
         return $permission;
     }

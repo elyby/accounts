@@ -17,5 +17,6 @@ coverage:
     exclude:
       - config/*
       - mail/*
+      - tests/*
       - codeception.dist.yml
       - codeception.yml

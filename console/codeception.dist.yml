@@ -18,6 +18,7 @@ coverage:
       - config/*
       - runtime/*
       - migrations/*
+      - tests/*
       - views/*
       - codeception.dist.yml
       - codeception.yml

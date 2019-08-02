@@ -31,6 +31,14 @@ fi
 # Fix permissions for cron tasks
 chmod 644 /etc/cron.d/*
 
+JWT_PRIVATE_PEM_LOCATION="/var/www/html/data/certs/private.pem"
+JWT_PUBLIC_PEM_LOCATION="/var/www/html/data/certs/public.pem"
+if [ ! -f "$JWT_PRIVATE_PEM_LOCATION" ] ; then
+  echo "There is no private key. Generating the new one."
+  openssl ecparam -name prime256v1 -genkey -noout -out "$JWT_PRIVATE_PEM_LOCATION"
+  openssl ec -in "$JWT_PRIVATE_PEM_LOCATION" -pubout -out "$JWT_PUBLIC_PEM_LOCATION"
+fi
+
 if [ "$1" = "crond" ] ; then
     # see: https://github.com/dubiousjim/dcron/issues/13
     # ignore using `exec` for `dcron` to get another pid instead of `1`

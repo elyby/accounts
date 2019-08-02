@@ -22,7 +22,7 @@ use const common\LATEST_RULES_VERSION;
 
 class RegistrationFormTest extends TestCase {
 
-    protected function setUp() {
+    protected function setUp(): void {
         parent::setUp();
         $this->mockRequest();
         Yii::$container->set(ReCaptchaValidator::class, new class(mock(ClientInterface::class)) extends ReCaptchaValidator {

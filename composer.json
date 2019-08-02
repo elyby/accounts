@@ -16,11 +16,12 @@
         "domnikl/statsd": "^2.6",
         "ely/mojang-api": "^0.2.0",
         "ely/yii2-tempmail-validator": "^2.0",
-        "emarref/jwt": "~1.0.3",
         "goaop/framework": "^2.2.0",
         "guzzlehttp/guzzle": "^6.0.0",
+        "lcobucci/jwt": "^3.3",
         "league/oauth2-server": "^4.1",
         "mito/yii2-sentry": "^1.0",
+        "nesbot/carbon": "^2.22",
         "paragonie/constant_time_encoding": "^2.0",
         "ramsey/uuid": "^3.5",
         "spomky-labs/otphp": "^9.0.2",
@@ -31,7 +32,7 @@
         "yiisoft/yii2-swiftmailer": "~2.1.0"
     },
     "require-dev": {
-        "codeception/base": "^3.0.0",
+        "codeception/codeception": "^3.0",
         "codeception/specify": "^1.0.0",
         "ely/php-code-style": "^0.3.0",
         "flow/jsonpath": "^0.4.0",
@@ -46,7 +47,8 @@
         "symfony/polyfill-ctype": "*",
         "symfony/polyfill-mbstring": "*",
         "symfony/polyfill-php70": "*",
-        "symfony/polyfill-php72": "*"
+        "symfony/polyfill-php72": "*",
+        "symfony/polyfill-php73": "*"
     },
     "repositories": [
         {

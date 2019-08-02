@@ -10,9 +10,13 @@ return [
     'components' => [
         'user' => [
             'class' => api\components\User\Component::class,
-            'secret' => getenv('JWT_USER_SECRET'),
-            'publicKeyPath' => getenv('JWT_PUBLIC_KEY') ?: 'data/certs/public.crt',
-            'privateKeyPath' => getenv('JWT_PRIVATE_KEY') ?: 'data/certs/private.key',
+        ],
+        'tokens' => [
+            'class' => api\components\Tokens\Component::class,
+            'hmacKey' => getenv('JWT_USER_SECRET'),
+            'privateKeyPath' => getenv('JWT_PRIVATE_KEY_PATH') ?: __DIR__ . '/../../data/certs/private.pem',
+            'privateKeyPass' => getenv('JWT_PRIVATE_KEY_PASS') ?: null,
+            'publicKeyPath' => getenv('JWT_PUBLIC_KEY_PATH') ?: __DIR__ . '/../../data/certs/public.pem',
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,

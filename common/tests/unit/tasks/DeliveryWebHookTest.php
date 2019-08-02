@@ -90,10 +90,9 @@ class DeliveryWebHookTest extends TestCase {
         $task->execute(mock(Queue::class));
     }
 
-    /**
-     * @expectedException \GuzzleHttp\Exception\ServerException
-     */
     public function testExecuteUnhandledException() {
+        $this->expectException(ServerException::class);
+
         $this->response = new Response(502);
         $task = $this->createMockedTask();
         $task->type = 'account.edit';

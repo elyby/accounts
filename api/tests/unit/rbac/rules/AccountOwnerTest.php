@@ -1,54 +1,46 @@
 <?php
-namespace common\tests\unit\rbac\rules;
+declare(strict_types=1);
 
-use api\components\User\Component;
+namespace api\tests\unit\rbac\rules;
+
 use api\components\User\IdentityInterface;
+use api\rbac\rules\AccountOwner;
 use common\models\Account;
-use common\rbac\rules\AccountOwner;
 use common\tests\unit\TestCase;
+use InvalidArgumentException;
 use Yii;
 use yii\rbac\Item;
 use const common\LATEST_RULES_VERSION;
 
 class AccountOwnerTest extends TestCase {
 
-    public function testIdentityIsNull() {
-        $component = mock(Component::class . '[findIdentityByAccessToken]', [[
-            'secret' => 'secret',
-            'publicKeyPath' => 'data/certs/public.crt',
-            'privateKeyPath' => 'data/certs/private.key',
-        ]]);
-        $component->shouldDeferMissing();
-        $component->shouldReceive('findIdentityByAccessToken')->andReturn(null);
-
-        Yii::$app->set('user', $component);
-
-        $this->assertFalse((new AccountOwner())->execute('some token', new Item(), ['accountId' => 123]));
-    }
-
     public function testExecute() {
         $rule = new AccountOwner();
         $item = new Item();
 
+        // Identity is null
+        $this->assertFalse($rule->execute('some token', $item, ['accountId' => 123]));
+
+        // Identity presented, but have no account
+        /** @var IdentityInterface|\Mockery\MockInterface $identity */
+        $identity = mock(IdentityInterface::class);
+        $identity->shouldReceive('getAccount')->andReturn(null);
+        Yii::$app->user->setIdentity($identity);
+
+        $this->assertFalse($rule->execute('some token', $item, ['accountId' => 123]));
+
+        // Identity has an account
         $account = new Account();
         $account->id = 1;
         $account->status = Account::STATUS_ACTIVE;
         $account->rules_agreement_version = LATEST_RULES_VERSION;
 
+        /** @var IdentityInterface|\Mockery\MockInterface $identity */
         $identity = mock(IdentityInterface::class);
         $identity->shouldReceive('getAccount')->andReturn($account);
 
-        $component = mock(Component::class . '[findIdentityByAccessToken]', [[
-            'secret' => 'secret',
-            'publicKeyPath' => 'data/certs/public.crt',
-            'privateKeyPath' => 'data/certs/private.key',
-        ]]);
-        $component->shouldDeferMissing();
-        $component->shouldReceive('findIdentityByAccessToken')->withArgs(['token'])->andReturn($identity);
+        Yii::$app->user->setIdentity($identity);
 
-        Yii::$app->set('user', $component);
-
-        $this->assertFalse($rule->execute('token', $item, []));
         $this->assertFalse($rule->execute('token', $item, ['accountId' => 2]));
         $this->assertFalse($rule->execute('token', $item, ['accountId' => '2']));
         $this->assertTrue($rule->execute('token', $item, ['accountId' => 1]));
@@ -60,6 +52,13 @@ class AccountOwnerTest extends TestCase {
         $account->status = Account::STATUS_BANNED;
         $this->assertFalse($rule->execute('token', $item, ['accountId' => 1]));
         $this->assertFalse($rule->execute('token', $item, ['accountId' => 1, 'optionalRules' => true]));
+    }
+
+    public function testExecuteWithoutAccountId() {
+        $this->expectException(InvalidArgumentException::class);
+
+        $rule = new AccountOwner();
+        $this->assertFalse($rule->execute('token', new Item(), []));
     }
 
 }

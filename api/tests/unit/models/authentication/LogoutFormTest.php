@@ -1,8 +1,9 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\_support\models\authentication;
 
 use api\components\User\Component;
-use api\components\User\Identity;
 use api\models\authentication\LogoutForm;
 use api\tests\unit\TestCase;
 use Codeception\Specify;
@@ -16,7 +17,6 @@ class LogoutFormTest extends TestCase {
         $this->specify('No actions if active session is not exists', function() {
             $userComp = $this
                 ->getMockBuilder(Component::class)
-                ->setConstructorArgs([$this->getComponentArgs()])
                 ->setMethods(['getActiveSession'])
                 ->getMock();
             $userComp
@@ -42,7 +42,6 @@ class LogoutFormTest extends TestCase {
 
             $userComp = $this
                 ->getMockBuilder(Component::class)
-                ->setConstructorArgs([$this->getComponentArgs()])
                 ->setMethods(['getActiveSession'])
                 ->getMock();
             $userComp
@@ -55,17 +54,6 @@ class LogoutFormTest extends TestCase {
             $model = new LogoutForm();
             $model->logout();
         });
-    }
-
-    private function getComponentArgs() {
-        return [
-            'identityClass' => Identity::class,
-            'enableSession' => false,
-            'loginUrl' => null,
-            'secret' => 'secret',
-            'publicKeyPath' => 'data/certs/public.crt',
-            'privateKeyPath' => 'data/certs/private.key',
-        ];
     }
 
 }

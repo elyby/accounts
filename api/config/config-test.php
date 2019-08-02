@@ -1,8 +1,11 @@
 <?php
 return [
     'components' => [
-        'user' => [
-            'secret' => 'tests-secret-key',
+        'tokens' => [
+            'hmacKey' => 'tests-secret-key',
+            'privateKeyPath' => codecept_data_dir('certs/private.pem'),
+            'privateKeyPass' => null,
+            'publicKeyPath' => codecept_data_dir('certs/public.pem'),
         ],
         'reCaptcha' => [
             'public' => 'public-key',

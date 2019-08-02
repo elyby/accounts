@@ -1,7 +1,10 @@
 <?php
+declare(strict_types=1);
+
 namespace codeception\api\unit\modules\authserver\models;
 
 use api\models\authentication\LoginForm;
+use api\modules\authserver\exceptions\ForbiddenOperationException;
 use api\modules\authserver\models\AuthenticateData;
 use api\modules\authserver\models\AuthenticationForm;
 use api\tests\unit\TestCase;
@@ -22,11 +25,10 @@ class AuthenticationFormTest extends TestCase {
         ];
     }
 
-    /**
-     * @expectedException \api\modules\authserver\exceptions\ForbiddenOperationException
-     * @expectedExceptionMessage Invalid credentials. Invalid nickname or password.
-     */
     public function testAuthenticateByWrongNicknamePass() {
+        $this->expectException(ForbiddenOperationException::class);
+        $this->expectExceptionMessage('Invalid credentials. Invalid nickname or password.');
+
         $authForm = $this->createAuthForm();
 
         $authForm->username = 'wrong-username';
@@ -36,11 +38,10 @@ class AuthenticationFormTest extends TestCase {
         $authForm->authenticate();
     }
 
-    /**
-     * @expectedException \api\modules\authserver\exceptions\ForbiddenOperationException
-     * @expectedExceptionMessage Invalid credentials. Invalid email or password.
-     */
     public function testAuthenticateByWrongEmailPass() {
+        $this->expectException(ForbiddenOperationException::class);
+        $this->expectExceptionMessage('Invalid credentials. Invalid email or password.');
+
         $authForm = $this->createAuthForm();
 
         $authForm->username = 'wrong-email@ely.by';
@@ -50,11 +51,10 @@ class AuthenticationFormTest extends TestCase {
         $authForm->authenticate();
     }
 
-    /**
-     * @expectedException \api\modules\authserver\exceptions\ForbiddenOperationException
-     * @expectedExceptionMessage This account has been suspended.
-     */
     public function testAuthenticateByValidCredentialsIntoBlockedAccount() {
+        $this->expectException(ForbiddenOperationException::class);
+        $this->expectExceptionMessage('This account has been suspended.');
+
         $authForm = $this->createAuthForm(Account::STATUS_BANNED);
 
         $authForm->username = 'dummy';
@@ -71,7 +71,7 @@ class AuthenticationFormTest extends TestCase {
         $minecraftAccessKey->access_token = Uuid::uuid4();
         $authForm->expects($this->once())
             ->method('createMinecraftAccessToken')
-            ->will($this->returnValue($minecraftAccessKey));
+            ->willReturn($minecraftAccessKey);
 
         $authForm->username = 'dummy';
         $authForm->password = 'password_0';
@@ -122,18 +122,18 @@ class AuthenticationFormTest extends TestCase {
         $account->status = $status;
         $account->setPassword('password_0');
 
-        $loginForm->expects($this->any())
+        $loginForm
             ->method('getAccount')
-            ->will($this->returnValue($account));
+            ->willReturn($account);
 
         /** @var AuthenticationForm|\PHPUnit\Framework\MockObject\MockObject $authForm */
         $authForm = $this->getMockBuilder(AuthenticationForm::class)
             ->setMethods(['createLoginForm', 'createMinecraftAccessToken'])
             ->getMock();
 
-        $authForm->expects($this->any())
+        $authForm
             ->method('createLoginForm')
-            ->will($this->returnValue($loginForm));
+            ->willReturn($loginForm);
 
         return $authForm;
     }

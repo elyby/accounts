@@ -50,7 +50,7 @@ class PullMojangUsernameTest extends TestCase {
     public function testExecuteUsernameExists() {
         $this->mockedMethod->willReturn(new ProfileInfo('069a79f444e94726a5befca90e38aaf5', 'Notch'));
 
-        /** @var \common\models\MojangUsername $mojangUsernameFixture */
+        /** @var MojangUsername $mojangUsernameFixture */
         $mojangUsernameFixture = $this->tester->grabFixture('mojangUsernames', 'Notch');
         $task = new PullMojangUsername();
         $task->username = 'Notch';
@@ -89,7 +89,7 @@ class PullMojangUsernameTest extends TestCase {
     }
 
     public function testExecuteRemoveIfExistsNoMore() {
-        $this->mockedMethod->willThrowException(new NoContentException(new Request('', ''), new Response()));
+        $this->mockedMethod->willThrowException(new NoContentException(new Request('GET', ''), new Response()));
 
         $username = $this->tester->grabFixture('mojangUsernames', 'not-exists')['username'];
         $task = new PullMojangUsername();
