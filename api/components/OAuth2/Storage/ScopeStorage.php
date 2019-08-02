@@ -12,6 +12,8 @@ class ScopeStorage extends AbstractStorage implements ScopeInterface {
 
     public const OFFLINE_ACCESS = 'offline_access';
 
+    public const CHANGE_SKIN = 'change_skin';
+
     private const PUBLIC_SCOPES_TO_INTERNAL_PERMISSIONS = [
         'account_info' => P::OBTAIN_OWN_ACCOUNT_INFO,
         'account_email' => P::OBTAIN_ACCOUNT_EMAIL,
@@ -24,6 +26,7 @@ class ScopeStorage extends AbstractStorage implements ScopeInterface {
         P::OBTAIN_ACCOUNT_EMAIL,
         P::MINECRAFT_SERVER_SESSION,
         self::OFFLINE_ACCESS,
+        self::CHANGE_SKIN,
     ];
 
     private const CLIENT_CREDENTIALS_PERMISSIONS = [
