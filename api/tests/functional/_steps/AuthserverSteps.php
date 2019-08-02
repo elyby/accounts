@@ -9,7 +9,7 @@ use Ramsey\Uuid\Uuid;
 
 class AuthserverSteps extends FunctionalTester {
 
-    public function amAuthenticated(string $asUsername = 'admin', string $password = 'password_0'): array {
+    public function amAuthenticated(string $asUsername = 'admin', string $password = 'password_0') {
         $route = new AuthserverRoute($this);
         $clientToken = Uuid::uuid4()->toString();
         $route->authenticate([

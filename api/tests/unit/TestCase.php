@@ -13,7 +13,7 @@ class TestCase extends Unit {
      */
     protected $tester;
 
-    protected function tearDown() {
+    protected function tearDown(): void {
         parent::tearDown();
         Mockery::close();
     }

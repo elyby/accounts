@@ -20,7 +20,7 @@ class ComponentTest extends TestCase {
      */
     private $component;
 
-    protected function setUp() {
+    protected function setUp(): void {
         parent::setUp();
 
         $this->api = $this->createMock(Api::class);

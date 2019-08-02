@@ -1,14 +1,17 @@
 <?php
+declare(strict_types=1);
+
 namespace api\models\authentication;
 
 use api\aop\annotations\CollectModelMetrics;
+use api\components\Tokens\TokensFactory;
 use api\models\base\ApiForm;
 use api\validators\EmailActivationKeyValidator;
 use common\helpers\Error as E;
 use common\models\EmailActivation;
 use common\validators\PasswordValidator;
+use Webmozart\Assert\Assert;
 use Yii;
-use yii\base\ErrorException;
 
 class RecoverPasswordForm extends ApiForm {
 
@@ -18,7 +21,7 @@ class RecoverPasswordForm extends ApiForm {
 
     public $newRePassword;
 
-    public function rules() {
+    public function rules(): array {
         return [
             ['key', EmailActivationKeyValidator::class, 'type' => EmailActivation::TYPE_FORGOT_PASSWORD_KEY],
             ['newPassword', 'required', 'message' => E::NEW_PASSWORD_REQUIRED],
@@ -28,22 +31,18 @@ class RecoverPasswordForm extends ApiForm {
         ];
     }
 
-    public function validatePasswordAndRePasswordMatch($attribute) {
-        if (!$this->hasErrors()) {
-            if ($this->newPassword !== $this->newRePassword) {
-                $this->addError($attribute, E::NEW_RE_PASSWORD_DOES_NOT_MATCH);
-            }
+    public function validatePasswordAndRePasswordMatch(string $attribute): void {
+        if (!$this->hasErrors() && $this->newPassword !== $this->newRePassword) {
+            $this->addError($attribute, E::NEW_RE_PASSWORD_DOES_NOT_MATCH);
         }
     }
 
     /**
      * @CollectModelMetrics(prefix="authentication.recoverPassword")
-     * @return \api\components\User\AuthenticationResult|bool
-     * @throws ErrorException
      */
-    public function recoverPassword() {
+    public function recoverPassword(): ?AuthenticationResult {
         if (!$this->validate()) {
-            return false;
+            return null;
         }
 
         $transaction = Yii::$app->db->beginTransaction();
@@ -52,17 +51,16 @@ class RecoverPasswordForm extends ApiForm {
         $confirmModel = $this->key;
         $account = $confirmModel->account;
         $account->password = $this->newPassword;
-        if (!$confirmModel->delete()) {
-            throw new ErrorException('Unable remove activation key.');
-        }
+        /** @noinspection PhpUnhandledExceptionInspection */
+        Assert::notSame($confirmModel->delete(), false, 'Unable remove activation key.');
 
-        if (!$account->save(false)) {
-            throw new ErrorException('Unable activate user account.');
-        }
+        Assert::true($account->save(), 'Unable activate user account.');
+
+        $token = TokensFactory::createForAccount($account);
 
         $transaction->commit();
 
-        return Yii::$app->user->createJwtAuthenticationToken($account, false);
+        return new AuthenticationResult($token);
     }
 
 }

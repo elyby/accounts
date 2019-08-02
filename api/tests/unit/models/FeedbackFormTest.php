@@ -30,20 +30,19 @@ class FeedbackFormTest extends TestCase {
             ->getMock();
 
         $model
-            ->expects($this->any())
             ->method('getAccount')
-            ->will($this->returnValue(new Account([
+            ->willReturn(new Account([
                 'id' => '123',
                 'username' => 'Erick',
                 'email' => 'find-this@email.net',
                 'created_at' => time() - 86400,
-            ])));
+            ]));
         $this->assertTrue($model->sendMessage());
         /** @var Message $message */
         $message = $this->tester->grabLastSentEmail();
         $this->assertInstanceOf(Message::class, $message);
         $data = (string)$message;
-        $this->assertContains('find-this@email.net', $data);
+        $this->assertStringContainsString('find-this@email.net', $data);
     }
 
 }

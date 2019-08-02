@@ -6,6 +6,9 @@ return [
         'fromEmail' => 'ely@ely.by',
     ],
     'components' => [
+        'cache' => [
+            'class' => \yii\caching\FileCache::class,
+        ],
         'security' => [
             // It's allows us to increase tests speed by decreasing password hashing algorithm complexity
             'passwordHashCost' => 4,

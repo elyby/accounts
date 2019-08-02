@@ -10,6 +10,7 @@ use Faker\Provider\Internet;
 use Yii;
 use yii\redis\Connection;
 use yii\web\Request;
+use yii\web\TooManyRequestsHttpException;
 
 class RateLimiterTest extends TestCase {
 
@@ -63,10 +64,9 @@ class RateLimiterTest extends TestCase {
         $filter->checkRateLimit(null, $request, null, null);
     }
 
-    /**
-     * @expectedException \yii\web\TooManyRequestsHttpException
-     */
     public function testCheckRateLimiter() {
+        $this->expectException(TooManyRequestsHttpException::class);
+
         /** @var Connection|\PHPUnit\Framework\MockObject\MockObject $redis */
         $redis = $this->getMockBuilder(Connection::class)
             ->setMethods(['executeCommand'])

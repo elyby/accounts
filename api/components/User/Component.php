@@ -1,23 +1,10 @@
 <?php
+declare(strict_types=1);
+
 namespace api\components\User;
 
-use api\exceptions\ThisShouldNotHappenException;
 use common\models\Account;
 use common\models\AccountSession;
-use common\rbac\Roles as R;
-use DateInterval;
-use DateTime;
-use Emarref\Jwt\Algorithm\AlgorithmInterface;
-use Emarref\Jwt\Algorithm\Hs256;
-use Emarref\Jwt\Claim;
-use Emarref\Jwt\Encryption\Factory as EncryptionFactory;
-use Emarref\Jwt\Exception\VerificationException;
-use Emarref\Jwt\Token;
-use Emarref\Jwt\Verification\Context as VerificationContext;
-use Exception;
-use Yii;
-use yii\base\InvalidConfigException;
-use yii\web\UnauthorizedHttpException;
 use yii\web\User as YiiUserComponent;
 
 /**
@@ -33,127 +20,25 @@ class Component extends YiiUserComponent {
     public const KEEP_SITE_SESSIONS = 2;
     public const KEEP_CURRENT_SESSION = 4;
 
-    public const JWT_SUBJECT_PREFIX = 'ely|';
-
     public $enableSession = false;
 
     public $loginUrl = null;
 
-    public $identityClass = Identity::class;
-
-    public $secret;
-
-    public $expirationTimeout = 'PT1H';
-
-    public $sessionTimeout = 'P7D';
-
     /**
-     * @var Token[]
+     * We don't use the standard web authorization mechanism via cookies.
+     * Therefore, only one static method findIdentityByAccessToken is used from
+     * the whole IdentityInterface interface, which is implemented in the factory.
+     * The method only used from loginByAccessToken from base class.
+     *
+     * @var string
      */
-    private static $parsedTokensCache = [];
-
-    public function init() {
-        parent::init();
-        if (!$this->secret) {
-            throw new InvalidConfigException('secret must be specified');
-        }
-    }
-
-    public function findIdentityByAccessToken($accessToken): ?IdentityInterface {
-        if (empty($accessToken)) {
-            return null;
-        }
-
-        /** @var \api\components\User\IdentityInterface|string $identityClass */
-        $identityClass = $this->identityClass;
-        try {
-            return $identityClass::findIdentityByAccessToken($accessToken);
-        } catch (UnauthorizedHttpException $e) {
-            // Do nothing. It's okay to catch this.
-        } catch (Exception $e) {
-            Yii::error($e);
-        }
-
-        return null;
-    }
-
-    public function createJwtAuthenticationToken(Account $account, bool $rememberMe): AuthenticationResult {
-        $ip = Yii::$app->request->userIP;
-        $token = $this->createToken($account);
-        if ($rememberMe) {
-            $session = new AccountSession();
-            $session->account_id = $account->id;
-            $session->setIp($ip);
-            $session->generateRefreshToken();
-            if (!$session->save()) {
-                throw new ThisShouldNotHappenException('Cannot save account session model');
-            }
-
-            $token->addClaim(new Claim\JwtId($session->id));
-        } else {
-            $session = null;
-            // If we don't remember a session, the token should live longer
-            // so that the session doesn't end while working with the account
-            $token->addClaim(new Claim\Expiration((new DateTime())->add(new DateInterval($this->sessionTimeout))));
-        }
-
-        $jwt = $this->serializeToken($token);
-
-        return new AuthenticationResult($account, $jwt, $session);
-    }
-
-    public function renewJwtAuthenticationToken(AccountSession $session): AuthenticationResult {
-        $transaction = Yii::$app->db->beginTransaction();
-
-        $account = $session->account;
-        $token = $this->createToken($account);
-        $token->addClaim(new Claim\JwtId($session->id));
-        $jwt = $this->serializeToken($token);
-
-        $result = new AuthenticationResult($account, $jwt, $session);
-
-        $session->setIp(Yii::$app->request->userIP);
-        $session->last_refreshed_at = time();
-        if (!$session->save()) {
-            throw new ThisShouldNotHappenException('Cannot update session info');
-        }
-
-        $transaction->commit();
-
-        return $result;
-    }
-
-    /**
-     * @param string $jwtString
-     * @return Token
-     * @throws VerificationException in case when some Claim not pass the validation
-     */
-    public function parseToken(string $jwtString): Token {
-        $token = &self::$parsedTokensCache[$jwtString];
-        if ($token === null) {
-            $jwt = new Jwt();
-            try {
-                $notVerifiedToken = $jwt->deserialize($jwtString);
-            } catch (Exception $e) {
-                throw new VerificationException('Incorrect token encoding', 0, $e);
-            }
-
-            $context = new VerificationContext(EncryptionFactory::create($this->getAlgorithm()));
-            $context->setSubject(self::JWT_SUBJECT_PREFIX);
-            $jwt->verify($notVerifiedToken, $context);
-
-            $token = $notVerifiedToken;
-        }
-
-        return $token;
-    }
+    public $identityClass = IdentityFactory::class;
 
     /**
      * The method searches AccountSession model, which one has been used to create current JWT token.
      * null will be returned in case when any of the following situations occurred:
      * - The user isn't authorized
-     * - There is no header with a token
-     * - Token validation isn't passed and some exception has been thrown
+     * - The user isn't authorized via JWT token
      * - No session key found in the token. This is possible if the user chose not to remember me
      *   or just some old tokens, without the support of saving the used session
      *
@@ -164,23 +49,18 @@ class Component extends YiiUserComponent {
             return null;
         }
 
-        $bearer = $this->getBearerToken();
-        if ($bearer === null) {
+        /** @var IdentityInterface $identity */
+        $identity = $this->getIdentity();
+        if (!$identity instanceof JwtIdentity) {
             return null;
         }
 
-        try {
-            $token = $this->parseToken($bearer);
-        } catch (VerificationException $e) {
+        $sessionId = $identity->getToken()->getClaim('jti', false);
+        if ($sessionId === false) {
             return null;
         }
 
-        $sessionId = $token->getPayload()->findClaimByName(Claim\JwtId::NAME);
-        if ($sessionId === null) {
-            return null;
-        }
-
-        return AccountSession::findOne($sessionId->getValue());
+        return AccountSession::findOne($sessionId);
     }
 
     public function terminateSessions(Account $account, int $mode = 0): void {
@@ -202,47 +82,6 @@ class Component extends YiiUserComponent {
                 $minecraftAccessKey->delete();
             }
         }
-    }
-
-    public function getAlgorithm(): AlgorithmInterface {
-        return new Hs256($this->secret);
-    }
-
-    protected function serializeToken(Token $token): string {
-        return (new Jwt())->serialize($token, EncryptionFactory::create($this->getAlgorithm()));
-    }
-
-    protected function createToken(Account $account): Token {
-        $token = new Token();
-        foreach ($this->getClaims($account) as $claim) {
-            $token->addClaim($claim);
-        }
-
-        return $token;
-    }
-
-    /**
-     * @param Account $account
-     * @return Claim\AbstractClaim[]
-     */
-    protected function getClaims(Account $account): array {
-        $currentTime = new DateTime();
-
-        return [
-            new ScopesClaim([R::ACCOUNTS_WEB_USER]),
-            new Claim\IssuedAt($currentTime),
-            new Claim\Expiration($currentTime->add(new DateInterval($this->expirationTimeout))),
-            new Claim\Subject(self::JWT_SUBJECT_PREFIX . $account->id),
-        ];
-    }
-
-    private function getBearerToken() {
-        $authHeader = Yii::$app->request->getHeaders()->get('Authorization');
-        if ($authHeader === null || !preg_match('/^Bearer\s+(.*?)$/', $authHeader, $matches)) {
-            return null;
-        }
-
-        return $matches[1];
     }
 
 }

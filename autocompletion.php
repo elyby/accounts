@@ -25,6 +25,7 @@ class Yii extends \yii\BaseYii {
  * @property \api\components\OAuth2\Component $oauth
  * @property \common\components\StatsD        $statsd
  * @property \yii\queue\Queue                 $queue
+ * @property \api\components\Tokens\Component $tokens
  */
 abstract class BaseApplication extends yii\base\Application {
 }

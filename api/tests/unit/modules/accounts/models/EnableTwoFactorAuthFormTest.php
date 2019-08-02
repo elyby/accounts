@@ -1,8 +1,9 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\unit\modules\accounts\models;
 
 use api\components\User\Component;
-use api\components\User\Identity;
 use api\modules\accounts\models\EnableTwoFactorAuthForm;
 use api\tests\unit\TestCase;
 use common\helpers\Error as E;
@@ -19,12 +20,7 @@ class EnableTwoFactorAuthFormTest extends TestCase {
         $account->otp_secret = 'mock secret';
 
         /** @var Component|\Mockery\MockInterface $component */
-        $component = mock(Component::class . '[terminateSessions]', [[
-            'identityClass' => Identity::class,
-            'enableSession' => false,
-            'loginUrl' => null,
-            'secret' => 'secret',
-        ]]);
+        $component = mock(Component::class . '[terminateSessions]');
         $component->shouldReceive('terminateSessions')->withArgs([$account, Component::KEEP_CURRENT_SESSION]);
 
         Yii::$app->set('user', $component);

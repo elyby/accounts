@@ -1,10 +1,14 @@
 <?php
+declare(strict_types=1);
+
 namespace api\models\authentication;
 
 use api\aop\annotations\CollectModelMetrics;
+use api\components\Tokens\TokensFactory;
 use api\models\base\ApiForm;
 use common\helpers\Error as E;
 use common\models\AccountSession;
+use Webmozart\Assert\Assert;
 use Yii;
 
 class RefreshTokenForm extends ApiForm {
@@ -16,41 +20,45 @@ class RefreshTokenForm extends ApiForm {
      */
     private $session;
 
-    public function rules() {
+    public function rules(): array {
         return [
             ['refresh_token', 'required', 'message' => E::REFRESH_TOKEN_REQUIRED],
             ['refresh_token', 'validateRefreshToken'],
         ];
     }
 
-    public function validateRefreshToken() {
-        if (!$this->hasErrors()) {
-            /** @var AccountSession|null $token */
-            if ($this->getSession() === null) {
-                $this->addError('refresh_token', E::REFRESH_TOKEN_NOT_EXISTS);
-            }
+    public function validateRefreshToken(): void {
+        if (!$this->hasErrors() && $this->findSession() === null) {
+            $this->addError('refresh_token', E::REFRESH_TOKEN_NOT_EXISTS);
         }
     }
 
     /**
      * @CollectModelMetrics(prefix="authentication.renew")
-     * @return \api\components\User\AuthenticationResult|bool
      */
-    public function renew() {
+    public function renew(): ?AuthenticationResult {
         if (!$this->validate()) {
-            return false;
+            return null;
         }
 
-        /** @var \api\components\User\Component $component */
-        $component = Yii::$app->user;
+        /** @var AccountSession $session */
+        $session = $this->findSession();
+        $account = $session->account;
 
-        return $component->renewJwtAuthenticationToken($this->getSession());
+        $transaction = Yii::$app->db->beginTransaction();
+
+        $token = TokensFactory::createForAccount($account, $session);
+
+        $session->setIp(Yii::$app->request->userIP);
+        $session->touch('last_refreshed_at');
+        Assert::true($session->save(), 'Cannot update session info');
+
+        $transaction->commit();
+
+        return new AuthenticationResult($token, $session->refresh_token);
     }
 
-    /**
-     * @return AccountSession|null
-     */
-    public function getSession() {
+    private function findSession(): ?AccountSession {
         if ($this->session === null) {
             $this->session = AccountSession::findOne(['refresh_token' => $this->refresh_token]);
         }

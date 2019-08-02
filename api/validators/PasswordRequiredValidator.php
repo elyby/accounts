@@ -1,9 +1,9 @@
 <?php
 namespace api\validators;
 
+use api\rbac\Permissions as P;
 use common\helpers\Error as E;
 use common\models\Account;
-use common\rbac\Permissions as P;
 use yii\base\InvalidConfigException;
 use yii\di\Instance;
 use yii\validators\Validator;

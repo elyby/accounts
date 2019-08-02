@@ -38,9 +38,8 @@ class CreateWebHooksDeliveriesTest extends TestCase {
             'status' => 0,
         ];
         $result = CreateWebHooksDeliveries::createAccountEdit($account, $changedAttributes);
-        $this->assertInstanceOf(CreateWebHooksDeliveries::class, $result);
         $this->assertSame('account.edit', $result->type);
-        $this->assertArraySubset([
+        $this->assertEmpty(array_diff_assoc([
             'id' => 123,
             'uuid' => 'afc8dc7a-4bbf-4d3a-8699-68890088cf84',
             'username' => 'mock-username',
@@ -48,8 +47,8 @@ class CreateWebHooksDeliveriesTest extends TestCase {
             'lang' => 'en',
             'isActive' => true,
             'registered' => '2018-07-08T00:13:34+00:00',
-            'changedAttributes' => $changedAttributes,
-        ], $result->payloads);
+        ], $result->payloads));
+        $this->assertSame($changedAttributes, $result->payloads['changedAttributes']);
     }
 
     public function testExecute() {

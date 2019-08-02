@@ -1,8 +1,9 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\unit\modules\accounts\models;
 
 use api\components\User\Component;
-use api\components\User\Identity;
 use api\modules\accounts\models\ChangePasswordForm;
 use api\tests\unit\TestCase;
 use common\components\UserPass;
@@ -56,12 +57,7 @@ class ChangePasswordFormTest extends TestCase {
     }
 
     public function testPerformAction() {
-        $component = mock(Component::class . '[terminateSessions]', [[
-            'identityClass' => Identity::class,
-            'enableSession' => false,
-            'loginUrl' => null,
-            'secret' => 'secret',
-        ]]);
+        $component = mock(Component::class . '[terminateSessions]');
         $component->shouldNotReceive('terminateSessions');
 
         Yii::$app->set('user', $component);
@@ -116,12 +112,7 @@ class ChangePasswordFormTest extends TestCase {
         $account->setPassword('password_0');
 
         /** @var Component|\Mockery\MockInterface $component */
-        $component = mock(Component::class . '[terminateSessions]', [[
-            'identityClass' => Identity::class,
-            'enableSession' => false,
-            'loginUrl' => null,
-            'secret' => 'secret',
-        ]]);
+        $component = mock(Component::class . '[terminateSessions]');
         $component->shouldReceive('terminateSessions')->once()->withArgs([$account, Component::KEEP_CURRENT_SESSION]);
 
         Yii::$app->set('user', $component);

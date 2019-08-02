@@ -1,7 +1,8 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\_support\models\authentication;
 
-use api\components\User\AuthenticationResult;
 use api\models\authentication\RecoverPasswordForm;
 use api\tests\unit\TestCase;
 use common\models\Account;
@@ -24,8 +25,8 @@ class RecoverPasswordFormTest extends TestCase {
             'newRePassword' => '12345678',
         ]);
         $result = $model->recoverPassword();
-        $this->assertInstanceOf(AuthenticationResult::class, $result);
-        $this->assertNull($result->getSession(), 'session was not generated');
+        $this->assertNotNull($result);
+        $this->assertNull($result->getRefreshToken(), 'session was not generated');
         $this->assertFalse(EmailActivation::find()->andWhere(['key' => $fixture['key']])->exists());
         /** @var Account $account */
         $account = Account::findOne($fixture['account_id']);

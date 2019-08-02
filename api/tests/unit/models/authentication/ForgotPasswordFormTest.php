@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace codeception\api\unit\models\authentication;
 
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
@@ -14,7 +16,7 @@ use Yii;
 
 class ForgotPasswordFormTest extends TestCase {
 
-    protected function setUp() {
+    protected function setUp(): void {
         parent::setUp();
         Yii::$container->set(ReCaptchaValidator::class, new class(mock(ClientInterface::class)) extends ReCaptchaValidator {
             public function validateValue($value) {

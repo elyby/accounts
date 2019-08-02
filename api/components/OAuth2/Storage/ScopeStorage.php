@@ -3,8 +3,8 @@ namespace api\components\OAuth2\Storage;
 
 use api\components\OAuth2\Entities\ClientEntity;
 use api\components\OAuth2\Entities\ScopeEntity;
+use api\rbac\Permissions as P;
 use Assert\Assert;
-use common\rbac\Permissions as P;
 use League\OAuth2\Server\Storage\AbstractStorage;
 use League\OAuth2\Server\Storage\ScopeInterface;
 

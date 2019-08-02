@@ -27,6 +27,8 @@ services:
       - db
       - redis
     env_file: .env
+    volumes:
+      - certs-storage:/var/www/html/data/certs
     networks:
       default:
         aliases:
@@ -70,6 +72,14 @@ services:
     restart: always
     volumes:
       - ./data/redis:/data
+
+volumes:
+  certs-storage:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD/data/certs
+      o: bind
 
 networks:
   nginx-proxy:

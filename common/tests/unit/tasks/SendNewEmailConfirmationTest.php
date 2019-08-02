@@ -41,7 +41,7 @@ class SendNewEmailConfirmationTest extends TestCase {
         $this->assertSame(['mock@ely.by' => 'mock-username'], $email->getTo());
         $this->assertSame('Ely.by Account new E-mail confirmation', $email->getSubject());
         $children = $email->getSwiftMessage()->getChildren()[0];
-        $this->assertContains('GFEDCBA', $children->getBody());
+        $this->assertStringContainsString('GFEDCBA', $children->getBody());
     }
 
 }
