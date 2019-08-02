@@ -99,8 +99,8 @@ return [
         ],
         'authManager' => [
             'class' => \api\rbac\Manager::class,
-            'itemFile' => '@common/rbac/.generated/items.php',
-            'ruleFile' => '@common/rbac/.generated/rules.php',
+            'itemFile' => '@api/rbac/.generated/items.php',
+            'ruleFile' => '@api/rbac/.generated/rules.php',
         ],
         'statsd' => [
             'class' => common\components\StatsD::class,
