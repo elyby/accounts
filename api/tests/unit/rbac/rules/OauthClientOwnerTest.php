@@ -9,6 +9,7 @@ use api\rbac\rules\OauthClientOwner;
 use common\models\Account;
 use common\tests\fixtures\OauthClientFixture;
 use common\tests\unit\TestCase;
+use InvalidArgumentException;
 use Yii;
 use yii\rbac\Item;
 use const common\LATEST_RULES_VERSION;
@@ -59,10 +60,9 @@ class OauthClientOwnerTest extends TestCase {
         $this->assertFalse($rule->execute('token', $item, ['accountId' => 1]));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testExecuteWithoutClientId() {
+        $this->expectException(InvalidArgumentException::class);
+
         $rule = new OauthClientOwner();
         $this->assertFalse($rule->execute('token', new Item(), []));
     }

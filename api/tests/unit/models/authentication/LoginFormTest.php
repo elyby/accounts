@@ -15,13 +15,13 @@ class LoginFormTest extends TestCase {
 
     private $originalRemoteAddr;
 
-    protected function setUp() {
+    protected function setUp(): void {
         $this->originalRemoteAddr = $_SERVER['REMOTE_ADDR'] ?? null;
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
         parent::setUp();
     }
 
-    protected function tearDown() {
+    protected function tearDown(): void {
         parent::tearDown();
         $_SERVER['REMOTE_ADDR'] = $this->originalRemoteAddr;
     }

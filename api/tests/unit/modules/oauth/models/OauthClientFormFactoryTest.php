@@ -1,6 +1,9 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\unit\modules\oauth\models;
 
+use api\modules\oauth\exceptions\UnsupportedOauthClientType;
 use api\modules\oauth\models\ApplicationType;
 use api\modules\oauth\models\MinecraftServerType;
 use api\modules\oauth\models\OauthClientFormFactory;
@@ -37,10 +40,9 @@ class OauthClientFormFactoryTest extends TestCase {
         $this->assertSame('localhost:12345', $requestForm->minecraftServerIp);
     }
 
-    /**
-     * @expectedException \api\modules\oauth\exceptions\UnsupportedOauthClientType
-     */
     public function testCreateUnknownType() {
+        $this->expectException(UnsupportedOauthClientType::class);
+
         $client = new OauthClient();
         $client->type = 'unknown-type';
         OauthClientFormFactory::create($client);

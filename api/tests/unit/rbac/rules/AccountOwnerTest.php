@@ -7,6 +7,7 @@ use api\components\User\IdentityInterface;
 use api\rbac\rules\AccountOwner;
 use common\models\Account;
 use common\tests\unit\TestCase;
+use InvalidArgumentException;
 use Yii;
 use yii\rbac\Item;
 use const common\LATEST_RULES_VERSION;
@@ -53,10 +54,9 @@ class AccountOwnerTest extends TestCase {
         $this->assertFalse($rule->execute('token', $item, ['accountId' => 1, 'optionalRules' => true]));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testExecuteWithoutAccountId() {
+        $this->expectException(InvalidArgumentException::class);
+
         $rule = new AccountOwner();
         $this->assertFalse($rule->execute('token', new Item(), []));
     }
