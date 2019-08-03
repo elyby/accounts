@@ -4,8 +4,12 @@ stages:
   - release
   - cleanup
 
+.defineVersion: &defineVersion |-
+  export VERSION="${CI_COMMIT_TAG:-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}}"
+.loginIntoRegistry: &loginIntoRegistry |-
+  docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
+
 variables:
-  VERSION: "${CI_COMMIT_TAG:-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}}"
   APP_IMAGE_NAME: "registry.ely.by/elyby/accounts"
   WEB_IMAGE_NAME: "registry.ely.by/elyby/accounts-nginx"
   DB_IMAGE_NAME: "registry.ely.by/elyby/accounts-mariadb"
@@ -59,9 +63,13 @@ build:production:
   image: docker:18.02
   stage: build
   before_script:
+    - *defineVersion
+    - *loginIntoRegistry
     - sed -i -e "s/{{PLACE_VERSION_HERE}}/$VERSION/g" common/config/config.php
-    - docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
   script:
+    - docker pull "$APP_IMAGE_NAME:latest"
+    - docker pull "$WEB_IMAGE_NAME:latest"
+    - docker pull "$DB_IMAGE_NAME:latest"
     - >
       docker build
       --pull
@@ -93,7 +101,7 @@ release:latest:
   variables:
     GIT_STRATEGY: none
   before_script:
-    - docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
+    - *loginIntoRegistry
   script:
     - docker tag "$APP_IMAGE_NAME:$CI_PIPELINE_ID" "$APP_IMAGE_NAME:latest"
     - docker push "$APP_IMAGE_NAME:latest"
@@ -113,7 +121,7 @@ release:tag:
   variables:
     GIT_STRATEGY: none
   before_script:
-    - docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
+    - *loginIntoRegistry
   script:
     - docker tag "$APP_IMAGE_NAME:$CI_PIPELINE_ID" "$APP_IMAGE_NAME:$VERSION"
     - docker push "$APP_IMAGE_NAME:$VERSION"
