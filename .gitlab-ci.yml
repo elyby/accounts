@@ -1,135 +1,135 @@
 stages:
-    - test
-    - build
-    - release
-    - cleanup
+  - test
+  - build
+  - release
+  - cleanup
 
 variables:
-    VERSION: "${CI_COMMIT_TAG:-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}}"
-    APP_IMAGE_NAME: "registry.ely.by/elyby/accounts"
-    WEB_IMAGE_NAME: "registry.ely.by/elyby/accounts-nginx"
-    DB_IMAGE_NAME: "registry.ely.by/elyby/accounts-mariadb"
+  VERSION: "${CI_COMMIT_TAG:-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}}"
+  APP_IMAGE_NAME: "registry.ely.by/elyby/accounts"
+  WEB_IMAGE_NAME: "registry.ely.by/elyby/accounts-nginx"
+  DB_IMAGE_NAME: "registry.ely.by/elyby/accounts-mariadb"
 
 php-cs-fixer:
-    image: edbizarro/gitlab-ci-pipeline-php:7.3-alpine
-    stage: test
-    cache:
-        key: backend-vendor
-        paths:
-            - vendor
-    script:
-        - composer install
-        - vendor/bin/php-cs-fixer fix -v --dry-run
+  image: edbizarro/gitlab-ci-pipeline-php:7.3-alpine
+  stage: test
+  cache:
+    key: backend-vendor
+    paths:
+      - vendor
+  script:
+    - composer install
+    - vendor/bin/php-cs-fixer fix -v --dry-run
 
 codeception:
-    image: edbizarro/gitlab-ci-pipeline-php:7.3-alpine
-    services:
-        - name: redis:4.0.10-alpine
-          alias: redis
-        - name: mariadb:10.2.11
-          alias: db
-    variables:
-        # App config
-        DB_HOST: "db"
-        DB_DATABASE: "ely_accounts_test"
-        DB_USER: "ely_accounts_tester"
-        DB_PASSWORD: "ely_accounts_tester_password"
-        REDIS_HOST: "redis"
-        REDIS_PORT: "6379"
-        # MariaDB config
-        MYSQL_RANDOM_ROOT_PASSWORD: "true"
-        MYSQL_DATABASE: "ely_accounts_test"
-        MYSQL_USER: "ely_accounts_tester"
-        MYSQL_PASSWORD: "ely_accounts_tester_password"
-    stage: test
-    cache:
-        key: backend-vendor
-        paths:
-            - vendor
-    before_script:
-        # While we not counting coverage, xdebug only slow down tests
-        - sudo rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-    script:
-        - composer install
-        - php yii rbac/generate
-        - ./docker/php/wait-for-it.sh "${DB_HOST}:3306" -s -t 0 -- "php yii migrate/up --interactive=0"
-        - vendor/bin/codecept run
+  image: edbizarro/gitlab-ci-pipeline-php:7.3-alpine
+  services:
+    - name: redis:4.0.10-alpine
+      alias: redis
+    - name: mariadb:10.2.11
+      alias: db
+  variables:
+    # App config
+    DB_HOST: "db"
+    DB_DATABASE: "ely_accounts_test"
+    DB_USER: "ely_accounts_tester"
+    DB_PASSWORD: "ely_accounts_tester_password"
+    REDIS_HOST: "redis"
+    REDIS_PORT: "6379"
+    # MariaDB config
+    MYSQL_RANDOM_ROOT_PASSWORD: "true"
+    MYSQL_DATABASE: "ely_accounts_test"
+    MYSQL_USER: "ely_accounts_tester"
+    MYSQL_PASSWORD: "ely_accounts_tester_password"
+  stage: test
+  cache:
+    key: backend-vendor
+    paths:
+      - vendor
+  before_script:
+    # While we not counting coverage, xdebug only slow down tests
+    - sudo rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+  script:
+    - composer install
+    - php yii rbac/generate
+    - ./docker/php/wait-for-it.sh "${DB_HOST}:3306" -s -t 0 -- "php yii migrate/up --interactive=0"
+    - vendor/bin/codecept run
 
 build:production:
-    image: docker:18.02
-    stage: build
-    before_script:
-        - sed -i -e "s/{{PLACE_VERSION_HERE}}/$VERSION/g" common/config/config.php
-        - docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
-    script:
-        - >
-          docker build
-          --pull
-          --target app
-          --build-arg "build_env=prod"
-          --cache-from "$APP_IMAGE_NAME:latest"
-          -t "$APP_IMAGE_NAME:$CI_PIPELINE_ID" .
-        - >
-          docker build
-          --pull
-          --target web
-          --build-arg "build_env=prod"
-          --cache-from "$WEB_IMAGE_NAME:latest"
-          -t "$WEB_IMAGE_NAME:$CI_PIPELINE_ID" .
-        - >
-          docker build
-          --pull
-          --target db
-          --build-arg "build_env=prod"
-          --cache-from "$DB_IMAGE_NAME:latest"
-          -t "$DB_IMAGE_NAME:$CI_PIPELINE_ID" .
-    only:
-        - master
-        - tags
+  image: docker:18.02
+  stage: build
+  before_script:
+    - sed -i -e "s/{{PLACE_VERSION_HERE}}/$VERSION/g" common/config/config.php
+    - docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
+  script:
+    - >
+      docker build
+      --pull
+      --target app
+      --build-arg "build_env=prod"
+      --cache-from "$APP_IMAGE_NAME:latest"
+      -t "$APP_IMAGE_NAME:$CI_PIPELINE_ID" .
+    - >
+      docker build
+      --pull
+      --target web
+      --build-arg "build_env=prod"
+      --cache-from "$WEB_IMAGE_NAME:latest"
+      -t "$WEB_IMAGE_NAME:$CI_PIPELINE_ID" .
+    - >
+      docker build
+      --pull
+      --target db
+      --build-arg "build_env=prod"
+      --cache-from "$DB_IMAGE_NAME:latest"
+      -t "$DB_IMAGE_NAME:$CI_PIPELINE_ID" .
+  only:
+    - master
+    - tags
 
 release:latest:
-    image: docker:18.02
-    stage: release
-    variables:
-        GIT_STRATEGY: none
-    before_script:
-        - docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
-    script:
-        - docker tag "$APP_IMAGE_NAME:$CI_PIPELINE_ID" "$APP_IMAGE_NAME:latest"
-        - docker push "$APP_IMAGE_NAME:latest"
+  image: docker:18.02
+  stage: release
+  variables:
+    GIT_STRATEGY: none
+  before_script:
+    - docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
+  script:
+    - docker tag "$APP_IMAGE_NAME:$CI_PIPELINE_ID" "$APP_IMAGE_NAME:latest"
+    - docker push "$APP_IMAGE_NAME:latest"
 
-        - docker tag "$WEB_IMAGE_NAME:$CI_PIPELINE_ID" "$WEB_IMAGE_NAME:latest"
-        - docker push "$WEB_IMAGE_NAME:latest"
+    - docker tag "$WEB_IMAGE_NAME:$CI_PIPELINE_ID" "$WEB_IMAGE_NAME:latest"
+    - docker push "$WEB_IMAGE_NAME:latest"
 
-        - docker tag "$DB_IMAGE_NAME:$CI_PIPELINE_ID" "$DB_IMAGE_NAME:latest"
-        - docker push "$DB_IMAGE_NAME:latest"
-    only:
-        - master
-        - tags
+    - docker tag "$DB_IMAGE_NAME:$CI_PIPELINE_ID" "$DB_IMAGE_NAME:latest"
+    - docker push "$DB_IMAGE_NAME:latest"
+  only:
+    - master
+    - tags
 
 release:tag:
-    image: docker:18.02
-    stage: release
-    variables:
-        GIT_STRATEGY: none
-    before_script:
-        - docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
-    script:
-        - docker tag "$APP_IMAGE_NAME:$CI_PIPELINE_ID" "$APP_IMAGE_NAME:$VERSION"
-        - docker push "$APP_IMAGE_NAME:$VERSION"
+  image: docker:18.02
+  stage: release
+  variables:
+    GIT_STRATEGY: none
+  before_script:
+    - docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
+  script:
+    - docker tag "$APP_IMAGE_NAME:$CI_PIPELINE_ID" "$APP_IMAGE_NAME:$VERSION"
+    - docker push "$APP_IMAGE_NAME:$VERSION"
 
-        - docker tag "$WEB_IMAGE_NAME:$CI_PIPELINE_ID" "$WEB_IMAGE_NAME:$VERSION"
-        - docker push "$WEB_IMAGE_NAME:$VERSION"
+    - docker tag "$WEB_IMAGE_NAME:$CI_PIPELINE_ID" "$WEB_IMAGE_NAME:$VERSION"
+    - docker push "$WEB_IMAGE_NAME:$VERSION"
 
-        - docker tag "$DB_IMAGE_NAME:$CI_PIPELINE_ID" "$DB_IMAGE_NAME:$VERSION"
-        - docker push "$DB_IMAGE_NAME:$VERSION"
-    only:
-        - tags
+    - docker tag "$DB_IMAGE_NAME:$CI_PIPELINE_ID" "$DB_IMAGE_NAME:$VERSION"
+    - docker push "$DB_IMAGE_NAME:$VERSION"
+  only:
+    - tags
 
 cleanup:
-    stage: cleanup
-    script:
-        - docker rmi "$APP_IMAGE_NAME:$CI_PIPELINE_ID" "$APP_IMAGE_NAME:$VERSION" "$APP_IMAGE_NAME:latest" || true
-        - docker rmi "$WEB_IMAGE_NAME:$CI_PIPELINE_ID" "$WEB_IMAGE_NAME:$VERSION" "$WEB_IMAGE_NAME:latest" || true
-        - docker rmi "$DB_IMAGE_NAME:$CI_PIPELINE_ID" "$DB_IMAGE_NAME:$VERSION" "$DB_IMAGE_NAME:latest" || true
-    when: always
+  stage: cleanup
+  script:
+    - docker rmi "$APP_IMAGE_NAME:$CI_PIPELINE_ID" "$APP_IMAGE_NAME:$VERSION" "$APP_IMAGE_NAME:latest" || true
+    - docker rmi "$WEB_IMAGE_NAME:$CI_PIPELINE_ID" "$WEB_IMAGE_NAME:$VERSION" "$WEB_IMAGE_NAME:latest" || true
+    - docker rmi "$DB_IMAGE_NAME:$CI_PIPELINE_ID" "$DB_IMAGE_NAME:$VERSION" "$DB_IMAGE_NAME:latest" || true
+  when: always
