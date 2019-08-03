@@ -5,7 +5,7 @@ stages:
     - cleanup
 
 variables:
-    VERSION: "${CI_COMMIT_TAG:-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA:0:7}}"
+    VERSION: "${CI_COMMIT_TAG:-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}}"
     APP_IMAGE_NAME: "registry.ely.by/elyby/accounts"
     WEB_IMAGE_NAME: "registry.ely.by/elyby/accounts-nginx"
     DB_IMAGE_NAME: "registry.ely.by/elyby/accounts-mariadb"
@@ -60,24 +60,28 @@ build:production:
     stage: build
     before_script:
         - sed -i -e "s/{{PLACE_VERSION_HERE}}/$VERSION/g" common/config/config.php
+        - docker login -u gitlab-ci -p $CI_BUILD_TOKEN registry.ely.by
     script:
         - >
           docker build
           --pull
           --target app
           --build-arg "build_env=prod"
+          --cache-from "$APP_IMAGE_NAME:latest"
           -t "$APP_IMAGE_NAME:$CI_PIPELINE_ID" .
         - >
           docker build
           --pull
           --target web
           --build-arg "build_env=prod"
+          --cache-from "$WEB_IMAGE_NAME:latest"
           -t "$WEB_IMAGE_NAME:$CI_PIPELINE_ID" .
         - >
           docker build
           --pull
           --target db
           --build-arg "build_env=prod"
+          --cache-from "$DB_IMAGE_NAME:latest"
           -t "$DB_IMAGE_NAME:$CI_PIPELINE_ID" .
     only:
         - master
