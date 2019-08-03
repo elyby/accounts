@@ -82,7 +82,7 @@ build:production:
       --pull
       --target web
       --build-arg "build_env=prod"
-      --cache-from "$APP_IMAGE_NAME:latest"
+      --cache-from "$APP_IMAGE_NAME:$CI_PIPELINE_ID"
       --cache-from "$WEB_IMAGE_NAME:latest"
       -t "$WEB_IMAGE_NAME:$CI_PIPELINE_ID" .
     - >
@@ -90,7 +90,7 @@ build:production:
       --pull
       --target db
       --build-arg "build_env=prod"
-      --cache-from "$APP_IMAGE_NAME:latest"
+      --cache-from "$APP_IMAGE_NAME:$CI_PIPELINE_ID"
       --cache-from "$DB_IMAGE_NAME:latest"
       -t "$DB_IMAGE_NAME:$CI_PIPELINE_ID" .
   only:
@@ -138,6 +138,8 @@ release:tag:
 
 cleanup:
   stage: cleanup
+  variables:
+    GIT_STRATEGY: none
   script:
     - docker rmi "$APP_IMAGE_NAME:$CI_PIPELINE_ID" "$APP_IMAGE_NAME:$VERSION" "$APP_IMAGE_NAME:latest" || true
     - docker rmi "$WEB_IMAGE_NAME:$CI_PIPELINE_ID" "$WEB_IMAGE_NAME:$VERSION" "$WEB_IMAGE_NAME:latest" || true
