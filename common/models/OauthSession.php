@@ -28,6 +28,10 @@ class OauthSession extends ActiveRecord {
         return '{{%oauth_sessions}}';
     }
 
+    public static function find(): OauthSessionQuery {
+        return new OauthSessionQuery(static::class);
+    }
+
     public function behaviors() {
         return [
             [
