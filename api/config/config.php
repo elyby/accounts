@@ -5,7 +5,7 @@ return [
     'bootstrap' => ['log', 'authserver', 'internal', 'mojang'],
     'controllerNamespace' => 'api\controllers',
     'params' => [
-        'authserverHost' => getenv('AUTHSERVER_HOST'),
+        'authserverHost' => getenv('AUTHSERVER_HOST') ?: 'authserver.ely.by',
     ],
     'components' => [
         'user' => [
