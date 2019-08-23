@@ -1,7 +1,7 @@
 <?php
 namespace api\tests\functional\oauth;
 
-use api\components\OAuth2\Storage\ScopeStorage as S;
+use api\components\OAuth2\Repositories\ScopeStorage as S;
 use api\rbac\Permissions as P;
 use api\tests\_pages\OauthRoute;
 use api\tests\functional\_steps\OauthSteps;

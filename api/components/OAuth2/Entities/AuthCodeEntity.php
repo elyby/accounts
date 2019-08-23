@@ -1,29 +1,18 @@
 <?php
+declare(strict_types=1);
+
 namespace api\components\OAuth2\Entities;
 
-use League\OAuth2\Server\Entity\SessionEntity as OriginalSessionEntity;
+use League\OAuth2\Server\Entities\AuthCodeEntityInterface;
+use League\OAuth2\Server\Entities\Traits\AuthCodeTrait;
+use League\OAuth2\Server\Entities\Traits\EntityTrait;
+use League\OAuth2\Server\Entities\Traits\TokenEntityTrait;
 
-class AuthCodeEntity extends \League\OAuth2\Server\Entity\AuthCodeEntity {
+class AuthCodeEntity implements AuthCodeEntityInterface {
+    use EntityTrait;
+    use AuthCodeTrait;
+    use TokenEntityTrait;
 
-    protected $sessionId;
-
-    public function getSessionId() {
-        return $this->sessionId;
-    }
-
-    /**
-     * @inheritdoc
-     * @return static
-     */
-    public function setSession(OriginalSessionEntity $session) {
-        parent::setSession($session);
-        $this->sessionId = $session->getId();
-
-        return $this;
-    }
-
-    public function setSessionId(string $sessionId) {
-        $this->sessionId = $sessionId;
-    }
+    // TODO: constructor
 
 }

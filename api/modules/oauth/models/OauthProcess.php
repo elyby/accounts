@@ -1,19 +1,18 @@
 <?php
+declare(strict_types=1);
+
 namespace api\modules\oauth\models;
 
-use api\components\OAuth2\Exception\AcceptRequiredException;
-use api\components\OAuth2\Exception\AccessDeniedException;
-use api\components\OAuth2\Grants\AuthCodeGrant;
-use api\components\OAuth2\Grants\AuthorizeParams;
 use api\rbac\Permissions as P;
 use common\models\Account;
 use common\models\OauthClient;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\ServerRequest;
 use League\OAuth2\Server\AuthorizationServer;
-use League\OAuth2\Server\Exception\InvalidGrantException;
-use League\OAuth2\Server\Exception\OAuthException;
-use League\OAuth2\Server\Grant\GrantTypeInterface;
+use League\OAuth2\Server\Exception\OAuthServerException;
+use League\OAuth2\Server\RequestTypes\AuthorizationRequest;
+use Psr\Http\Message\ServerRequestInterface;
 use Yii;
-use yii\helpers\ArrayHelper;
 
 class OauthProcess {
 
@@ -50,16 +49,13 @@ class OauthProcess {
      */
     public function validate(): array {
         try {
-            $authParams = $this->getAuthorizationCodeGrant()->checkAuthorizeParams();
-            $client = $authParams->getClient();
+            $request = $this->getRequest();
+            $authRequest = $this->server->validateAuthorizationRequest($request);
+            $client = $authRequest->getClient();
             /** @var OauthClient $clientModel */
-            $clientModel = $this->findClient($client->getId());
-            $response = $this->buildSuccessResponse(
-                Yii::$app->request->getQueryParams(),
-                $clientModel,
-                $authParams->getScopes()
-            );
-        } catch (OAuthException $e) {
+            $clientModel = $this->findClient($client->getIdentifier());
+            $response = $this->buildSuccessResponse($request, $clientModel, $authRequest->getScopes());
+        } catch (OAuthServerException $e) {
             $response = $this->buildErrorResponse($e);
         }
 
@@ -88,33 +84,37 @@ class OauthProcess {
     public function complete(): array {
         try {
             Yii::$app->statsd->inc('oauth.complete.attempt');
-            $grant = $this->getAuthorizationCodeGrant();
-            $authParams = $grant->checkAuthorizeParams();
+
+            $request = $this->getRequest();
+            $authRequest = $this->server->validateAuthorizationRequest($request);
             /** @var Account $account */
             $account = Yii::$app->user->identity->getAccount();
-            /** @var \common\models\OauthClient $clientModel */
-            $clientModel = $this->findClient($authParams->getClient()->getId());
+            /** @var OauthClient $clientModel */
+            $clientModel = $this->findClient($authRequest->getClient()->getIdentifier());
 
-            if (!$this->canAutoApprove($account, $clientModel, $authParams)) {
+            if (!$this->canAutoApprove($account, $clientModel, $authRequest)) {
                 Yii::$app->statsd->inc('oauth.complete.approve_required');
-                $isAccept = Yii::$app->request->post('accept');
-                if ($isAccept === null) {
-                    throw new AcceptRequiredException();
+
+                $accept = ((array)$request->getParsedBody())['accept'] ?? null;
+                if ($accept === null) {
+                    throw $this->createAcceptRequiredException();
                 }
 
-                if (!$isAccept) {
-                    throw new AccessDeniedException($authParams->getRedirectUri());
+                if (!in_array($accept, [1, '1', true, 'true'], true)) {
+                    throw OAuthServerException::accessDenied(null, $authRequest->getRedirectUri());
                 }
             }
 
-            $redirectUri = $grant->newAuthorizeRequest('user', $account->id, $authParams);
+            $responseObj = $this->server->completeAuthorizationRequest($authRequest, new Response(200));
+
             $response = [
                 'success' => true,
-                'redirectUri' => $redirectUri,
+                'redirectUri' => $responseObj->getHeader('Location'), // TODO: ensure that this is correct type and behavior
             ];
+
             Yii::$app->statsd->inc('oauth.complete.success');
-        } catch (OAuthException $e) {
-            if (!$e instanceof AcceptRequiredException) {
+        } catch (OAuthServerException $e) {
+            if ($e->getErrorType() === 'accept_required') {
                 Yii::$app->statsd->inc('oauth.complete.fail');
             }
 
@@ -146,19 +146,28 @@ class OauthProcess {
      * @return array
      */
     public function getToken(): array {
-        $grantType = Yii::$app->request->post('grant_type', 'null');
+        $request = $this->getRequest();
+        $params = (array)$request->getParsedBody();
+        $grantType = $params['grant_type'] ?? 'null';
         try {
             Yii::$app->statsd->inc("oauth.issueToken_{$grantType}.attempt");
-            $response = $this->server->issueAccessToken();
-            $clientId = Yii::$app->request->post('client_id');
+
+            $responseObj = new Response(200);
+            $this->server->respondToAccessTokenRequest($request, $responseObj);
+            $clientId = $params['client_id'];
+
+            // TODO: build response from the responseObj
+            $response = [];
+
             Yii::$app->statsd->inc("oauth.issueToken_client.{$clientId}");
             Yii::$app->statsd->inc("oauth.issueToken_{$grantType}.success");
-        } catch (OAuthException $e) {
+        } catch (OAuthServerException $e) {
             Yii::$app->statsd->inc("oauth.issueToken_{$grantType}.fail");
-            Yii::$app->response->statusCode = $e->httpStatusCode;
+            Yii::$app->response->statusCode = $e->getHttpStatusCode();
+
             $response = [
-                'error' => $e->errorType,
-                'message' => $e->getMessage(),
+                'error' => $e->getErrorType(),
+                'message' => $e->getMessage(), // TODO: use hint field?
             ];
         }
 
@@ -166,7 +175,7 @@ class OauthProcess {
     }
 
     private function findClient(string $clientId): ?OauthClient {
-        return OauthClient::findOne($clientId);
+        return OauthClient::findOne(['id' => $clientId]);
     }
 
     /**
@@ -175,11 +184,11 @@ class OauthProcess {
      *
      * @param Account $account
      * @param OauthClient $client
-     * @param AuthorizeParams $oauthParams
+     * @param AuthorizationRequest $request
      *
      * @return bool
      */
-    private function canAutoApprove(Account $account, OauthClient $client, AuthorizeParams $oauthParams): bool {
+    private function canAutoApprove(Account $account, OauthClient $client, AuthorizationRequest $request): bool {
         if ($client->is_trusted) {
             return true;
         }
@@ -188,7 +197,7 @@ class OauthProcess {
         $session = $account->getOauthSessions()->andWhere(['client_id' => $client->id])->one();
         if ($session !== null) {
             $existScopes = $session->getScopes()->members();
-            if (empty(array_diff(array_keys($oauthParams->getScopes()), $existScopes))) {
+            if (empty(array_diff(array_keys($request->getScopes()), $existScopes))) {
                 return true;
             }
         }
@@ -197,17 +206,17 @@ class OauthProcess {
     }
 
     /**
-     * @param array $queryParams
+     * @param ServerRequestInterface $request
      * @param OauthClient $client
-     * @param \api\components\OAuth2\Entities\ScopeEntity[] $scopes
+     * @param \League\OAuth2\Server\Entities\ScopeEntityInterface[] $scopes
      *
      * @return array
      */
-    private function buildSuccessResponse(array $queryParams, OauthClient $client, array $scopes): array {
+    private function buildSuccessResponse(ServerRequestInterface $request, OauthClient $client, array $scopes): array {
         return [
             'success' => true,
             // We return only those keys which are related to the OAuth2 standard parameters
-            'oAuth' => array_intersect_key($queryParams, array_flip([
+            'oAuth' => array_intersect_key($request->getQueryParams(), array_flip([
                 'client_id',
                 'redirect_uri',
                 'response_type',
@@ -217,55 +226,57 @@ class OauthProcess {
             'client' => [
                 'id' => $client->id,
                 'name' => $client->name,
-                'description' => ArrayHelper::getValue($queryParams, 'description', $client->description),
+                'description' => $request->getQueryParams()['description'] ?? $client->description,
             ],
             'session' => [
-                'scopes' => $this->fixScopesNames(array_keys($scopes)),
+                'scopes' => $this->buildScopesArray($scopes),
             ],
         ];
     }
 
-    private function fixScopesNames(array $scopes): array {
-        foreach ($scopes as &$scope) {
-            if (isset(self::INTERNAL_PERMISSIONS_TO_PUBLIC_SCOPES[$scope])) {
-                $scope = self::INTERNAL_PERMISSIONS_TO_PUBLIC_SCOPES[$scope];
-            }
+    /**
+     * @param \League\OAuth2\Server\Entities\ScopeEntityInterface[] $scopes
+     * @return array
+     */
+    private function buildScopesArray(array $scopes): array {
+        $result = [];
+        foreach ($scopes as $scope) {
+            $result[] = self::INTERNAL_PERMISSIONS_TO_PUBLIC_SCOPES[$scope->getIdentifier()] ?? $scope->getIdentifier();
         }
 
-        return $scopes;
+        return $result;
     }
 
-    private function buildErrorResponse(OAuthException $e): array {
+    private function buildErrorResponse(OAuthServerException $e): array {
         $response = [
             'success' => false,
-            'error' => $e->errorType,
-            'parameter' => $e->parameter,
-            'statusCode' => $e->httpStatusCode,
+            'error' => $e->getErrorType(),
+            // 'parameter' => $e->parameter, // TODO: if this is necessary, the parameter can be extracted from the hint
+            'statusCode' => $e->getHttpStatusCode(),
         ];
 
-        if ($e->shouldRedirect()) {
+        if ($e->hasRedirect()) {
             $response['redirectUri'] = $e->getRedirectUri();
         }
 
-        if ($e->httpStatusCode !== 200) {
-            Yii::$app->response->setStatusCode($e->httpStatusCode);
+        if ($e->getHttpStatusCode() !== 200) {
+            Yii::$app->response->setStatusCode($e->getHttpStatusCode());
         }
 
         return $response;
     }
 
-    private function getGrant(string $grantType = null): GrantTypeInterface {
-        return $this->server->getGrantType($grantType ?? Yii::$app->request->get('grant_type'));
+    private function getRequest(): ServerRequestInterface {
+        return ServerRequest::fromGlobals();
     }
 
-    private function getAuthorizationCodeGrant(): AuthCodeGrant {
-        /** @var GrantTypeInterface $grantType */
-        $grantType = $this->getGrant('authorization_code');
-        if (!$grantType instanceof AuthCodeGrant) {
-            throw new InvalidGrantException('authorization_code grant have invalid realisation');
-        }
-
-        return $grantType;
+    private function createAcceptRequiredException(): OAuthServerException {
+        return new OAuthServerException(
+            'Client must accept authentication request.',
+            0,
+            'accept_required',
+            401
+        );
     }
 
 }

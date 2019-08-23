@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\functional\oauth;
 
 use api\rbac\Permissions as P;
@@ -18,61 +20,6 @@ class AuthCodeCest {
 
     public function testValidateRequest(FunctionalTester $I) {
         $this->testOauthParamsValidation($I, 'validate');
-
-        $I->wantTo('validate and obtain information about new auth request');
-        $this->route->validate($this->buildQueryParams(
-            'ely',
-            'http://ely.by',
-            'code',
-            [P::MINECRAFT_SERVER_SESSION, 'account_info', 'account_email'],
-            'test-state'
-        ));
-        $I->canSeeResponseCodeIs(200);
-        $I->canSeeResponseIsJson();
-        $I->canSeeResponseContainsJson([
-            'success' => true,
-            'oAuth' => [
-                'client_id' => 'ely',
-                'redirect_uri' => 'http://ely.by',
-                'response_type' => 'code',
-                'scope' => 'minecraft_server_session,account_info,account_email',
-                'state' => 'test-state',
-            ],
-            'client' => [
-                'id' => 'ely',
-                'name' => 'Ely.by',
-                'description' => 'Всем знакомое елуби',
-            ],
-            'session' => [
-                'scopes' => [
-                    'minecraft_server_session',
-                    'account_info',
-                    'account_email',
-                ],
-            ],
-        ]);
-    }
-
-    public function testValidateWithDescriptionReplaceRequest(FunctionalTester $I) {
-        $I->amAuthenticated();
-        $I->wantTo('validate and get information with description replacement');
-        $this->route->validate($this->buildQueryParams(
-            'ely',
-            'http://ely.by',
-            'code',
-            null,
-            null,
-            [
-                'description' => 'all familiar eliby',
-            ]
-        ));
-        $I->canSeeResponseCodeIs(200);
-        $I->canSeeResponseIsJson();
-        $I->canSeeResponseContainsJson([
-            'client' => [
-                'description' => 'all familiar eliby',
-            ],
-        ]);
     }
 
     public function testCompleteValidationAction(FunctionalTester $I) {

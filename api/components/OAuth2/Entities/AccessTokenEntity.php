@@ -1,7 +1,7 @@
 <?php
 namespace api\components\OAuth2\Entities;
 
-use api\components\OAuth2\Storage\SessionStorage;
+use api\components\OAuth2\Repositories\SessionStorage;
 use ErrorException;
 use League\OAuth2\Server\Entity\SessionEntity as OriginalSessionEntity;
 

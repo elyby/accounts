@@ -13,13 +13,13 @@ use yii\db\ActiveRecord;
  * @property string         $type
  * @property string         $name
  * @property string         $description
- * @property string         $redirect_uri
+ * @property string|null    $redirect_uri
  * @property string         $website_url
  * @property string         $minecraft_server_ip
  * @property integer        $account_id
  * @property bool           $is_trusted
  * @property bool           $is_deleted
- * @property integer        $created_at
+ * @property int            $created_at
  *
  * Behaviors:
  * @property Account|null   $account

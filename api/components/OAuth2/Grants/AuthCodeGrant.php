@@ -6,7 +6,7 @@ use api\components\OAuth2\Entities\AuthCodeEntity;
 use api\components\OAuth2\Entities\ClientEntity;
 use api\components\OAuth2\Entities\RefreshTokenEntity;
 use api\components\OAuth2\Entities\SessionEntity;
-use api\components\OAuth2\Storage\ScopeStorage;
+use api\components\OAuth2\Repositories\ScopeStorage;
 use api\components\OAuth2\Utils\Scopes;
 use League\OAuth2\Server\Entity\AuthCodeEntity as BaseAuthCodeEntity;
 use League\OAuth2\Server\Entity\ClientEntity as BaseClientEntity;

@@ -1,10 +1,18 @@
 <?php
+declare(strict_types=1);
+
 namespace api\components\OAuth2\Entities;
 
-class ScopeEntity extends \League\OAuth2\Server\Entity\ScopeEntity {
+use League\OAuth2\Server\Entities\ScopeEntityInterface;
+use League\OAuth2\Server\Entities\Traits\EntityTrait;
+use League\OAuth2\Server\Entities\Traits\ScopeTrait;
 
-    public function setId(string $id) {
-        $this->id = $id;
+class ScopeEntity implements ScopeEntityInterface {
+    use EntityTrait;
+    use ScopeTrait;
+
+    public function __construct(string $id) {
+        $this->identifier = $id;
     }
 
 }

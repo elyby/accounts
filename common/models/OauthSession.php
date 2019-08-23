@@ -69,7 +69,8 @@ class OauthSession extends ActiveRecord {
     }
 
     public function removeRefreshToken(): void {
-        /** @var \api\components\OAuth2\Storage\RefreshTokenStorage $refreshTokensStorage */
+        /** @var \api\components\OAuth2\Repositories\RefreshTokenStorage $refreshTokensStorage */
+        // TODO: rework
         $refreshTokensStorage = Yii::$app->oauth->getRefreshTokenStorage();
         $refreshTokensSet = $refreshTokensStorage->sessionHash($this->id);
         foreach ($refreshTokensSet->members() as $refreshTokenId) {

@@ -1,5 +1,5 @@
 <?php
-namespace api\components\OAuth2\Storage;
+namespace api\components\OAuth2\Repositories;
 
 use api\components\OAuth2\Entities\ClientEntity;
 use api\components\OAuth2\Entities\ScopeEntity;

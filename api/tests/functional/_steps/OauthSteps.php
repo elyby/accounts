@@ -1,13 +1,15 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\functional\_steps;
 
-use api\components\OAuth2\Storage\ScopeStorage as S;
+use api\components\OAuth2\Repositories\ScopeStorage as S;
 use api\tests\_pages\OauthRoute;
 use api\tests\FunctionalTester;
 
 class OauthSteps extends FunctionalTester {
 
-    public function getAuthCode(array $permissions = []) {
+    public function getAuthCode(array $permissions = []): string {
         $this->amAuthenticated();
         $route = new OauthRoute($this);
         $route->complete([
@@ -23,21 +25,21 @@ class OauthSteps extends FunctionalTester {
         return $matches[1];
     }
 
-    public function getAccessToken(array $permissions = []) {
+    public function getAccessToken(array $permissions = []): string {
         $authCode = $this->getAuthCode($permissions);
         $response = $this->issueToken($authCode);
 
         return $response['access_token'];
     }
 
-    public function getRefreshToken(array $permissions = []) {
+    public function getRefreshToken(array $permissions = []): string {
         $authCode = $this->getAuthCode(array_merge([S::OFFLINE_ACCESS], $permissions));
         $response = $this->issueToken($authCode);
 
         return $response['refresh_token'];
     }
 
-    public function issueToken($authCode) {
+    public function issueToken($authCode): array {
         $route = new OauthRoute($this);
         $route->issueToken([
             'code' => $authCode,
@@ -50,7 +52,7 @@ class OauthSteps extends FunctionalTester {
         return json_decode($this->grabResponse(), true);
     }
 
-    public function getAccessTokenByClientCredentialsGrant(array $permissions = [], $useTrusted = true) {
+    public function getAccessTokenByClientCredentialsGrant(array $permissions = [], $useTrusted = true): string {
         $route = new OauthRoute($this);
         $route->issueToken([
             'client_id' => $useTrusted ? 'trusted-client' : 'default-client',

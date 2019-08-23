@@ -1,10 +1,13 @@
 <?php
+declare(strict_types=1);
+
 namespace api\components\OAuth2;
 
+use api\components\OAuth2\Keys\EmptyKey;
+use api\components\OAuth2\Repositories;
+use DateInterval;
 use League\OAuth2\Server\AuthorizationServer;
-use League\OAuth2\Server\Storage\AccessTokenInterface;
-use League\OAuth2\Server\Storage\RefreshTokenInterface;
-use League\OAuth2\Server\Storage\SessionInterface;
+use League\OAuth2\Server\Grant;
 use yii\base\Component as BaseComponent;
 
 /**
@@ -19,35 +22,32 @@ class Component extends BaseComponent {
 
     public function getAuthServer(): AuthorizationServer {
         if ($this->_authServer === null) {
-            $authServer = new AuthorizationServer();
-            $authServer->setAccessTokenStorage(new Storage\AccessTokenStorage());
-            $authServer->setClientStorage(new Storage\ClientStorage());
-            $authServer->setScopeStorage(new Storage\ScopeStorage());
-            $authServer->setSessionStorage(new Storage\SessionStorage());
-            $authServer->setAuthCodeStorage(new Storage\AuthCodeStorage());
-            $authServer->setRefreshTokenStorage(new Storage\RefreshTokenStorage());
-            $authServer->setAccessTokenTTL(86400); // 1d
+            $clientsRepo = new Repositories\ClientRepository();
+            $accessTokensRepo = new Repositories\AccessTokenRepository();
+            $scopesRepo = new Repositories\ScopeRepository();
+            $authCodesRepo = new Repositories\AuthCodeRepository();
+            $refreshTokensRepo = new Repositories\RefreshTokenRepository();
 
-            $authServer->addGrantType(new Grants\AuthCodeGrant());
-            $authServer->addGrantType(new Grants\RefreshTokenGrant());
-            $authServer->addGrantType(new Grants\ClientCredentialsGrant());
+            $accessTokenTTL = new DateInterval('P1D');
+
+            $authServer = new AuthorizationServer(
+                $clientsRepo,
+                $accessTokensRepo,
+                $scopesRepo,
+                new EmptyKey(),
+                '123' // TODO: extract to the variable
+            );
+            /** @noinspection PhpUnhandledExceptionInspection */
+            $authCodeGrant = new Grant\AuthCodeGrant($authCodesRepo, $refreshTokensRepo, new DateInterval('PT10M'));
+            $authCodeGrant->disableRequireCodeChallengeForPublicClients();
+            $authServer->enableGrantType($authCodeGrant, $accessTokenTTL);
+            $authServer->enableGrantType(new Grant\RefreshTokenGrant($refreshTokensRepo), $accessTokenTTL);
+            $authServer->enableGrantType(new Grant\ClientCredentialsGrant(), $accessTokenTTL);
 
             $this->_authServer = $authServer;
         }
 
         return $this->_authServer;
-    }
-
-    public function getAccessTokenStorage(): AccessTokenInterface {
-        return $this->getAuthServer()->getAccessTokenStorage();
-    }
-
-    public function getRefreshTokenStorage(): RefreshTokenInterface {
-        return $this->getAuthServer()->getRefreshTokenStorage();
-    }
-
-    public function getSessionStorage(): SessionInterface {
-        return $this->getAuthServer()->getSessionStorage();
     }
 
 }

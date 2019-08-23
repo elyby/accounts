@@ -28,6 +28,7 @@ class OAuth2Identity implements IdentityInterface {
      */
     public static function findIdentityByAccessToken($token, $type = null): IdentityInterface {
         /** @var AccessTokenEntity|null $model */
+        // TODO: rework
         $model = Yii::$app->oauth->getAccessTokenStorage()->get($token);
         if ($model === null) {
             throw new UnauthorizedHttpException('Incorrect token');

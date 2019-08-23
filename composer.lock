@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "35095ab389bcc73cacbafceffa74fb71",
+    "content-hash": "35a16287a6dc45c16e0553022aa34f5b",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -304,6 +304,69 @@
                 "validate email"
             ],
             "time": "2018-04-13T00:48:04+00:00"
+        },
+        {
+            "name": "defuse/php-encryption",
+            "version": "v2.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/defuse/php-encryption.git",
+                "reference": "0f407c43b953d571421e0020ba92082ed5fb7620"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/defuse/php-encryption/zipball/0f407c43b953d571421e0020ba92082ed5fb7620",
+                "reference": "0f407c43b953d571421e0020ba92082ed5fb7620",
+                "shasum": ""
+            },
+            "require": {
+                "ext-openssl": "*",
+                "paragonie/random_compat": ">= 2",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "nikic/php-parser": "^2.0|^3.0|^4.0",
+                "phpunit/phpunit": "^4|^5"
+            },
+            "bin": [
+                "bin/generate-defuse-key"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Defuse\\Crypto\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Hornby",
+                    "email": "taylor@defuse.ca",
+                    "homepage": "https://defuse.ca/"
+                },
+                {
+                    "name": "Scott Arciszewski",
+                    "email": "info@paragonie.com",
+                    "homepage": "https://paragonie.com"
+                }
+            ],
+            "description": "Secure PHP Encryption Library",
+            "keywords": [
+                "aes",
+                "authenticated encryption",
+                "cipher",
+                "crypto",
+                "cryptography",
+                "encrypt",
+                "encryption",
+                "openssl",
+                "security",
+                "symmetric key cryptography"
+            ],
+            "time": "2018-07-24T23:27:56+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -1215,30 +1278,37 @@
         },
         {
             "name": "league/oauth2-server",
-            "version": "4.1.7",
+            "version": "dev-adaptation",
             "source": {
                 "type": "git",
-                "url": "https://github.com/thephpleague/oauth2-server.git",
-                "reference": "138524984ac472652c69399529a35b6595cf22d3"
+                "url": "https://github.com/elyby/oauth2-server.git",
+                "reference": "08e470e81a20896109704bac4b7c24781797dfc3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/oauth2-server/zipball/138524984ac472652c69399529a35b6595cf22d3",
-                "reference": "138524984ac472652c69399529a35b6595cf22d3",
+                "url": "https://api.github.com/repos/elyby/oauth2-server/zipball/08e470e81a20896109704bac4b7c24781797dfc3",
+                "reference": "08e470e81a20896109704bac4b7c24781797dfc3",
                 "shasum": ""
             },
             "require": {
-                "league/event": "~2.1",
-                "php": ">=5.4.0",
-                "symfony/http-foundation": "~2.4|~3.0"
+                "defuse/php-encryption": "^2.2.1",
+                "ext-json": "*",
+                "ext-openssl": "*",
+                "lcobucci/jwt": "^3.3.1",
+                "league/event": "^2.2",
+                "php": ">=7.1.0",
+                "psr/http-message": "^1.0.1"
             },
             "replace": {
                 "league/oauth2server": "*",
                 "lncd/oauth2": "*"
             },
             "require-dev": {
-                "mockery/mockery": "0.9.*",
-                "phpunit/phpunit": "4.3.*"
+                "phpstan/phpstan": "^0.11.8",
+                "phpstan/phpstan-phpunit": "^0.11.2",
+                "phpunit/phpunit": "^7.5.13 || ^8.2.3",
+                "roave/security-advisories": "dev-master",
+                "zendframework/zend-diactoros": "^2.1.2"
             },
             "type": "library",
             "autoload": {
@@ -1246,7 +1316,11 @@
                     "League\\OAuth2\\Server\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "LeagueTests\\": "tests/"
+                }
+            },
             "license": [
                 "MIT"
             ],
@@ -1256,14 +1330,21 @@
                     "email": "hello@alexbilbie.com",
                     "homepage": "http://www.alexbilbie.com",
                     "role": "Developer"
+                },
+                {
+                    "name": "Andy Millington",
+                    "email": "andrew@noexceptions.io",
+                    "homepage": "https://www.noexceptions.io",
+                    "role": "Developer"
                 }
             ],
             "description": "A lightweight and powerful OAuth 2.0 authorization and resource server library with support for all the core specification grants. This library will allow you to secure your API with OAuth and allow your applications users to approve apps that want to access their data from your API.",
-            "homepage": "http://oauth2.thephpleague.com/",
+            "homepage": "https://oauth2.thephpleague.com/",
             "keywords": [
-                "Authentication",
                 "api",
                 "auth",
+                "auth",
+                "authentication",
                 "authorisation",
                 "authorization",
                 "oauth",
@@ -1275,7 +1356,10 @@
                 "secure",
                 "server"
             ],
-            "time": "2018-06-23T16:27:31+00:00"
+            "support": {
+                "source": "https://github.com/elyby/oauth2-server/tree/adaptation"
+            },
+            "time": "2019-08-22T21:17:49+00:00"
         },
         {
             "name": "mito/yii2-sentry",
@@ -1915,60 +1999,6 @@
             "description": "Symfony Finder Component",
             "homepage": "https://symfony.com",
             "time": "2019-06-28T13:16:30+00:00"
-        },
-        {
-            "name": "symfony/http-foundation",
-            "version": "v3.4.22",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/http-foundation.git",
-                "reference": "9a81d2330ea255ded06a69b4f7fb7804836e7a05"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/9a81d2330ea255ded06a69b4f7fb7804836e7a05",
-                "reference": "9a81d2330ea255ded06a69b4f7fb7804836e7a05",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^5.5.9|>=7.0.8",
-                "symfony/polyfill-mbstring": "~1.1",
-                "symfony/polyfill-php70": "~1.6"
-            },
-            "require-dev": {
-                "symfony/expression-language": "~2.8|~3.0|~4.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.4-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Component\\HttpFoundation\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony HttpFoundation Component",
-            "homepage": "https://symfony.com",
-            "time": "2019-01-27T09:04:14+00:00"
         },
         {
             "name": "symfony/process",
@@ -6653,12 +6683,13 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "league/oauth2-server": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.2",
+        "php": "^7.3",
         "ext-intl": "*",
         "ext-json": "*",
         "ext-libxml": "*",
