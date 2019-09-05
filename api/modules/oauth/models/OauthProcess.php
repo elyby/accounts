@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace api\modules\oauth\models;
 
+use api\components\OAuth2\Entities\UserEntity;
 use api\rbac\Permissions as P;
 use common\models\Account;
 use common\models\OauthClient;
@@ -105,6 +106,7 @@ class OauthProcess {
                 }
             }
 
+            $authRequest->setUser(new UserEntity($account->id));
             $responseObj = $this->server->completeAuthorizationRequest($authRequest, new Response(200));
 
             $response = [
