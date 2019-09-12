@@ -107,6 +107,7 @@ class OauthProcess {
             }
 
             $authRequest->setUser(new UserEntity($account->id));
+            $authRequest->setAuthorizationApproved(true);
             $responseObj = $this->server->completeAuthorizationRequest($authRequest, new Response(200));
 
             $response = [
@@ -250,10 +251,15 @@ class OauthProcess {
     }
 
     private function buildErrorResponse(OAuthServerException $e): array {
+        $hint = $e->getPayload()['hint'] ?? '';
+        if (preg_match('/the `(\w+)` scope/', $hint, $matches)) {
+            $parameter = $matches[1];
+        }
+
         $response = [
             'success' => false,
             'error' => $e->getErrorType(),
-            // 'parameter' => $e->parameter, // TODO: if this is necessary, the parameter can be extracted from the hint
+            'parameter' => $parameter ?? null,
             'statusCode' => $e->getHttpStatusCode(),
         ];
 

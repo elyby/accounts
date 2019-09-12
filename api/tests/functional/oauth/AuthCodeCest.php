@@ -132,7 +132,7 @@ class AuthCodeCest {
         $I->canSeeResponseContainsJson([
             'success' => false,
             'error' => 'access_denied',
-            'parameter' => '',
+            'parameter' => null,
             'statusCode' => 401,
         ]);
         $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');

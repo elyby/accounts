@@ -25,6 +25,7 @@ class Component extends BaseComponent {
             $clientsRepo = new Repositories\ClientRepository();
             $accessTokensRepo = new Repositories\AccessTokenRepository();
             $scopesRepo = new Repositories\ScopeRepository();
+            $publicScopesRepo = new Repositories\PublicScopeRepository();
             $authCodesRepo = new Repositories\AuthCodeRepository();
             $refreshTokensRepo = new Repositories\RefreshTokenRepository();
 
@@ -41,6 +42,7 @@ class Component extends BaseComponent {
             $authCodeGrant = new Grant\AuthCodeGrant($authCodesRepo, $refreshTokensRepo, new DateInterval('PT10M'));
             $authCodeGrant->disableRequireCodeChallengeForPublicClients();
             $authServer->enableGrantType($authCodeGrant, $accessTokenTTL);
+            $authCodeGrant->setScopeRepository($publicScopesRepo); // Change repository after enabling
             $authServer->enableGrantType(new Grant\RefreshTokenGrant($refreshTokensRepo), $accessTokenTTL);
             $authServer->enableGrantType(new Grant\ClientCredentialsGrant(), $accessTokenTTL);
 
