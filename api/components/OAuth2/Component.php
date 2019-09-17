@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace api\components\OAuth2;
 
 use api\components\OAuth2\Keys\EmptyKey;
-use api\components\OAuth2\Repositories;
 use DateInterval;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Grant;

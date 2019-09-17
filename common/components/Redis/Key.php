@@ -4,6 +4,9 @@ namespace common\components\Redis;
 use InvalidArgumentException;
 use Yii;
 
+/**
+ * @deprecated
+ */
 class Key {
 
     private $key;

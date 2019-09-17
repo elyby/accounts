@@ -9,31 +9,30 @@ use api\tests\FunctionalTester;
 
 class OauthSteps extends FunctionalTester {
 
-    public function getAuthCode(array $permissions = []): string {
+    public function obtainAuthCode(array $permissions = []): string {
         $this->amAuthenticated();
-        $route = new OauthRoute($this);
-        $route->complete([
+        $this->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
             'client_id' => 'ely',
             'redirect_uri' => 'http://ely.by',
             'response_type' => 'code',
-            'scope' => implode(',', $permissions),
-        ], ['accept' => true]);
+            'scope' => implode(' ', $permissions),
+        ]), ['accept' => true]);
         $this->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
-        $response = json_decode($this->grabResponse(), true);
-        preg_match('/code=([\w-]+)/', $response['redirectUri'], $matches);
+        [$redirectUri] = $this->grabDataFromResponseByJsonPath('$.redirectUri');
+        preg_match('/code=([\w-]+)/', $redirectUri, $matches);
 
         return $matches[1];
     }
 
     public function getAccessToken(array $permissions = []): string {
-        $authCode = $this->getAuthCode($permissions);
+        $authCode = $this->obtainAuthCode($permissions);
         $response = $this->issueToken($authCode);
 
         return $response['access_token'];
     }
 
     public function getRefreshToken(array $permissions = []): string {
-        $authCode = $this->getAuthCode(array_merge([S::OFFLINE_ACCESS], $permissions));
+        $authCode = $this->obtainAuthCode(array_merge([S::OFFLINE_ACCESS], $permissions));
         $response = $this->issueToken($authCode);
 
         return $response['refresh_token'];

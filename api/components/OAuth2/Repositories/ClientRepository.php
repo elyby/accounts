@@ -29,8 +29,6 @@ class ClientRepository implements ClientRepositoryInterface {
             return false;
         }
 
-        // TODO: there is missing behavior of checking redirectUri. Is it now bundled into grant?
-
         return true;
     }
 

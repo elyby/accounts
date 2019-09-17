@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "35a16287a6dc45c16e0553022aa34f5b",
+    "content-hash": "7ee1d380684b79ffabf92f115d7de4a8",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -1766,6 +1766,44 @@
                 "uuid"
             ],
             "time": "2018-07-19T23:38:55+00:00"
+        },
+        {
+            "name": "sam-it/yii2-mariadb",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SAM-IT/yii2-mariadb.git",
+                "reference": "9d0551dc05332e51c4546b070e0cb221217d75d6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SAM-IT/yii2-mariadb/zipball/9d0551dc05332e51c4546b070e0cb221217d75d6",
+                "reference": "9d0551dc05332e51c4546b070e0cb221217d75d6",
+                "shasum": ""
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.9",
+                "phpunit/phpunit": "^7.2",
+                "yiisoft/yii2-dev": "^2.0.15"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "SamIT\\Yii2\\MariaDb\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sam Mousa",
+                    "email": "sam@mousa.nl"
+                }
+            ],
+            "description": "MariaDB Driver for Yii2",
+            "time": "2019-04-23T13:27:38+00:00"
         },
         {
             "name": "sentry/sentry",

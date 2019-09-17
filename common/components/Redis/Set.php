@@ -5,6 +5,9 @@ use ArrayIterator;
 use IteratorAggregate;
 use Yii;
 
+/**
+ * @deprecated
+ */
 class Set extends Key implements IteratorAggregate {
 
     public function add($value): self {

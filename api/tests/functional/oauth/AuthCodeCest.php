@@ -72,7 +72,7 @@ class AuthCodeCest {
         $I->canSeeResponseContainsJson([
             'success' => false,
             'error' => 'accept_required',
-            'parameter' => '',
+            'parameter' => null,
             'statusCode' => 401,
         ]);
     }
@@ -90,7 +90,7 @@ class AuthCodeCest {
         $I->canSeeResponseContainsJson([
             'success' => false,
             'error' => 'accept_required',
-            'parameter' => '',
+            'parameter' => null,
             'statusCode' => 401,
         ]);
     }
@@ -114,7 +114,7 @@ class AuthCodeCest {
         $I->canSeeResponseContainsJson([
             'success' => false,
             'error' => 'accept_required',
-            'parameter' => '',
+            'parameter' => null,
             'statusCode' => 401,
         ]);
     }

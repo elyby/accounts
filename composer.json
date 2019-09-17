@@ -24,6 +24,7 @@
         "nesbot/carbon": "^2.22",
         "paragonie/constant_time_encoding": "^2.0",
         "ramsey/uuid": "^3.5",
+        "sam-it/yii2-mariadb": "^1.1",
         "spomky-labs/otphp": "^9.0.2",
         "webmozart/assert": "^1.2.0",
         "yiisoft/yii2": "~2.0.20",

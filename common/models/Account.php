@@ -93,7 +93,7 @@ class Account extends ActiveRecord {
     }
 
     public function getOauthSessions(): ActiveQuery {
-        return $this->hasMany(OauthSession::class, ['owner_id' => 'id'])->andWhere(['owner_type' => 'user']);
+        return $this->hasMany(OauthSession::class, ['account_id' => 'id']);
     }
 
     public function getOauthClients(): OauthClientQuery {

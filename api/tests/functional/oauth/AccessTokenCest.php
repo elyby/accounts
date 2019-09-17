@@ -1,113 +1,91 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\functional\oauth;
 
-use api\tests\_pages\OauthRoute;
 use api\tests\functional\_steps\OauthSteps;
-use api\tests\FunctionalTester;
 
 class AccessTokenCest {
 
-    /**
-     * @var OauthRoute
-     */
-    private $route;
-
-    public function _before(FunctionalTester $I) {
-        $this->route = new OauthRoute($I);
+    public function successfullyIssueToken(OauthSteps $I) {
+        $I->wantTo('complete oauth flow and obtain access_token');
+        $authCode = $I->obtainAuthCode();
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'authorization_code',
+            'code' => $authCode,
+            'client_id' => 'ely',
+            'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
+            'redirect_uri' => 'http://ely.by',
+        ]);
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseContainsJson([
+            'token_type' => 'Bearer',
+        ]);
+        $I->canSeeResponseJsonMatchesJsonPath('$.access_token');
+        $I->canSeeResponseJsonMatchesJsonPath('$.expires_in');
+        $I->cantSeeResponseJsonMatchesJsonPath('$.refresh_token');
     }
 
-    public function testIssueTokenWithWrongArgs(OauthSteps $I) {
-        $I->wantTo('check behavior on on request without any credentials');
-        $this->route->issueToken();
+    public function successfullyIssueOfflineToken(OauthSteps $I) {
+        $I->wantTo('complete oauth flow with offline_access scope and obtain access_token and refresh_token');
+        $authCode = $I->obtainAuthCode(['offline_access']);
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'authorization_code',
+            'code' => $authCode,
+            'client_id' => 'ely',
+            'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
+            'redirect_uri' => 'http://ely.by',
+        ]);
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseContainsJson([
+            'token_type' => 'Bearer',
+        ]);
+        $I->canSeeResponseJsonMatchesJsonPath('$.access_token');
+        $I->canSeeResponseJsonMatchesJsonPath('$.expires_in');
+        $I->canSeeResponseJsonMatchesJsonPath('$.refresh_token');
+    }
+
+    public function callEndpointWithByEmptyRequest(OauthSteps $I) {
+        $I->wantTo('check behavior on on request without any params');
+        $I->sendPOST('/api/oauth2/v1/token');
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
-            'error' => 'invalid_request',
-            'message' => 'The request is missing a required parameter, includes an invalid parameter value, includes a parameter more than once, or is otherwise malformed. Check the "grant_type" parameter.',
+            'error' => 'unsupported_grant_type',
+            'message' => 'The authorization grant type is not supported by the authorization server.',
         ]);
+    }
 
+    public function issueTokenByPassingInvalidAuthCode(OauthSteps $I) {
         $I->wantTo('check behavior on passing invalid auth code');
-        $this->route->issueToken($this->buildParams(
-            'wrong-auth-code',
-            'ely',
-            'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
-            'http://ely.by'
-        ));
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'authorization_code',
+            'code' => 'wrong-auth-code',
+            'client_id' => 'ely',
+            'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
+            'redirect_uri' => 'http://ely.by',
+        ]);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
             'error' => 'invalid_request',
             'message' => 'The request is missing a required parameter, includes an invalid parameter value, includes a parameter more than once, or is otherwise malformed. Check the "code" parameter.',
         ]);
+    }
 
-        $authCode = $I->getAuthCode();
+    public function issueTokenByPassingInvalidRedirectUri(OauthSteps $I) {
         $I->wantTo('check behavior on passing invalid redirect_uri');
-        $this->route->issueToken($this->buildParams(
-            $authCode,
-            'ely',
-            'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
-            'http://some-other.domain'
-        ));
-        $I->canSeeResponseCodeIs(401);
+        $authCode = $I->obtainAuthCode();
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'authorization_code',
+            'code' => $authCode,
+            'client_id' => 'ely',
+            'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
+            'redirect_uri' => 'http://some-other.domain',
+        ]);
+        $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
             'error' => 'invalid_client',
             'message' => 'Client authentication failed.',
         ]);
-    }
-
-    public function testIssueToken(OauthSteps $I) {
-        $authCode = $I->getAuthCode();
-        $this->route->issueToken($this->buildParams(
-            $authCode,
-            'ely',
-            'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
-            'http://ely.by'
-        ));
-        $I->canSeeResponseCodeIs(200);
-        $I->canSeeResponseIsJson();
-        $I->canSeeResponseContainsJson([
-            'token_type' => 'Bearer',
-        ]);
-        $I->canSeeResponseJsonMatchesJsonPath('$.access_token');
-        $I->cantSeeResponseJsonMatchesJsonPath('$.refresh_token');
-        $I->canSeeResponseJsonMatchesJsonPath('$.expires_in');
-    }
-
-    public function testIssueTokenWithRefreshToken(OauthSteps $I) {
-        $authCode = $I->getAuthCode(['offline_access']);
-        $this->route->issueToken($this->buildParams(
-            $authCode,
-            'ely',
-            'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
-            'http://ely.by'
-        ));
-        $I->canSeeResponseCodeIs(200);
-        $I->canSeeResponseIsJson();
-        $I->canSeeResponseContainsJson([
-            'token_type' => 'Bearer',
-        ]);
-        $I->canSeeResponseJsonMatchesJsonPath('$.access_token');
-        $I->canSeeResponseJsonMatchesJsonPath('$.refresh_token');
-        $I->canSeeResponseJsonMatchesJsonPath('$.expires_in');
-    }
-
-    private function buildParams($code = null, $clientId = null, $clientSecret = null, $redirectUri = null) {
-        $params = ['grant_type' => 'authorization_code'];
-        if ($code !== null) {
-            $params['code'] = $code;
-        }
-
-        if ($clientId !== null) {
-            $params['client_id'] = $clientId;
-        }
-
-        if ($clientSecret !== null) {
-            $params['client_secret'] = $clientSecret;
-        }
-
-        if ($redirectUri !== null) {
-            $params['redirect_uri'] = $redirectUri;
-        }
-
-        return $params;
     }
 
 }

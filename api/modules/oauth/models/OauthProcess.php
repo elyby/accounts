@@ -7,12 +7,15 @@ use api\components\OAuth2\Entities\UserEntity;
 use api\rbac\Permissions as P;
 use common\models\Account;
 use common\models\OauthClient;
+use common\models\OauthSession;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
 use League\OAuth2\Server\AuthorizationServer;
+use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use League\OAuth2\Server\RequestTypes\AuthorizationRequest;
 use Psr\Http\Message\ServerRequestInterface;
+use Webmozart\Assert\Assert;
 use Yii;
 
 class OauthProcess {
@@ -57,7 +60,7 @@ class OauthProcess {
             $clientModel = $this->findClient($client->getIdentifier());
             $response = $this->buildSuccessResponse($request, $clientModel, $authRequest->getScopes());
         } catch (OAuthServerException $e) {
-            $response = $this->buildErrorResponse($e);
+            $response = $this->buildCompleteErrorResponse($e);
         }
 
         return $response;
@@ -90,29 +93,31 @@ class OauthProcess {
             $authRequest = $this->server->validateAuthorizationRequest($request);
             /** @var Account $account */
             $account = Yii::$app->user->identity->getAccount();
-            /** @var OauthClient $clientModel */
-            $clientModel = $this->findClient($authRequest->getClient()->getIdentifier());
+            /** @var OauthClient $client */
+            $client = $this->findClient($authRequest->getClient()->getIdentifier());
 
-            if (!$this->canAutoApprove($account, $clientModel, $authRequest)) {
+            $approved = $this->canAutoApprove($account, $client, $authRequest);
+            if (!$approved) {
                 Yii::$app->statsd->inc('oauth.complete.approve_required');
 
-                $accept = ((array)$request->getParsedBody())['accept'] ?? null;
-                if ($accept === null) {
+                $acceptParam = ((array)$request->getParsedBody())['accept'] ?? null;
+                if ($acceptParam === null) {
                     throw $this->createAcceptRequiredException();
                 }
 
-                if (!in_array($accept, [1, '1', true, 'true'], true)) {
-                    throw OAuthServerException::accessDenied(null, $authRequest->getRedirectUri());
+                $approved = in_array($acceptParam, [1, '1', true, 'true'], true);
+                if ($approved) {
+                    $this->storeOauthSession($account, $client, $authRequest);
                 }
             }
 
             $authRequest->setUser(new UserEntity($account->id));
-            $authRequest->setAuthorizationApproved(true);
-            $responseObj = $this->server->completeAuthorizationRequest($authRequest, new Response(200));
+            $authRequest->setAuthorizationApproved($approved);
+            $response = $this->server->completeAuthorizationRequest($authRequest, new Response(200));
 
-            $response = [
+            $result = [
                 'success' => true,
-                'redirectUri' => $responseObj->getHeader('Location'), // TODO: ensure that this is correct type and behavior
+                'redirectUri' => $response->getHeaderLine('Location'),
             ];
 
             Yii::$app->statsd->inc('oauth.complete.success');
@@ -121,10 +126,10 @@ class OauthProcess {
                 Yii::$app->statsd->inc('oauth.complete.fail');
             }
 
-            $response = $this->buildErrorResponse($e);
+            $result = $this->buildCompleteErrorResponse($e);
         }
 
-        return $response;
+        return $result;
     }
 
     /**
@@ -168,10 +173,7 @@ class OauthProcess {
             Yii::$app->statsd->inc("oauth.issueToken_{$grantType}.fail");
             Yii::$app->response->statusCode = $e->getHttpStatusCode();
 
-            $response = [
-                'error' => $e->getErrorType(),
-                'message' => $e->getMessage(), // TODO: use hint field?
-            ];
+            $response = $this->buildIssueErrorResponse($e);
         }
 
         return $response;
@@ -196,22 +198,31 @@ class OauthProcess {
             return true;
         }
 
-        /** @var \common\models\OauthSession|null $session */
-        $session = $account->getOauthSessions()->andWhere(['client_id' => $client->id])->one();
-        if ($session !== null) {
-            $existScopes = $session->getScopes()->members();
-            if (empty(array_diff(array_keys($request->getScopes()), $existScopes))) {
-                return true;
-            }
+        $session = $this->findOauthSession($account, $client);
+        if ($session === null) {
+            return false;
         }
 
-        return false;
+        return empty(array_diff($this->getScopesList($request), $session->getScopes()));
+    }
+
+    private function storeOauthSession(Account $account, OauthClient $client, AuthorizationRequest $request): void {
+        $session = $this->findOauthSession($account, $client);
+        if ($session === null) {
+            $session = new OauthSession();
+            $session->account_id = $account->id;
+            $session->client_id = $client->id;
+        }
+
+        $session->scopes = array_unique(array_merge($session->getScopes(), $this->getScopesList($request)));
+
+        Assert::true($session->save());
     }
 
     /**
      * @param ServerRequestInterface $request
      * @param OauthClient $client
-     * @param \League\OAuth2\Server\Entities\ScopeEntityInterface[] $scopes
+     * @param ScopeEntityInterface[] $scopes
      *
      * @return array
      */
@@ -238,7 +249,7 @@ class OauthProcess {
     }
 
     /**
-     * @param \League\OAuth2\Server\Entities\ScopeEntityInterface[] $scopes
+     * @param ScopeEntityInterface[] $scopes
      * @return array
      */
     private function buildScopesArray(array $scopes): array {
@@ -250,7 +261,7 @@ class OauthProcess {
         return $result;
     }
 
-    private function buildErrorResponse(OAuthServerException $e): array {
+    private function buildCompleteErrorResponse(OAuthServerException $e): array {
         $hint = $e->getPayload()['hint'] ?? '';
         if (preg_match('/the `(\w+)` scope/', $hint, $matches)) {
             $parameter = $matches[1];
@@ -274,6 +285,35 @@ class OauthProcess {
         return $response;
     }
 
+    /**
+     * Raw error messages aren't very informative for the end user, as they don't contain
+     * information about the parameter that caused the error.
+     * This method is intended to build a more understandable description.
+     *
+     * Part of the existing texts is a legacy from the previous implementation.
+     *
+     * @param OAuthServerException $e
+     * @return array
+     */
+    private function buildIssueErrorResponse(OAuthServerException $e): array {
+        $errorType = $e->getErrorType();
+        $message = $e->getMessage();
+        $hint = $e->getHint();
+        switch ($hint) {
+            case 'Invalid redirect URI':
+                $errorType = 'invalid_client';
+                $message = 'Client authentication failed.';
+                break;
+            case 'Cannot decrypt the authorization code':
+                $message .= ' Check the "code" parameter.';
+        }
+
+        return [
+            'error' => $errorType,
+            'message' => $message,
+        ];
+    }
+
     private function getRequest(): ServerRequestInterface {
         return ServerRequest::fromGlobals();
     }
@@ -285,6 +325,18 @@ class OauthProcess {
             'accept_required',
             401
         );
+    }
+
+    private function getScopesList(AuthorizationRequest $request): array {
+        // TODO: replace with an arrow function in PHP 7.4
+        return array_map(function(ScopeEntityInterface $scope): string {
+            return $scope->getIdentifier();
+        }, $request->getScopes());
+    }
+
+    private function findOauthSession(Account $account, OauthClient $client): ?OauthSession {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
+        return $account->getOauthSessions()->andWhere(['client_id' => $client->id])->one();
     }
 
 }

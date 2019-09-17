@@ -1,5 +1,7 @@
 <?php
-namespace api\tests\functional\oauth;
+declare(strict_types=1);
+
+namespace api\tests\functional\dev\applications;
 
 use api\tests\_pages\OauthRoute;
 use api\tests\FunctionalTester;
