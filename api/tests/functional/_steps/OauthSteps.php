@@ -3,8 +3,7 @@ declare(strict_types=1);
 
 namespace api\tests\functional\_steps;
 
-use api\components\OAuth2\Repositories\ScopeStorage as S;
-use api\tests\_pages\OauthRoute;
+use api\components\OAuth2\Repositories\PublicScopeRepository;
 use api\tests\FunctionalTester;
 
 class OauthSteps extends FunctionalTester {
@@ -32,31 +31,29 @@ class OauthSteps extends FunctionalTester {
     }
 
     public function getRefreshToken(array $permissions = []): string {
-        $authCode = $this->obtainAuthCode(array_merge([S::OFFLINE_ACCESS], $permissions));
+        $authCode = $this->obtainAuthCode(array_merge([PublicScopeRepository::OFFLINE_ACCESS], $permissions));
         $response = $this->issueToken($authCode);
 
         return $response['refresh_token'];
     }
 
-    public function issueToken($authCode): array {
-        $route = new OauthRoute($this);
-        $route->issueToken([
+    public function issueToken(string $authCode): array {
+        $this->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'authorization_code',
             'code' => $authCode,
             'client_id' => 'ely',
             'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
             'redirect_uri' => 'http://ely.by',
-            'grant_type' => 'authorization_code',
         ]);
 
         return json_decode($this->grabResponse(), true);
     }
 
-    public function getAccessTokenByClientCredentialsGrant(array $permissions = [], $useTrusted = true): string {
-        $route = new OauthRoute($this);
-        $route->issueToken([
+    public function getAccessTokenByClientCredentialsGrant(array $permissions = [], bool $useTrusted = true): string {
+        $this->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'client_credentials',
             'client_id' => $useTrusted ? 'trusted-client' : 'default-client',
             'client_secret' => $useTrusted ? 'tXBbyvMcyaOgHMOAXBpN2EC7uFoJAaL9' : 'AzWRy7ZjS1yRQUk2vRBDic8fprOKDB1W',
-            'grant_type' => 'client_credentials',
             'scope' => implode(',', $permissions),
         ]);
 

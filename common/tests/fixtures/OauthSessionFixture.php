@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace common\tests\fixtures;
 
 use common\models\OauthSession;

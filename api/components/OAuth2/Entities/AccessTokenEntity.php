@@ -1,44 +1,32 @@
 <?php
+declare(strict_types=1);
+
 namespace api\components\OAuth2\Entities;
 
-use api\components\OAuth2\Repositories\SessionStorage;
-use ErrorException;
-use League\OAuth2\Server\Entity\SessionEntity as OriginalSessionEntity;
+use api\components\Tokens\TokensFactory;
+use League\OAuth2\Server\CryptKeyInterface;
+use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
+use League\OAuth2\Server\Entities\Traits\EntityTrait;
+use League\OAuth2\Server\Entities\Traits\TokenEntityTrait;
 
-class AccessTokenEntity extends \League\OAuth2\Server\Entity\AccessTokenEntity {
-
-    protected $sessionId;
-
-    public function getSessionId() {
-        return $this->sessionId;
+class AccessTokenEntity implements AccessTokenEntityInterface {
+    use EntityTrait;
+    use TokenEntityTrait {
+        getExpiryDateTime as parentGetExpiryDateTime;
     }
 
-    public function setSessionId($sessionId) {
-        $this->sessionId = $sessionId;
+    public function __toString(): string {
+        // TODO: strip "offline_access" scope from the scopes list
+        return (string)TokensFactory::createForOAuthClient($this);
     }
 
-    /**
-     * @inheritdoc
-     * @return static
-     */
-    public function setSession(OriginalSessionEntity $session) {
-        parent::setSession($session);
-        $this->sessionId = $session->getId();
-
-        return $this;
+    public function setPrivateKey(CryptKeyInterface $privateKey): void {
+        // We use a general-purpose component to build JWT tokens, so there is no need to keep the key
     }
 
-    public function getSession() {
-        if ($this->session instanceof OriginalSessionEntity) {
-            return $this->session;
-        }
-
-        $sessionStorage = $this->server->getSessionStorage();
-        if (!$sessionStorage instanceof SessionStorage) {
-            throw new ErrorException('SessionStorage must be instance of ' . SessionStorage::class);
-        }
-
-        return $sessionStorage->getById($this->sessionId);
+    public function getExpiryDateTime() {
+        // TODO: extend token life depending on scopes list
+        return $this->parentGetExpiryDateTime();
     }
 
 }

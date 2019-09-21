@@ -183,7 +183,7 @@ class AuthCodeCest {
             'redirect_uri' => 'http://ely.by',
             'response_type' => 'code',
             'scope' => 'minecraft_server_session block_account',
-        ]));
+        ]), ['accept' => true]); // TODO: maybe remove?
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([

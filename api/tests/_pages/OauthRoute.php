@@ -5,29 +5,9 @@ namespace api\tests\_pages;
 
 /**
  * @deprecated
+ * TODO: remove
  */
 class OauthRoute extends BasePage {
-
-    /**
-     * @deprecated
-     */
-    public function validate(array $queryParams): void {
-        $this->getActor()->sendGET('/api/oauth2/v1/validate', $queryParams);
-    }
-
-    /**
-     * @deprecated
-     */
-    public function complete(array $queryParams = [], array $postParams = []): void {
-        $this->getActor()->sendPOST('/api/oauth2/v1/complete?' . http_build_query($queryParams), $postParams);
-    }
-
-    /**
-     * @deprecated
-     */
-    public function issueToken(array $postParams = []): void {
-        $this->getActor()->sendPOST('/api/oauth2/v1/token', $postParams);
-    }
 
     /**
      * @deprecated

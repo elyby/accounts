@@ -81,10 +81,10 @@ class AccessTokenCest {
             'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
             'redirect_uri' => 'http://some-other.domain',
         ]);
-        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseCodeIs(401);
         $I->canSeeResponseContainsJson([
             'error' => 'invalid_client',
-            'message' => 'Client authentication failed.',
+            'message' => 'Client authentication failed',
         ]);
     }
 

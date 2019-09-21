@@ -3,49 +3,35 @@ declare(strict_types=1);
 
 namespace api\components\OAuth2\Repositories;
 
+use api\components\OAuth2\Entities\RefreshTokenEntity;
+use common\models\OauthRefreshToken;
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface;
+use Webmozart\Assert\Assert;
 
 class RefreshTokenRepository implements RefreshTokenRepositoryInterface {
 
-    /**
-     * Creates a new refresh token
-     *
-     * @return RefreshTokenEntityInterface|null
-     */
-    public function getNewRefreshToken(): RefreshTokenEntityInterface {
-        // TODO: Implement getNewRefreshToken() method.
+    public function getNewRefreshToken(): ?RefreshTokenEntityInterface {
+        return new RefreshTokenEntity();
     }
 
-    /**
-     * Create a new refresh token_name.
-     *
-     * @param RefreshTokenEntityInterface $refreshTokenEntity
-     *
-     * @throws \League\OAuth2\Server\Exception\UniqueTokenIdentifierConstraintViolationException
-     */
-    public function persistNewRefreshToken(RefreshTokenEntityInterface $refreshTokenEntity) {
-        // TODO: Implement persistNewRefreshToken() method.
+    public function persistNewRefreshToken(RefreshTokenEntityInterface $refreshTokenEntity): void {
+        $model = new OauthRefreshToken();
+        $model->id = $refreshTokenEntity->getIdentifier();
+        $model->account_id = $refreshTokenEntity->getAccessToken()->getUserIdentifier();
+        $model->client_id = $refreshTokenEntity->getAccessToken()->getClient()->getIdentifier();
+
+        Assert::true($model->save());
     }
 
-    /**
-     * Revoke the refresh token.
-     *
-     * @param string $tokenId
-     */
-    public function revokeRefreshToken($tokenId) {
-        // TODO: Implement revokeRefreshToken() method.
+    public function revokeRefreshToken($tokenId): void {
+        // Currently we're not rotating refresh tokens so do not revoke
+        // token during any OAuth2 grant
     }
 
-    /**
-     * Check if the refresh token has been revoked.
-     *
-     * @param string $tokenId
-     *
-     * @return bool Return true if this token has been revoked
-     */
-    public function isRefreshTokenRevoked($tokenId) {
-        // TODO: Implement isRefreshTokenRevoked() method.
+    public function isRefreshTokenRevoked($tokenId): bool {
+        // TODO: validate old refresh tokens
+        return !OauthRefreshToken::find()->andWhere(['id' => $tokenId])->exists();
     }
 
 }

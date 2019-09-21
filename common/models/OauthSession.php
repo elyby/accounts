@@ -17,8 +17,9 @@ use yii\db\ActiveRecord;
  * @property integer $created_at
  *
  * Relations:
- * @property OauthClient $client
- * @property Account     $account
+ * @property-read OauthClient $client
+ * @property-read Account $account
+ * @property-read OauthRefreshToken[] $refreshTokens
  */
 class OauthSession extends ActiveRecord {
 
@@ -41,6 +42,10 @@ class OauthSession extends ActiveRecord {
 
     public function getAccount(): ActiveQuery {
         return $this->hasOne(Account::class, ['id' => 'owner_id']);
+    }
+
+    public function getRefreshTokens(): ActiveQuery {
+        return $this->hasMany(OauthRefreshToken::class, ['account_id' => 'account_id', 'client_id' => 'client_id']);
     }
 
     public function getScopes(): array {

@@ -1,15 +1,11 @@
 <?php
+declare(strict_types=1);
+
 namespace common\tests\_support;
 
 use Codeception\Module;
 use Codeception\TestInterface;
-use common\tests\fixtures\AccountFixture;
-use common\tests\fixtures\AccountSessionFixture;
-use common\tests\fixtures\EmailActivationFixture;
-use common\tests\fixtures\MinecraftAccessKeyFixture;
-use common\tests\fixtures\OauthClientFixture;
-use common\tests\fixtures\OauthSessionFixture;
-use common\tests\fixtures\UsernameHistoryFixture;
+use common\tests\fixtures;
 use yii\test\FixtureTrait;
 use yii\test\InitDbFixture;
 
@@ -50,13 +46,14 @@ class FixtureHelper extends Module {
 
     public function fixtures() {
         return [
-            'accounts' => AccountFixture::class,
-            'accountSessions' => AccountSessionFixture::class,
-            'emailActivations' => EmailActivationFixture::class,
-            'usernamesHistory' => UsernameHistoryFixture::class,
-            'oauthClients' => OauthClientFixture::class,
-            'oauthSessions' => OauthSessionFixture::class,
-            'minecraftAccessKeys' => MinecraftAccessKeyFixture::class,
+            'accounts' => fixtures\AccountFixture::class,
+            'accountSessions' => fixtures\AccountSessionFixture::class,
+            'emailActivations' => fixtures\EmailActivationFixture::class,
+            'usernamesHistory' => fixtures\UsernameHistoryFixture::class,
+            'oauthClients' => fixtures\OauthClientFixture::class,
+            'oauthSessions' => fixtures\OauthSessionFixture::class,
+            'oauthRefreshTokens' => fixtures\OauthRefreshTokensFixture::class,
+            'minecraftAccessKeys' => fixtures\MinecraftAccessKeyFixture::class,
         ];
     }
 

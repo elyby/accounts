@@ -12,7 +12,7 @@ class EmptyKey implements CryptKeyInterface {
     }
 
     public function getPassPhrase(): ?string {
-        return '';
+        return null;
     }
 
 }

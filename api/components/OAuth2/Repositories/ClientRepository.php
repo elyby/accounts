@@ -25,6 +25,10 @@ class ClientRepository implements ClientRepositoryInterface {
             return false;
         }
 
+        if ($client->type !== OauthClient::TYPE_APPLICATION) {
+            return false;
+        }
+
         if ($clientSecret !== null && $clientSecret !== $client->secret) {
             return false;
         }

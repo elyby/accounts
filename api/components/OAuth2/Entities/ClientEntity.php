@@ -11,11 +11,24 @@ class ClientEntity implements ClientEntityInterface {
     use EntityTrait;
     use ClientTrait;
 
-    public function __construct(string $id, string $name, $redirectUri, bool $isTrusted = false) {
+    /**
+     * @var bool
+     */
+    private $isTrusted;
+
+    public function __construct(string $id, string $name, $redirectUri, bool $isTrusted) {
         $this->identifier = $id;
         $this->name = $name;
         $this->redirectUri = $redirectUri;
-        $this->isConfidential = $isTrusted;
+        $this->isTrusted = $isTrusted;
+    }
+
+    public function isConfidential(): bool {
+        return true;
+    }
+
+    public function isTrusted(): bool {
+        return $this->isTrusted;
     }
 
 }

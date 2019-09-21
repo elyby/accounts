@@ -13,6 +13,4 @@ class AuthCodeEntity implements AuthCodeEntityInterface {
     use AuthCodeTrait;
     use TokenEntityTrait;
 
-    // TODO: constructor
-
 }

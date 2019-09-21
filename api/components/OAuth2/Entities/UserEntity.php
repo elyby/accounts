@@ -9,7 +9,7 @@ use League\OAuth2\Server\Entities\UserEntityInterface;
 class UserEntity implements UserEntityInterface {
     use EntityTrait;
 
-    public function __construct($id) {
+    public function __construct(int $id) {
         $this->identifier = $id;
     }
 

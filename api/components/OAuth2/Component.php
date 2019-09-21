@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace api\components\OAuth2;
 
+use api\components\OAuth2\Grants\AuthCodeGrant;
+use api\components\OAuth2\Grants\RefreshTokenGrant;
 use api\components\OAuth2\Keys\EmptyKey;
 use DateInterval;
 use League\OAuth2\Server\AuthorizationServer;
@@ -23,8 +25,8 @@ class Component extends BaseComponent {
         if ($this->_authServer === null) {
             $clientsRepo = new Repositories\ClientRepository();
             $accessTokensRepo = new Repositories\AccessTokenRepository();
-            $scopesRepo = new Repositories\ScopeRepository();
             $publicScopesRepo = new Repositories\PublicScopeRepository();
+            $internalScopesRepo = new Repositories\InternalScopeRepository();
             $authCodesRepo = new Repositories\AuthCodeRepository();
             $refreshTokensRepo = new Repositories\RefreshTokenRepository();
 
@@ -33,17 +35,24 @@ class Component extends BaseComponent {
             $authServer = new AuthorizationServer(
                 $clientsRepo,
                 $accessTokensRepo,
-                $scopesRepo,
+                new Repositories\EmptyScopeRepository(),
                 new EmptyKey(),
                 '123' // TODO: extract to the variable
             );
             /** @noinspection PhpUnhandledExceptionInspection */
-            $authCodeGrant = new Grant\AuthCodeGrant($authCodesRepo, $refreshTokensRepo, new DateInterval('PT10M'));
+            $authCodeGrant = new AuthCodeGrant($authCodesRepo, $refreshTokensRepo, new DateInterval('PT10M'));
             $authCodeGrant->disableRequireCodeChallengeForPublicClients();
             $authServer->enableGrantType($authCodeGrant, $accessTokenTTL);
             $authCodeGrant->setScopeRepository($publicScopesRepo); // Change repository after enabling
-            $authServer->enableGrantType(new Grant\RefreshTokenGrant($refreshTokensRepo), $accessTokenTTL);
-            $authServer->enableGrantType(new Grant\ClientCredentialsGrant(), $accessTokenTTL);
+
+            // TODO: extends refresh token life time to forever
+            $refreshTokenGrant = new RefreshTokenGrant($refreshTokensRepo);
+            $authServer->enableGrantType($refreshTokenGrant, $accessTokenTTL);
+            $refreshTokenGrant->setScopeRepository($publicScopesRepo); // Change repository after enabling
+
+            $clientCredentialsGrant = new Grant\ClientCredentialsGrant();
+            $authServer->enableGrantType($clientCredentialsGrant, $accessTokenTTL);
+            $clientCredentialsGrant->setScopeRepository($internalScopesRepo); // Change repository after enabling
 
             $this->_authServer = $authServer;
         }

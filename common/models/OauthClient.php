@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace common\models;
 
 use Yii;
@@ -22,8 +24,9 @@ use yii\db\ActiveRecord;
  * @property int            $created_at
  *
  * Behaviors:
- * @property Account|null   $account
+ * @property Account|null $account
  * @property OauthSession[] $sessions
+ * @property-read OauthRefreshToken[] $refreshTokens
  */
 class OauthClient extends ActiveRecord {
 
@@ -31,7 +34,7 @@ class OauthClient extends ActiveRecord {
     public const TYPE_MINECRAFT_SERVER = 'minecraft-server';
 
     public static function tableName(): string {
-        return '{{%oauth_clients}}';
+        return 'oauth_clients';
     }
 
     public function behaviors(): array {
@@ -53,6 +56,10 @@ class OauthClient extends ActiveRecord {
 
     public function getSessions(): ActiveQuery {
         return $this->hasMany(OauthSession::class, ['client_id' => 'id']);
+    }
+
+    public function getRefreshTokens(): ActiveQuery {
+        return $this->hasMany(OauthRefreshToken::class, ['client_id' => 'id']);
     }
 
     public static function find(): OauthClientQuery {

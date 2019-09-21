@@ -156,16 +156,13 @@ class OauthProcess {
     public function getToken(): array {
         $request = $this->getRequest();
         $params = (array)$request->getParsedBody();
+        $clientId = $params['client_id'] ?? '';
         $grantType = $params['grant_type'] ?? 'null';
         try {
             Yii::$app->statsd->inc("oauth.issueToken_{$grantType}.attempt");
 
-            $responseObj = new Response(200);
-            $this->server->respondToAccessTokenRequest($request, $responseObj);
-            $clientId = $params['client_id'];
-
-            // TODO: build response from the responseObj
-            $response = [];
+            $response = $this->server->respondToAccessTokenRequest($request, new Response(200));
+            $result = json_decode((string)$response->getBody(), true);
 
             Yii::$app->statsd->inc("oauth.issueToken_client.{$clientId}");
             Yii::$app->statsd->inc("oauth.issueToken_{$grantType}.success");
@@ -173,10 +170,10 @@ class OauthProcess {
             Yii::$app->statsd->inc("oauth.issueToken_{$grantType}.fail");
             Yii::$app->response->statusCode = $e->getHttpStatusCode();
 
-            $response = $this->buildIssueErrorResponse($e);
+            $result = $this->buildIssueErrorResponse($e);
         }
 
-        return $response;
+        return $result;
     }
 
     private function findClient(string $clientId): ?OauthClient {
@@ -290,7 +287,7 @@ class OauthProcess {
      * information about the parameter that caused the error.
      * This method is intended to build a more understandable description.
      *
-     * Part of the existing texts is a legacy from the previous implementation.
+     * Part of the existing texts are the legacy from the previous implementation.
      *
      * @param OAuthServerException $e
      * @return array
@@ -306,6 +303,7 @@ class OauthProcess {
                 break;
             case 'Cannot decrypt the authorization code':
                 $message .= ' Check the "code" parameter.';
+                break;
         }
 
         return [
@@ -328,7 +326,6 @@ class OauthProcess {
     }
 
     private function getScopesList(AuthorizationRequest $request): array {
-        // TODO: replace with an arrow function in PHP 7.4
         return array_map(function(ScopeEntityInterface $scope): string {
             return $scope->getIdentifier();
         }, $request->getScopes());
