@@ -56,6 +56,20 @@ class OauthSession extends ActiveRecord {
         return (array)$this->scopes;
     }
 
+    /**
+     * In the early period of the project existence, the refresh tokens related to the current session
+     * were stored in Redis. This method allows to get a list of these tokens.
+     *
+     * @return array of refresh tokens (ids)
+     */
+    public function getLegacyRefreshTokens(): array {
+        if ($this->legacy_id === null) {
+            return [];
+        }
+
+        return Yii::$app->redis->smembers($this->getLegacyRedisRefreshTokensKey());
+    }
+
     public function beforeDelete(): bool {
         if (!parent::beforeDelete()) {
             return false;
@@ -63,6 +77,7 @@ class OauthSession extends ActiveRecord {
 
         if ($this->legacy_id !== null) {
             Yii::$app->redis->del($this->getLegacyRedisScopesKey());
+            Yii::$app->redis->del($this->getLegacyRedisRefreshTokensKey());
         }
 
         return true;
@@ -70,6 +85,10 @@ class OauthSession extends ActiveRecord {
 
     private function getLegacyRedisScopesKey(): string {
         return "oauth:sessions:{$this->legacy_id}:scopes";
+    }
+
+    private function getLegacyRedisRefreshTokensKey(): string {
+        return "oauth:sessions:{$this->legacy_id}:refresh:tokens";
     }
 
 }

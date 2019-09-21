@@ -57,7 +57,7 @@ class AuthorizationController extends Controller {
     }
 
     private function createOauthProcess(): OauthProcess {
-        return new OauthProcess(Yii::$app->oauth->authServer);
+        return new OauthProcess(Yii::$app->oauth->getAuthServer());
     }
 
 }

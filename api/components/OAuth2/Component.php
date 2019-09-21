@@ -45,11 +45,11 @@ class Component extends BaseComponent {
             $authServer->enableGrantType($authCodeGrant, $accessTokenTTL);
             $authCodeGrant->setScopeRepository($publicScopesRepo); // Change repository after enabling
 
-            // TODO: extends refresh token life time to forever
             $refreshTokenGrant = new RefreshTokenGrant($refreshTokensRepo);
-            $authServer->enableGrantType($refreshTokenGrant, $accessTokenTTL);
+            $authServer->enableGrantType($refreshTokenGrant);
             $refreshTokenGrant->setScopeRepository($publicScopesRepo); // Change repository after enabling
 
+            // TODO: make these access tokens live longer
             $clientCredentialsGrant = new Grant\ClientCredentialsGrant();
             $authServer->enableGrantType($clientCredentialsGrant, $accessTokenTTL);
             $clientCredentialsGrant->setScopeRepository($internalScopesRepo); // Change repository after enabling

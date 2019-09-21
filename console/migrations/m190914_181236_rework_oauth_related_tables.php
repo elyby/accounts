@@ -27,6 +27,7 @@ class m190914_181236_rework_oauth_related_tables extends Migration {
         // Change type again to make column nullable
         $this->alterColumn('oauth_sessions', 'id', $this->integer(11)->unsigned()->after('client_id'));
         $this->renameColumn('oauth_sessions', 'id', 'legacy_id');
+        $this->createIndex('legacy_id', 'oauth_sessions', 'legacy_id', true);
         $this->addPrimaryKey('id', 'oauth_sessions', ['account_id', 'client_id']);
         $this->dropForeignKey('FK_oauth_session_to_client', 'oauth_sessions');
         $this->dropIndex('FK_oauth_session_to_client', 'oauth_sessions');
@@ -53,6 +54,7 @@ class m190914_181236_rework_oauth_related_tables extends Migration {
         $this->dropIndex('FK_oauth_session_to_oauth_client', 'oauth_sessions');
         $this->dropPrimaryKey('PRIMARY', 'oauth_sessions');
         $this->delete('oauth_sessions', ['legacy_id' => null]);
+        $this->dropIndex('legacy_id', 'oauth_sessions');
         $this->alterColumn('oauth_sessions', 'legacy_id', $this->integer(11)->unsigned()->notNull()->append('AUTO_INCREMENT PRIMARY KEY FIRST'));
         $this->renameColumn('oauth_sessions', 'legacy_id', 'id');
         $this->alterColumn('oauth_sessions', 'client_id', $this->db->getTableSchema('oauth_clients')->getColumn('id')->dbType);
