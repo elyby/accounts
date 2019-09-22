@@ -35,9 +35,9 @@ class TokensFactory {
     public static function createForOAuthClient(AccessTokenEntityInterface $accessToken): Token {
         $payloads = [
             'aud' => self::buildAud($accessToken->getClient()->getIdentifier()),
-            'ely-scopes' => array_map(static function(ScopeEntityInterface $scope): string {
+            'ely-scopes' => implode(',', array_map(static function(ScopeEntityInterface $scope): string {
                 return $scope->getIdentifier();
-            }, $accessToken->getScopes()),
+            }, $accessToken->getScopes())),
             'exp' => $accessToken->getExpiryDateTime()->getTimestamp(),
         ];
         if ($accessToken->getUserIdentifier() !== null) {
