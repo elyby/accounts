@@ -11,9 +11,6 @@ use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Grant;
 use yii\base\Component as BaseComponent;
 
-/**
- * @property AuthorizationServer $authServer
- */
 class Component extends BaseComponent {
 
     /**
@@ -39,7 +36,6 @@ class Component extends BaseComponent {
                 new EmptyKey(),
                 '123' // TODO: extract to the variable
             );
-            /** @noinspection PhpUnhandledExceptionInspection */
             $authCodeGrant = new AuthCodeGrant($authCodesRepo, $refreshTokensRepo, new DateInterval('PT10M'));
             $authCodeGrant->disableRequireCodeChallengeForPublicClients();
             $authServer->enableGrantType($authCodeGrant, $accessTokenTTL);

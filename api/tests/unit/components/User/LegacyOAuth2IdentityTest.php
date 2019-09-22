@@ -5,14 +5,12 @@ namespace api\tests\unit\components\User;
 
 use api\components\OAuth2\Component;
 use api\components\OAuth2\Entities\AccessTokenEntity;
-use api\components\User\OAuth2Identity;
+use api\components\User\LegacyOAuth2Identity;
 use api\tests\unit\TestCase;
-use League\OAuth2\Server\AbstractServer;
-use League\OAuth2\Server\Storage\AccessTokenInterface;
 use Yii;
 use yii\web\UnauthorizedHttpException;
 
-class OAuth2IdentityTest extends TestCase {
+class LegacyOAuth2IdentityTest extends TestCase {
 
     public function testFindIdentityByAccessToken() {
         $accessToken = new AccessTokenEntity(mock(AbstractServer::class));
@@ -20,7 +18,7 @@ class OAuth2IdentityTest extends TestCase {
         $accessToken->setId('mock-token');
         $this->mockFoundedAccessToken($accessToken);
 
-        $identity = OAuth2Identity::findIdentityByAccessToken('mock-token');
+        $identity = LegacyOAuth2Identity::findIdentityByAccessToken('mock-token');
         $this->assertSame('mock-token', $identity->getId());
     }
 
@@ -28,7 +26,7 @@ class OAuth2IdentityTest extends TestCase {
         $this->expectException(UnauthorizedHttpException::class);
         $this->expectExceptionMessage('Incorrect token');
 
-        OAuth2Identity::findIdentityByAccessToken('not exists token');
+        LegacyOAuth2Identity::findIdentityByAccessToken('not exists token');
     }
 
     public function testFindIdentityByAccessTokenWithExpiredToken() {
@@ -39,7 +37,7 @@ class OAuth2IdentityTest extends TestCase {
         $accessToken->setExpireTime(time() - 3600);
         $this->mockFoundedAccessToken($accessToken);
 
-        OAuth2Identity::findIdentityByAccessToken('mock-token');
+        LegacyOAuth2Identity::findIdentityByAccessToken('mock-token');
     }
 
     private function mockFoundedAccessToken(AccessTokenEntity $accessToken) {

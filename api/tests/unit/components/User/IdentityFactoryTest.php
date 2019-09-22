@@ -7,7 +7,7 @@ use api\components\OAuth2\Component;
 use api\components\OAuth2\Entities\AccessTokenEntity;
 use api\components\User\IdentityFactory;
 use api\components\User\JwtIdentity;
-use api\components\User\OAuth2Identity;
+use api\components\User\LegacyOAuth2Identity;
 use api\tests\unit\TestCase;
 use Carbon\Carbon;
 use League\OAuth2\Server\AbstractServer;
@@ -37,7 +37,7 @@ class IdentityFactoryTest extends TestCase {
         Yii::$app->set('oauth', $component);
 
         $identity = IdentityFactory::findIdentityByAccessToken('mock-token');
-        $this->assertInstanceOf(OAuth2Identity::class, $identity);
+        $this->assertInstanceOf(LegacyOAuth2Identity::class, $identity);
     }
 
     public function testFindIdentityByAccessTokenWithEmptyValue() {
