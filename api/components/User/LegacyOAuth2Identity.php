@@ -32,7 +32,7 @@ class LegacyOAuth2Identity implements IdentityInterface {
      */
     private $session = false;
 
-    private function __construct(string $accessToken, string $sessionId, array $scopes) {
+    private function __construct(string $accessToken, int $sessionId, array $scopes) {
         $this->accessToken = $accessToken;
         $this->sessionId = $sessionId;
         $this->scopes = $scopes;

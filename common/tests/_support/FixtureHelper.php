@@ -52,7 +52,11 @@ class FixtureHelper extends Module {
             'usernamesHistory' => fixtures\UsernameHistoryFixture::class,
             'oauthClients' => fixtures\OauthClientFixture::class,
             'oauthSessions' => fixtures\OauthSessionFixture::class,
+            'legacyOauthSessionsScopes' => fixtures\LegacyOauthSessionScopeFixtures::class,
+            'legacyOauthAccessTokens' => fixtures\LegacyOauthAccessTokenFixture::class,
+            'legacyOauthAccessTokensScopes' => fixtures\LegacyOauthAccessTokenScopeFixture::class,
             'oauthRefreshTokens' => fixtures\OauthRefreshTokensFixture::class,
+            'legacyOauthRefreshTokens' => fixtures\LegacyOauthRefreshTokenFixture::class,
             'minecraftAccessKeys' => fixtures\MinecraftAccessKeyFixture::class,
         ];
     }

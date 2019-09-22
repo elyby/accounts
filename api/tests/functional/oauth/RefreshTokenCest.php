@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace api\tests\functional\oauth;
 
 use api\tests\functional\_steps\OauthSteps;
+use api\tests\FunctionalTester;
 
 class RefreshTokenCest {
 
@@ -53,6 +54,18 @@ class RefreshTokenCest {
         $this->canSeeRefreshTokenSuccess($I);
     }
 
+    public function refreshTokenUsingLegacyToken(FunctionalTester $I) {
+        $I->wantTo('refresh token using the legacy token');
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'refresh_token',
+            'refresh_token' => 'op7kPGAgHlsXRBJtkFg7wKOTpodvtHVW5NxR7Tjr',
+            'client_id' => 'test1',
+            'client_secret' => 'eEvrKHF47sqiaX94HsX-xXzdGiz3mcsq',
+            'scope' => 'minecraft_server_session account_info',
+        ]);
+        $this->canSeeRefreshTokenSuccess($I);
+    }
+
     public function passInvalidRefreshToken(OauthSteps $I) {
         $I->wantToTest('behaviour of the server when invalid refresh token passed');
         $I->sendPOST('/api/oauth2/v1/token', [
@@ -85,7 +98,7 @@ class RefreshTokenCest {
         ]);
     }
 
-    private function canSeeRefreshTokenSuccess(OauthSteps $I) {
+    private function canSeeRefreshTokenSuccess(FunctionalTester $I) {
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseContainsJson([
             'token_type' => 'Bearer',

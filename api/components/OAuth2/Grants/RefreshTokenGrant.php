@@ -14,7 +14,7 @@ use Yii;
 class RefreshTokenGrant extends BaseRefreshTokenGrant {
 
     /**
-     * Previously, refresh tokens was stored in Redis.
+     * Previously, refresh tokens were stored in Redis.
      * If received refresh token is matches the legacy token template,
      * restore the information from the legacy storage.
      *
