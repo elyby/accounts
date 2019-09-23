@@ -54,7 +54,7 @@ class OauthSteps extends FunctionalTester {
             'grant_type' => 'client_credentials',
             'client_id' => $useTrusted ? 'trusted-client' : 'default-client',
             'client_secret' => $useTrusted ? 'tXBbyvMcyaOgHMOAXBpN2EC7uFoJAaL9' : 'AzWRy7ZjS1yRQUk2vRBDic8fprOKDB1W',
-            'scope' => implode(',', $permissions),
+            'scope' => implode(' ', $permissions),
         ]);
 
         $response = json_decode($this->grabResponse(), true);

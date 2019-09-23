@@ -22,7 +22,12 @@ class InternalScopeRepository implements ScopeRepositoryInterface {
         P::ESCAPE_IDENTITY_VERIFICATION,
     ];
 
+    private const PUBLIC_SCOPES_TO_INTERNAL_PERMISSIONS = [
+        'internal_account_info' => P::OBTAIN_EXTENDED_ACCOUNT_INFO,
+    ];
+
     public function getScopeEntityByIdentifier($identifier): ?ScopeEntityInterface {
+        $identifier = $this->convertToInternalPermission($identifier);
         if (!in_array($identifier, self::ALLOWED_SCOPES, true)) {
             return null;
         }
@@ -49,6 +54,10 @@ class InternalScopeRepository implements ScopeRepositoryInterface {
         }
 
         return $scopes;
+    }
+
+    private function convertToInternalPermission(string $publicScope): string {
+        return self::PUBLIC_SCOPES_TO_INTERNAL_PERMISSIONS[$publicScope] ?? $publicScope;
     }
 
 }
