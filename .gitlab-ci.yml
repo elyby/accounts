@@ -156,7 +156,7 @@ Docker images:
 # Cleanup stage #
 #################
 
-cleanup:
+Remove Docker images:
   stage: cleanup
   image: docker:19.03.2
   variables:
