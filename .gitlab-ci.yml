@@ -4,6 +4,7 @@ stages:
   - prepare
   - testing
   - build
+  - cleanup
 
 variables:
   APP_IMAGE_NAME: "$CI_REGISTRY_IMAGE/app"
@@ -103,8 +104,6 @@ Codeception:
 Docker images:
   stage: build
   image: docker:19.03.2
-  services:
-    - docker:dind
   before_script:
     - *defineVars
     - *dockerLogin
@@ -143,12 +142,30 @@ Docker images:
       -t "$DB_VERSIONED_IMAGE_NAME"
       -t "$DB_LATEST_IMAGE_NAME" .
     # Push images to the registry
-    - docker push $APP_IMAGE_VERSIONED_NAME
-    - docker push $APP_IMAGE_LATEST_NAME
-    - docker push $WEB_IMAGE_VERSIONED_NAME
-    - docker push $WEB_IMAGE_LATEST_NAME
-    - docker push $DB_IMAGE_VERSIONED_NAME
-    - docker push $DB_IMAGE_LATEST_NAME
+    - docker push $APP_VERSIONED_IMAGE_NAME
+    - docker push $APP_LATEST_IMAGE_NAME
+    - docker push $WEB_VERSIONED_IMAGE_NAME
+    - docker push $WEB_LATEST_IMAGE_NAME
+    - docker push $DB_VERSIONED_IMAGE_NAME
+    - docker push $DB_LATEST_IMAGE_NAME
+  only:
+    - master
+    - tags
+
+#################
+# Cleanup stage #
+#################
+
+cleanup:
+  stage: cleanup
+  image: docker:19.03.2
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - docker rmi "$APP_LATEST_IMAGE_NAME" "$APP_VERSIONED_IMAGE_NAME" || true
+    - docker rmi "$WEB_LATEST_IMAGE_NAME" "$WEB_VERSIONED_IMAGE_NAME" || true
+    - docker rmi "$DB_LATEST_IMAGE_NAME" "$DB_VERSIONED_IMAGE_NAME" || true
+  when: always
   only:
     - master
     - tags
