@@ -161,6 +161,8 @@ Remove Docker images:
   image: docker:19.03.2
   variables:
     GIT_STRATEGY: none
+  before_script:
+    - *defineVars
   script:
     - docker rmi "$APP_LATEST_IMAGE_NAME" "$APP_VERSIONED_IMAGE_NAME" || true
     - docker rmi "$WEB_LATEST_IMAGE_NAME" "$WEB_VERSIONED_IMAGE_NAME" || true
