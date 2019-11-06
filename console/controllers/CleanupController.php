@@ -1,6 +1,7 @@
 <?php
 namespace console\controllers;
 
+use Carbon\Carbon;
 use common\models\AccountSession;
 use common\models\EmailActivation;
 use common\models\MinecraftAccessKey;
@@ -32,7 +33,7 @@ class CleanupController extends Controller {
 
     public function actionMinecraftSessions(): int {
         $expiredMinecraftSessionsQuery = MinecraftAccessKey::find()
-            ->andWhere(['<', 'updated_at', time() - 1209600]); // 2 weeks
+            ->andWhere(['<', 'updated_at', Carbon::now()->subMonths(3)->getTimestamp()]);
 
         foreach ($expiredMinecraftSessionsQuery->each(100, Yii::$app->unbufferedDb) as $minecraftSession) {
             /** @var MinecraftAccessKey $minecraftSession */

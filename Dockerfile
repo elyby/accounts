@@ -1,4 +1,4 @@
-FROM php:7.3.3-fpm-alpine3.9 AS app
+FROM php:7.3.11-fpm-alpine3.10 AS app
 
 # ENV variables for composer
 ENV COMPOSER_NO_INTERACTION 1

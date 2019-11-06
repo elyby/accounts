@@ -26,7 +26,6 @@ class ValidateForm extends ApiForm {
         }
 
         if ($result->isExpired()) {
-            $result->delete();
             throw new ForbiddenOperationException('Token expired.');
         }
 
