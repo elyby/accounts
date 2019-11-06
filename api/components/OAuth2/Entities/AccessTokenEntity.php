@@ -3,9 +3,12 @@ declare(strict_types=1);
 
 namespace api\components\OAuth2\Entities;
 
+use api\components\OAuth2\Repositories\PublicScopeRepository;
 use api\components\Tokens\TokensFactory;
+use DateTimeImmutable;
 use League\OAuth2\Server\CryptKeyInterface;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
+use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Entities\Traits\EntityTrait;
 use League\OAuth2\Server\Entities\Traits\TokenEntityTrait;
 
@@ -15,16 +18,31 @@ class AccessTokenEntity implements AccessTokenEntityInterface {
         getExpiryDateTime as parentGetExpiryDateTime;
     }
 
+    /**
+     * There is no need to store offline_access scope in the resulting access_token.
+     * We cannot remove it from the token because otherwise we won't be able to form a refresh_token.
+     * That's why we delete offline_access before creating the token and then return it back.
+     *
+     * @return string
+     */
     public function __toString(): string {
-        // TODO: strip "offline_access" scope from the scopes list
-        return (string)TokensFactory::createForOAuthClient($this);
+        $scopes = $this->scopes;
+        $this->scopes = array_filter($this->scopes, function(ScopeEntityInterface $scope): bool {
+            return $scope->getIdentifier() !== PublicScopeRepository::OFFLINE_ACCESS;
+        });
+
+        $token = TokensFactory::createForOAuthClient($this);
+
+        $this->scopes = $scopes;
+
+        return (string)$token;
     }
 
     public function setPrivateKey(CryptKeyInterface $privateKey): void {
         // We use a general-purpose component to build JWT tokens, so there is no need to keep the key
     }
 
-    public function getExpiryDateTime() {
+    public function getExpiryDateTime(): DateTimeImmutable {
         // TODO: extend token life depending on scopes list
         return $this->parentGetExpiryDateTime();
     }
