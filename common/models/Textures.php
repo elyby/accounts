@@ -65,12 +65,22 @@ class Textures {
     public function getTextures(): array {
         /** @var SkinSystemApi $api */
         $api = Yii::$container->get(SkinSystemApi::class);
+        if (YII_ENV_PROD) {
+            $api->setClient(new \GuzzleHttp\Client([
+                'connect_timeout' => 2,
+                'decode_content' => false,
+                'read_timeout' => 5,
+                'stream' => true,
+                'timeout' => 5,
+            ]));
+        }
+
         try {
             $textures = $api->textures($this->account->username);
         } catch (RequestException $e) {
             Yii::warning('Cannot get textures from skinsystem.ely.by. Exception message is ' . $e->getMessage());
         } catch (GuzzleException $e) {
-            Yii::error($e);
+            Yii::warning($e);
         }
 
         return $textures ?? [];
