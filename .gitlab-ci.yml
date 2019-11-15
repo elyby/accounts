@@ -85,7 +85,7 @@ Codeception:
     REDIS_HOST: "redis"
     REDIS_PORT: "6379"
     # MariaDB config
-    MARIADB_RANDOM_ROOT_PASSWORD: "true"
+    ALLOW_EMPTY_PASSWORD: "yes"
     MARIADB_DATABASE: "ely_accounts_test"
     MARIADB_USER: "ely_accounts_tester"
     MARIADB_PASSWORD: "ely_accounts_tester_password"
