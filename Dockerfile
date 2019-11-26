@@ -68,7 +68,7 @@ CMD ["php-fpm"]
 
 # ================================================================================
 
-FROM nginx:1.15.10-alpine AS web
+FROM fholzer/nginx-brotli:v1.16.0 AS web
 
 ENV PHP_SERVERS php:9000
 
