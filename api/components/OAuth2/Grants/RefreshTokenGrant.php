@@ -121,6 +121,10 @@ class RefreshTokenGrant extends AbstractGrant {
             $session = $oldRefreshToken->getSession();
         }
 
+        if ($session === null) {
+            throw new Exception\InvalidRefreshException();
+        }
+
         $scopes = $this->formatScopes($session->getScopes());
 
         // Get and validate any requested scopes

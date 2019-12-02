@@ -28,7 +28,7 @@ class AccessTokenEntity extends \League\OAuth2\Server\Entity\AccessTokenEntity {
         return $this;
     }
 
-    public function getSession() {
+    public function getSession(): ?OriginalSessionEntity {
         if ($this->session instanceof OriginalSessionEntity) {
             return $this->session;
         }

@@ -3,6 +3,7 @@ namespace api\components\OAuth2\Storage;
 
 use api\components\OAuth2\Entities\AuthCodeEntity;
 use api\components\OAuth2\Entities\SessionEntity;
+use api\exceptions\ThisShouldNotHappenException;
 use common\models\OauthSession;
 use ErrorException;
 use League\OAuth2\Server\Entity\AccessTokenEntity as OriginalAccessTokenEntity;
@@ -19,8 +20,13 @@ class SessionStorage extends AbstractStorage implements SessionInterface {
      * @param string $sessionId
      * @return SessionEntity|null
      */
-    public function getById($sessionId) {
-        return $this->hydrate($this->getSessionModel($sessionId));
+    public function getById($sessionId): ?SessionEntity {
+        $session = $this->getSessionModel($sessionId);
+        if ($session === null) {
+            return null;
+        }
+
+        return $this->hydrate($session);
     }
 
     public function getByAccessToken(OriginalAccessTokenEntity $accessToken) {
@@ -35,9 +41,14 @@ class SessionStorage extends AbstractStorage implements SessionInterface {
         return $this->getById($authCode->getSessionId());
     }
 
-    public function getScopes(OriginalSessionEntity $session) {
+    public function getScopes(OriginalSessionEntity $entity) {
+        $session = $this->getSessionModel($entity->getId());
+        if ($session === null) {
+            return [];
+        }
+
         $result = [];
-        foreach ($this->getSessionModel($session->getId())->getScopes() as $scope) {
+        foreach ($session->getScopes() as $scope) {
             if ($this->server->getScopeStorage()->get($scope) !== null) {
                 $result[] = (new ScopeEntity($this->server))->hydrate(['id' => $scope]);
             }
@@ -72,20 +83,20 @@ class SessionStorage extends AbstractStorage implements SessionInterface {
         return $sessionId;
     }
 
-    public function associateScope(OriginalSessionEntity $session, ScopeEntity $scope) {
-        $this->getSessionModel($session->getId())->getScopes()->add($scope->getId());
-    }
-
-    private function getSessionModel(string $sessionId): OauthSession {
-        $session = OauthSession::findOne($sessionId);
+    public function associateScope(OriginalSessionEntity $sessionEntity, ScopeEntity $scopeEntity): void {
+        $session = $this->getSessionModel($sessionEntity->getId());
         if ($session === null) {
-            throw new ErrorException('Cannot find oauth session');
+            throw new ThisShouldNotHappenException('Cannot find oauth session');
         }
 
-        return $session;
+        $session->getScopes()->add($scopeEntity->getId());
     }
 
-    private function hydrate(OauthSession $sessionModel) {
+    private function getSessionModel(string $sessionId): ?OauthSession {
+        return OauthSession::findOne(['id' => $sessionId]);
+    }
+
+    private function hydrate(OauthSession $sessionModel): SessionEntity {
         $entity = new SessionEntity($this->server);
         $entity->setId($sessionModel->id);
         $entity->setClientId($sessionModel->client_id);
