@@ -41,6 +41,11 @@ class OAuth2Identity implements IdentityInterface {
     }
 
     public function getAccount(): ?Account {
+        $session = $this->getSession();
+        if ($session === null) {
+            return null;
+        }
+
         return $this->getSession()->account;
     }
 
@@ -70,7 +75,7 @@ class OAuth2Identity implements IdentityInterface {
 
     // @codeCoverageIgnoreEnd
 
-    private function getSession(): OauthSession {
+    private function getSession(): ?OauthSession {
         return OauthSession::findOne(['id' => $this->_accessToken->getSessionId()]);
     }
 
