@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\modules\oauth\controllers;
 
 use api\controllers\Controller;
@@ -19,11 +21,23 @@ class IdentityController extends Controller {
                         'actions' => ['index'],
                         'allow' => true,
                         'roles' => [P::OBTAIN_ACCOUNT_INFO],
-                        'roleParams' => function() {
-                            /** @noinspection NullPointerExceptionInspection */
-                            return [
-                                'accountId' => Yii::$app->user->getIdentity()->getAccount()->id,
-                            ];
+                        'roleParams' => function(): array {
+                            /** @var \api\components\User\IdentityInterface $identity */
+                            $identity = Yii::$app->user->getIdentity();
+                            $account = $identity->getAccount();
+                            if ($account === null) {
+                                Yii::$app->sentry->captureMessage('Unexpected lack of account', [
+                                    'identityType' => get_class($identity),
+                                    'userId' => $identity->getId(),
+                                    'assignedPermissions' => $identity->getAssignedPermissions(),
+                                ], [
+                                    'level' => 'warning',
+                                ]);
+
+                                return ['accountId' => 0];
+                            }
+
+                            return ['accountId' => $account->id];
                         },
                     ],
                 ],
