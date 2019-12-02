@@ -15,7 +15,7 @@ class RefreshTokenEntity extends \League\OAuth2\Server\Entity\RefreshTokenEntity
         return false;
     }
 
-    public function getSession(): SessionEntity {
+    public function getSession(): ?SessionEntity {
         if ($this->session instanceof SessionEntity) {
             return $this->session;
         }
