@@ -74,7 +74,7 @@ Codeception:
   services:
     - name: redis:4.0.10-alpine
       alias: redis
-    - name: mariadb:10.2.11
+    - name: bitnami/mariadb:10.3.20-debian-9-r4
       alias: db
   variables:
     # App config
@@ -85,10 +85,10 @@ Codeception:
     REDIS_HOST: "redis"
     REDIS_PORT: "6379"
     # MariaDB config
-    MYSQL_RANDOM_ROOT_PASSWORD: "true"
-    MYSQL_DATABASE: "ely_accounts_test"
-    MYSQL_USER: "ely_accounts_tester"
-    MYSQL_PASSWORD: "ely_accounts_tester_password"
+    ALLOW_EMPTY_PASSWORD: "yes"
+    MARIADB_DATABASE: "ely_accounts_test"
+    MARIADB_USER: "ely_accounts_tester"
+    MARIADB_PASSWORD: "ely_accounts_tester_password"
   before_script:
     # We don't count code coverage yet, so xdebug can be removed
     - sudo rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini

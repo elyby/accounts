@@ -1,5 +1,6 @@
 .git/*
 .env
+data
 
 # vendor folder will be filled from the container
 vendor

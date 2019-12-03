@@ -68,7 +68,7 @@ CMD ["php-fpm"]
 
 # ================================================================================
 
-FROM nginx:1.15.10-alpine AS web
+FROM fholzer/nginx-brotli:v1.16.0 AS web
 
 ENV PHP_SERVERS php:9000
 
@@ -88,7 +88,9 @@ CMD ["nginx", "-g", "daemon off;"]
 
 # ================================================================================
 
-FROM mariadb:10.3.14-bionic AS db
+FROM bitnami/mariadb:10.3.20-debian-9-r4 AS db
+
+USER 0
 
 COPY ./docker/mariadb/config.cnf /etc/mysql/conf.d/
 
@@ -116,5 +118,7 @@ RUN set -ex \
  && rm -rf /mysql-sys \
  && apt-get purge -y --auto-remove $fetchDeps
 
-ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["mysqld"]
+USER 1001
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/run.sh"]
