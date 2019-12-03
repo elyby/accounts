@@ -62,7 +62,8 @@ server {
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         fastcgi_param REQUEST_URI $request_url;
         fastcgi_param REMOTE_ADDR $http_x_real_ip;
-        # Override HTTPS param to handle ssl from nginx-proxy container
+        # Override HTTPS param to handle ssl from nginx-proxy or haproxy containers
         fastcgi_param HTTPS $http_x_forwarded_ssl if_not_empty;
+        fastcgi_param HTTPS $http_x_forwarded_proto if_not_empty;
     }
 }
