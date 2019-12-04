@@ -46,6 +46,11 @@ class RefreshTokenGrant extends BaseRefreshTokenGrant {
         return null;
     }
 
+    /**
+     * @param string $refreshToken
+     * @return array
+     * @throws OAuthServerException
+     */
     private function validateLegacyRefreshToken(string $refreshToken): array {
         $result = Yii::$app->redis->get("oauth:refresh:tokens:{$refreshToken}");
         if ($result === null) {

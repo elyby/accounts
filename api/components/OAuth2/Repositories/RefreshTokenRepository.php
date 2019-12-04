@@ -30,8 +30,7 @@ class RefreshTokenRepository implements RefreshTokenRepositoryInterface {
     }
 
     public function isRefreshTokenRevoked($tokenId): bool {
-        // TODO: validate old refresh tokens
-        return !OauthRefreshToken::find()->andWhere(['id' => $tokenId])->exists();
+        return OauthRefreshToken::find()->andWhere(['id' => $tokenId])->exists() === false;
     }
 
 }
