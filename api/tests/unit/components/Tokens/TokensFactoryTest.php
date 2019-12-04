@@ -14,7 +14,9 @@ class TokensFactoryTest extends TestCase {
         $account = new Account();
         $account->id = 1;
 
-        $token = TokensFactory::createForAccount($account);
+        $factory = new TokensFactory();
+
+        $token = $factory->createForWebAccount($account);
         $this->assertEqualsWithDelta(time(), $token->getClaim('iat'), 1);
         $this->assertEqualsWithDelta(time() + 60 * 60 * 24 * 7, $token->getClaim('exp'), 2);
         $this->assertSame('ely|1', $token->getClaim('sub'));
@@ -24,7 +26,7 @@ class TokensFactoryTest extends TestCase {
         $session = new AccountSession();
         $session->id = 2;
 
-        $token = TokensFactory::createForAccount($account, $session);
+        $token = $factory->createForWebAccount($account, $session);
         $this->assertEqualsWithDelta(time(), $token->getClaim('iat'), 1);
         $this->assertEqualsWithDelta(time() + 3600, $token->getClaim('exp'), 2);
         $this->assertSame('ely|1', $token->getClaim('sub'));

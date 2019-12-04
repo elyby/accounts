@@ -1,48 +1,38 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\functional\authserver;
 
-use api\tests\_pages\AuthserverRoute;
 use api\tests\FunctionalTester;
+use Codeception\Example;
 use Ramsey\Uuid\Uuid;
 
 class AuthorizationCest {
 
     /**
-     * @var AuthserverRoute
+     * @example {"login": "admin", "password": "password_0"}
+     * @example {"login": "admin@ely.by", "password": "password_0"}
      */
-    private $route;
-
-    public function _before(FunctionalTester $I) {
-        $this->route = new AuthserverRoute($I);
-    }
-
-    public function byName(FunctionalTester $I) {
+    public function byFormParamsPostRequest(FunctionalTester $I, Example $example) {
         $I->wantTo('authenticate by username and password');
-        $this->route->authenticate([
-            'username' => 'admin',
-            'password' => 'password_0',
+        $I->sendPOST('/api/authserver/authentication/authenticate', [
+            'username' => $example['login'],
+            'password' => $example['password'],
             'clientToken' => Uuid::uuid4()->toString(),
         ]);
 
         $this->testSuccessResponse($I);
     }
 
-    public function byEmail(FunctionalTester $I) {
-        $I->wantTo('authenticate by email and password');
-        $this->route->authenticate([
-            'username' => 'admin@ely.by',
-            'password' => 'password_0',
-            'clientToken' => Uuid::uuid4()->toString(),
-        ]);
-
-        $this->testSuccessResponse($I);
-    }
-
-    public function byNamePassedViaPOSTBody(FunctionalTester $I) {
+    /**
+     * @example {"login": "admin", "password": "password_0"}
+     * @example {"login": "admin@ely.by", "password": "password_0"}
+     */
+    public function byJsonPostRequest(FunctionalTester $I, Example $example) {
         $I->wantTo('authenticate by username and password sent via post body');
-        $this->route->authenticate(json_encode([
-            'username' => 'admin',
-            'password' => 'password_0',
+        $I->sendPOST('/api/authserver/authentication/authenticate', json_encode([
+            'username' => $example['login'],
+            'password' => $example['password'],
             'clientToken' => Uuid::uuid4()->toString(),
         ]));
 
@@ -51,7 +41,7 @@ class AuthorizationCest {
 
     public function byEmailWithEnabledTwoFactorAuth(FunctionalTester $I) {
         $I->wantTo('get valid error by authenticate account with enabled two factor auth');
-        $this->route->authenticate([
+        $I->sendPOST('/api/authserver/authentication/authenticate', [
             'username' => 'otp@gmail.com',
             'password' => 'password_0',
             'clientToken' => Uuid::uuid4()->toString(),
@@ -64,30 +54,9 @@ class AuthorizationCest {
         ]);
     }
 
-    public function byEmailWithParamsAsJsonInPostBody(FunctionalTester $I) {
-        $I->wantTo('authenticate by email and password, passing values as serialized string in post body');
-        $this->route->authenticate(json_encode([
-            'username' => 'admin@ely.by',
-            'password' => 'password_0',
-            'clientToken' => Uuid::uuid4()->toString(),
-        ]));
-
-        $this->testSuccessResponse($I);
-    }
-
-    public function longClientToken(FunctionalTester $I) {
-        $I->wantTo('send non uuid clientToken, but less then 255 characters');
-        $this->route->authenticate([
-            'username' => 'admin@ely.by',
-            'password' => 'password_0',
-            'clientToken' => str_pad('', 255, 'x'),
-        ]);
-        $this->testSuccessResponse($I);
-    }
-
     public function tooLongClientToken(FunctionalTester $I) {
         $I->wantTo('send non uuid clientToken with more then 255 characters length');
-        $this->route->authenticate([
+        $I->sendPOST('/api/authserver/authentication/authenticate', [
             'username' => 'admin@ely.by',
             'password' => 'password_0',
             'clientToken' => str_pad('', 256, 'x'),
@@ -102,7 +71,7 @@ class AuthorizationCest {
 
     public function wrongArguments(FunctionalTester $I) {
         $I->wantTo('get error on wrong amount of arguments');
-        $this->route->authenticate([
+        $I->sendPOST('/api/authserver/authentication/authenticate', [
             'key' => 'value',
         ]);
         $I->canSeeResponseCodeIs(400);
@@ -115,7 +84,7 @@ class AuthorizationCest {
 
     public function wrongNicknameAndPassword(FunctionalTester $I) {
         $I->wantTo('authenticate by username and password with wrong data');
-        $this->route->authenticate([
+        $I->sendPOST('/api/authserver/authentication/authenticate', [
             'username' => 'nonexistent_user',
             'password' => 'nonexistent_password',
             'clientToken' => Uuid::uuid4()->toString(),
@@ -130,7 +99,7 @@ class AuthorizationCest {
 
     public function bannedAccount(FunctionalTester $I) {
         $I->wantTo('authenticate in suspended account');
-        $this->route->authenticate([
+        $I->sendPOST('/api/authserver/authentication/authenticate', [
             'username' => 'Banned',
             'password' => 'password_0',
             'clientToken' => Uuid::uuid4()->toString(),

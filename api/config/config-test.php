@@ -9,6 +9,7 @@ return [
             'privateKeyPath' => codecept_data_dir('certs/private.pem'),
             'privateKeyPass' => null,
             'publicKeyPath' => codecept_data_dir('certs/public.pem'),
+            'encryptionKey' => 'mock-encryption-key',
         ],
         'reCaptcha' => [
             'public' => 'public-key',

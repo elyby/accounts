@@ -1,39 +1,47 @@
 <?php
+declare(strict_types=1);
+
 namespace api\modules\authserver\models;
 
-use common\models\MinecraftAccessKey;
+use common\models\Account;
+use Lcobucci\JWT\Token;
 
 class AuthenticateData {
 
     /**
-     * @var MinecraftAccessKey
+     * @var Account
      */
-    private $minecraftAccessKey;
+    private $account;
 
-    public function __construct(MinecraftAccessKey $minecraftAccessKey) {
-        $this->minecraftAccessKey = $minecraftAccessKey;
-    }
+    /**
+     * @var Token
+     */
+    private $accessToken;
 
-    public function getMinecraftAccessKey(): MinecraftAccessKey {
-        return $this->minecraftAccessKey;
+    /**
+     * @var string
+     */
+    private $clientToken;
+
+    public function __construct(Account $account, string $accessToken, string $clientToken) {
+        $this->account = $account;
+        $this->accessToken = $accessToken;
+        $this->clientToken = $clientToken;
     }
 
     public function getResponseData(bool $includeAvailableProfiles = false): array {
-        $accessKey = $this->minecraftAccessKey;
-        $account = $accessKey->account;
-
         $result = [
-            'accessToken' => $accessKey->access_token,
-            'clientToken' => $accessKey->client_token,
+            'accessToken' => $this->accessToken,
+            'clientToken' => $this->clientToken,
             'selectedProfile' => [
-                'id' => $account->uuid,
-                'name' => $account->username,
+                'id' => $this->account->uuid,
+                'name' => $this->account->username,
                 'legacy' => false,
             ],
         ];
 
         if ($includeAvailableProfiles) {
-            // The Moiangs themselves haven't come up with anything yet with these availableProfiles
+            // The Mojang themselves haven't come up with anything yet with these availableProfiles
             $availableProfiles[0] = $result['selectedProfile'];
             $result['availableProfiles'] = $availableProfiles;
         }

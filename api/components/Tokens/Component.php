@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace api\components\Tokens;
 
 use Carbon\Carbon;
+use Defuse\Crypto\Crypto;
 use Exception;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
@@ -36,6 +37,11 @@ class Component extends BaseComponent {
     public $privateKeyPass;
 
     /**
+     * @var string|\Defuse\Crypto\Key
+     */
+    public $encryptionKey;
+
+    /**
      * @var AlgorithmsManager|null
      */
     private $algorithmManager;
@@ -45,6 +51,7 @@ class Component extends BaseComponent {
         Assert::notEmpty($this->hmacKey, 'hmacKey must be set');
         Assert::notEmpty($this->privateKeyPath, 'privateKeyPath must be set');
         Assert::notEmpty($this->publicKeyPath, 'publicKeyPath must be set');
+        Assert::notEmpty($this->encryptionKey, 'encryptionKey must be set');
     }
 
     public function create(array $payloads = [], array $headers = []): Token {
@@ -53,11 +60,11 @@ class Component extends BaseComponent {
             ->issuedAt($now->getTimestamp())
             ->expiresAt($now->addHour()->getTimestamp());
         foreach ($payloads as $claim => $value) {
-            $builder->withClaim($claim, $value);
+            $builder->withClaim($claim, $this->prepareValue($value));
         }
 
         foreach ($headers as $claim => $value) {
-            $builder->withHeader($claim, $value);
+            $builder->withHeader($claim, $this->prepareValue($value));
         }
 
         /** @noinspection PhpUnhandledExceptionInspection */
@@ -85,6 +92,10 @@ class Component extends BaseComponent {
         }
     }
 
+    public function decryptValue(string $encryptedValue): string {
+        return Crypto::decryptWithPassword($encryptedValue, $this->encryptionKey);
+    }
+
     private function getAlgorithmManager(): AlgorithmsManager {
         if ($this->algorithmManager === null) {
             $this->algorithmManager = new AlgorithmsManager([
@@ -98,6 +109,14 @@ class Component extends BaseComponent {
         }
 
         return $this->algorithmManager;
+    }
+
+    private function prepareValue($value) {
+        if ($value instanceof EncryptedValue) {
+            return Crypto::encryptWithPassword($value->getValue(), $this->encryptionKey);
+        }
+
+        return $value;
     }
 
 }

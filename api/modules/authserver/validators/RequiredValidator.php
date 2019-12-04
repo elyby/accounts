@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\modules\authserver\validators;
 
 use api\modules\authserver\exceptions\IllegalArgumentException;
@@ -14,7 +16,7 @@ class RequiredValidator extends \yii\validators\RequiredValidator {
      * @return null
      * @throws \api\modules\authserver\exceptions\AuthserverException
      */
-    protected function validateValue($value) {
+    protected function validateValue($value): ?array {
         if (parent::validateValue($value) !== null) {
             throw new IllegalArgumentException();
         }

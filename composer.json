@@ -13,6 +13,7 @@
         "ext-pdo": "*",
         "ext-simplexml": "*",
         "bacon/bacon-qr-code": "^1.0",
+        "defuse/php-encryption": "^2.2",
         "domnikl/statsd": "^2.6",
         "ely/mojang-api": "^0.2.0",
         "ely/yii2-tempmail-validator": "^2.0",

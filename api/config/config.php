@@ -21,6 +21,10 @@ return [
             'privateKeyPath' => getenv('JWT_PRIVATE_KEY_PATH') ?: __DIR__ . '/../../data/certs/private.pem',
             'privateKeyPass' => getenv('JWT_PRIVATE_KEY_PASS') ?: null,
             'publicKeyPath' => getenv('JWT_PUBLIC_KEY_PATH') ?: __DIR__ . '/../../data/certs/public.pem',
+            'encryptionKey' => getenv('JWT_ENCRYPTION_KEY'),
+        ],
+        'tokensFactory' => [
+        	'class' => api\components\Tokens\TokensFactory::class,
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,

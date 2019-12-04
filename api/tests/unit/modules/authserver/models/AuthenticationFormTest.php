@@ -79,7 +79,7 @@ class AuthenticationFormTest extends TestCase {
 
         $result = $authForm->authenticate();
         $this->assertInstanceOf(AuthenticateData::class, $result);
-        $this->assertSame($minecraftAccessKey->access_token, $result->getMinecraftAccessKey()->access_token);
+        $this->assertSame($minecraftAccessKey->access_token, $result->getToken()->access_token);
     }
 
     public function testCreateMinecraftAccessToken() {

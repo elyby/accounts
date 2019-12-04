@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace api\tests;
 
-use api\components\Tokens\TokensFactory;
 use api\tests\_generated\FunctionalTesterActions;
 use Codeception\Actor;
 use common\models\Account;
@@ -20,7 +19,7 @@ class FunctionalTester extends Actor {
             throw new InvalidArgumentException("Cannot find account with username \"{$asUsername}\"");
         }
 
-        $token = TokensFactory::createForAccount($account);
+        $token = Yii::$app->tokensFactory->createForWebAccount($account);
         $this->amBearerAuthenticated((string)$token);
 
         return $account->id;

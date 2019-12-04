@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace api\models\authentication;
 
 use api\aop\annotations\CollectModelMetrics;
-use api\components\Tokens\TokensFactory;
 use api\models\base\ApiForm;
 use api\validators\EmailActivationKeyValidator;
 use common\helpers\Error as E;
@@ -56,7 +55,7 @@ class RecoverPasswordForm extends ApiForm {
 
         Assert::true($account->save(), 'Unable activate user account.');
 
-        $token = TokensFactory::createForAccount($account);
+        $token = Yii::$app->tokensFactory->createForWebAccount($account);
 
         $transaction->commit();
 

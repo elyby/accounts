@@ -4,13 +4,13 @@ declare(strict_types=1);
 namespace api\components\OAuth2\Entities;
 
 use api\components\OAuth2\Repositories\PublicScopeRepository;
-use api\components\Tokens\TokensFactory;
 use DateTimeImmutable;
 use League\OAuth2\Server\CryptKeyInterface;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Entities\Traits\EntityTrait;
 use League\OAuth2\Server\Entities\Traits\TokenEntityTrait;
+use Yii;
 
 class AccessTokenEntity implements AccessTokenEntityInterface {
     use EntityTrait;
@@ -31,7 +31,7 @@ class AccessTokenEntity implements AccessTokenEntityInterface {
             return $scope->getIdentifier() !== PublicScopeRepository::OFFLINE_ACCESS;
         });
 
-        $token = TokensFactory::createForOAuthClient($this);
+        $token = Yii::$app->tokensFactory->createForOAuthClient($this);
 
         $this->scopes = $scopes;
 

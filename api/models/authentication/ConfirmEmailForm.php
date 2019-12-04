@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace api\models\authentication;
 
 use api\aop\annotations\CollectModelMetrics;
-use api\components\Tokens\TokensFactory;
 use api\models\base\ApiForm;
 use api\validators\EmailActivationKeyValidator;
 use common\models\Account;
@@ -48,7 +47,7 @@ class ConfirmEmailForm extends ApiForm {
         $session->generateRefreshToken();
         Assert::true($session->save(), 'Cannot save account session model');
 
-        $token = TokensFactory::createForAccount($account, $session);
+        $token = Yii::$app->tokensFactory->createForWebAccount($account, $session);
 
         $transaction->commit();
 
