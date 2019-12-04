@@ -37,14 +37,16 @@ class RefreshTokenForm extends ApiForm {
      */
     public function refresh(): AuthenticateData {
         $this->validate();
-
+        $account = null;
         if (mb_strlen($this->accessToken) === 36) {
             /** @var MinecraftAccessKey $token */
             $token = MinecraftAccessKey::findOne([
                 'access_token' => $this->accessToken,
                 'client_token' => $this->clientToken,
             ]);
-            $account = $token->account;
+            if ($token !== null) {
+                $account = $token->account;
+            }
         } else {
             $token = Yii::$app->tokens->parse($this->accessToken);
 
@@ -59,7 +61,11 @@ class RefreshTokenForm extends ApiForm {
             $account = Account::findOne(['id' => $accountId]);
         }
 
-        if ($account === null || $account->status === Account::STATUS_BANNED) {
+        if ($account === null) {
+            throw new ForbiddenOperationException('Invalid token.');
+        }
+
+        if ($account->status === Account::STATUS_BANNED) {
             throw new ForbiddenOperationException('This account has been suspended.');
         }
 

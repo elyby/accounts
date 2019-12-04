@@ -24,7 +24,7 @@ return [
             'encryptionKey' => getenv('JWT_ENCRYPTION_KEY'),
         ],
         'tokensFactory' => [
-        	'class' => api\components\Tokens\TokensFactory::class,
+            'class' => api\components\Tokens\TokensFactory::class,
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,

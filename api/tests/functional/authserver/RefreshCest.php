@@ -28,6 +28,31 @@ class RefreshCest {
         $this->assertSuccessResponse($I);
     }
 
+    public function refreshWithInvalidClientToken(AuthserverSteps $I) {
+        $I->wantTo('refresh accessToken with not matched client token');
+        [$accessToken] = $I->amAuthenticated();
+        $I->sendPOST('/api/authserver/authentication/refresh', [
+            'accessToken' => $accessToken,
+            'clientToken' => Uuid::uuid4()->toString(),
+        ]);
+        $I->canSeeResponseContainsJson([
+            'error' => 'ForbiddenOperationException',
+            'errorMessage' => 'Invalid token.',
+        ]);
+    }
+
+    public function refreshLegacyAccessTokenWithInvalidClientToken(AuthserverSteps $I) {
+        $I->wantTo('refresh legacy accessToken with not matched client token');
+        $I->sendPOST('/api/authserver/authentication/refresh', [
+            'accessToken' => 'e7bb6648-2183-4981-9b86-eba5e7f87b42',
+            'clientToken' => Uuid::uuid4()->toString(),
+        ]);
+        $I->canSeeResponseContainsJson([
+            'error' => 'ForbiddenOperationException',
+            'errorMessage' => 'Invalid token.',
+        ]);
+    }
+
     /**
      * @example {"accessToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpYXQiOjE1NzU0Nzk1NTMsImV4cCI6MTU3NTY1MjM1MywiZWx5LXNjb3BlcyI6Im1pbmVjcmFmdF9zZXJ2ZXJfc2Vzc2lvbiIsImVseS1jbGllbnQtdG9rZW4iOiJkZWY1MDIwMDE2ZTEzMTBmMzM2YzVjYWQzZDdiMTJmYjcyNmVhYzdlYjgyOGUzMzg1MzBhMmFmODdkZTJhMjRiMTVmNzAxNWQ1MjU1MjhiNGZiMjgzMTgxOTA2ODhlMWE4Njk5MjAwMzBlMTQyZmQ5ZWM5ODBlZDkzMWI1Mzc2MzgyMTliMjVjMjI1MjQyYzdmMjgzMjE0NjcyNDg3ZDQ4MTYxYjMwMGU1MGIzYWJlMTYwYjVkMmE4ZWMyMzMwMGJhMGNlMTg3MzYyYTgyMjJiYjQ4OTU0MzM4MDJiNTBlZDBhYzFhMWUwZDk3NDgxNDciLCJzdWIiOiJlbHl8MSJ9.PuM-8rzj4qtD9l0lUANSIWC8yjJe8ifarOYsAjc3r4iYFt0P6za-gzJEPncDC80oCXsYVlJHtrEypcsB9wJFSg", "clientToken": "d1b1162c-3d73-4b35-b64f-7bf68bd0e853"}
      * @example {"accessToken": "6042634a-a1e2-4aed-866c-c661fe4e63e2", "clientToken": "47fb164a-2332-42c1-8bad-549e67bb210c"}
