@@ -14,6 +14,11 @@ use yii\base\Component as BaseComponent;
 class Component extends BaseComponent {
 
     /**
+     * @var string|\Defuse\Crypto\Key
+     */
+    public $encryptionKey;
+
+    /**
      * @var AuthorizationServer
      */
     private $_authServer;
@@ -34,7 +39,7 @@ class Component extends BaseComponent {
                 $accessTokensRepo,
                 new Repositories\EmptyScopeRepository(),
                 new EmptyKey(),
-                '123' // TODO: extract to the variable
+                $this->encryptionKey
             );
             $authCodeGrant = new AuthCodeGrant($authCodesRepo, $refreshTokensRepo, new DateInterval('PT10M'));
             $authCodeGrant->disableRequireCodeChallengeForPublicClients();

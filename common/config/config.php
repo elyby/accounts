@@ -12,7 +12,7 @@ return [
         '@console' => '@root/console',
     ],
     'params' => [
-        'fromEmail' => 'ely@ely.by',
+        'fromEmail' => 'account@ely.by',
         'supportEmail' => 'support@ely.by',
     ],
     'container' => [
@@ -91,11 +91,8 @@ return [
         ],
         'emailsRenderer' => [
             'class' => common\components\EmailsRenderer\Component::class,
-            'serviceUrl' => getenv('EMAILS_RENDERER_HOST'),
+            'serviceUrl' => getenv('EMAILS_RENDERER_HOST') ?: 'http://emails-renderer:3000',
             'basePath' => '/images/emails',
-        ],
-        'oauth' => [
-            'class' => api\components\OAuth2\Component::class,
         ],
         'authManager' => [
             'class' => \api\rbac\Manager::class,

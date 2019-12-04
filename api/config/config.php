@@ -11,6 +11,10 @@ return [
         'user' => [
             'class' => api\components\User\Component::class,
         ],
+        'oauth' => [
+            'class' => api\components\OAuth2\Component::class,
+            'encryptionKey' => getenv('JWT_ENCRYPTION_KEY'),
+        ],
         'tokens' => [
             'class' => api\components\Tokens\Component::class,
             'hmacKey' => getenv('JWT_USER_SECRET'),

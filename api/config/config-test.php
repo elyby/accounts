@@ -1,6 +1,9 @@
 <?php
 return [
     'components' => [
+        'oauth' => [
+            'encryptionKey' => 'mock-encryption-key',
+        ],
         'tokens' => [
             'hmacKey' => 'tests-secret-key',
             'privateKeyPath' => codecept_data_dir('certs/private.pem'),
