@@ -3,12 +3,14 @@ declare(strict_types=1);
 
 namespace api\components\OAuth2\Grants;
 
+use api\components\OAuth2\CryptTrait;
 use api\components\OAuth2\Repositories\PublicScopeRepository;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use League\OAuth2\Server\Grant\AuthCodeGrant as BaseAuthCodeGrant;
 
 class AuthCodeGrant extends BaseAuthCodeGrant {
+    use CryptTrait;
 
     protected function issueRefreshToken(AccessTokenEntityInterface $accessToken): ?RefreshTokenEntityInterface {
         foreach ($accessToken->getScopes() as $scope) {

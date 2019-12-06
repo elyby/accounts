@@ -13,7 +13,6 @@ return [
         ],
         'oauth' => [
             'class' => api\components\OAuth2\Component::class,
-            'encryptionKey' => getenv('JWT_ENCRYPTION_KEY'),
         ],
         'tokens' => [
             'class' => api\components\Tokens\Component::class,

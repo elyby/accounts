@@ -18,7 +18,7 @@ class OauthSteps extends FunctionalTester {
         ]), ['accept' => true]);
         $this->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
         [$redirectUri] = $this->grabDataFromResponseByJsonPath('$.redirectUri');
-        preg_match('/code=([\w-]+)/', $redirectUri, $matches);
+        preg_match('/code=([^&$]+)/', $redirectUri, $matches);
 
         return $matches[1];
     }

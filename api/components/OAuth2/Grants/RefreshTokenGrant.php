@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace api\components\OAuth2\Grants;
 
+use api\components\OAuth2\CryptTrait;
 use common\models\OauthSession;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
@@ -12,6 +13,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Yii;
 
 class RefreshTokenGrant extends BaseRefreshTokenGrant {
+    use CryptTrait;
 
     /**
      * Previously, refresh tokens were stored in Redis.

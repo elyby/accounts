@@ -94,14 +94,14 @@ class Component extends BaseComponent {
     public function encryptValue(string $rawValue): string {
         /** @noinspection PhpUnhandledExceptionInspection */
         $nonce = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
-        $cipher = base64_encode($nonce . sodium_crypto_secretbox($rawValue, $nonce, $this->encryptionKey));
+        $cipher = $this->base64UrlEncode($nonce . sodium_crypto_secretbox($rawValue, $nonce, $this->encryptionKey));
         sodium_memzero($rawValue);
 
         return $cipher;
     }
 
     public function decryptValue(string $encryptedValue): string {
-        $decoded = base64_decode($encryptedValue);
+        $decoded = $this->base64UrlDecode($encryptedValue);
         Assert::true($decoded !== false, 'passed value has an invalid base64 encoding');
         Assert::true(mb_strlen($decoded, '8bit') >= (SODIUM_CRYPTO_SECRETBOX_NONCEBYTES + SODIUM_CRYPTO_SECRETBOX_MACBYTES));
         $nonce = mb_substr($decoded, 0, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES, '8bit');
@@ -135,6 +135,14 @@ class Component extends BaseComponent {
         }
 
         return $value;
+    }
+
+    private function base64UrlEncode(string $rawValue): string {
+        return rtrim(strtr(base64_encode($rawValue), '+/', '-_'), '=');
+    }
+
+    private function base64UrlDecode(string $encodedValue): string {
+        return base64_decode(str_pad(strtr($encodedValue, '-_', '+/'), strlen($encodedValue) % 4, '=', STR_PAD_RIGHT));
     }
 
 }
