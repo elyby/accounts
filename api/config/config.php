@@ -7,6 +7,14 @@ return [
     'params' => [
         'authserverHost' => getenv('AUTHSERVER_HOST') ?: 'authserver.ely.by',
     ],
+    'modules' => [
+        'authserver' => api\modules\authserver\Module::class,
+        'session' => api\modules\session\Module::class,
+        'mojang' => api\modules\mojang\Module::class,
+        'internal' => api\modules\internal\Module::class,
+        'accounts' => api\modules\accounts\Module::class,
+        'oauth' => api\modules\oauth\Module::class,
+    ],
     'components' => [
         'user' => [
             'class' => api\components\User\Component::class,
@@ -89,13 +97,5 @@ return [
         'errorHandler' => [
             'class' => api\components\ErrorHandler::class,
         ],
-    ],
-    'modules' => [
-        'authserver' => api\modules\authserver\Module::class,
-        'session' => api\modules\session\Module::class,
-        'mojang' => api\modules\mojang\Module::class,
-        'internal' => api\modules\internal\Module::class,
-        'accounts' => api\modules\accounts\Module::class,
-        'oauth' => api\modules\oauth\Module::class,
     ],
 ];

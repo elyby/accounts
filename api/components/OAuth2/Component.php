@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace api\components\OAuth2;
 
 use api\components\OAuth2\Keys\EmptyKey;
+use Carbon\CarbonInterval;
 use DateInterval;
 use League\OAuth2\Server\AuthorizationServer;
 use yii\base\Component as BaseComponent;
@@ -24,7 +25,7 @@ class Component extends BaseComponent {
             $authCodesRepo = new Repositories\AuthCodeRepository();
             $refreshTokensRepo = new Repositories\RefreshTokenRepository();
 
-            $accessTokenTTL = new DateInterval('P1D');
+            $accessTokenTTL = CarbonInterval::day();
 
             $authServer = new AuthorizationServer(
                 $clientsRepo,
@@ -44,9 +45,8 @@ class Component extends BaseComponent {
             $authServer->enableGrantType($refreshTokenGrant);
             $refreshTokenGrant->setScopeRepository($publicScopesRepo); // Change repository after enabling
 
-            // TODO: make these access tokens live longer
             $clientCredentialsGrant = new Grants\ClientCredentialsGrant();
-            $authServer->enableGrantType($clientCredentialsGrant, $accessTokenTTL);
+            $authServer->enableGrantType($clientCredentialsGrant, CarbonInterval::create(-1)); // set negative value to make it non expiring
             $clientCredentialsGrant->setScopeRepository($internalScopesRepo); // Change repository after enabling
 
             $this->_authServer = $authServer;

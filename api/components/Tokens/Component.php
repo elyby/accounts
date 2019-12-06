@@ -55,9 +55,11 @@ class Component extends BaseComponent {
 
     public function create(array $payloads = [], array $headers = []): Token {
         $now = Carbon::now();
-        $builder = (new Builder())
-            ->issuedAt($now->getTimestamp())
-            ->expiresAt($now->addHour()->getTimestamp());
+        $builder = (new Builder())->issuedAt($now->getTimestamp());
+        if (isset($payloads['exp'])) {
+            $builder->expiresAt($payloads['exp']);
+        }
+
         foreach ($payloads as $claim => $value) {
             $builder->withClaim($claim, $this->prepareValue($value));
         }

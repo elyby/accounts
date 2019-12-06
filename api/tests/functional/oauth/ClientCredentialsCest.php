@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace api\tests\functional\oauth;
 
-use api\tests\functional\_steps\OauthSteps;
 use api\tests\FunctionalTester;
 
 class ClientCredentialsCest {
@@ -35,7 +34,7 @@ class ClientCredentialsCest {
         ]);
     }
 
-    public function issueTokenWithInternalScopesAsTrustedClient(OauthSteps $I) {
+    public function issueTokenWithInternalScopesAsTrustedClient(FunctionalTester $I) {
         $I->wantTo('issue token as trusted client and require some internal scope');
         $I->sendPOST('/api/oauth2/v1/token', [
             'grant_type' => 'client_credentials',
