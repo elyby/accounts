@@ -25,7 +25,7 @@ class Component extends BaseComponent {
             $authCodesRepo = new Repositories\AuthCodeRepository();
             $refreshTokensRepo = new Repositories\RefreshTokenRepository();
 
-            $accessTokenTTL = CarbonInterval::day();
+            $accessTokenTTL = CarbonInterval::days(2);
 
             $authServer = new AuthorizationServer(
                 $clientsRepo,

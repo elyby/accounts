@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace api\components\OAuth2\Entities;
 
 use api\components\OAuth2\Repositories\PublicScopeRepository;
+use api\rbac\Permissions;
+use Carbon\CarbonImmutable;
 use DateTimeImmutable;
 use League\OAuth2\Server\CryptKeyInterface;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
@@ -43,8 +45,22 @@ class AccessTokenEntity implements AccessTokenEntityInterface {
     }
 
     public function getExpiryDateTime(): DateTimeImmutable {
-        // TODO: extend token life depending on scopes list
-        return $this->parentGetExpiryDateTime();
+        $expiryTime = $this->parentGetExpiryDateTime();
+        if ($this->hasScope(PublicScopeRepository::CHANGE_SKIN) || $this->hasScope(Permissions::OBTAIN_ACCOUNT_EMAIL)) {
+            $expiryTime = min($expiryTime, CarbonImmutable::now()->addHour());
+        }
+
+        return $expiryTime;
+    }
+
+    private function hasScope(string $scopeIdentifier): bool {
+        foreach ($this->getScopes() as $scope) {
+            if ($scope->getIdentifier() === $scopeIdentifier) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }

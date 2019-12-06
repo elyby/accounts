@@ -12,8 +12,8 @@ use League\OAuth2\Server\Repositories\ScopeRepositoryInterface;
 class PublicScopeRepository implements ScopeRepositoryInterface {
 
     public const OFFLINE_ACCESS = 'offline_access';
+    public const CHANGE_SKIN = 'change_skin';
 
-    private const CHANGE_SKIN = 'change_skin';
     private const ACCOUNT_INFO = 'account_info';
     private const ACCOUNT_EMAIL = 'account_email';
 
