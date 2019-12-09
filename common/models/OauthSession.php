@@ -10,11 +10,12 @@ use yii\db\ActiveRecord;
 
 /**
  * Fields:
- * @property int     $account_id
- * @property string  $client_id
- * @property int     $legacy_id
- * @property array   $scopes
- * @property integer $created_at
+ * @property int $account_id
+ * @property string $client_id
+ * @property int|null $legacy_id
+ * @property array $scopes
+ * @property int $created_at
+ * @property int|null $revoked_at
  *
  * Relations:
  * @property-read OauthClient $client
@@ -58,6 +59,7 @@ class OauthSession extends ActiveRecord {
      * @return array of refresh tokens (ids)
      */
     public function getLegacyRefreshTokens(): array {
+        // TODO: it seems that this method isn't used anywhere
         if ($this->legacy_id === null) {
             return [];
         }

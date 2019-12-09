@@ -36,7 +36,7 @@ class Component extends BaseComponent {
     public $privateKeyPass;
 
     /**
-     * @var string|\Defuse\Crypto\Key
+     * @var string
      */
     public $encryptionKey;
 

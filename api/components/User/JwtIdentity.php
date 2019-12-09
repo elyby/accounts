@@ -6,6 +6,8 @@ namespace api\components\User;
 use api\components\Tokens\TokenReader;
 use Carbon\Carbon;
 use common\models\Account;
+use common\models\OauthClient;
+use common\models\OauthSession;
 use Exception;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\ValidationData;
@@ -50,7 +52,23 @@ class JwtIdentity implements IdentityInterface {
             throw new UnauthorizedHttpException('Incorrect token');
         }
 
+        $tokenReader = new TokenReader($token);
+        $accountId = $tokenReader->getAccountId();
+        $iat = $token->getClaim('iat');
+        if ($tokenReader->getMinecraftClientToken() !== null && self::isRevoked($accountId, OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER, $iat)) {
+            throw new UnauthorizedHttpException('Token has been revoked');
+        }
+
+        if ($tokenReader->getClientId() !== null && self::isRevoked($accountId, $tokenReader->getClientId(), $iat)) {
+            throw new UnauthorizedHttpException('Token has been revoked');
+        }
+
         return new self($token);
+    }
+
+    private static function isRevoked(int $accountId, string $clientId, int $iat): bool {
+        $session = OauthSession::findOne(['account_id' => $accountId, 'client_id' => $clientId]);
+        return $session !== null && $session->revoked_at !== null &&  $session->revoked_at > $iat;
     }
 
     public function getToken(): Token {

@@ -88,6 +88,7 @@ class ComponentTest extends TestCase {
         $component->terminateSessions($account, Component::KEEP_SITE_SESSIONS);
         $this->assertEmpty($account->getMinecraftAccessKeys()->all());
         $this->assertNotEmpty($account->getSessions()->all());
+        // TODO: write test about invalidating new minecraft access tokens based on JWT
 
         // All sessions should be removed except the current one
         $component->terminateSessions($account, Component::KEEP_CURRENT_SESSION);

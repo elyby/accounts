@@ -85,6 +85,7 @@ class AuthenticationForm extends ApiForm {
         $account = $loginForm->getAccount();
         $token = Yii::$app->tokensFactory->createForMinecraftAccount($account, $this->clientToken);
         $dataModel = new AuthenticateData($account, (string)$token, $this->clientToken);
+        // TODO: issue session in the oauth_sessions
 
         Authserver::info("User with id = {$account->id}, username = '{$account->username}' and email = '{$account->email}' successfully logged in.");
 

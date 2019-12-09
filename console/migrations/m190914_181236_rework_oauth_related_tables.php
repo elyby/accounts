@@ -34,9 +34,21 @@ class m190914_181236_rework_oauth_related_tables extends Migration {
         $this->addForeignKey('FK_oauth_session_to_account', 'oauth_sessions', 'account_id', 'accounts', 'id', 'CASCADE', 'CASCADE');
         $this->addForeignKey('FK_oauth_session_to_oauth_client', 'oauth_sessions', 'client_id', 'oauth_clients', 'id', 'CASCADE', 'CASCADE');
         $this->addColumn('oauth_sessions', 'scopes', $this->json()->toString('scopes') . ' AFTER `legacy_id`');
+        $this->addColumn('oauth_sessions', 'revoked_at', $this->integer(11)->unsigned() . ' AFTER `created_at`');
+
+        $this->insert('oauth_clients', [
+            'id' => 'unauthorized_minecraft_game_launcher',
+            'secret' => 'there_is_no_secret',
+            'type' => 'minecraft-game-launcher',
+            'name' => 'Unauthorized Minecraft game launcher',
+            'created_at' => time(),
+        ]);
     }
 
     public function safeDown() {
+        $this->delete('oauth_clients', ['id' => 'unauthorized_minecraft_game_launcher']);
+
+        $this->dropColumn('oauth_sessions', 'revoked_at');
         $this->dropColumn('oauth_sessions', 'scopes');
         $this->dropForeignKey('FK_oauth_session_to_oauth_client', 'oauth_sessions');
         $this->dropForeignKey('FK_oauth_session_to_account', 'oauth_sessions');

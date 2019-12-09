@@ -7,6 +7,8 @@ use api\components\User\JwtIdentity;
 use api\tests\unit\TestCase;
 use Carbon\Carbon;
 use common\tests\fixtures\AccountFixture;
+use common\tests\fixtures\OauthClientFixture;
+use common\tests\fixtures\OauthSessionFixture;
 use yii\web\UnauthorizedHttpException;
 
 class JwtIdentityTest extends TestCase {
@@ -14,6 +16,8 @@ class JwtIdentityTest extends TestCase {
     public function _fixtures(): array {
         return [
             'accounts' => AccountFixture::class,
+            'oauthClients' => OauthClientFixture::class,
+            'oauthSessions' => OauthSessionFixture::class,
         ];
     }
 
@@ -45,6 +49,14 @@ class JwtIdentityTest extends TestCase {
         yield 'iat from future' => [
             'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ2MTc3NDIsImV4cCI6MTU2NDYxNDE0Miwic3ViIjoiZWx5fDEifQ._6hj6XUSmSLibgT9ZE1Pokf4oI9r-d6tEc1z2J-fBlr1710Qiso5yNcXqb3Z_xy7Qtemyq8jOlOZA8DvmkVBrg',
             'Incorrect token',
+        ];
+        yield 'revoked by oauth client' => [
+            'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudF9pbmZvLG1pbmVjcmFmdF9zZXJ2ZXJfc2Vzc2lvbiIsImlhdCI6MTU2NDYxMDUwMCwic3ViIjoiZWx5fDEiLCJhdWQiOiJjbGllbnR8dGxhdW5jaGVyIn0.YzUzvnREEoQPu8CvU6WLdysUU0bC_xzigQPs2LK1su38uysSYgSbPzNOZYkQnvcmVLehHY-ON44x-oA8Os-9ZA',
+            'Token has been revoked',
+        ];
+        yield 'revoked by unauthorized minecraft launcher' => [
+            'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoibWluZWNyYWZ0X3NlcnZlcl9zZXNzaW9uIiwiZWx5LWNsaWVudC10b2tlbiI6IllBTVhneTBBcEI5Z2dUL1VYNjNJaTdKcGtNd2ZwTmxaaE8yVVVEeEZ3YTFmZ2g4dksyN0RtV25vN2xqbk1pWWJwQ1VuS09YVnR2V1YrVVg1dWRQVVFsK04xY3BBZlJBL2ErZW1BZz09IiwiaWF0IjoxNTY0NjEwNTAwLCJzdWIiOiJlbHl8MSJ9.mxFgf4M1QSG4_Zd3sGoJUx9L9_XbjHd4T8-CWIVzmSPp2_9OHjq-CIFEwSwlfoz3QGN7NV0TpC8-PfRvjd93eQ',
+            'Token has been revoked',
         ];
         yield 'invalid signature' => [
             'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ2MTA1NDIsImV4cCI6MTU2NDYxNDE0Miwic3ViIjoiZWx5fDEifQ.yth31f2PyhUkYSfBlizzUXWIgOvxxk8gNP-js0z8g1OT5rig40FPTIkgsZRctAwAAlj6QoIWW7-hxLTcSb2vmw',

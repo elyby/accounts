@@ -31,6 +31,12 @@ class OauthClient extends ActiveRecord {
 
     public const TYPE_APPLICATION = 'application';
     public const TYPE_MINECRAFT_SERVER = 'minecraft-server';
+    public const TYPE_MINECRAFT_GAME_LAUNCHER = 'minecraft-game-launcher';
+
+    /**
+     * Abstract oauth_client, used to
+     */
+    public const UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER = 'unauthorized_minecraft_game_launcher';
 
     public static function tableName(): string {
         return 'oauth_clients';
