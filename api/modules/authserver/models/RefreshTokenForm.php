@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace api\modules\authserver\models;
 
+use api\components\Tokens\TokenReader;
 use api\models\base\ApiForm;
 use api\modules\authserver\exceptions\ForbiddenOperationException;
 use api\modules\authserver\validators\AccessTokenValidator;
@@ -49,16 +50,12 @@ class RefreshTokenForm extends ApiForm {
             }
         } else {
             $token = Yii::$app->tokens->parse($this->accessToken);
-
-            $encodedClientToken = $token->getClaim('ely-client-token');
-            $clientToken = Yii::$app->tokens->decryptValue($encodedClientToken);
-            if ($clientToken !== $this->clientToken) {
+            $tokenReader = new TokenReader($token);
+            if ($tokenReader->getMinecraftClientToken() !== $this->clientToken) {
                 throw new ForbiddenOperationException('Invalid token.');
             }
 
-            $accountClaim = $token->getClaim('sub');
-            $accountId = (int)explode('|', $accountClaim)[1];
-            $account = Account::findOne(['id' => $accountId]);
+            $account = Account::findOne(['id' => $tokenReader->getAccountId()]);
         }
 
         if ($account === null) {

@@ -34,20 +34,9 @@ class m190914_181236_rework_oauth_related_tables extends Migration {
         $this->addForeignKey('FK_oauth_session_to_account', 'oauth_sessions', 'account_id', 'accounts', 'id', 'CASCADE', 'CASCADE');
         $this->addForeignKey('FK_oauth_session_to_oauth_client', 'oauth_sessions', 'client_id', 'oauth_clients', 'id', 'CASCADE', 'CASCADE');
         $this->addColumn('oauth_sessions', 'scopes', $this->json()->toString('scopes') . ' AFTER `legacy_id`');
-
-        $this->createTable('oauth_refresh_tokens', [
-            'id' => $this->string(80)->notNull()->unique(),
-            'account_id' => $this->db->getTableSchema('oauth_sessions', true)->getColumn('account_id')->dbType . ' NOT NULL',
-            'client_id' => $this->db->getTableSchema('oauth_sessions', true)->getColumn('client_id')->dbType . ' NOT NULL',
-            'issued_at' => $this->integer(11)->unsigned()->notNull(),
-            $this->primary('id'),
-        ]);
-        $this->addForeignKey('FK_oauth_refresh_token_to_oauth_session', 'oauth_refresh_tokens', ['account_id', 'client_id'], 'oauth_sessions', ['account_id', 'client_id'], 'CASCADE');
     }
 
     public function safeDown() {
-        $this->dropTable('oauth_refresh_tokens');
-
         $this->dropColumn('oauth_sessions', 'scopes');
         $this->dropForeignKey('FK_oauth_session_to_oauth_client', 'oauth_sessions');
         $this->dropForeignKey('FK_oauth_session_to_account', 'oauth_sessions');

@@ -41,7 +41,6 @@ use const common\LATEST_RULES_VERSION;
  * @property UsernameHistory[]    $usernameHistory
  * @property AccountSession[]     $sessions
  * @property MinecraftAccessKey[] $minecraftAccessKeys
- * @property-read OauthRefreshToken[] $oauthRefreshTokens
  *
  * Behaviors:
  * @mixin TimestampBehavior
@@ -100,10 +99,6 @@ class Account extends ActiveRecord {
     public function getOauthClients(): OauthClientQuery {
         /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->hasMany(OauthClient::class, ['account_id' => 'id']);
-    }
-
-    public function getOauthRefreshTokens(): ActiveQuery {
-        return $this->hasMany(OauthRefreshToken::class, ['account_id' => 'id']);
     }
 
     public function getUsernameHistory(): ActiveQuery {

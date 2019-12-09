@@ -3,13 +3,12 @@ declare(strict_types=1);
 
 namespace api\components\User;
 
-use api\components\Tokens\TokensFactory;
+use api\components\Tokens\TokenReader;
 use Carbon\Carbon;
 use common\models\Account;
 use Exception;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\ValidationData;
-use Webmozart\Assert\Assert;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\web\UnauthorizedHttpException;
@@ -20,6 +19,11 @@ class JwtIdentity implements IdentityInterface {
      * @var Token
      */
     private $token;
+
+    /**
+     * @var TokenReader|null
+     */
+    private $reader;
 
     private function __construct(Token $token) {
         $this->token = $token;
@@ -46,11 +50,6 @@ class JwtIdentity implements IdentityInterface {
             throw new UnauthorizedHttpException('Incorrect token');
         }
 
-        $sub = $token->getClaim('sub', false);
-        if ($sub !== false && strpos((string)$sub, TokensFactory::SUB_ACCOUNT_PREFIX) !== 0) {
-            throw new UnauthorizedHttpException('Incorrect token');
-        }
-
         return new self($token);
     }
 
@@ -59,24 +58,11 @@ class JwtIdentity implements IdentityInterface {
     }
 
     public function getAccount(): ?Account {
-        $subject = $this->token->getClaim('sub', false);
-        if ($subject === false) {
-            return null;
-        }
-
-        Assert::startsWith($subject, TokensFactory::SUB_ACCOUNT_PREFIX);
-        $accountId = (int)mb_substr($subject, mb_strlen(TokensFactory::SUB_ACCOUNT_PREFIX));
-
-        return Account::findOne(['id' => $accountId]);
+        return Account::findOne(['id' => $this->getReader()->getAccountId()]);
     }
 
     public function getAssignedPermissions(): array {
-        $scopesClaim = $this->token->getClaim('ely-scopes', false);
-        if ($scopesClaim === false) {
-            return [];
-        }
-
-        return explode(',', $scopesClaim);
+        return $this->getReader()->getScopes() ?? [];
     }
 
     public function getId(): string {
@@ -97,5 +83,13 @@ class JwtIdentity implements IdentityInterface {
     }
 
     // @codeCoverageIgnoreEnd
+
+    private function getReader(): TokenReader {
+        if ($this->reader === null) {
+            $this->reader = new TokenReader($this->token);
+        }
+
+        return $this->reader;
+    }
 
 }

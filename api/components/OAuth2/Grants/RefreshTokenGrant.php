@@ -4,7 +4,11 @@ declare(strict_types=1);
 namespace api\components\OAuth2\Grants;
 
 use api\components\OAuth2\CryptTrait;
+use api\components\Tokens\TokenReader;
+use Carbon\Carbon;
 use common\models\OauthSession;
+use InvalidArgumentException;
+use Lcobucci\JWT\ValidationData;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
@@ -32,7 +36,7 @@ class RefreshTokenGrant extends BaseRefreshTokenGrant {
             return $this->validateLegacyRefreshToken($refreshToken);
         }
 
-        return parent::validateOldRefreshToken($request, $clientId);
+        return $this->validateAccessToken($refreshToken);
     }
 
     /**
@@ -80,6 +84,38 @@ class RefreshTokenGrant extends BaseRefreshTokenGrant {
             'access_token_id' => $accessTokenId,
             'scopes' => $relatedSession->getScopes(),
             'user_id' => $relatedSession->account_id,
+            'expire_time' => null,
+        ];
+    }
+
+    /**
+     * @param string $jwt
+     * @return array
+     * @throws OAuthServerException
+     */
+    private function validateAccessToken(string $jwt): array {
+        try {
+            $token = Yii::$app->tokens->parse($jwt);
+        } catch (InvalidArgumentException $e) {
+            throw OAuthServerException::invalidRefreshToken('Cannot decrypt the refresh token', $e);
+        }
+
+        if (!Yii::$app->tokens->verify($token)) {
+            throw OAuthServerException::invalidRefreshToken('Cannot decrypt the refresh token');
+        }
+
+        if (!$token->validate(new ValidationData(Carbon::now()->getTimestamp()))) {
+            throw OAuthServerException::invalidRefreshToken('Token has expired');
+        }
+
+        $reader = new TokenReader($token);
+
+        return [
+            'client_id' => $reader->getClientId(),
+            'refresh_token_id' => '', // This value used only to invalidate old token
+            'access_token_id' => '', // This value used only to invalidate old token
+            'scopes' => $reader->getScopes(),
+            'user_id' => $reader->getAccountId(),
             'expire_time' => null,
         ];
     }

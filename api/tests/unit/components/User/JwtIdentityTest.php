@@ -50,10 +50,6 @@ class JwtIdentityTest extends TestCase {
             'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ2MTA1NDIsImV4cCI6MTU2NDYxNDE0Miwic3ViIjoiZWx5fDEifQ.yth31f2PyhUkYSfBlizzUXWIgOvxxk8gNP-js0z8g1OT5rig40FPTIkgsZRctAwAAlj6QoIWW7-hxLTcSb2vmw',
             'Incorrect token',
         ];
-        yield 'invalid sub' => [
-            'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ2MTA1NDIsImV4cCI6MTU2NDYxNDE0Miwic3ViIjoxMjM0fQ.yigP5nWFdX0ktbuZC_Unb9bWxpAVd7Nv8Fb1Vsa0t5WkVA88VbhPi2P-CenbDOy8ngwoGV9m3c3upMs2V3gqvw',
-            'Incorrect token',
-        ];
         yield 'empty token' => ['', 'Incorrect token'];
     }
 
@@ -64,6 +60,10 @@ class JwtIdentityTest extends TestCase {
 
         // Sub presented, but account not exists
         $identity = JwtIdentity::findIdentityByAccessToken('eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ2MTA1NDIsImV4cCI6MTU2NDYxNDE0Miwic3ViIjoiZWx5fDk5OTk5In0.1pAnhkR-_ZqzjLBR-PNIMJUXRSUK3aYixrFNKZg2ynPNPiDvzh8U-iBTT6XRfMP5nvfXZucRpoPVoiXtx40CUQ');
+        $this->assertNull($identity->getAccount());
+
+        // Sub contains invalid value
+        $identity = JwtIdentity::findIdentityByAccessToken('eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ2MTA1NDIsImV4cCI6MTU2NDYxNDE0Miwic3ViIjoxMjM0fQ.yigP5nWFdX0ktbuZC_Unb9bWxpAVd7Nv8Fb1Vsa0t5WkVA88VbhPi2P-CenbDOy8ngwoGV9m3c3upMs2V3gqvw');
         $this->assertNull($identity->getAccount());
 
         // Token without sub claim

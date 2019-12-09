@@ -4,12 +4,12 @@ declare(strict_types=1);
 namespace api\modules\oauth\models;
 
 use api\components\OAuth2\Entities\UserEntity;
+use api\components\OAuth2\Events\RequestedRefreshToken;
 use api\rbac\Permissions as P;
 use common\models\Account;
 use common\models\OauthClient;
 use common\models\OauthSession;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7\ServerRequest;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
@@ -20,6 +20,7 @@ use Yii;
 
 class OauthProcess {
 
+    // TODO: merge this with PublicScopesRepository
     private const INTERNAL_PERMISSIONS_TO_PUBLIC_SCOPES = [
         P::OBTAIN_OWN_ACCOUNT_INFO => 'account_info',
         P::OBTAIN_ACCOUNT_EMAIL => 'account_email',
@@ -49,11 +50,11 @@ class OauthProcess {
      *
      * In addition, you can pass the description value to override the application's description.
      *
+     * @param ServerRequestInterface $request
      * @return array
      */
-    public function validate(): array {
+    public function validate(ServerRequestInterface $request): array {
         try {
-            $request = $this->getRequest();
             $authRequest = $this->server->validateAuthorizationRequest($request);
             $client = $authRequest->getClient();
             /** @var OauthClient $clientModel */
@@ -83,13 +84,13 @@ class OauthProcess {
      * If the field is present, it will be interpreted as any value resulting in false positives.
      * Otherwise, the value will be interpreted as "true".
      *
+     * @param ServerRequestInterface $request
      * @return array
      */
-    public function complete(): array {
+    public function complete(ServerRequestInterface $request): array {
         try {
             Yii::$app->statsd->inc('oauth.complete.attempt');
 
-            $request = $this->getRequest();
             $authRequest = $this->server->validateAuthorizationRequest($request);
             /** @var Account $account */
             $account = Yii::$app->user->identity->getAccount();
@@ -151,18 +152,29 @@ class OauthProcess {
      *     grant_type,
      * ]
      *
+     * @param ServerRequestInterface $request
      * @return array
      */
-    public function getToken(): array {
-        $request = $this->getRequest();
+    public function getToken(ServerRequestInterface $request): array {
         $params = (array)$request->getParsedBody();
         $clientId = $params['client_id'] ?? '';
         $grantType = $params['grant_type'] ?? 'null';
         try {
             Yii::$app->statsd->inc("oauth.issueToken_{$grantType}.attempt");
 
+            $shouldIssueRefreshToken = false;
+            $this->server->getEmitter()->addOneTimeListener(RequestedRefreshToken::class, function() use (&$shouldIssueRefreshToken) {
+                $shouldIssueRefreshToken = true;
+            });
+
             $response = $this->server->respondToAccessTokenRequest($request, new Response(200));
+            /** @noinspection JsonEncodingApiUsageInspection at this point json error is not possible */
             $result = json_decode((string)$response->getBody(), true);
+            if ($shouldIssueRefreshToken) {
+                // Set the refresh_token field to keep compatibility with the old clients,
+                // which will be broken in case when refresh_token field will be missing
+                $result['refresh_token'] = $result['access_token'];
+            }
 
             Yii::$app->statsd->inc("oauth.issueToken_client.{$clientId}");
             Yii::$app->statsd->inc("oauth.issueToken_{$grantType}.success");
@@ -310,10 +322,6 @@ class OauthProcess {
             'error' => $errorType,
             'message' => $message,
         ];
-    }
-
-    private function getRequest(): ServerRequestInterface {
-        return ServerRequest::fromGlobals();
     }
 
     private function createAcceptRequiredException(): OAuthServerException {

@@ -27,7 +27,7 @@ class RefreshTokenCest {
             'refresh_token' => $refreshToken,
             'client_id' => 'ely',
             'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
-            'scope' => 'minecraft_server_session offline_access',
+            'scope' => 'minecraft_server_session',
         ]);
         $this->canSeeRefreshTokenSuccess($I);
     }

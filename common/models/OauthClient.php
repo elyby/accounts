@@ -26,7 +26,6 @@ use yii\db\ActiveRecord;
  * Behaviors:
  * @property Account|null $account
  * @property OauthSession[] $sessions
- * @property-read OauthRefreshToken[] $refreshTokens
  */
 class OauthClient extends ActiveRecord {
 
@@ -56,10 +55,6 @@ class OauthClient extends ActiveRecord {
 
     public function getSessions(): ActiveQuery {
         return $this->hasMany(OauthSession::class, ['client_id' => 'id']);
-    }
-
-    public function getRefreshTokens(): ActiveQuery {
-        return $this->hasMany(OauthRefreshToken::class, ['client_id' => 'id']);
     }
 
     public static function find(): OauthClientQuery {

@@ -68,7 +68,7 @@ class TokensFactory extends Component {
      * @return string
      */
     private function prepareScopes(array $scopes): string {
-        return implode(',', array_map(function($scope): string {
+        return implode(',', array_map(function($scope): string { // TODO: replace to the space if it's possible
             if ($scope instanceof ScopeEntityInterface) {
                 return $scope->getIdentifier();
             }
