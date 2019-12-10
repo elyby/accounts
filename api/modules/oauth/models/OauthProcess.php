@@ -20,7 +20,6 @@ use Yii;
 
 class OauthProcess {
 
-    // TODO: merge this with PublicScopesRepository
     private const INTERNAL_PERMISSIONS_TO_PUBLIC_SCOPES = [
         P::OBTAIN_OWN_ACCOUNT_INFO => 'account_info',
         P::OBTAIN_ACCOUNT_EMAIL => 'account_email',
@@ -325,12 +324,7 @@ class OauthProcess {
     }
 
     private function createAcceptRequiredException(): OAuthServerException {
-        return new OAuthServerException(
-            'Client must accept authentication request.',
-            0,
-            'accept_required',
-            401
-        );
+        return new OAuthServerException('Client must accept authentication request.', 0, 'accept_required', 401);
     }
 
     private function getScopesList(AuthorizationRequest $request): array {

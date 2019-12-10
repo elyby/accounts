@@ -54,21 +54,22 @@ class JwtIdentity implements IdentityInterface {
 
         $tokenReader = new TokenReader($token);
         $accountId = $tokenReader->getAccountId();
-        $iat = $token->getClaim('iat');
-        if ($tokenReader->getMinecraftClientToken() !== null && self::isRevoked($accountId, OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER, $iat)) {
-            throw new UnauthorizedHttpException('Token has been revoked');
-        }
+        if ($accountId !== null) {
+            $iat = $token->getClaim('iat');
+            if ($tokenReader->getMinecraftClientToken() !== null
+             && self::isRevoked($accountId, OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER, $iat)
+            ) {
+                throw new UnauthorizedHttpException('Token has been revoked');
+            }
 
-        if ($tokenReader->getClientId() !== null && self::isRevoked($accountId, $tokenReader->getClientId(), $iat)) {
-            throw new UnauthorizedHttpException('Token has been revoked');
+            if ($tokenReader->getClientId() !== null
+             && self::isRevoked($accountId, $tokenReader->getClientId(), $iat)
+            ) {
+                throw new UnauthorizedHttpException('Token has been revoked');
+            }
         }
 
         return new self($token);
-    }
-
-    private static function isRevoked(int $accountId, string $clientId, int $iat): bool {
-        $session = OauthSession::findOne(['account_id' => $accountId, 'client_id' => $clientId]);
-        return $session !== null && $session->revoked_at !== null &&  $session->revoked_at > $iat;
     }
 
     public function getToken(): Token {
@@ -98,6 +99,11 @@ class JwtIdentity implements IdentityInterface {
 
     public static function findIdentity($id) {
         throw new NotSupportedException('This method used for cookie auth, except we using Bearer auth');
+    }
+
+    private static function isRevoked(int $accountId, string $clientId, int $iat): bool {
+        $session = OauthSession::findOne(['account_id' => $accountId, 'client_id' => $clientId]);
+        return $session !== null && $session->revoked_at !== null && $session->revoked_at > $iat;
     }
 
     // @codeCoverageIgnoreEnd

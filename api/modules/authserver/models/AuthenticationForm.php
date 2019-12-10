@@ -9,8 +9,12 @@ use api\modules\authserver\exceptions\ForbiddenOperationException;
 use api\modules\authserver\Module as Authserver;
 use api\modules\authserver\validators\ClientTokenValidator;
 use api\modules\authserver\validators\RequiredValidator;
+use api\rbac\Permissions as P;
 use common\helpers\Error as E;
 use common\models\Account;
+use common\models\OauthClient;
+use common\models\OauthSession;
+use Webmozart\Assert\Assert;
 use Yii;
 
 class AuthenticationForm extends ApiForm {
@@ -85,7 +89,17 @@ class AuthenticationForm extends ApiForm {
         $account = $loginForm->getAccount();
         $token = Yii::$app->tokensFactory->createForMinecraftAccount($account, $this->clientToken);
         $dataModel = new AuthenticateData($account, (string)$token, $this->clientToken);
-        // TODO: issue session in the oauth_sessions
+        /** @var OauthSession|null $minecraftOauthSession */
+        $hasMinecraftOauthSession = $account->getOauthSessions()
+            ->andWhere(['client_id' => OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER])
+            ->exists();
+        if ($hasMinecraftOauthSession === false) {
+            $minecraftOauthSession = new OauthSession();
+            $minecraftOauthSession->account_id = $account->id;
+            $minecraftOauthSession->client_id = OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER;
+            $minecraftOauthSession->scopes = [P::MINECRAFT_SERVER_SESSION];
+            Assert::true($minecraftOauthSession->save());
+        }
 
         Authserver::info("User with id = {$account->id}, username = '{$account->username}' and email = '{$account->email}' successfully logged in.");
 

@@ -10,6 +10,9 @@ use api\modules\authserver\validators\AccessTokenValidator;
 use api\modules\authserver\validators\RequiredValidator;
 use common\models\Account;
 use common\models\MinecraftAccessKey;
+use common\models\OauthClient;
+use common\models\OauthSession;
+use Webmozart\Assert\Assert;
 use Yii;
 
 class RefreshTokenForm extends ApiForm {
@@ -67,6 +70,19 @@ class RefreshTokenForm extends ApiForm {
         }
 
         $token = Yii::$app->tokensFactory->createForMinecraftAccount($account, $this->clientToken);
+
+        // TODO: This behavior duplicates with the AuthenticationForm. Need to find a way to avoid duplication.
+        /** @var OauthSession|null $minecraftOauthSession */
+        $hasMinecraftOauthSession = $account->getOauthSessions()
+            ->andWhere(['client_id' => OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER])
+            ->exists();
+        if ($hasMinecraftOauthSession === false) {
+            $minecraftOauthSession = new OauthSession();
+            $minecraftOauthSession->account_id = $account->id;
+            $minecraftOauthSession->client_id = OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER;
+            $minecraftOauthSession->scopes = [P::MINECRAFT_SERVER_SESSION];
+            Assert::true($minecraftOauthSession->save());
+        }
 
         return new AuthenticateData($account, (string)$token, $this->clientToken);
     }
