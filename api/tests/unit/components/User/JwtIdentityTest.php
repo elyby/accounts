@@ -55,7 +55,7 @@ class JwtIdentityTest extends TestCase {
             'Token has been revoked',
         ];
         yield 'revoked by unauthorized minecraft launcher' => [
-            'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoibWluZWNyYWZ0X3NlcnZlcl9zZXNzaW9uIiwiZWx5LWNsaWVudC10b2tlbiI6IllBTVhneTBBcEI5Z2dUL1VYNjNJaTdKcGtNd2ZwTmxaaE8yVVVEeEZ3YTFmZ2g4dksyN0RtV25vN2xqbk1pWWJwQ1VuS09YVnR2V1YrVVg1dWRQVVFsK04xY3BBZlJBL2ErZW1BZz09IiwiaWF0IjoxNTY0NjEwNTAwLCJzdWIiOiJlbHl8MSJ9.mxFgf4M1QSG4_Zd3sGoJUx9L9_XbjHd4T8-CWIVzmSPp2_9OHjq-CIFEwSwlfoz3QGN7NV0TpC8-PfRvjd93eQ',
+            'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoibWluZWNyYWZ0X3NlcnZlcl9zZXNzaW9uIiwiZWx5LWNsaWVudC10b2tlbiI6IllBTVhneTBBcEI5Z2dUX1VYNjNJaTdKcGtNd2ZwTmxaaE8yVVVEeEZ3YTFmZ2g4dksyN0RtV25vN2xqbk1pWWJwQ1VuS09YVnR2V1YtVVg1dWRQVVFsLU4xY3BBZlJBX2EtZW1BZyIsImlhdCI6MTU2NDYxMDUwMCwic3ViIjoiZWx5fDEifQ.LtE9cQJ4z5dGVkDZl50M2HZH6kOYHgGz2RIycS_lzU9YLhosQ3ux7i2KI7qGI7BNuxO5zJ1OkxF2r9Qc240EpA',
             'Token has been revoked',
         ];
         yield 'invalid signature' => [

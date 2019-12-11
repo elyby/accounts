@@ -54,7 +54,7 @@ class RefreshCest {
     }
 
     /**
-     * @example {"accessToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpYXQiOjE1NzU1NjE1MjgsImV4cCI6MTU3NTU2MTUyOCwiZWx5LXNjb3BlcyI6Im1pbmVjcmFmdF9zZXJ2ZXJfc2Vzc2lvbiIsImVseS1jbGllbnQtdG9rZW4iOiJZQU1YZ3kwQXBCOWdnVC9VWDYzSWk3SnBrTXdmcE5sWmhPMlVVRHhGd2ExZmdoOHZLMjdEbVdubzdsam5NaVlicENVbktPWFZ0dldWK1VYNXVkUFVRbCtOMWNwQWZSQS9hK2VtQWc9PSIsInN1YiI6ImVseXwxIn0.Yt3k9NpTthBVrrmcO6npd8n3zksolC2RI1m-NH2-_YEiaaCGC2vW8iszi3WB-g6f6Q64OYuQXxxXMl516PLTfA", "clientToken": "4f368b58-9097-4e56-80b1-f421ae4b53cf"}
+     * @example {"accessToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpYXQiOjE1NzU1NjE1MjgsImV4cCI6MTU3NTU2MTUyOCwiZWx5LXNjb3BlcyI6Im1pbmVjcmFmdF9zZXJ2ZXJfc2Vzc2lvbiIsImVseS1jbGllbnQtdG9rZW4iOiIydnByWnRVdk40VTVtSnZzc0ozaXNpekdVWFhQYnFsV1FsQjVVRWVfUV81bkxKYzlsbUJ3VU1hQWJ1MjBtZC1FNzNtengxNWFsZmRJSU1OMTV5YUpBalZOM29vQW9IRDctOWdOcmciLCJzdWIiOiJlbHl8MSJ9.vwjXzy0VtjJlP6B4RxqoE69yRSBsluZ29VELe4vDi8GCy487eC5cIf9hz9oxp5YcdE7uEJZeqX2yi3nk_0nCaA", "clientToken": "4f368b58-9097-4e56-80b1-f421ae4b53cf"}
      * @example {"accessToken": "6042634a-a1e2-4aed-866c-c661fe4e63e2", "clientToken": "47fb164a-2332-42c1-8bad-549e67bb210c"}
      */
     public function refreshExpiredToken(AuthserverSteps $I, Example $example) {
