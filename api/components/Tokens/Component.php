@@ -18,6 +18,10 @@ class Component extends BaseComponent {
 
     /**
      * @var string
+     * @deprecated In earlier versions of the application, JWT were signed by a synchronous encryption algorithm.
+     * Now asynchronous encryption is used instead, and this logic is saved for a transitional period.
+     * I think it can be safely removed, but I'll not do it yet, because at the time of writing the comment
+     * there were enough changes in the code already.
      */
     public $hmacKey;
 
