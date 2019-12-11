@@ -1,120 +1,86 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\functional\oauth;
 
-use api\tests\_pages\OauthRoute;
-use api\tests\functional\_steps\OauthSteps;
 use api\tests\FunctionalTester;
 
 class ClientCredentialsCest {
 
-    /**
-     * @var OauthRoute
-     */
-    private $route;
-
-    public function _before(FunctionalTester $I) {
-        $this->route = new OauthRoute($I);
+    public function issueTokenWithPublicScopes(FunctionalTester $I) {
+        $I->wantTo('issue token as not trusted client and require only public scopes');
+        // We don't have any public scopes yet for this grant, so the test runs with an empty set
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'client_credentials',
+            'client_id' => 'ely',
+            'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
+            'scope' => '',
+        ]);
+        $this->assertSuccessResponse($I);
     }
 
-    public function testIssueTokenWithWrongArgs(FunctionalTester $I) {
-        $I->wantTo('check behavior on on request without any credentials');
-        $this->route->issueToken($this->buildParams());
-        $I->canSeeResponseCodeIs(400);
-        $I->canSeeResponseContainsJson([
-            'error' => 'invalid_request',
+    public function issueTokenWithInternalScopesAsNotTrustedClient(FunctionalTester $I) {
+        $I->wantTo('issue token as not trusted client and require some internal scope');
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'client_credentials',
+            'client_id' => 'ely',
+            'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
+            'scope' => 'block_account',
         ]);
-
-        $I->wantTo('check behavior on passing invalid client_id');
-        $this->route->issueToken($this->buildParams(
-            'invalid-client',
-            'invalid-secret',
-            ['invalid-scope']
-        ));
-        $I->canSeeResponseCodeIs(401);
-        $I->canSeeResponseContainsJson([
-            'error' => 'invalid_client',
-        ]);
-
-        $I->wantTo('check behavior on passing invalid client_secret');
-        $this->route->issueToken($this->buildParams(
-            'ely',
-            'invalid-secret',
-            ['invalid-scope']
-        ));
-        $I->canSeeResponseCodeIs(401);
-        $I->canSeeResponseContainsJson([
-            'error' => 'invalid_client',
-        ]);
-
-        $I->wantTo('check behavior on passing invalid client_secret');
-        $this->route->issueToken($this->buildParams(
-            'ely',
-            'invalid-secret',
-            ['invalid-scope']
-        ));
-        $I->canSeeResponseCodeIs(401);
-        $I->canSeeResponseContainsJson([
-            'error' => 'invalid_client',
-        ]);
-    }
-
-    public function testIssueTokenWithPublicScopes(OauthSteps $I) {
-        // TODO: we don't have any public scopes yet for this grant, so the test runs with an empty set
-        $this->route->issueToken($this->buildParams(
-            'ely',
-            'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
-            []
-        ));
-        $I->canSeeResponseCodeIs(200);
-        $I->canSeeResponseIsJson();
-        $I->canSeeResponseContainsJson([
-            'token_type' => 'Bearer',
-        ]);
-        $I->canSeeResponseJsonMatchesJsonPath('$.access_token');
-        $I->canSeeResponseJsonMatchesJsonPath('$.expires_in');
-    }
-
-    public function testIssueTokenWithInternalScopes(OauthSteps $I) {
-        $this->route->issueToken($this->buildParams(
-            'ely',
-            'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
-            ['account_block']
-        ));
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
             'error' => 'invalid_scope',
         ]);
+    }
 
-        $this->route->issueToken($this->buildParams(
-            'trusted-client',
-            'tXBbyvMcyaOgHMOAXBpN2EC7uFoJAaL9',
-            ['account_block']
-        ));
+    public function issueTokenWithInternalScopesAsTrustedClient(FunctionalTester $I) {
+        $I->wantTo('issue token as trusted client and require some internal scope');
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'client_credentials',
+            'client_id' => 'trusted-client',
+            'client_secret' => 'tXBbyvMcyaOgHMOAXBpN2EC7uFoJAaL9',
+            'scope' => 'block_account',
+        ]);
+        $this->assertSuccessResponse($I);
+    }
+
+    public function issueTokenByPassingInvalidClientId(FunctionalTester $I) {
+        $I->wantToTest('behavior on passing invalid client_id');
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'client_credentials',
+            'client_id' => 'invalid-client',
+            'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
+            'scope' => 'block_account',
+        ]);
+        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseContainsJson([
+            'error' => 'invalid_client',
+        ]);
+    }
+
+    public function issueTokenByPassingInvalidClientSecret(FunctionalTester $I) {
+        $I->wantTo('check behavior on passing invalid client_secret');
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'client_credentials',
+            'client_id' => 'trusted-client',
+            'client_secret' => 'invalid-secret',
+            'scope' => 'block_account',
+        ]);
+        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseContainsJson([
+            'error' => 'invalid_client',
+        ]);
+    }
+
+    private function assertSuccessResponse(FunctionalTester $I): void {
         $I->canSeeResponseCodeIs(200);
-        $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
             'token_type' => 'Bearer',
         ]);
         $I->canSeeResponseJsonMatchesJsonPath('$.access_token');
         $I->canSeeResponseJsonMatchesJsonPath('$.expires_in');
-    }
-
-    private function buildParams($clientId = null, $clientSecret = null, array $scopes = null) {
-        $params = ['grant_type' => 'client_credentials'];
-        if ($clientId !== null) {
-            $params['client_id'] = $clientId;
-        }
-
-        if ($clientSecret !== null) {
-            $params['client_secret'] = $clientSecret;
-        }
-
-        if ($scopes !== null) {
-            $params['scope'] = implode(',', $scopes);
-        }
-
-        return $params;
+        $I->cantSeeResponseJsonMatchesJsonPath('$.refresh_token');
     }
 
 }

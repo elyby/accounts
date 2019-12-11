@@ -1,38 +1,33 @@
 <?php
+declare(strict_types=1);
+
 namespace common\models;
 
-use common\components\Redis\Set;
 use Yii;
-use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
  * Fields:
- * @property integer     $id
- * @property string      $owner_type contains one of the OauthOwnerType constants
- * @property string|null $owner_id
- * @property string      $client_id
- * @property string      $client_redirect_uri
- * @property integer     $created_at
+ * @property int $account_id
+ * @property string $client_id
+ * @property int|null $legacy_id
+ * @property array $scopes
+ * @property int $created_at
+ * @property int|null $revoked_at
  *
  * Relations:
- * @property OauthClient $client
- * @property Account     $account
- * @property Set         $scopes
+ * @property-read OauthClient $client
+ * @property-read Account $account
  */
 class OauthSession extends ActiveRecord {
 
     public static function tableName(): string {
-        return '{{%oauth_sessions}}';
+        return 'oauth_sessions';
     }
 
-    public static function find(): OauthSessionQuery {
-        return new OauthSessionQuery(static::class);
-    }
-
-    public function behaviors() {
+    public function behaviors(): array {
         return [
             [
                 'class' => TimestampBehavior::class,
@@ -49,38 +44,48 @@ class OauthSession extends ActiveRecord {
         return $this->hasOne(Account::class, ['id' => 'owner_id']);
     }
 
-    public function getScopes(): Set {
-        return new Set(static::getDb()->getSchema()->getRawTableName(static::tableName()), $this->id, 'scopes');
+    public function getScopes(): array {
+        if (empty($this->scopes) && $this->legacy_id !== null) {
+            return Yii::$app->redis->smembers($this->getLegacyRedisScopesKey());
+        }
+
+        return (array)$this->scopes;
     }
 
-    public function getAccessTokens() {
-        throw new NotSupportedException('This method is possible, but not implemented');
+    /**
+     * In the early period of the project existence, the refresh tokens related to the current session
+     * were stored in Redis. This method allows to get a list of these tokens.
+     *
+     * @return array of refresh tokens (ids)
+     */
+    public function getLegacyRefreshTokens(): array {
+        // TODO: it seems that this method isn't used anywhere
+        if ($this->legacy_id === null) {
+            return [];
+        }
+
+        return Yii::$app->redis->smembers($this->getLegacyRedisRefreshTokensKey());
     }
 
     public function beforeDelete(): bool {
-        if (!$result = parent::beforeDelete()) {
-            return $result;
+        if (!parent::beforeDelete()) {
+            return false;
         }
 
-        $this->clearScopes();
-        $this->removeRefreshToken();
+        if ($this->legacy_id !== null) {
+            Yii::$app->redis->del($this->getLegacyRedisScopesKey());
+            Yii::$app->redis->del($this->getLegacyRedisRefreshTokensKey());
+        }
 
         return true;
     }
 
-    public function removeRefreshToken(): void {
-        /** @var \api\components\OAuth2\Storage\RefreshTokenStorage $refreshTokensStorage */
-        $refreshTokensStorage = Yii::$app->oauth->getRefreshTokenStorage();
-        $refreshTokensSet = $refreshTokensStorage->sessionHash($this->id);
-        foreach ($refreshTokensSet->members() as $refreshTokenId) {
-            $refreshTokensStorage->delete($refreshTokensStorage->get($refreshTokenId));
-        }
-
-        $refreshTokensSet->delete();
+    private function getLegacyRedisScopesKey(): string {
+        return "oauth:sessions:{$this->legacy_id}:scopes";
     }
 
-    public function clearScopes(): void {
-        $this->getScopes()->delete();
+    private function getLegacyRedisRefreshTokensKey(): string {
+        return "oauth:sessions:{$this->legacy_id}:refresh:tokens";
     }
 
 }

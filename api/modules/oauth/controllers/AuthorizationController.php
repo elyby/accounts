@@ -1,9 +1,13 @@
 <?php
+declare(strict_types=1);
+
 namespace api\modules\oauth\controllers;
 
 use api\controllers\Controller;
 use api\modules\oauth\models\OauthProcess;
 use api\rbac\Permissions as P;
+use GuzzleHttp\Psr7\ServerRequest;
+use Psr\Http\Message\ServerRequestInterface;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
@@ -43,22 +47,23 @@ class AuthorizationController extends Controller {
     }
 
     public function actionValidate(): array {
-        return $this->createOauthProcess()->validate();
+        return $this->createOauthProcess()->validate($this->getServerRequest());
     }
 
     public function actionComplete(): array {
-        return $this->createOauthProcess()->complete();
+        return $this->createOauthProcess()->complete($this->getServerRequest());
     }
 
     public function actionToken(): array {
-        return $this->createOauthProcess()->getToken();
+        return $this->createOauthProcess()->getToken($this->getServerRequest());
     }
 
     private function createOauthProcess(): OauthProcess {
-        $server = Yii::$app->oauth->authServer;
-        $server->setRequest(null); // Enforce request recreation (test environment bug)
+        return new OauthProcess(Yii::$app->oauth->getAuthServer());
+    }
 
-        return new OauthProcess($server);
+    private function getServerRequest(): ServerRequestInterface {
+        return ServerRequest::fromGlobals();
     }
 
 }

@@ -1,187 +1,123 @@
 <?php
+declare(strict_types=1);
+
 namespace api\components\OAuth2\Grants;
 
-use api\components\OAuth2\Entities\AccessTokenEntity;
-use api\components\OAuth2\Entities\RefreshTokenEntity;
-use api\components\OAuth2\Utils\Scopes;
-use ErrorException;
-use League\OAuth2\Server\Entity\AccessTokenEntity as BaseAccessTokenEntity;
-use League\OAuth2\Server\Entity\ClientEntity as BaseClientEntity;
-use League\OAuth2\Server\Entity\RefreshTokenEntity as BaseRefreshTokenEntity;
-use League\OAuth2\Server\Event\ClientAuthenticationFailedEvent;
-use League\OAuth2\Server\Exception;
-use League\OAuth2\Server\Grant\AbstractGrant;
-use League\OAuth2\Server\Util\SecureKey;
+use api\components\OAuth2\CryptTrait;
+use api\components\Tokens\TokenReader;
+use Carbon\Carbon;
+use common\models\OauthSession;
+use InvalidArgumentException;
+use Lcobucci\JWT\ValidationData;
+use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
+use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
+use League\OAuth2\Server\Exception\OAuthServerException;
+use League\OAuth2\Server\Grant\RefreshTokenGrant as BaseRefreshTokenGrant;
+use Psr\Http\Message\ServerRequestInterface;
+use Yii;
 
-class RefreshTokenGrant extends AbstractGrant {
+class RefreshTokenGrant extends BaseRefreshTokenGrant {
+    use CryptTrait;
 
-    protected $identifier = 'refresh_token';
+    /**
+     * Previously, refresh tokens were stored in Redis.
+     * If received refresh token is matches the legacy token template,
+     * restore the information from the legacy storage.
+     *
+     * @param ServerRequestInterface $request
+     * @param string $clientId
+     *
+     * @return array
+     * @throws OAuthServerException
+     */
+    protected function validateOldRefreshToken(ServerRequestInterface $request, $clientId): array {
+        $refreshToken = $this->getRequestParameter('refresh_token', $request);
+        if ($refreshToken !== null && mb_strlen($refreshToken) === 40) {
+            return $this->validateLegacyRefreshToken($refreshToken);
+        }
 
-    protected $refreshTokenTTL = 604800;
-
-    protected $refreshTokenRotate = false;
-
-    protected $requireClientSecret = true;
-
-    public function setRefreshTokenTTL($refreshTokenTTL): void {
-        $this->refreshTokenTTL = $refreshTokenTTL;
-    }
-
-    public function getRefreshTokenTTL(): int {
-        return $this->refreshTokenTTL;
-    }
-
-    public function setRefreshTokenRotation(bool $refreshTokenRotate = true): void {
-        $this->refreshTokenRotate = $refreshTokenRotate;
-    }
-
-    public function shouldRotateRefreshTokens(): bool {
-        return $this->refreshTokenRotate;
-    }
-
-    public function setRequireClientSecret(string $required): void {
-        $this->requireClientSecret = $required;
-    }
-
-    public function shouldRequireClientSecret(): bool {
-        return $this->requireClientSecret;
+        return $this->validateAccessToken($refreshToken);
     }
 
     /**
-     * In the earlier versions of Accounts Ely.by backend we had a comma-separated scopes
-     * list, while by OAuth2 standard it they should be separated by a space. Shit happens :)
-     * So override scopes validation function to reformat passed value.
+     * Currently we're not rotating refresh tokens.
+     * So we overriding this method to always return null, which means,
+     * that refresh_token will not be issued.
      *
-     * @param string       $scopeParam
-     * @param BaseClientEntity $client
-     * @param string $redirectUri
+     * @param AccessTokenEntityInterface $accessToken
      *
-     * @return \League\OAuth2\Server\Entity\ScopeEntity[]
+     * @return RefreshTokenEntityInterface|null
      */
-    public function validateScopes($scopeParam = '', BaseClientEntity $client, $redirectUri = null) {
-        return parent::validateScopes(Scopes::format($scopeParam), $client, $redirectUri);
+    protected function issueRefreshToken(AccessTokenEntityInterface $accessToken): ?RefreshTokenEntityInterface {
+        return null;
     }
 
     /**
-     * The method has been overridden because we stores access_tokens in Redis with expire value,
-     * so they might not exists at the moment, when it will be requested via refresh_token.
-     * That's why we extends RefreshTokenEntity to give it knowledge about related session.
-     *
-     * @inheritdoc
-     * @throws \League\OAuth2\Server\Exception\OAuthException
+     * @param string $refreshToken
+     * @return array
+     * @throws OAuthServerException
      */
-    public function completeFlow(): array {
-        $clientId = $this->server->getRequest()->request->get('client_id', $this->server->getRequest()->getUser());
-        if ($clientId === null) {
-            throw new Exception\InvalidRequestException('client_id');
+    private function validateLegacyRefreshToken(string $refreshToken): array {
+        $result = Yii::$app->redis->get("oauth:refresh:tokens:{$refreshToken}");
+        if ($result === null) {
+            throw OAuthServerException::invalidRefreshToken('Token has been revoked');
         }
 
-        $clientSecret = $this->server->getRequest()->request->get(
-            'client_secret',
-            $this->server->getRequest()->getPassword()
-        );
-        if ($clientSecret === null && $this->shouldRequireClientSecret()) {
-            throw new Exception\InvalidRequestException('client_secret');
+        try {
+            [
+                'access_token_id' => $accessTokenId,
+                'session_id' => $sessionId,
+            ] = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\Exception $e) {
+            throw OAuthServerException::invalidRefreshToken('Cannot decrypt the refresh token', $e);
         }
 
-        // Validate client ID and client secret
-        $client = $this->server->getClientStorage()->get($clientId, $clientSecret, null, $this->getIdentifier());
-        if (($client instanceof BaseClientEntity) === false) {
-            $this->server->getEventEmitter()->emit(new ClientAuthenticationFailedEvent($this->server->getRequest()));
-            throw new Exception\InvalidClientException();
+        /** @var OauthSession|null $relatedSession */
+        $relatedSession = OauthSession::findOne(['legacy_id' => $sessionId]);
+        if ($relatedSession === null) {
+            throw OAuthServerException::invalidRefreshToken('Token has been revoked');
         }
 
-        $oldRefreshTokenParam = $this->server->getRequest()->request->get('refresh_token');
-        if ($oldRefreshTokenParam === null) {
-            throw new Exception\InvalidRequestException('refresh_token');
+        return [
+            'client_id' => $relatedSession->client_id,
+            'refresh_token_id' => $refreshToken,
+            'access_token_id' => $accessTokenId,
+            'scopes' => $relatedSession->getScopes(),
+            'user_id' => $relatedSession->account_id,
+            'expire_time' => null,
+        ];
+    }
+
+    /**
+     * @param string $jwt
+     * @return array
+     * @throws OAuthServerException
+     */
+    private function validateAccessToken(string $jwt): array {
+        try {
+            $token = Yii::$app->tokens->parse($jwt);
+        } catch (InvalidArgumentException $e) {
+            throw OAuthServerException::invalidRefreshToken('Cannot decrypt the refresh token', $e);
         }
 
-        // Validate refresh token
-        $oldRefreshToken = $this->server->getRefreshTokenStorage()->get($oldRefreshTokenParam);
-        if (($oldRefreshToken instanceof BaseRefreshTokenEntity) === false) {
-            throw new Exception\InvalidRefreshException();
+        if (!Yii::$app->tokens->verify($token)) {
+            throw OAuthServerException::invalidRefreshToken('Cannot decrypt the refresh token');
         }
 
-        // Ensure the old refresh token hasn't expired
-        if ($oldRefreshToken->isExpired()) {
-            throw new Exception\InvalidRefreshException();
+        if (!$token->validate(new ValidationData(Carbon::now()->getTimestamp()))) {
+            throw OAuthServerException::invalidRefreshToken('Token has expired');
         }
 
-        /** @var AccessTokenEntity|null $oldAccessToken */
-        $oldAccessToken = $oldRefreshToken->getAccessToken();
-        if ($oldAccessToken instanceof AccessTokenEntity) {
-            // Get the scopes for the original session
-            $session = $oldAccessToken->getSession();
-        } else {
-            if (!$oldRefreshToken instanceof RefreshTokenEntity) {
-                /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
-                throw new ErrorException('oldRefreshToken must be instance of ' . RefreshTokenEntity::class);
-            }
+        $reader = new TokenReader($token);
 
-            $session = $oldRefreshToken->getSession();
-        }
-
-        if ($session === null) {
-            throw new Exception\InvalidRefreshException();
-        }
-
-        $scopes = $this->formatScopes($session->getScopes());
-
-        // Get and validate any requested scopes
-        $requestedScopesString = $this->server->getRequest()->request->get('scope', '');
-        $requestedScopes = $this->validateScopes($requestedScopesString, $client);
-
-        // If no new scopes are requested then give the access token the original session scopes
-        if (count($requestedScopes) === 0) {
-            $newScopes = $scopes;
-        } else {
-            // The OAuth spec says that a refreshed access token can have the original scopes or fewer so ensure
-            //  the request doesn't include any new scopes
-            foreach ($requestedScopes as $requestedScope) {
-                if (!isset($scopes[$requestedScope->getId()])) {
-                    throw new Exception\InvalidScopeException($requestedScope->getId());
-                }
-            }
-
-            $newScopes = $requestedScopes;
-        }
-
-        // Generate a new access token and assign it the correct sessions
-        $newAccessToken = new AccessTokenEntity($this->server);
-        $newAccessToken->setId(SecureKey::generate());
-        $newAccessToken->setExpireTime($this->getAccessTokenTTL() + time());
-        $newAccessToken->setSession($session);
-
-        foreach ($newScopes as $newScope) {
-            $newAccessToken->associateScope($newScope);
-        }
-
-        // Expire the old token and save the new one
-        $oldAccessToken instanceof BaseAccessTokenEntity && $oldAccessToken->expire();
-        $newAccessToken->save();
-
-        $this->server->getTokenType()->setSession($session);
-        $this->server->getTokenType()->setParam('access_token', $newAccessToken->getId());
-        $this->server->getTokenType()->setParam('expires_in', $this->getAccessTokenTTL());
-
-        if ($this->shouldRotateRefreshTokens()) {
-            // Expire the old refresh token
-            $oldRefreshToken->expire();
-
-            // Generate a new refresh token
-            $newRefreshToken = new RefreshTokenEntity($this->server);
-            $newRefreshToken->setId(SecureKey::generate());
-            $newRefreshToken->setExpireTime($this->getRefreshTokenTTL() + time());
-            $newRefreshToken->setAccessToken($newAccessToken);
-            $newRefreshToken->save();
-
-            $this->server->getTokenType()->setParam('refresh_token', $newRefreshToken->getId());
-        } else {
-            $oldRefreshToken->setAccessToken($newAccessToken);
-            $oldRefreshToken->save();
-        }
-
-        return $this->server->getTokenType()->generateResponse();
+        return [
+            'client_id' => $reader->getClientId(),
+            'refresh_token_id' => '', // This value used only to invalidate old token
+            'access_token_id' => '', // This value used only to invalidate old token
+            'scopes' => $reader->getScopes(),
+            'user_id' => $reader->getAccountId(),
+            'expire_time' => null,
+        ];
     }
 
 }

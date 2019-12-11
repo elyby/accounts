@@ -5,13 +5,14 @@
     "type": "project",
     "minimum-stability": "stable",
     "require": {
-        "php": "^7.2",
+        "php": "^7.3",
         "ext-intl": "*",
         "ext-json": "*",
         "ext-libxml": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
         "ext-simplexml": "*",
+        "ext-sodium": "*",
         "bacon/bacon-qr-code": "^1.0",
         "domnikl/statsd": "^2.6",
         "ely/mojang-api": "^0.2.0",
@@ -19,11 +20,12 @@
         "goaop/framework": "^2.2.0",
         "guzzlehttp/guzzle": "^6.0.0",
         "lcobucci/jwt": "^3.3",
-        "league/oauth2-server": "^4.1",
+        "league/oauth2-server": "dev-adaptation",
         "mito/yii2-sentry": "^1.0",
         "nesbot/carbon": "^2.22",
         "paragonie/constant_time_encoding": "^2.0",
         "ramsey/uuid": "^3.5",
+        "sam-it/yii2-mariadb": "^1.1",
         "spomky-labs/otphp": "^9.0.2",
         "webmozart/assert": "^1.2.0",
         "yiisoft/yii2": "~2.0.20",
@@ -54,6 +56,10 @@
         {
             "type": "composer",
             "url": "https://asset-packagist.org"
+        },
+        {
+            "type": "github",
+            "url": "https://github.com/elyby/oauth2-server.git"
         }
     ],
     "config": {

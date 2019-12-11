@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\modules\authserver\controllers;
 
 use api\controllers\Controller;
@@ -14,7 +16,7 @@ class AuthenticationController extends Controller {
         return $behaviors;
     }
 
-    public function verbs() {
+    public function verbs(): array {
         return [
             'authenticate' => ['POST'],
             'refresh' => ['POST'],
@@ -24,21 +26,35 @@ class AuthenticationController extends Controller {
         ];
     }
 
-    public function actionAuthenticate() {
+    /**
+     * @return array
+     * @throws \api\modules\authserver\exceptions\ForbiddenOperationException
+     * @throws \api\modules\authserver\exceptions\IllegalArgumentException
+     */
+    public function actionAuthenticate(): array {
         $model = new models\AuthenticationForm();
         $model->load(Yii::$app->request->post());
 
         return $model->authenticate()->getResponseData(true);
     }
 
-    public function actionRefresh() {
+    /**
+     * @return array
+     * @throws \api\modules\authserver\exceptions\ForbiddenOperationException
+     * @throws \api\modules\authserver\exceptions\IllegalArgumentException
+     */
+    public function actionRefresh(): array {
         $model = new models\RefreshTokenForm();
         $model->load(Yii::$app->request->post());
 
         return $model->refresh()->getResponseData(false);
     }
 
-    public function actionValidate() {
+    /**
+     * @throws \api\modules\authserver\exceptions\ForbiddenOperationException
+     * @throws \api\modules\authserver\exceptions\IllegalArgumentException
+     */
+    public function actionValidate(): void {
         $model = new models\ValidateForm();
         $model->load(Yii::$app->request->post());
         $model->validateToken();
@@ -46,7 +62,11 @@ class AuthenticationController extends Controller {
         // In case of an error, an exception is thrown which will be processed by ErrorHandler
     }
 
-    public function actionSignout() {
+    /**
+     * @throws \api\modules\authserver\exceptions\ForbiddenOperationException
+     * @throws \api\modules\authserver\exceptions\IllegalArgumentException
+     */
+    public function actionSignout(): void {
         $model = new models\SignoutForm();
         $model->load(Yii::$app->request->post());
         $model->signout();
@@ -54,7 +74,10 @@ class AuthenticationController extends Controller {
         // In case of an error, an exception is thrown which will be processed by ErrorHandler
     }
 
-    public function actionInvalidate() {
+    /**
+     * @throws \api\modules\authserver\exceptions\IllegalArgumentException
+     */
+    public function actionInvalidate(): void {
         $model = new models\InvalidateForm();
         $model->load(Yii::$app->request->post());
         $model->invalidateToken();

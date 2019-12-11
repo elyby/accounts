@@ -7,6 +7,8 @@ use api\components\User\JwtIdentity;
 use api\tests\unit\TestCase;
 use Carbon\Carbon;
 use common\tests\fixtures\AccountFixture;
+use common\tests\fixtures\OauthClientFixture;
+use common\tests\fixtures\OauthSessionFixture;
 use yii\web\UnauthorizedHttpException;
 
 class JwtIdentityTest extends TestCase {
@@ -14,6 +16,8 @@ class JwtIdentityTest extends TestCase {
     public function _fixtures(): array {
         return [
             'accounts' => AccountFixture::class,
+            'oauthClients' => OauthClientFixture::class,
+            'oauthSessions' => OauthSessionFixture::class,
         ];
     }
 
@@ -46,12 +50,16 @@ class JwtIdentityTest extends TestCase {
             'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ2MTc3NDIsImV4cCI6MTU2NDYxNDE0Miwic3ViIjoiZWx5fDEifQ._6hj6XUSmSLibgT9ZE1Pokf4oI9r-d6tEc1z2J-fBlr1710Qiso5yNcXqb3Z_xy7Qtemyq8jOlOZA8DvmkVBrg',
             'Incorrect token',
         ];
+        yield 'revoked by oauth client' => [
+            'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudF9pbmZvLG1pbmVjcmFmdF9zZXJ2ZXJfc2Vzc2lvbiIsImlhdCI6MTU2NDYxMDUwMCwic3ViIjoiZWx5fDEiLCJhdWQiOiJjbGllbnR8dGxhdW5jaGVyIn0.YzUzvnREEoQPu8CvU6WLdysUU0bC_xzigQPs2LK1su38uysSYgSbPzNOZYkQnvcmVLehHY-ON44x-oA8Os-9ZA',
+            'Token has been revoked',
+        ];
+        yield 'revoked by unauthorized minecraft launcher' => [
+            'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoibWluZWNyYWZ0X3NlcnZlcl9zZXNzaW9uIiwiZWx5LWNsaWVudC10b2tlbiI6IllBTVhneTBBcEI5Z2dUX1VYNjNJaTdKcGtNd2ZwTmxaaE8yVVVEeEZ3YTFmZ2g4dksyN0RtV25vN2xqbk1pWWJwQ1VuS09YVnR2V1YtVVg1dWRQVVFsLU4xY3BBZlJBX2EtZW1BZyIsImlhdCI6MTU2NDYxMDUwMCwic3ViIjoiZWx5fDEifQ.LtE9cQJ4z5dGVkDZl50M2HZH6kOYHgGz2RIycS_lzU9YLhosQ3ux7i2KI7qGI7BNuxO5zJ1OkxF2r9Qc240EpA',
+            'Token has been revoked',
+        ];
         yield 'invalid signature' => [
             'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ2MTA1NDIsImV4cCI6MTU2NDYxNDE0Miwic3ViIjoiZWx5fDEifQ.yth31f2PyhUkYSfBlizzUXWIgOvxxk8gNP-js0z8g1OT5rig40FPTIkgsZRctAwAAlj6QoIWW7-hxLTcSb2vmw',
-            'Incorrect token',
-        ];
-        yield 'invalid sub' => [
-            'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ2MTA1NDIsImV4cCI6MTU2NDYxNDE0Miwic3ViIjoxMjM0fQ.yigP5nWFdX0ktbuZC_Unb9bWxpAVd7Nv8Fb1Vsa0t5WkVA88VbhPi2P-CenbDOy8ngwoGV9m3c3upMs2V3gqvw',
             'Incorrect token',
         ];
         yield 'empty token' => ['', 'Incorrect token'];
@@ -64,6 +72,10 @@ class JwtIdentityTest extends TestCase {
 
         // Sub presented, but account not exists
         $identity = JwtIdentity::findIdentityByAccessToken('eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ2MTA1NDIsImV4cCI6MTU2NDYxNDE0Miwic3ViIjoiZWx5fDk5OTk5In0.1pAnhkR-_ZqzjLBR-PNIMJUXRSUK3aYixrFNKZg2ynPNPiDvzh8U-iBTT6XRfMP5nvfXZucRpoPVoiXtx40CUQ');
+        $this->assertNull($identity->getAccount());
+
+        // Sub contains invalid value
+        $identity = JwtIdentity::findIdentityByAccessToken('eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ2MTA1NDIsImV4cCI6MTU2NDYxNDE0Miwic3ViIjoxMjM0fQ.yigP5nWFdX0ktbuZC_Unb9bWxpAVd7Nv8Fb1Vsa0t5WkVA88VbhPi2P-CenbDOy8ngwoGV9m3c3upMs2V3gqvw');
         $this->assertNull($identity->getAccount());
 
         // Token without sub claim

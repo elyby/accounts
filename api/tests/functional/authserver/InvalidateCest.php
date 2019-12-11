@@ -3,25 +3,15 @@ declare(strict_types=1);
 
 namespace api\tests\functional\authserver;
 
-use api\tests\_pages\AuthserverRoute;
 use api\tests\functional\_steps\AuthserverSteps;
 use Ramsey\Uuid\Uuid;
 
 class InvalidateCest {
 
-    /**
-     * @var AuthserverRoute
-     */
-    private $route;
-
-    public function _before(AuthserverSteps $I) {
-        $this->route = new AuthserverRoute($I);
-    }
-
     public function invalidate(AuthserverSteps $I) {
         $I->wantTo('invalidate my token');
         [$accessToken, $clientToken] = $I->amAuthenticated();
-        $this->route->invalidate([
+        $I->sendPOST('/api/authserver/authentication/invalidate', [
             'accessToken' => $accessToken,
             'clientToken' => $clientToken,
         ]);
@@ -31,7 +21,7 @@ class InvalidateCest {
 
     public function wrongArguments(AuthserverSteps $I) {
         $I->wantTo('get error on wrong amount of arguments');
-        $this->route->invalidate([
+        $I->sendPOST('/api/authserver/authentication/invalidate', [
             'key' => 'value',
         ]);
         $I->canSeeResponseCodeIs(400);
@@ -44,7 +34,7 @@ class InvalidateCest {
 
     public function wrongAccessTokenOrClientToken(AuthserverSteps $I) {
         $I->wantTo('invalidate by wrong client and access token');
-        $this->route->invalidate([
+        $I->sendPOST('/api/authserver/authentication/invalidate', [
             'accessToken' => Uuid::uuid4()->toString(),
             'clientToken' => Uuid::uuid4()->toString(),
         ]);

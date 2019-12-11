@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\modules\authserver\models;
 
 use api\models\authentication\LoginForm;
@@ -6,21 +8,30 @@ use api\models\base\ApiForm;
 use api\modules\authserver\exceptions\ForbiddenOperationException;
 use api\modules\authserver\validators\RequiredValidator;
 use common\helpers\Error as E;
-use common\models\MinecraftAccessKey;
-use Yii;
 
 class SignoutForm extends ApiForm {
 
+    /**
+     * @var string
+     */
     public $username;
 
+    /**
+     * @var string
+     */
     public $password;
 
-    public function rules() {
+    public function rules(): array {
         return [
             [['username', 'password'], RequiredValidator::class],
         ];
     }
 
+    /**
+     * @return bool
+     * @throws ForbiddenOperationException
+     * @throws \api\modules\authserver\exceptions\IllegalArgumentException
+     */
     public function signout(): bool {
         $this->validate();
 
@@ -44,16 +55,7 @@ class SignoutForm extends ApiForm {
             throw new ForbiddenOperationException("Invalid credentials. Invalid {$attribute} or password.");
         }
 
-        $account = $loginForm->getAccount();
-
-        /** @noinspection SqlResolve */
-        Yii::$app->db->createCommand('
-            DELETE
-              FROM ' . MinecraftAccessKey::tableName() . '
-             WHERE account_id = :userId
-        ', [
-            'userId' => $account->id,
-        ])->execute();
+        // We're unable to invalidate access tokens because they aren't stored in our database
 
         return true;
     }

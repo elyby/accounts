@@ -3,139 +3,60 @@ declare(strict_types=1);
 
 namespace codeception\api\unit\modules\authserver\models;
 
-use api\models\authentication\LoginForm;
 use api\modules\authserver\exceptions\ForbiddenOperationException;
-use api\modules\authserver\models\AuthenticateData;
 use api\modules\authserver\models\AuthenticationForm;
 use api\tests\unit\TestCase;
-use common\models\Account;
-use common\models\MinecraftAccessKey;
-use common\tests\_support\ProtectedCaller;
+use common\models\OauthClient;
+use common\models\OauthSession;
 use common\tests\fixtures\AccountFixture;
-use common\tests\fixtures\MinecraftAccessKeyFixture;
+use common\tests\fixtures\OauthClientFixture;
 use Ramsey\Uuid\Uuid;
 
 class AuthenticationFormTest extends TestCase {
-    use ProtectedCaller;
 
     public function _fixtures(): array {
         return [
             'accounts' => AccountFixture::class,
-            'minecraftAccessKeys' => MinecraftAccessKeyFixture::class,
+            'oauthClients' => OauthClientFixture::class,
         ];
     }
 
-    public function testAuthenticateByWrongNicknamePass() {
-        $this->expectException(ForbiddenOperationException::class);
-        $this->expectExceptionMessage('Invalid credentials. Invalid nickname or password.');
-
-        $authForm = $this->createAuthForm();
-
-        $authForm->username = 'wrong-username';
-        $authForm->password = 'wrong-password';
-        $authForm->clientToken = Uuid::uuid4();
-
-        $authForm->authenticate();
-    }
-
-    public function testAuthenticateByWrongEmailPass() {
-        $this->expectException(ForbiddenOperationException::class);
-        $this->expectExceptionMessage('Invalid credentials. Invalid email or password.');
-
-        $authForm = $this->createAuthForm();
-
-        $authForm->username = 'wrong-email@ely.by';
-        $authForm->password = 'wrong-password';
-        $authForm->clientToken = Uuid::uuid4();
-
-        $authForm->authenticate();
-    }
-
-    public function testAuthenticateByValidCredentialsIntoBlockedAccount() {
-        $this->expectException(ForbiddenOperationException::class);
-        $this->expectExceptionMessage('This account has been suspended.');
-
-        $authForm = $this->createAuthForm(Account::STATUS_BANNED);
-
-        $authForm->username = 'dummy';
-        $authForm->password = 'password_0';
-        $authForm->clientToken = Uuid::uuid4();
-
-        $authForm->authenticate();
-    }
-
     public function testAuthenticateByValidCredentials() {
-        $authForm = $this->createAuthForm();
-
-        $minecraftAccessKey = new MinecraftAccessKey();
-        $minecraftAccessKey->access_token = Uuid::uuid4();
-        $authForm->expects($this->once())
-            ->method('createMinecraftAccessToken')
-            ->willReturn($minecraftAccessKey);
-
-        $authForm->username = 'dummy';
+        $authForm = new AuthenticationForm();
+        $authForm->username = 'admin';
         $authForm->password = 'password_0';
-        $authForm->clientToken = Uuid::uuid4();
-
-        $result = $authForm->authenticate();
-        $this->assertInstanceOf(AuthenticateData::class, $result);
-        $this->assertSame($minecraftAccessKey->access_token, $result->getMinecraftAccessKey()->access_token);
+        $authForm->clientToken = Uuid::uuid4()->toString();
+        $result = $authForm->authenticate()->getResponseData();
+        $this->assertRegExp('/^[\w=-]+\.[\w=-]+\.[\w=-]+$/', $result['accessToken']);
+        $this->assertSame($authForm->clientToken, $result['clientToken']);
+        $this->assertSame('df936908-b2e1-544d-96f8-2977ec213022', $result['selectedProfile']['id']);
+        $this->assertSame('Admin', $result['selectedProfile']['name']);
+        $this->assertFalse($result['selectedProfile']['legacy']);
+        $this->assertTrue(OauthSession::find()->andWhere([
+            'account_id' => 1,
+            'client_id' => OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER,
+        ])->exists());
     }
 
-    public function testCreateMinecraftAccessToken() {
+    /**
+     * @dataProvider getInvalidCredentialsCases
+     */
+    public function testAuthenticateByWrongNicknamePass(string $expectedExceptionMessage, string $login, string $password) {
+        $this->expectException(ForbiddenOperationException::class);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+
         $authForm = new AuthenticationForm();
-        $authForm->clientToken = Uuid::uuid4();
-        /** @var Account $account */
-        $account = $this->tester->grabFixture('accounts', 'admin');
-        /** @var MinecraftAccessKey $result */
-        $result = $this->callProtected($authForm, 'createMinecraftAccessToken', $account);
-        $this->assertInstanceOf(MinecraftAccessKey::class, $result);
-        $this->assertSame($account->id, $result->account_id);
-        $this->assertSame($authForm->clientToken, $result->client_token);
-        $this->assertInstanceOf(MinecraftAccessKey::class, MinecraftAccessKey::findOne($result->access_token));
+        $authForm->username = $login;
+        $authForm->password = $password;
+        $authForm->clientToken = Uuid::uuid4()->toString();
+        $authForm->authenticate();
     }
 
-    public function testCreateMinecraftAccessTokenWithExistsClientId() {
-        $authForm = new AuthenticationForm();
-        $minecraftFixture = $this->tester->grabFixture('minecraftAccessKeys', 'admin-token');
-        $authForm->clientToken = $minecraftFixture['client_token'];
-        /** @var Account $account */
-        $account = $this->tester->grabFixture('accounts', 'admin');
-        /** @var MinecraftAccessKey $result */
-        $result = $this->callProtected($authForm, 'createMinecraftAccessToken', $account);
-        $this->assertInstanceOf(MinecraftAccessKey::class, $result);
-        $this->assertSame($account->id, $result->account_id);
-        $this->assertSame($authForm->clientToken, $result->client_token);
-        $this->assertNull(MinecraftAccessKey::findOne($minecraftFixture['access_token']));
-        $this->assertInstanceOf(MinecraftAccessKey::class, MinecraftAccessKey::findOne($result->access_token));
-    }
-
-    private function createAuthForm($status = Account::STATUS_ACTIVE) {
-        /** @var LoginForm|\PHPUnit\Framework\MockObject\MockObject $loginForm */
-        $loginForm = $this->getMockBuilder(LoginForm::class)
-            ->setMethods(['getAccount'])
-            ->getMock();
-
-        $account = new Account();
-        $account->username = 'dummy';
-        $account->email = 'dummy@ely.by';
-        $account->status = $status;
-        $account->setPassword('password_0');
-
-        $loginForm
-            ->method('getAccount')
-            ->willReturn($account);
-
-        /** @var AuthenticationForm|\PHPUnit\Framework\MockObject\MockObject $authForm */
-        $authForm = $this->getMockBuilder(AuthenticationForm::class)
-            ->setMethods(['createLoginForm', 'createMinecraftAccessToken'])
-            ->getMock();
-
-        $authForm
-            ->method('createLoginForm')
-            ->willReturn($loginForm);
-
-        return $authForm;
+    public function getInvalidCredentialsCases() {
+        yield ['Invalid credentials. Invalid nickname or password.', 'wrong-username', 'wrong-password'];
+        yield ['Invalid credentials. Invalid email or password.', 'wrong-email@ely.by', 'wrong-password'];
+        yield ['This account has been suspended.', 'Banned', 'password_0'];
+        yield ['Account protected with two factor auth.', 'AccountWithEnabledOtp', 'password_0'];
     }
 
 }

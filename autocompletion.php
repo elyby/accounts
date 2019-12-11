@@ -22,10 +22,8 @@ class Yii extends \yii\BaseYii {
  * @property \GuzzleHttp\Client               $guzzle
  * @property \common\components\EmailsRenderer\Component $emailsRenderer
  * @property \mito\sentry\Component           $sentry
- * @property \api\components\OAuth2\Component $oauth
  * @property \common\components\StatsD        $statsd
  * @property \yii\queue\Queue                 $queue
- * @property \api\components\Tokens\Component $tokens
  */
 abstract class BaseApplication extends yii\base\Application {
 }
@@ -34,8 +32,11 @@ abstract class BaseApplication extends yii\base\Application {
  * Class WebApplication
  * Include only Web application related components here
  *
- * @property \api\components\User\Component      $user User component.
- * @property \api\components\ReCaptcha\Component $reCaptcha
+ * @property \api\components\User\Component       $user
+ * @property \api\components\ReCaptcha\Component  $reCaptcha
+ * @property \api\components\OAuth2\Component     $oauth
+ * @property \api\components\Tokens\Component     $tokens
+ * @property \api\components\Tokens\TokensFactory $tokensFactory
  *
  * @method \api\components\User\Component getUser()
  */

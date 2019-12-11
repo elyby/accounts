@@ -5,6 +5,8 @@ namespace api\components\User;
 
 use common\models\Account;
 use common\models\AccountSession;
+use common\models\OauthClient;
+use Webmozart\Assert\Assert;
 use yii\web\User as YiiUserComponent;
 
 /**
@@ -78,6 +80,15 @@ class Component extends YiiUserComponent {
         }
 
         if (!($mode & self::KEEP_MINECRAFT_SESSIONS)) {
+            /** @var \common\models\OauthSession|null $minecraftSession */
+            $minecraftSession = $account->getOauthSessions()
+                ->andWhere(['client_id' => OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER])
+                ->one();
+            if ($minecraftSession !== null) {
+                $minecraftSession->revoked_at = time();
+                Assert::true($minecraftSession->save());
+            }
+
             foreach ($account->minecraftAccessKeys as $minecraftAccessKey) {
                 $minecraftAccessKey->delete();
             }

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\modules\session\controllers;
 
 use api\controllers\Controller;
@@ -31,18 +33,23 @@ class SessionController extends Controller {
         return $behaviors;
     }
 
-    public function actionJoin() {
+    /**
+     * @return array
+     * @throws ForbiddenOperationException
+     * @throws IllegalArgumentException
+     */
+    public function actionJoin(): array {
         Yii::$app->response->format = Response::FORMAT_JSON;
 
         $data = Yii::$app->request->post();
         $protocol = new ModernJoin($data['accessToken'] ?? '', $data['selectedProfile'] ?? '', $data['serverId'] ?? '');
         $joinForm = new JoinForm($protocol);
-        $joinForm->join();
+        $joinForm->join(); // will throw an exception in case of any error
 
         return ['id' => 'OK'];
     }
 
-    public function actionJoinLegacy() {
+    public function actionJoinLegacy(): string {
         Yii::$app->response->format = Response::FORMAT_RAW;
 
         $data = Yii::$app->request->get();
@@ -64,7 +71,12 @@ class SessionController extends Controller {
         return 'OK';
     }
 
-    public function actionHasJoined() {
+    /**
+     * @return array
+     * @throws ForbiddenOperationException
+     * @throws IllegalArgumentException
+     */
+    public function actionHasJoined(): array {
         Yii::$app->response->format = Response::FORMAT_JSON;
 
         $data = Yii::$app->request->get();
@@ -76,7 +88,7 @@ class SessionController extends Controller {
         return $textures->getMinecraftResponse();
     }
 
-    public function actionHasJoinedLegacy() {
+    public function actionHasJoinedLegacy(): string {
         Yii::$app->response->format = Response::FORMAT_RAW;
 
         $data = Yii::$app->request->get();
@@ -95,7 +107,14 @@ class SessionController extends Controller {
         return 'YES';
     }
 
-    public function actionProfile($uuid) {
+    /**
+     * @param string $uuid
+     *
+     * @return array
+     * @throws ForbiddenOperationException
+     * @throws IllegalArgumentException
+     */
+    public function actionProfile(string $uuid): array {
         try {
             $uuid = Uuid::fromString($uuid)->toString();
         } catch (\InvalidArgumentException $e) {

@@ -22,7 +22,11 @@ class ComponentTest extends TestCase {
         $this->assertSame('ES256', $token->getHeader('alg'));
         $this->assertEmpty(array_diff(array_keys($token->getClaims()), ['iat', 'exp']));
         $this->assertEqualsWithDelta(time(), $token->getClaim('iat'), 1);
-        $this->assertEqualsWithDelta(time() + 3600, $token->getClaim('exp'), 2);
+
+        // Pass exp claim
+        $time = time() + 60;
+        $token = $this->component->create(['exp' => $time]);
+        $this->assertSame($time, $token->getClaim('exp'));
 
         // Pass custom payloads
         $token = $this->component->create(['find' => 'me']);

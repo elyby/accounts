@@ -131,6 +131,7 @@ class LoginFormTest extends TestCase {
             'login' => 'erickskrauch',
             'password' => '12345678',
             'account' => new Account([
+                'id' => 1,
                 'username' => 'erickskrauch',
                 'password' => '12345678',
                 'status' => Account::STATUS_ACTIVE,

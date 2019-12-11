@@ -5,13 +5,16 @@ namespace codeception\api\unit\components\User;
 
 use api\components\User\Component;
 use api\components\User\JwtIdentity;
-use api\components\User\OAuth2Identity;
+use api\components\User\LegacyOAuth2Identity;
 use api\tests\unit\TestCase;
 use common\models\Account;
 use common\models\AccountSession;
+use common\models\OauthClient;
 use common\tests\fixtures\AccountFixture;
 use common\tests\fixtures\AccountSessionFixture;
 use common\tests\fixtures\MinecraftAccessKeyFixture;
+use common\tests\fixtures\OauthClientFixture;
+use common\tests\fixtures\OauthSessionFixture;
 use Lcobucci\JWT\Claim\Basic;
 use Lcobucci\JWT\Token;
 
@@ -32,6 +35,8 @@ class ComponentTest extends TestCase {
             'accounts' => AccountFixture::class,
             'sessions' => AccountSessionFixture::class,
             'minecraftSessions' => MinecraftAccessKeyFixture::class,
+            'oauthClients' => OauthClientFixture::class,
+            'oauthSessions' => OauthSessionFixture::class,
         ];
     }
 
@@ -41,7 +46,7 @@ class ComponentTest extends TestCase {
         $this->assertNull($component->getActiveSession());
 
         // Identity is a Oauth2Identity
-        $component->setIdentity(mock(OAuth2Identity::class));
+        $component->setIdentity(mock(LegacyOAuth2Identity::class));
         $this->assertNull($component->getActiveSession());
 
         // Identity is correct, but have no jti claim
@@ -88,6 +93,7 @@ class ComponentTest extends TestCase {
         $component->terminateSessions($account, Component::KEEP_SITE_SESSIONS);
         $this->assertEmpty($account->getMinecraftAccessKeys()->all());
         $this->assertNotEmpty($account->getSessions()->all());
+        $this->assertEqualsWithDelta(time(), $account->getOauthSessions()->andWhere(['client_id' => OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER])->one()->revoked_at, 5);
 
         // All sessions should be removed except the current one
         $component->terminateSessions($account, Component::KEEP_CURRENT_SESSION);

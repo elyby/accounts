@@ -7,9 +7,20 @@ return [
     'params' => [
         'authserverHost' => getenv('AUTHSERVER_HOST') ?: 'authserver.ely.by',
     ],
+    'modules' => [
+        'authserver' => api\modules\authserver\Module::class,
+        'session' => api\modules\session\Module::class,
+        'mojang' => api\modules\mojang\Module::class,
+        'internal' => api\modules\internal\Module::class,
+        'accounts' => api\modules\accounts\Module::class,
+        'oauth' => api\modules\oauth\Module::class,
+    ],
     'components' => [
         'user' => [
             'class' => api\components\User\Component::class,
+        ],
+        'oauth' => [
+            'class' => api\components\OAuth2\Component::class,
         ],
         'tokens' => [
             'class' => api\components\Tokens\Component::class,
@@ -17,6 +28,10 @@ return [
             'privateKeyPath' => getenv('JWT_PRIVATE_KEY_PATH') ?: __DIR__ . '/../../data/certs/private.pem',
             'privateKeyPass' => getenv('JWT_PRIVATE_KEY_PASS') ?: null,
             'publicKeyPath' => getenv('JWT_PUBLIC_KEY_PATH') ?: __DIR__ . '/../../data/certs/public.pem',
+            'encryptionKey' => getenv('JWT_ENCRYPTION_KEY'),
+        ],
+        'tokensFactory' => [
+            'class' => api\components\Tokens\TokensFactory::class,
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -82,13 +97,5 @@ return [
         'errorHandler' => [
             'class' => api\components\ErrorHandler::class,
         ],
-    ],
-    'modules' => [
-        'authserver' => api\modules\authserver\Module::class,
-        'session' => api\modules\session\Module::class,
-        'mojang' => api\modules\mojang\Module::class,
-        'internal' => api\modules\internal\Module::class,
-        'accounts' => api\modules\accounts\Module::class,
-        'oauth' => api\modules\oauth\Module::class,
     ],
 ];

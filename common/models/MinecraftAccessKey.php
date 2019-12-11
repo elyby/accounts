@@ -25,6 +25,10 @@ use yii\db\ActiveRecord;
  * Behaviors:
  * @mixin TimestampBehavior
  * @mixin PrimaryKeyValueBehavior
+ *
+ * @deprecated This table is no longer used to store authorization information in Minecraft.
+ * In time it will be empty (see the cleanup console command) and when it does, this model,
+ * the table in the database and everything related to the old logic can be removed.
  */
 class MinecraftAccessKey extends ActiveRecord {
 

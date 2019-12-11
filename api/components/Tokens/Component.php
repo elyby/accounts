@@ -8,6 +8,7 @@ use Exception;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Token;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use Webmozart\Assert\Assert;
 use yii\base\Component as BaseComponent;
 
@@ -17,6 +18,10 @@ class Component extends BaseComponent {
 
     /**
      * @var string
+     * @deprecated In earlier versions of the application, JWT were signed by a synchronous encryption algorithm.
+     * Now asynchronous encryption is used instead, and this logic is saved for a transitional period.
+     * I think it can be safely removed, but I'll not do it yet, because at the time of writing the comment
+     * there were enough changes in the code already.
      */
     public $hmacKey;
 
@@ -36,6 +41,11 @@ class Component extends BaseComponent {
     public $privateKeyPass;
 
     /**
+     * @var string
+     */
+    public $encryptionKey;
+
+    /**
      * @var AlgorithmsManager|null
      */
     private $algorithmManager;
@@ -45,19 +55,22 @@ class Component extends BaseComponent {
         Assert::notEmpty($this->hmacKey, 'hmacKey must be set');
         Assert::notEmpty($this->privateKeyPath, 'privateKeyPath must be set');
         Assert::notEmpty($this->publicKeyPath, 'publicKeyPath must be set');
+        Assert::notEmpty($this->encryptionKey, 'encryptionKey must be set');
     }
 
     public function create(array $payloads = [], array $headers = []): Token {
         $now = Carbon::now();
-        $builder = (new Builder())
-            ->issuedAt($now->getTimestamp())
-            ->expiresAt($now->addHour()->getTimestamp());
+        $builder = (new Builder())->issuedAt($now->getTimestamp());
+        if (isset($payloads['exp'])) {
+            $builder->expiresAt($payloads['exp']);
+        }
+
         foreach ($payloads as $claim => $value) {
-            $builder->withClaim($claim, $value);
+            $builder->withClaim($claim, $this->prepareValue($value));
         }
 
         foreach ($headers as $claim => $value) {
-            $builder->withHeader($claim, $value);
+            $builder->withHeader($claim, $this->prepareValue($value));
         }
 
         /** @noinspection PhpUnhandledExceptionInspection */
@@ -85,6 +98,28 @@ class Component extends BaseComponent {
         }
     }
 
+    public function encryptValue(string $rawValue): string {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $nonce = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
+        $cipher = Base64UrlSafe::encodeUnpadded($nonce . sodium_crypto_secretbox($rawValue, $nonce, $this->encryptionKey));
+        sodium_memzero($rawValue);
+
+        return $cipher;
+    }
+
+    public function decryptValue(string $encryptedValue): string {
+        $decoded = Base64UrlSafe::decode($encryptedValue);
+        Assert::true(mb_strlen($decoded, '8bit') >= (SODIUM_CRYPTO_SECRETBOX_NONCEBYTES + SODIUM_CRYPTO_SECRETBOX_MACBYTES));
+        $nonce = mb_substr($decoded, 0, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES, '8bit');
+        $cipherText = mb_substr($decoded, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES, null, '8bit');
+
+        $rawValue = sodium_crypto_secretbox_open($cipherText, $nonce, $this->encryptionKey);
+        Assert::true($rawValue !== false);
+        sodium_memzero($cipherText);
+
+        return $rawValue;
+    }
+
     private function getAlgorithmManager(): AlgorithmsManager {
         if ($this->algorithmManager === null) {
             $this->algorithmManager = new AlgorithmsManager([
@@ -98,6 +133,14 @@ class Component extends BaseComponent {
         }
 
         return $this->algorithmManager;
+    }
+
+    private function prepareValue($value) {
+        if ($value instanceof EncryptedValue) {
+            return $this->encryptValue($value->getValue());
+        }
+
+        return $value;
     }
 
 }

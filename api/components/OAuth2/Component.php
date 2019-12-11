@@ -1,15 +1,13 @@
 <?php
+declare(strict_types=1);
+
 namespace api\components\OAuth2;
 
+use Carbon\CarbonInterval;
+use DateInterval;
 use League\OAuth2\Server\AuthorizationServer;
-use League\OAuth2\Server\Storage\AccessTokenInterface;
-use League\OAuth2\Server\Storage\RefreshTokenInterface;
-use League\OAuth2\Server\Storage\SessionInterface;
 use yii\base\Component as BaseComponent;
 
-/**
- * @property AuthorizationServer $authServer
- */
 class Component extends BaseComponent {
 
     /**
@@ -19,35 +17,45 @@ class Component extends BaseComponent {
 
     public function getAuthServer(): AuthorizationServer {
         if ($this->_authServer === null) {
-            $authServer = new AuthorizationServer();
-            $authServer->setAccessTokenStorage(new Storage\AccessTokenStorage());
-            $authServer->setClientStorage(new Storage\ClientStorage());
-            $authServer->setScopeStorage(new Storage\ScopeStorage());
-            $authServer->setSessionStorage(new Storage\SessionStorage());
-            $authServer->setAuthCodeStorage(new Storage\AuthCodeStorage());
-            $authServer->setRefreshTokenStorage(new Storage\RefreshTokenStorage());
-            $authServer->setAccessTokenTTL(86400); // 1d
-
-            $authServer->addGrantType(new Grants\AuthCodeGrant());
-            $authServer->addGrantType(new Grants\RefreshTokenGrant());
-            $authServer->addGrantType(new Grants\ClientCredentialsGrant());
-
-            $this->_authServer = $authServer;
+            $this->_authServer = $this->createAuthServer();
         }
 
         return $this->_authServer;
     }
 
-    public function getAccessTokenStorage(): AccessTokenInterface {
-        return $this->getAuthServer()->getAccessTokenStorage();
-    }
+    private function createAuthServer(): AuthorizationServer {
+        $clientsRepo = new Repositories\ClientRepository();
+        $accessTokensRepo = new Repositories\AccessTokenRepository();
+        $publicScopesRepo = new Repositories\PublicScopeRepository();
+        $internalScopesRepo = new Repositories\InternalScopeRepository();
+        $authCodesRepo = new Repositories\AuthCodeRepository();
+        $refreshTokensRepo = new Repositories\RefreshTokenRepository();
 
-    public function getRefreshTokenStorage(): RefreshTokenInterface {
-        return $this->getAuthServer()->getRefreshTokenStorage();
-    }
+        $accessTokenTTL = CarbonInterval::create(-1); // Set negative value to make tokens non expiring
 
-    public function getSessionStorage(): SessionInterface {
-        return $this->getAuthServer()->getSessionStorage();
+        $authServer = new AuthorizationServer(
+            $clientsRepo,
+            $accessTokensRepo,
+            new Repositories\EmptyScopeRepository(),
+            new Keys\EmptyKey(),
+            '', // Omit the key because we use our own encryption mechanism
+            new ResponseTypes\BearerTokenResponse()
+        );
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $authCodeGrant = new Grants\AuthCodeGrant($authCodesRepo, $refreshTokensRepo, new DateInterval('PT10M'));
+        $authCodeGrant->disableRequireCodeChallengeForPublicClients();
+        $authServer->enableGrantType($authCodeGrant, $accessTokenTTL);
+        $authCodeGrant->setScopeRepository($publicScopesRepo); // Change repository after enabling
+
+        $refreshTokenGrant = new Grants\RefreshTokenGrant($refreshTokensRepo);
+        $authServer->enableGrantType($refreshTokenGrant, $accessTokenTTL);
+        $refreshTokenGrant->setScopeRepository($publicScopesRepo); // Change repository after enabling
+
+        $clientCredentialsGrant = new Grants\ClientCredentialsGrant();
+        $authServer->enableGrantType($clientCredentialsGrant, $accessTokenTTL);
+        $clientCredentialsGrant->setScopeRepository($internalScopesRepo); // Change repository after enabling
+
+        return $authServer;
     }
 
 }

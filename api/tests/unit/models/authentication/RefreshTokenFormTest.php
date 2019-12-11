@@ -5,14 +5,12 @@ namespace codeception\api\unit\models\authentication;
 
 use api\models\authentication\RefreshTokenForm;
 use api\tests\unit\TestCase;
-use Codeception\Specify;
 use common\models\AccountSession;
 use common\tests\fixtures\AccountSessionFixture;
 use Yii;
 use yii\web\Request;
 
 class RefreshTokenFormTest extends TestCase {
-    use Specify;
 
     public function _fixtures(): array {
         return [
@@ -21,9 +19,8 @@ class RefreshTokenFormTest extends TestCase {
     }
 
     public function testRenew() {
-        /** @var Request|\Mockery\MockInterface $request */
-        $request = mock(Request::class . '[getUserIP]')->makePartial();
-        $request->shouldReceive('getUserIP')->andReturn('10.1.2.3');
+        $request = $this->createPartialMock(Request::class, ['getUserIP']);
+        $request->method('getUserIP')->willReturn('10.1.2.3');
         Yii::$app->set('request', $request);
 
         $model = new RefreshTokenForm();

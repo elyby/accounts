@@ -14,33 +14,33 @@ use const common\LATEST_RULES_VERSION;
 
 /**
  * Fields:
- * @property integer $id
+ * @property int     $id
  * @property string  $uuid
  * @property string  $username
  * @property string  $email
  * @property string  $password_hash
- * @property integer $password_hash_strategy
+ * @property int     $password_hash_strategy
  * @property string  $lang
- * @property integer $status
- * @property integer $rules_agreement_version
+ * @property int     $status
+ * @property int     $rules_agreement_version
  * @property string  $registration_ip
  * @property string  $otp_secret
- * @property integer $is_otp_enabled
- * @property integer $created_at
- * @property integer $updated_at
- * @property integer $password_changed_at
+ * @property int     $is_otp_enabled
+ * @property int     $created_at
+ * @property int     $updated_at
+ * @property int     $password_changed_at
  *
  * Getters-setters:
  * @property-write string $password plain user's password
  * @property-read string $profileLink link to the user's Ely.by profile
  *
  * Relations:
- * @property EmailActivation[]    $emailActivations
- * @property OauthSession[]       $oauthSessions
- * @property OauthClient[]        $oauthClients
- * @property UsernameHistory[]    $usernameHistory
- * @property AccountSession[]     $sessions
- * @property MinecraftAccessKey[] $minecraftAccessKeys
+ * @property-read EmailActivation[] $emailActivations
+ * @property-read OauthSession[] $oauthSessions
+ * @property-read OauthClient[] $oauthClients
+ * @property-read UsernameHistory[] $usernameHistory
+ * @property-read AccountSession[] $sessions
+ * @property-read MinecraftAccessKey[] $minecraftAccessKeys
  *
  * Behaviors:
  * @mixin TimestampBehavior
@@ -93,7 +93,7 @@ class Account extends ActiveRecord {
     }
 
     public function getOauthSessions(): ActiveQuery {
-        return $this->hasMany(OauthSession::class, ['owner_id' => 'id'])->andWhere(['owner_type' => 'user']);
+        return $this->hasMany(OauthSession::class, ['account_id' => 'id']);
     }
 
     public function getOauthClients(): OauthClientQuery {

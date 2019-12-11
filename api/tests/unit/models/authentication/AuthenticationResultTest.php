@@ -21,19 +21,20 @@ class AuthenticationResultTest extends TestCase {
     }
 
     public function testGetAsResponse() {
-        $token = Yii::$app->tokens->create();
+        $time = time() + 3600;
+        $token = Yii::$app->tokens->create(['exp' => $time]);
         $jwt = (string)$token;
 
         $model = new AuthenticationResult($token);
         $result = $model->formatAsOAuth2Response();
         $this->assertSame($jwt, $result['access_token']);
-        $this->assertEqualsWithDelta(3600, $result['expires_in'], 1);
+        $this->assertSame(3600, $result['expires_in']);
         $this->assertArrayNotHasKey('refresh_token', $result);
 
         $model = new AuthenticationResult($token, 'refresh_token');
         $result = $model->formatAsOAuth2Response();
         $this->assertSame($jwt, $result['access_token']);
-        $this->assertEqualsWithDelta(3600, $result['expires_in'], 1);
+        $this->assertSame(3600, $result['expires_in']);
         $this->assertSame('refresh_token', $result['refresh_token']);
     }
 

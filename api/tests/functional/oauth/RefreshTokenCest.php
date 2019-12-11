@@ -1,83 +1,96 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\functional\oauth;
 
-use api\components\OAuth2\Storage\ScopeStorage as S;
-use api\rbac\Permissions as P;
-use api\tests\_pages\OauthRoute;
 use api\tests\functional\_steps\OauthSteps;
 use api\tests\FunctionalTester;
 
 class RefreshTokenCest {
 
-    /**
-     * @var OauthRoute
-     */
-    private $route;
-
-    public function _before(FunctionalTester $I) {
-        $this->route = new OauthRoute($I);
+    public function refreshToken(OauthSteps $I) {
+        $I->wantTo('refresh token without passing the desired scopes');
+        $refreshToken = $I->getRefreshToken();
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'refresh_token',
+            'refresh_token' => $refreshToken,
+            'client_id' => 'ely',
+            'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
+        ]);
+        $this->canSeeRefreshTokenSuccess($I);
     }
 
-    public function testInvalidRefreshToken(OauthSteps $I) {
-        $this->route->issueToken($this->buildParams(
-            'some-invalid-refresh-token',
-            'ely',
-            'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM'
-        ));
+    public function refreshTokenWithSameScopes(OauthSteps $I) {
+        $refreshToken = $I->getRefreshToken(['minecraft_server_session']);
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'refresh_token',
+            'refresh_token' => $refreshToken,
+            'client_id' => 'ely',
+            'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
+            'scope' => 'minecraft_server_session',
+        ]);
+        $this->canSeeRefreshTokenSuccess($I);
+    }
+
+    public function refreshTokenTwice(OauthSteps $I) {
+        $I->wantTo('refresh token two times in a row and ensure, that token isn\'t rotating');
+        $refreshToken = $I->getRefreshToken(['minecraft_server_session']);
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'refresh_token',
+            'refresh_token' => $refreshToken,
+            'client_id' => 'ely',
+            'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
+            'scope' => 'minecraft_server_session',
+        ]);
+        $this->canSeeRefreshTokenSuccess($I);
+
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'refresh_token',
+            'refresh_token' => $refreshToken,
+            'client_id' => 'ely',
+            'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
+            'scope' => 'minecraft_server_session',
+        ]);
+        $this->canSeeRefreshTokenSuccess($I);
+    }
+
+    public function refreshTokenUsingLegacyToken(FunctionalTester $I) {
+        $I->wantTo('refresh token using the legacy token');
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'refresh_token',
+            'refresh_token' => 'op7kPGAgHlsXRBJtkFg7wKOTpodvtHVW5NxR7Tjr',
+            'client_id' => 'test1',
+            'client_secret' => 'eEvrKHF47sqiaX94HsX-xXzdGiz3mcsq',
+            'scope' => 'minecraft_server_session account_info',
+        ]);
+        $this->canSeeRefreshTokenSuccess($I);
+    }
+
+    public function passInvalidRefreshToken(OauthSteps $I) {
+        $I->wantToTest('behaviour of the server when invalid refresh token passed');
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'refresh_token',
+            'refresh_token' => 'some-invalid-refresh-token',
+            'client_id' => 'ely',
+            'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
+        ]);
+        $I->canSeeResponseCodeIs(401);
         $I->canSeeResponseContainsJson([
             'error' => 'invalid_request',
             'message' => 'The refresh token is invalid.',
         ]);
     }
 
-    public function testRefreshToken(OauthSteps $I) {
-        $refreshToken = $I->getRefreshToken();
-        $this->route->issueToken($this->buildParams(
-            $refreshToken,
-            'ely',
-            'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM'
-        ));
-        $this->canSeeRefreshTokenSuccess($I);
-    }
-
-    public function testRefreshTokenWithSameScopes(OauthSteps $I) {
-        $refreshToken = $I->getRefreshToken([P::MINECRAFT_SERVER_SESSION]);
-        $this->route->issueToken($this->buildParams(
-            $refreshToken,
-            'ely',
-            'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
-            [P::MINECRAFT_SERVER_SESSION, S::OFFLINE_ACCESS]
-        ));
-        $this->canSeeRefreshTokenSuccess($I);
-    }
-
-    public function testRefreshTokenTwice(OauthSteps $I) {
-        $refreshToken = $I->getRefreshToken([P::MINECRAFT_SERVER_SESSION]);
-        $this->route->issueToken($this->buildParams(
-            $refreshToken,
-            'ely',
-            'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
-            [P::MINECRAFT_SERVER_SESSION, S::OFFLINE_ACCESS]
-        ));
-        $this->canSeeRefreshTokenSuccess($I);
-
-        $this->route->issueToken($this->buildParams(
-            $refreshToken,
-            'ely',
-            'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
-            [P::MINECRAFT_SERVER_SESSION, S::OFFLINE_ACCESS]
-        ));
-        $this->canSeeRefreshTokenSuccess($I);
-    }
-
-    public function testRefreshTokenWithNewScopes(OauthSteps $I) {
-        $refreshToken = $I->getRefreshToken([P::MINECRAFT_SERVER_SESSION]);
-        $this->route->issueToken($this->buildParams(
-            $refreshToken,
-            'ely',
-            'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
-            [P::MINECRAFT_SERVER_SESSION, S::OFFLINE_ACCESS, 'account_email']
-        ));
+    public function requireNewScopes(OauthSteps $I) {
+        $I->wantToTest('behavior when required the new scope that was not issued with original token');
+        $refreshToken = $I->getRefreshToken(['minecraft_server_session']);
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'refresh_token',
+            'refresh_token' => $refreshToken,
+            'client_id' => 'ely',
+            'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
+            'scope' => 'minecraft_server_session account_email',
+        ]);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -85,34 +98,8 @@ class RefreshTokenCest {
         ]);
     }
 
-    private function buildParams($refreshToken = null, $clientId = null, $clientSecret = null, $scopes = []) {
-        $params = ['grant_type' => 'refresh_token'];
-        if ($refreshToken !== null) {
-            $params['refresh_token'] = $refreshToken;
-        }
-
-        if ($clientId !== null) {
-            $params['client_id'] = $clientId;
-        }
-
-        if ($clientSecret !== null) {
-            $params['client_secret'] = $clientSecret;
-        }
-
-        if (!empty($scopes)) {
-            if (is_array($scopes)) {
-                $scopes = implode(',', $scopes);
-            }
-
-            $params['scope'] = $scopes;
-        }
-
-        return $params;
-    }
-
-    private function canSeeRefreshTokenSuccess(OauthSteps $I) {
+    private function canSeeRefreshTokenSuccess(FunctionalTester $I) {
         $I->canSeeResponseCodeIs(200);
-        $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
             'token_type' => 'Bearer',
         ]);

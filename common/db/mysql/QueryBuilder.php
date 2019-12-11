@@ -1,8 +1,10 @@
 <?php
+declare(strict_types=1);
+
 namespace common\db\mysql;
 
+use SamIT\Yii2\MariaDb\QueryBuilder as MysqlQueryBuilder;
 use yii\db\ExpressionInterface;
-use yii\db\mysql\QueryBuilder as MysqlQueryBuilder;
 
 class QueryBuilder extends MysqlQueryBuilder {
 

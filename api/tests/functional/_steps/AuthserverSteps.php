@@ -3,16 +3,14 @@ declare(strict_types=1);
 
 namespace api\tests\functional\_steps;
 
-use api\tests\_pages\AuthserverRoute;
 use api\tests\FunctionalTester;
 use Ramsey\Uuid\Uuid;
 
 class AuthserverSteps extends FunctionalTester {
 
-    public function amAuthenticated(string $asUsername = 'admin', string $password = 'password_0') {
-        $route = new AuthserverRoute($this);
+    public function amAuthenticated(string $asUsername = 'admin', string $password = 'password_0'): array {
         $clientToken = Uuid::uuid4()->toString();
-        $route->authenticate([
+        $this->sendPOST('/api/authserver/authentication/authenticate', [
             'username' => $asUsername,
             'password' => $password,
             'clientToken' => $clientToken,
