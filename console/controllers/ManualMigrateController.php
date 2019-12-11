@@ -24,7 +24,7 @@ class ManualMigrateController extends Controller {
                     return (int)explode(':', $key)[2];
                 }, $keys);
                 /** @var OauthSession[] $sessions */
-                $sessions = OauthSession::find()->andWhere(['legacy_id' => $sessionsIds]);
+                $sessions = OauthSession::find()->andWhere(['legacy_id' => $sessionsIds])->all();
                 foreach ($sessions as $session) {
                     if (empty($session->scopes)) {
                         $session->scopes = Yii::$app->redis->smembers("oauth:sessions:{$session->legacy_id}:scopes");
