@@ -37,7 +37,12 @@ class ClientRepository implements ClientRepositoryInterface {
     }
 
     private function findModel(string $id): ?OauthClient {
-        return OauthClient::findOne(['id' => $id]);
+        $client = OauthClient::findOne(['id' => $id]);
+        if ($client === null || $client->type !== OauthClient::TYPE_APPLICATION) {
+            return null;
+        }
+
+        return $client;
     }
 
 }
