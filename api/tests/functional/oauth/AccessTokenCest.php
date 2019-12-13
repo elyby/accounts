@@ -22,7 +22,7 @@ class AccessTokenCest {
             'token_type' => 'Bearer',
         ]);
         $I->canSeeResponseJsonMatchesJsonPath('$.access_token');
-        $I->canSeeResponseJsonMatchesJsonPath('$.expires_in');
+        $I->cantSeeResponseJsonMatchesJsonPath('$.expires_in');
         $I->cantSeeResponseJsonMatchesJsonPath('$.refresh_token');
     }
 

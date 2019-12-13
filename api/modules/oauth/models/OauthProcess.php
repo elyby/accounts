@@ -176,11 +176,15 @@ class OauthProcess {
             }
 
             if (($result['expires_in'] ?? 0) <= 0) {
-                // Since some of our clients use this field to understand how long the token will live,
-                // we have to give it some value. The tokens with zero lifetime don't expire
-                // but in order not to break the clients storing the value as integer on 32-bit systems,
-                // let's calculate the value based on the unsigned maximum for this type
-                $result['expires_in'] = 2 ** 31 - time();
+                if ($shouldIssueRefreshToken || $grantType === 'refresh_token') {
+                    // Since some of our clients use this field to understand how long the token will live,
+                    // we have to give it some value. The tokens with zero lifetime don't expire
+                    // but in order not to break the clients storing the value as integer on 32-bit systems,
+                    // let's calculate the value based on the unsigned maximum for this type
+                    $result['expires_in'] = 2 ** 31 - time();
+                } else {
+                    unset($result['expires_in']);
+                }
             }
 
             Yii::$app->statsd->inc("oauth.issueToken_client.{$clientId}");
