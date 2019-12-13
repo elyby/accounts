@@ -10,7 +10,6 @@ use common\components\UserPass;
 use common\helpers\Error as E;
 use common\models\Account;
 use Yii;
-use yii\db\Transaction;
 
 class ChangePasswordFormTest extends TestCase {
 
@@ -57,21 +56,13 @@ class ChangePasswordFormTest extends TestCase {
     }
 
     public function testPerformAction() {
-        $component = mock(Component::class . '[terminateSessions]');
-        $component->shouldNotReceive('terminateSessions');
+        $component = $this->createPartialMock(Component::class, ['terminateSessions']);
+        $component->expects($this->never())->method('terminateSessions');
 
         Yii::$app->set('user', $component);
 
-        $transaction = mock(Transaction::class . '[commit]');
-        $transaction->shouldReceive('commit');
-        $connection = mock(Yii::$app->db);
-        $connection->shouldReceive('beginTransaction')->andReturn($transaction);
-
-        Yii::$app->set('db', $connection);
-
-        /** @var Account|\Mockery\MockInterface $account */
-        $account = mock(Account::class . '[save]');
-        $account->shouldReceive('save')->andReturn(true);
+        $account = $this->createPartialMock(Account::class, ['save']);
+        $account->method('save')->willReturn(true);
         $account->setPassword('password_0');
 
         $model = new ChangePasswordForm($account, [
@@ -85,9 +76,8 @@ class ChangePasswordFormTest extends TestCase {
         $this->assertTrue($account->validatePassword('my-new-password'), 'new password should be successfully stored into account');
         $this->assertGreaterThanOrEqual($callTime, $account->password_changed_at, 'password change time updated');
 
-        /** @var Account|\Mockery\MockInterface $account */
-        $account = mock(Account::class . '[save]');
-        $account->shouldReceive('save')->andReturn(true);
+        $account = $this->createPartialMock(Account::class, ['save']);
+        $account->method('save')->willReturn(true);
         $account->email = 'mock@ely.by';
         $account->password_hash_strategy = Account::PASS_HASH_STRATEGY_OLD_ELY;
         $account->password_hash = UserPass::make($account->email, '12345678');
@@ -106,14 +96,12 @@ class ChangePasswordFormTest extends TestCase {
     }
 
     public function testPerformActionWithLogout() {
-        /** @var Account|\Mockery\MockInterface $account */
-        $account = mock(Account::class . '[save]');
-        $account->shouldReceive('save')->andReturn(true);
+        $account = $this->createPartialMock(Account::class, ['save']);
+        $account->method('save')->willReturn(true);
         $account->setPassword('password_0');
 
-        /** @var Component|\Mockery\MockInterface $component */
-        $component = mock(Component::class . '[terminateSessions]');
-        $component->shouldReceive('terminateSessions')->once()->withArgs([$account, Component::KEEP_CURRENT_SESSION]);
+        $component = $this->createPartialMock(Component::class, ['terminateSessions']);
+        $component->expects($this->once())->method('terminateSessions')->with($account, Component::KEEP_CURRENT_SESSION);
 
         Yii::$app->set('user', $component);
 

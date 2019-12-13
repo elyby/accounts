@@ -22,9 +22,8 @@ class AccountOwnerTest extends TestCase {
         $this->assertFalse($rule->execute('some token', $item, ['accountId' => 123]));
 
         // Identity presented, but have no account
-        /** @var IdentityInterface|\Mockery\MockInterface $identity */
-        $identity = mock(IdentityInterface::class);
-        $identity->shouldReceive('getAccount')->andReturn(null);
+        $identity = $this->createMock(IdentityInterface::class);
+        $identity->method('getAccount')->willReturn(null);
         Yii::$app->user->setIdentity($identity);
 
         $this->assertFalse($rule->execute('some token', $item, ['accountId' => 123]));
@@ -35,9 +34,8 @@ class AccountOwnerTest extends TestCase {
         $account->status = Account::STATUS_ACTIVE;
         $account->rules_agreement_version = LATEST_RULES_VERSION;
 
-        /** @var IdentityInterface|\Mockery\MockInterface $identity */
-        $identity = mock(IdentityInterface::class);
-        $identity->shouldReceive('getAccount')->andReturn($account);
+        $identity = $this->createMock(IdentityInterface::class);
+        $identity->method('getAccount')->willReturn($account);
 
         Yii::$app->user->setIdentity($identity);
 

@@ -4,19 +4,13 @@ declare(strict_types=1);
 namespace api\tests\unit;
 
 use Codeception\Test\Unit;
-use Mockery;
+use common\tests\helpers\ExtendedPHPMock;
 
+/**
+ * @property \api\tests\UnitTester $tester
+ */
 class TestCase extends Unit {
-
-    /**
-     * @var \api\tests\UnitTester
-     */
-    protected $tester;
-
-    protected function tearDown(): void {
-        parent::tearDown();
-        Mockery::close();
-    }
+    use ExtendedPHPMock;
 
     /**
      * A list of fixtures that will be loaded before the test, but after the database is cleaned up

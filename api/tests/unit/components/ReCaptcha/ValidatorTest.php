@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace codeception\api\unit\components\ReCaptcha;
 
 use api\components\ReCaptcha\Validator;
@@ -12,14 +14,14 @@ use ReflectionClass;
 class ValidatorTest extends TestCase {
 
     public function testValidateEmptyValue() {
-        $validator = new Validator(mock(ClientInterface::class));
+        $validator = new Validator($this->createMock(ClientInterface::class));
         $this->assertFalse($validator->validate('', $error));
         $this->assertSame('error.captcha_required', $error, 'Get error.captcha_required, if passed empty value');
     }
 
     public function testValidateInvalidValue() {
-        $mockClient = mock(ClientInterface::class);
-        $mockClient->shouldReceive('request')->andReturn(new Response(200, [], json_encode([
+        $mockClient = $this->createMock(ClientInterface::class);
+        $mockClient->method('request')->willReturn(new Response(200, [], json_encode([
             'success' => false,
             'error-codes' => [
                 'invalid-input-response', // The response parameter is invalid or malformed.
@@ -32,14 +34,16 @@ class ValidatorTest extends TestCase {
     }
 
     public function testValidateWithNetworkTroubles() {
-        $mockClient = mock(ClientInterface::class);
-        $mockClient->shouldReceive('request')->andThrow(mock(ConnectException::class))->once();
-        $mockClient->shouldReceive('request')->andReturn(new Response(200, [], json_encode([
-            'success' => true,
-            'error-codes' => [
-                'invalid-input-response', // The response parameter is invalid or malformed.
-            ],
-        ])))->once();
+        $mockClient = $this->createMock(ClientInterface::class);
+        $mockClient->expects($this->exactly(2))->method('request')->willReturnOnConsecutiveCalls(
+            $this->throwException($this->createMock(ConnectException::class)),
+            $this->returnValue(new Response(200, [], json_encode([
+                'success' => true,
+                'error-codes' => [
+                    'invalid-input-response', // The response parameter is invalid or malformed.
+                ],
+            ])))
+        );
         PHPMockery::mock($this->getClassNamespace(Validator::class), 'sleep')->once();
 
         $validator = new Validator($mockClient);
@@ -48,8 +52,8 @@ class ValidatorTest extends TestCase {
     }
 
     public function testValidateWithHugeNetworkTroubles() {
-        $mockClient = mock(ClientInterface::class);
-        $mockClient->shouldReceive('request')->andThrow(mock(ConnectException::class))->times(3);
+        $mockClient = $this->createMock(ClientInterface::class);
+        $mockClient->expects($this->exactly(3))->method('request')->willThrowException($this->createMock(ConnectException::class));
         PHPMockery::mock($this->getClassNamespace(Validator::class), 'sleep')->times(2);
 
         $validator = new Validator($mockClient);
@@ -58,8 +62,8 @@ class ValidatorTest extends TestCase {
     }
 
     public function testValidateValidValue() {
-        $mockClient = mock(ClientInterface::class);
-        $mockClient->shouldReceive('request')->andReturn(new Response(200, [], json_encode([
+        $mockClient = $this->createMock(ClientInterface::class);
+        $mockClient->method('request')->willReturn(new Response(200, [], json_encode([
             'success' => true,
         ])));
         $validator = new Validator($mockClient);

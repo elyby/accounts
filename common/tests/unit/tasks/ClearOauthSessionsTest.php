@@ -36,20 +36,20 @@ class ClearOauthSessionsTest extends TestCase {
         $task = new ClearOauthSessions();
         $task->clientId = 'deleted-oauth-client-with-sessions';
         $task->notSince = 1519510065;
-        $task->execute(mock(Queue::class));
+        $task->execute($this->createMock(Queue::class));
 
         $this->assertFalse(OauthSession::find()->andWhere(['legacy_id' => 3])->exists());
         $this->assertTrue(OauthSession::find()->andWhere(['legacy_id' => 4])->exists());
 
         $task = new ClearOauthSessions();
         $task->clientId = 'deleted-oauth-client-with-sessions';
-        $task->execute(mock(Queue::class));
+        $task->execute($this->createMock(Queue::class));
 
         $this->assertFalse(OauthSession::find()->andWhere(['legacy_id' => 4])->exists());
 
         $task = new ClearOauthSessions();
         $task->clientId = 'some-not-exists-client-id';
-        $task->execute(mock(Queue::class));
+        $task->execute($this->createMock(Queue::class));
     }
 
 }

@@ -35,7 +35,7 @@ class ClearAccountSessionsTest extends TestCase {
         $bannedAccount = $this->tester->grabFixture('accounts', 'banned-account');
         $task = new ClearAccountSessions();
         $task->accountId = $bannedAccount->id;
-        $task->execute(mock(Queue::class));
+        $task->execute($this->createMock(Queue::class));
         $this->assertEmpty($bannedAccount->sessions);
         $this->assertEmpty($bannedAccount->minecraftAccessKeys);
         $this->assertEmpty($bannedAccount->oauthSessions);

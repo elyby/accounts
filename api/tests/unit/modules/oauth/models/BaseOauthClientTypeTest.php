@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\unit\modules\oauth\models;
 
 use api\modules\oauth\models\BaseOauthClientType;
@@ -10,9 +12,7 @@ class BaseOauthClientTypeTest extends TestCase {
     public function testApplyTyClient(): void {
         $client = new OauthClient();
 
-        /** @var BaseOauthClientType|\Mockery\MockInterface $form */
-        $form = mock(BaseOauthClientType::class);
-        $form->makePartial();
+        $form = $this->getMockForAbstractClass(BaseOauthClientType::class);
         $form->name = 'Application name';
         $form->websiteUrl = 'http://example.com';
 

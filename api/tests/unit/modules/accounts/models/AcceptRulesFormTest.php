@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\unit\modules\accounts\models;
 
 use api\modules\accounts\models\AcceptRulesForm;
@@ -9,9 +11,8 @@ use const common\LATEST_RULES_VERSION;
 class AcceptRulesFormTest extends TestCase {
 
     public function testAgreeWithLatestRules() {
-        /** @var Account|\Mockery\MockInterface $account */
-        $account = mock(Account::class . '[save]');
-        $account->shouldReceive('save')->andReturn(true);
+        $account = $this->createPartialMock(Account::class, ['save']);
+        $account->method('save')->willReturn(true);
         $account->rules_agreement_version = LATEST_RULES_VERSION - 1;
 
         $model = new AcceptRulesForm($account);

@@ -10,7 +10,6 @@ modules:
         recreateApplication: true
         transaction: false
     - common\tests\_support\FixtureHelper
-    - common\tests\_support\Mockery
     - REST:
         depends: Yii2
     - Redis:

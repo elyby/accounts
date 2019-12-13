@@ -13,7 +13,6 @@ use common\tasks\SendRegistrationEmail;
 use common\tests\fixtures\AccountFixture;
 use common\tests\fixtures\EmailActivationFixture;
 use common\tests\fixtures\UsernameHistoryFixture;
-use common\tests\helpers\Mock;
 use GuzzleHttp\ClientInterface;
 use Yii;
 use yii\validators\EmailValidator;
@@ -25,7 +24,7 @@ class RegistrationFormTest extends TestCase {
     protected function setUp(): void {
         parent::setUp();
         $this->mockRequest();
-        Yii::$container->set(ReCaptchaValidator::class, new class(mock(ClientInterface::class)) extends ReCaptchaValidator {
+        Yii::$container->set(ReCaptchaValidator::class, new class($this->createMock(ClientInterface::class)) extends ReCaptchaValidator {
             public function validateValue($value) {
                 return null;
             }
@@ -57,8 +56,8 @@ class RegistrationFormTest extends TestCase {
     }
 
     public function testSignup() {
-        Mock::func(EmailValidator::class, 'checkdnsrr')->andReturn(true);
-        Mock::func(EmailValidator::class, 'dns_get_record')->andReturn(['']);
+        $this->getFunctionMock(EmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
+        $this->getFunctionMock(EmailValidator::class, 'dns_get_record')->expects($this->any())->willReturn(['']);
         $model = new RegistrationForm([
             'username' => 'some_username',
             'email' => 'some_email@example.com',
@@ -75,8 +74,8 @@ class RegistrationFormTest extends TestCase {
     }
 
     public function testSignupWithDefaultLanguage() {
-        Mock::func(EmailValidator::class, 'checkdnsrr')->andReturn(true);
-        Mock::func(EmailValidator::class, 'dns_get_record')->andReturn(['']);
+        $this->getFunctionMock(EmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
+        $this->getFunctionMock(EmailValidator::class, 'dns_get_record')->expects($this->any())->willReturn(['']);
         $model = new RegistrationForm([
             'username' => 'some_username',
             'email' => 'some_email@example.com',

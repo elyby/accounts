@@ -45,7 +45,7 @@ class DeliveryWebHookTest extends TestCase {
             'key' => 'value',
             'another' => 'value',
         ];
-        $task->execute(mock(Queue::class));
+        $task->execute($this->createMock(Queue::class));
         /** @var Request $request */
         $request = $this->historyContainer[0]['request'];
         $this->assertSame('http://localhost:81/webhooks/ely', (string)$request->getUri());
@@ -66,7 +66,7 @@ class DeliveryWebHookTest extends TestCase {
             'key' => 'value',
             'another' => 'value',
         ];
-        $task->execute(mock(Queue::class));
+        $task->execute($this->createMock(Queue::class));
         /** @var Request $request */
         $request = $this->historyContainer[0]['request'];
         $this->assertSame('http://localhost:81/webhooks/ely', (string)$request->getUri());
@@ -87,7 +87,7 @@ class DeliveryWebHookTest extends TestCase {
             'key' => 'value',
             'another' => 'value',
         ];
-        $task->execute(mock(Queue::class));
+        $task->execute($this->createMock(Queue::class));
     }
 
     public function testExecuteUnhandledException() {
@@ -102,7 +102,7 @@ class DeliveryWebHookTest extends TestCase {
             'key' => 'value',
             'another' => 'value',
         ];
-        $task->execute(mock(Queue::class));
+        $task->execute($this->createMock(Queue::class));
     }
 
     private function createMockedTask(): DeliveryWebHook {

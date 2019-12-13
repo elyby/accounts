@@ -46,27 +46,24 @@ class ComponentTest extends TestCase {
         $this->assertNull($component->getActiveSession());
 
         // Identity is a Oauth2Identity
-        $component->setIdentity(mock(LegacyOAuth2Identity::class));
+        $component->setIdentity($this->createMock(LegacyOAuth2Identity::class));
         $this->assertNull($component->getActiveSession());
 
         // Identity is correct, but have no jti claim
-        /** @var JwtIdentity|\Mockery\MockInterface $identity */
-        $identity = mock(JwtIdentity::class);
-        $identity->shouldReceive('getToken')->andReturn(new Token());
+        $identity = $this->createMock(JwtIdentity::class);
+        $identity->method('getToken')->willReturn(new Token());
         $component->setIdentity($identity);
         $this->assertNull($component->getActiveSession());
 
         // Identity is correct and has jti claim, but there is no associated session
-        /** @var JwtIdentity|\Mockery\MockInterface $identity */
-        $identity = mock(JwtIdentity::class);
-        $identity->shouldReceive('getToken')->andReturn(new Token([], ['jti' => new Basic('jti', 999999)]));
+        $identity = $this->createMock(JwtIdentity::class);
+        $identity->method('getToken')->willReturn(new Token([], ['jti' => new Basic('jti', 999999)]));
         $component->setIdentity($identity);
         $this->assertNull($component->getActiveSession());
 
         // Identity is correct, has jti claim and associated session exists
-        /** @var JwtIdentity|\Mockery\MockInterface $identity */
-        $identity = mock(JwtIdentity::class);
-        $identity->shouldReceive('getToken')->andReturn(new Token([], ['jti' => new Basic('jti', 1)]));
+        $identity = $this->createMock(JwtIdentity::class);
+        $identity->method('getToken')->willReturn(new Token([], ['jti' => new Basic('jti', 1)]));
         $component->setIdentity($identity);
         $session = $component->getActiveSession();
         $this->assertNotNull($session);
@@ -77,9 +74,8 @@ class ComponentTest extends TestCase {
         /** @var AccountSession $session */
         $session = $this->tester->grabFixture('sessions', 'admin2');
 
-        /** @var Component|\Mockery\MockInterface $component */
-        $component = mock(Component::class . '[getActiveSession]')->makePartial();
-        $component->shouldReceive('getActiveSession')->times(1)->andReturn($session);
+        $component = $this->createPartialMock(Component::class, ['getActiveSession']);
+        $component->expects($this->once())->method('getActiveSession')->willReturn($session);
 
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'admin');

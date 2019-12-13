@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\unit\modules\accounts\models;
 
 use api\modules\accounts\models\DisableTwoFactorAuthForm;
@@ -9,16 +11,15 @@ use common\models\Account;
 class DisableTwoFactorAuthFormTest extends TestCase {
 
     public function testPerformAction() {
-        /** @var Account|\Mockery\MockInterface $account */
-        $account = mock(Account::class)->makePartial();
-        $account->shouldReceive('save')->once()->andReturn(true);
+        $account = $this->createPartialMock(Account::class, ['save']);
+        $account->expects($this->once())->method('save')->willReturn(true);
 
         $account->is_otp_enabled = true;
         $account->otp_secret = 'mock secret';
 
-        /** @var DisableTwoFactorAuthForm|\Mockery\MockInterface $model */
-        $model = mock(DisableTwoFactorAuthForm::class . '[validate]', [$account]);
-        $model->shouldReceive('validate')->once()->andReturn(true);
+        $model = $this->createPartialMock(DisableTwoFactorAuthForm::class, ['getAccount', 'validate']);
+        $model->method('getAccount')->willReturn($account);
+        $model->expects($this->once())->method('validate')->willReturn(true);
 
         $this->assertTrue($model->performAction());
         $this->assertNull($account->otp_secret);

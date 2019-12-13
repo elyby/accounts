@@ -69,7 +69,7 @@ class CreateWebHooksDeliveriesTest extends TestCase {
                 'status' => 0,
             ],
         ];
-        $task->execute(mock(Queue::class));
+        $task->execute($this->createMock(Queue::class));
         /** @var DeliveryWebHook[] $tasks */
         $tasks = $this->tester->grabQueueJobs();
         $this->assertCount(2, $tasks);

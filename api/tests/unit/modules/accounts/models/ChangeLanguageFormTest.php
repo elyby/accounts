@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\unit\modules\accounts\models;
 
 use api\modules\accounts\models\ChangeLanguageForm;
@@ -8,9 +10,8 @@ use common\models\Account;
 class ChangeLanguageFormTest extends TestCase {
 
     public function testApplyLanguage() {
-        /** @var Account|\Mockery\MockInterface $account */
-        $account = mock(Account::class . '[save]');
-        $account->shouldReceive('save')->andReturn(true);
+        $account = $this->createPartialMock(Account::class, ['save']);
+        $account->method('save')->willReturn(true);
 
         $model = new ChangeLanguageForm($account);
         $model->lang = 'ru';

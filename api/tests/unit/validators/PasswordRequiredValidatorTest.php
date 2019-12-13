@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace codeception\api\unit\validators;
 
 use api\rbac\Permissions as P;
@@ -26,9 +28,8 @@ class PasswordRequiredValidatorTest extends TestCase {
         $this->assertNull($this->callProtected($model, 'validateValue', '12345678'));
 
         // Skip validation if user can skip identity verification
-        /** @var User|\Mockery\MockInterface $component */
-        $component = mock(User::class . '[can]', [['identityClass' => '']]);
-        $component->shouldReceive('can')->withArgs([P::ESCAPE_IDENTITY_VERIFICATION])->andReturn(true);
+        $component = $this->createPartialMock(User::class, ['can']);
+        $component->method('can')->with(P::ESCAPE_IDENTITY_VERIFICATION)->willReturn(true);
         $model->user = $component;
         $this->assertNull($this->callProtected($model, 'validateValue', ''));
     }

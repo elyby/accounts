@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\functional\accounts;
 
 use api\tests\_pages\AccountsRoute;
@@ -18,7 +20,7 @@ class ChangeEmailSubmitNewEmailCest {
     }
 
     public function testSubmitNewEmail(FunctionalTester $I) {
-        Mock::func(EmailValidator::class, 'checkdnsrr')->andReturnTrue();
+        // Mock::func(EmailValidator::class, 'checkdnsrr')->andReturnTrue();
 
         $I->wantTo('submit new email');
         $id = $I->amAuthenticated('ILLIMUNATI');

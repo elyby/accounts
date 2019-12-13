@@ -54,7 +54,7 @@ class PullMojangUsernameTest extends TestCase {
         $mojangUsernameFixture = $this->tester->grabFixture('mojangUsernames', 'Notch');
         $task = new PullMojangUsername();
         $task->username = 'Notch';
-        $task->execute(mock(Queue::class));
+        $task->execute($this->createMock(Queue::class));
         /** @var MojangUsername|null $mojangUsername */
         $mojangUsername = MojangUsername::findOne('Notch');
         $this->assertInstanceOf(MojangUsername::class, $mojangUsername);
@@ -69,7 +69,7 @@ class PullMojangUsernameTest extends TestCase {
         $mojangUsernameFixture = $this->tester->grabFixture('mojangUsernames', 'Notch');
         $task = new PullMojangUsername();
         $task->username = 'Notch';
-        $task->execute(mock(Queue::class));
+        $task->execute($this->createMock(Queue::class));
         /** @var MojangUsername|null $mojangUsername */
         $mojangUsername = MojangUsername::findOne('Notch');
         $this->assertInstanceOf(MojangUsername::class, $mojangUsername);
@@ -82,7 +82,7 @@ class PullMojangUsernameTest extends TestCase {
 
         $task = new PullMojangUsername();
         $task->username = 'Chest';
-        $task->execute(mock(Queue::class));
+        $task->execute($this->createMock(Queue::class));
         /** @var MojangUsername|null $mojangUsername */
         $mojangUsername = MojangUsername::findOne('Chest');
         $this->assertInstanceOf(MojangUsername::class, $mojangUsername);
@@ -94,7 +94,7 @@ class PullMojangUsernameTest extends TestCase {
         $username = $this->tester->grabFixture('mojangUsernames', 'not-exists')['username'];
         $task = new PullMojangUsername();
         $task->username = $username;
-        $task->execute(mock(Queue::class));
+        $task->execute($this->createMock(Queue::class));
         /** @var MojangUsername|null $mojangUsername */
         $mojangUsername = MojangUsername::findOne($username);
         $this->assertNull($mojangUsername);
@@ -108,7 +108,7 @@ class PullMojangUsernameTest extends TestCase {
         $username = $mojangInfo['username'];
         $task = new PullMojangUsername();
         $task->username = $username;
-        $task->execute(mock(Queue::class));
+        $task->execute($this->createMock(Queue::class));
         /** @var MojangUsername|null $mojangUsername */
         $mojangUsername = MojangUsername::findOne($username);
         $this->assertInstanceOf(MojangUsername::class, $mojangUsername);

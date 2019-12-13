@@ -33,9 +33,8 @@ class OauthClientOwnerTest extends TestCase {
         $this->assertFalse($rule->execute('some token', $item, ['clientId' => 'ely']));
 
         // Client exists, identity presented, but have no account
-        /** @var IdentityInterface|\Mockery\MockInterface $identity */
-        $identity = mock(IdentityInterface::class);
-        $identity->shouldReceive('getAccount')->andReturn(null);
+        $identity = $this->createMock(IdentityInterface::class);
+        $identity->method('getAccount')->willReturn(null);
         Yii::$app->user->setIdentity($identity);
 
         $this->assertFalse($rule->execute('some token', $item, ['clientId' => 'ely']));
@@ -46,9 +45,8 @@ class OauthClientOwnerTest extends TestCase {
         $account->status = Account::STATUS_ACTIVE;
         $account->rules_agreement_version = LATEST_RULES_VERSION;
 
-        /** @var IdentityInterface|\Mockery\MockInterface $identity */
-        $identity = mock(IdentityInterface::class);
-        $identity->shouldReceive('getAccount')->andReturn($account);
+        $identity = $this->createMock(IdentityInterface::class);
+        $identity->method('getAccount')->willReturn($account);
         Yii::$app->user->setIdentity($identity);
 
         $this->assertTrue($rule->execute('token', $item, ['clientId' => 'admin-oauth-client']));

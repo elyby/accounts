@@ -56,7 +56,7 @@ class OauthClientForm {
     public function delete(): bool {
         $transaction = Yii::$app->db->beginTransaction();
 
-        $client = $this->client;
+        $client = $this->getClient();
         $client->is_deleted = true;
         Assert::true($client->save(), 'Cannot update oauth client');
 
@@ -70,7 +70,7 @@ class OauthClientForm {
     public function reset(bool $regenerateSecret = false): bool {
         $transaction = Yii::$app->db->beginTransaction();
 
-        $client = $this->client;
+        $client = $this->getClient();
         if ($regenerateSecret) {
             $client->generateSecret();
             Assert::true($client->save(), 'Cannot update oauth client');

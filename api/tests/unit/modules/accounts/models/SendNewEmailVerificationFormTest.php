@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\unit\modules\accounts\models;
 
 use api\modules\accounts\models\SendNewEmailVerificationForm;
@@ -9,7 +11,6 @@ use common\models\EmailActivation;
 use common\tasks\SendNewEmailConfirmation;
 use common\tests\fixtures\AccountFixture;
 use common\tests\fixtures\EmailActivationFixture;
-use common\tests\helpers\Mock;
 use yii\validators\EmailValidator;
 
 class SendNewEmailVerificationFormTest extends TestCase {
@@ -42,7 +43,7 @@ class SendNewEmailVerificationFormTest extends TestCase {
             'key' => $key,
             'email' => 'my-new-email@ely.by',
         ]);
-        Mock::func(EmailValidator::class, 'checkdnsrr')->andReturn(true);
+        $this->getFunctionMock(EmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
         $this->assertTrue($model->performAction());
         $this->assertNull(EmailActivation::findOne($key));
         /** @var EmailActivation $activation */
