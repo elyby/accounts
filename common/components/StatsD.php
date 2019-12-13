@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace common\components;
 
 use Domnikl\Statsd\Client;
@@ -80,7 +82,7 @@ class StatsD extends Component {
 
     protected function createConnection(): Connection {
         if (!empty($this->host) && !empty($this->port)) {
-            return new Connection\UdpSocket($this->host, $this->port);
+            return new Connection\UdpSocket($this->host, (int)$this->port);
         }
 
         return new Connection\Blackhole();

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\modules\accounts\models;
 
 use api\exceptions\ThisShouldNotHappenException;
@@ -9,10 +11,11 @@ use BaconQrCode\Renderer\Color\Rgb;
 use BaconQrCode\Renderer\Image\Svg;
 use BaconQrCode\Writer;
 use common\components\Qr\ElyDecorator;
+use OTPHP\TOTP;
+use OTPHP\TOTPInterface;
 use ParagonIE\ConstantTime\Base32;
 
 class TwoFactorAuthInfo extends BaseAccountForm {
-    use TotpHelper;
 
     public function getCredentials(): array {
         if (empty($this->getAccount()->otp_secret)) {
@@ -26,6 +29,15 @@ class TwoFactorAuthInfo extends BaseAccountForm {
             'uri' => $provisioningUri,
             'secret' => $this->getAccount()->otp_secret,
         ];
+    }
+
+    private function getTotp(): TOTPInterface {
+        $account = $this->getAccount();
+        $totp = TOTP::create($account->otp_secret);
+        $totp->setLabel($account->email);
+        $totp->setIssuer('Ely.by');
+
+        return $totp;
     }
 
     private function drawQrCode(string $content): string {
@@ -89,7 +101,7 @@ class TwoFactorAuthInfo extends BaseAccountForm {
      * @return string
      */
     private function generateOtpSecret(int $length): string {
-        $randomBytesLength = ceil($length / 1.6);
+        $randomBytesLength = (int)ceil($length / 1.6);
         $result = '';
         while (strlen($result) < $length) {
             /** @noinspection PhpUnhandledExceptionInspection */
