@@ -2,11 +2,11 @@
 namespace api\modules\accounts\models;
 
 use api\aop\annotations\CollectModelMetrics;
-use api\exceptions\ThisShouldNotHappenException;
 use api\validators\PasswordRequiredValidator;
 use common\models\UsernameHistory;
 use common\tasks\PullMojangUsername;
 use common\validators\UsernameValidator;
+use Webmozart\Assert\Assert;
 use Yii;
 
 class ChangeUsernameForm extends AccountActionForm {
@@ -40,16 +40,12 @@ class ChangeUsernameForm extends AccountActionForm {
         $transaction = Yii::$app->db->beginTransaction();
 
         $account->username = $this->username;
-        if (!$account->save()) {
-            throw new ThisShouldNotHappenException('Cannot save account model with new username');
-        }
+        Assert::true($account->save(), 'Cannot save account model with new username');
 
         $usernamesHistory = new UsernameHistory();
         $usernamesHistory->account_id = $account->id;
         $usernamesHistory->username = $account->username;
-        if (!$usernamesHistory->save()) {
-            throw new ThisShouldNotHappenException('Cannot save username history record');
-        }
+        Assert::true($usernamesHistory->save(), 'Cannot save username history record');
 
         Yii::$app->queue->push(PullMojangUsername::createFromAccount($account));
 

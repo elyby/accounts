@@ -2,9 +2,9 @@
 namespace api\modules\accounts\models;
 
 use api\aop\annotations\CollectModelMetrics;
-use api\exceptions\ThisShouldNotHappenException;
 use api\validators\EmailActivationKeyValidator;
 use common\models\EmailActivation;
+use Webmozart\Assert\Assert;
 use Yii;
 
 class ChangeEmailForm extends AccountActionForm {
@@ -33,9 +33,7 @@ class ChangeEmailForm extends AccountActionForm {
 
         $account = $this->getAccount();
         $account->email = $activation->newEmail;
-        if (!$account->save()) {
-            throw new ThisShouldNotHappenException('Cannot save new account email value');
-        }
+        Assert::true($account->save(), 'Cannot save new account email value');
 
         $transaction->commit();
 

@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace api\modules\accounts\models;
 
-use api\exceptions\ThisShouldNotHappenException;
 use api\models\base\BaseAccountForm;
 use BaconQrCode\Common\ErrorCorrectionLevel;
 use BaconQrCode\Encoder\Encoder;
@@ -14,6 +13,7 @@ use common\components\Qr\ElyDecorator;
 use OTPHP\TOTP;
 use OTPHP\TOTPInterface;
 use ParagonIE\ConstantTime\Base32;
+use Webmozart\Assert\Assert;
 
 class TwoFactorAuthInfo extends BaseAccountForm {
 
@@ -61,16 +61,10 @@ class TwoFactorAuthInfo extends BaseAccountForm {
         return 'data:image/svg+xml,' . $svg;
     }
 
-    /**
-     * @param int $length
-     * @throws ThisShouldNotHappenException
-     */
     private function setOtpSecret(int $length = 24): void {
         $account = $this->getAccount();
         $account->otp_secret = $this->generateOtpSecret($length);
-        if (!$account->save()) {
-            throw new ThisShouldNotHappenException('Cannot set account otp_secret');
-        }
+        Assert::true($account->save(), 'Cannot set account otp_secret');
     }
 
     /**

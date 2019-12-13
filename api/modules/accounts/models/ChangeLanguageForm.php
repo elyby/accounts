@@ -2,8 +2,8 @@
 namespace api\modules\accounts\models;
 
 use api\aop\annotations\CollectModelMetrics;
-use api\exceptions\ThisShouldNotHappenException;
 use common\validators\LanguageValidator;
+use Webmozart\Assert\Assert;
 
 class ChangeLanguageForm extends AccountActionForm {
 
@@ -26,9 +26,7 @@ class ChangeLanguageForm extends AccountActionForm {
 
         $account = $this->getAccount();
         $account->lang = $this->lang;
-        if (!$account->save()) {
-            throw new ThisShouldNotHappenException('Cannot change user language');
-        }
+        Assert::true($account->save(), 'Cannot change user language');
 
         return true;
     }

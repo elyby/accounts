@@ -2,12 +2,12 @@
 namespace api\modules\accounts\models;
 
 use api\aop\annotations\CollectModelMetrics;
-use api\exceptions\ThisShouldNotHappenException;
 use api\validators\PasswordRequiredValidator;
 use common\helpers\Error as E;
 use common\models\confirmations\CurrentEmailConfirmation;
 use common\models\EmailActivation;
 use common\tasks\SendCurrentEmailConfirmation;
+use Webmozart\Assert\Assert;
 use Yii;
 
 class SendEmailVerificationForm extends AccountActionForm {
@@ -59,9 +59,7 @@ class SendEmailVerificationForm extends AccountActionForm {
         $account = $this->getAccount();
         $emailActivation = new CurrentEmailConfirmation();
         $emailActivation->account_id = $account->id;
-        if (!$emailActivation->save()) {
-            throw new ThisShouldNotHappenException('Cannot save email activation model');
-        }
+        Assert::true($emailActivation->save(), 'Cannot save email activation model');
 
         return $emailActivation;
     }

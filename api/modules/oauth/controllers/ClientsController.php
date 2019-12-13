@@ -2,7 +2,6 @@
 namespace api\modules\oauth\controllers;
 
 use api\controllers\Controller;
-use api\exceptions\ThisShouldNotHappenException;
 use api\modules\oauth\exceptions\UnsupportedOauthClientType;
 use api\modules\oauth\models\OauthClientForm;
 use api\modules\oauth\models\OauthClientFormFactory;
@@ -10,6 +9,7 @@ use api\modules\oauth\models\OauthClientTypeForm;
 use api\rbac\Permissions as P;
 use common\models\Account;
 use common\models\OauthClient;
+use Webmozart\Assert\Assert;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
@@ -68,9 +68,7 @@ class ClientsController extends Controller {
 
     public function actionCreate(string $type): array {
         $account = Yii::$app->user->identity->getAccount();
-        if ($account === null) {
-            throw new ThisShouldNotHappenException('This form should not to be executed without associated account');
-        }
+        Assert::notNull($account === null, 'This form should not to be executed without associated account');
 
         $client = new OauthClient();
         $client->account_id = $account->id;

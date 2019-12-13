@@ -2,10 +2,10 @@
 namespace api\modules\accounts\models;
 
 use api\aop\annotations\CollectModelMetrics;
-use api\exceptions\ThisShouldNotHappenException;
 use api\validators\PasswordRequiredValidator;
 use api\validators\TotpValidator;
 use common\helpers\Error as E;
+use Webmozart\Assert\Assert;
 
 class DisableTwoFactorAuthForm extends AccountActionForm {
 
@@ -33,9 +33,7 @@ class DisableTwoFactorAuthForm extends AccountActionForm {
         $account = $this->getAccount();
         $account->is_otp_enabled = false;
         $account->otp_secret = null;
-        if (!$account->save()) {
-            throw new ThisShouldNotHappenException('Cannot disable otp for account');
-        }
+        Assert::true($account->save(), 'Cannot disable otp for account');
 
         return true;
     }

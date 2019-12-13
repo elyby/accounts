@@ -3,10 +3,10 @@ namespace api\modules\accounts\models;
 
 use api\aop\annotations\CollectModelMetrics;
 use api\components\User\Component;
-use api\exceptions\ThisShouldNotHappenException;
 use api\validators\PasswordRequiredValidator;
 use api\validators\TotpValidator;
 use common\helpers\Error as E;
+use Webmozart\Assert\Assert;
 use Yii;
 
 class EnableTwoFactorAuthForm extends AccountActionForm {
@@ -36,9 +36,7 @@ class EnableTwoFactorAuthForm extends AccountActionForm {
 
         $account = $this->getAccount();
         $account->is_otp_enabled = true;
-        if (!$account->save()) {
-            throw new ThisShouldNotHappenException('Cannot enable otp for account');
-        }
+        Assert::true($account->save(), 'Cannot enable otp for account');
 
         Yii::$app->user->terminateSessions($account, Component::KEEP_CURRENT_SESSION);
 

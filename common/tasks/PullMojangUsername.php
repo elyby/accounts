@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace common\tasks;
 
-use api\exceptions\ThisShouldNotHappenException;
 use common\models\Account;
 use common\models\MojangUsername;
 use Ely\Mojang\Api as MojangApi;
 use Ely\Mojang\Exception\MojangApiException;
 use Ely\Mojang\Exception\NoContentException;
 use GuzzleHttp\Exception\GuzzleException;
+use Webmozart\Assert\Assert;
 use Yii;
 use yii\queue\JobInterface;
 
@@ -60,9 +60,7 @@ class PullMojangUsername implements JobInterface {
                 $mojangUsername->touch('last_pulled_at');
             }
 
-            if (!$mojangUsername->save()) {
-                throw new ThisShouldNotHappenException('Cannot save mojang username');
-            }
+            Assert::true($mojangUsername->save(), 'Cannot save mojang username');
         }
     }
 

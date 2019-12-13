@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace api\modules\oauth\models;
 
-use api\exceptions\ThisShouldNotHappenException;
 use api\modules\oauth\exceptions\InvalidOauthClientState;
 use common\models\OauthClient;
 use common\tasks\ClearOauthSessions;
+use Webmozart\Assert\Assert;
 use Yii;
 use yii\helpers\Inflector;
 
@@ -48,9 +48,7 @@ class OauthClientForm {
             $client->generateSecret();
         }
 
-        if (!$client->save()) {
-            throw new ThisShouldNotHappenException('Cannot save oauth client');
-        }
+        Assert::true($client->save(), 'Cannot save oauth client');
 
         return true;
     }
@@ -60,9 +58,7 @@ class OauthClientForm {
 
         $client = $this->client;
         $client->is_deleted = true;
-        if (!$client->save()) {
-            throw new ThisShouldNotHappenException('Cannot update oauth client');
-        }
+        Assert::true($client->save(), 'Cannot update oauth client');
 
         Yii::$app->queue->push(ClearOauthSessions::createFromOauthClient($client));
 
@@ -77,9 +73,7 @@ class OauthClientForm {
         $client = $this->client;
         if ($regenerateSecret) {
             $client->generateSecret();
-            if (!$client->save()) {
-                throw new ThisShouldNotHappenException('Cannot update oauth client');
-            }
+            Assert::true($client->save(), 'Cannot update oauth client');
         }
 
         Yii::$app->queue->push(ClearOauthSessions::createFromOauthClient($client, time()));

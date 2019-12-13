@@ -3,7 +3,6 @@ namespace api\models\authentication;
 
 use api\aop\annotations\CollectModelMetrics;
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
-use api\exceptions\ThisShouldNotHappenException;
 use api\models\base\ApiForm;
 use common\components\UserFriendlyRandomKey;
 use common\helpers\Error as E;
@@ -11,6 +10,7 @@ use common\models\Account;
 use common\models\confirmations\RegistrationConfirmation;
 use common\models\EmailActivation;
 use common\tasks\SendRegistrationEmail;
+use Webmozart\Assert\Assert;
 use Yii;
 
 class RepeatAccountActivationForm extends ApiForm {
@@ -74,9 +74,7 @@ class RepeatAccountActivationForm extends ApiForm {
         $activation = new RegistrationConfirmation();
         $activation->account_id = $account->id;
         $activation->key = UserFriendlyRandomKey::make();
-        if (!$activation->save()) {
-            throw new ThisShouldNotHappenException('Unable save email-activation model.');
-        }
+        Assert::true($activation->save(), 'Unable save email-activation model.');
 
         $this->emailActivation = $activation;
 

@@ -3,10 +3,10 @@ namespace api\modules\accounts\models;
 
 use api\aop\annotations\CollectModelMetrics;
 use api\components\User\Component;
-use api\exceptions\ThisShouldNotHappenException;
 use api\validators\PasswordRequiredValidator;
 use common\helpers\Error as E;
 use common\validators\PasswordValidator;
+use Webmozart\Assert\Assert;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -61,9 +61,7 @@ class ChangePasswordForm extends AccountActionForm {
             Yii::$app->user->terminateSessions($account, Component::KEEP_CURRENT_SESSION);
         }
 
-        if (!$account->save()) {
-            throw new ThisShouldNotHappenException('Cannot save user model');
-        }
+        Assert::true($account->save(), 'Cannot save user model');
 
         $transaction->commit();
 

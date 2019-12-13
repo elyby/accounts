@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace console\models;
 
-use api\exceptions\ThisShouldNotHappenException;
 use common\models\WebHook;
 use common\models\WebHookEvent;
+use Webmozart\Assert\Assert;
 use Yii;
 use yii\base\Model;
 
@@ -43,17 +43,13 @@ class WebHookForm extends Model {
         $webHook = $this->webHook;
         $webHook->url = $this->url;
         $webHook->secret = $this->secret;
-        if (!$webHook->save()) {
-            throw new ThisShouldNotHappenException('Cannot save webhook.');
-        }
+        Assert::true($webHook->save(), 'Cannot save webhook.');
 
         foreach ($this->events as $event) {
             $eventModel = new WebHookEvent();
             $eventModel->webhook_id = $webHook->id;
             $eventModel->event_type = $event;
-            if (!$eventModel->save()) {
-                throw new ThisShouldNotHappenException('Cannot save webhook event.');
-            }
+            Assert::true($eventModel->save(), 'Cannot save webhook event.');
         }
 
         $transaction->commit();
