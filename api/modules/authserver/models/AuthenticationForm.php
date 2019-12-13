@@ -75,10 +75,7 @@ class AuthenticationForm extends ApiForm {
 
             // The previous authorization server implementation used the nickname field instead of username,
             // so we keep such behavior
-            $attribute = $loginForm->getLoginAttribute();
-            if ($attribute === 'username') {
-                $attribute = 'nickname';
-            }
+            $attribute = strpos($this->username, '@') === false ? 'nickname' : 'email';
 
             // TODO: эта логика дублируется с логикой в SignoutForm
 

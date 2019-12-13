@@ -24,7 +24,7 @@ class EmailActivationKeyValidator extends Validator {
 
     public $skipOnEmpty = false;
 
-    public function validateAttribute($model, $attribute) {
+    public function validateAttribute($model, $attribute): void {
         $value = $model->$attribute;
         if (empty($value)) {
             $this->addError($model, $attribute, $this->keyRequired);
@@ -49,7 +49,7 @@ class EmailActivationKeyValidator extends Validator {
         $query = EmailActivation::find();
         $query->andWhere(['key' => $key]);
         if ($type !== null) {
-            $query->andWhere(['type' => $type]);
+            $query->withType($type);
         }
 
         return $query->one();

@@ -59,6 +59,10 @@ class Account extends ActiveRecord {
         return '{{%accounts}}';
     }
 
+    public static function find(): AccountQuery {
+        return new AccountQuery(self::class);
+    }
+
     public function behaviors(): array {
         return [
             TimestampBehavior::class,
@@ -88,7 +92,7 @@ class Account extends ActiveRecord {
         $this->password_changed_at = time();
     }
 
-    public function getEmailActivations(): ActiveQuery {
+    public function getEmailActivations(): EmailActivationQuery {
         return $this->hasMany(EmailActivation::class, ['account_id' => 'id']);
     }
 

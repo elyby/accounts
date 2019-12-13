@@ -5,7 +5,6 @@ namespace api\models\authentication;
 
 use api\aop\annotations\CollectModelMetrics;
 use api\models\base\ApiForm;
-use api\traits\AccountFinder;
 use api\validators\TotpValidator;
 use common\helpers\Error as E;
 use common\models\Account;
@@ -14,14 +13,25 @@ use Webmozart\Assert\Assert;
 use Yii;
 
 class LoginForm extends ApiForm {
-    use AccountFinder;
 
+    /**
+     * @var string
+     */
     public $login;
 
+    /**
+     * @var string
+     */
     public $password;
 
+    /**
+     * @var string|null
+     */
     public $totp;
 
+    /**
+     * @var bool
+     */
     public $rememberMe = false;
 
     public function rules(): array {
@@ -90,8 +100,8 @@ class LoginForm extends ApiForm {
         }
     }
 
-    public function getLogin(): string {
-        return $this->login;
+    public function getAccount(): ?Account {
+        return Account::find()->andWhereLogin($this->login)->one();
     }
 
     /**

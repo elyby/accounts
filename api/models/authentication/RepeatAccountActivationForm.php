@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\models\authentication;
 
 use api\aop\annotations\CollectModelMetrics;
@@ -21,7 +23,7 @@ class RepeatAccountActivationForm extends ApiForm {
 
     private $emailActivation;
 
-    public function rules() {
+    public function rules(): array {
         return [
             ['captcha', ReCaptchaValidator::class],
             ['email', 'filter', 'filter' => 'trim'],
@@ -31,7 +33,7 @@ class RepeatAccountActivationForm extends ApiForm {
         ];
     }
 
-    public function validateEmailForAccount($attribute) {
+    public function validateEmailForAccount(string $attribute): void {
         if (!$this->hasErrors()) {
             $account = $this->getAccount();
             if ($account === null) {
@@ -45,7 +47,7 @@ class RepeatAccountActivationForm extends ApiForm {
         }
     }
 
-    public function validateExistsActivation($attribute) {
+    public function validateExistsActivation(string $attribute): void {
         if (!$this->hasErrors()) {
             $activation = $this->getActivation();
             if ($activation !== null && !$activation->canRepeat()) {
@@ -58,11 +60,12 @@ class RepeatAccountActivationForm extends ApiForm {
      * @CollectModelMetrics(prefix="signup.repeatEmail")
      * @return bool
      */
-    public function sendRepeatMessage() {
+    public function sendRepeatMessage(): bool {
         if (!$this->validate()) {
             return false;
         }
 
+        /** @var Account $account */
         $account = $this->getAccount();
         $transaction = Yii::$app->db->beginTransaction();
 
@@ -85,27 +88,17 @@ class RepeatAccountActivationForm extends ApiForm {
         return true;
     }
 
-    /**
-     * @return Account|null
-     */
-    public function getAccount() {
+    public function getAccount(): ?Account {
         return Account::find()
             ->andWhere(['email' => $this->email])
             ->one();
     }
 
-    /**
-     * @return EmailActivation|null
-     */
-    public function getActivation() {
-        if ($this->emailActivation === null) {
-            $this->emailActivation = $this->getAccount()
-                ->getEmailActivations()
-                ->andWhere(['type' => EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION])
-                ->one();
-        }
-
-        return $this->emailActivation;
+    public function getActivation(): ?EmailActivation {
+        return $this->getAccount()
+            ->getEmailActivations()
+            ->withType(EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION)
+            ->one();
     }
 
 }

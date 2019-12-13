@@ -29,7 +29,6 @@ class ChangeEmailFormTest extends TestCase {
             'account_id' => $account->id,
             'type' => EmailActivation::TYPE_NEW_EMAIL_CONFIRMATION,
         ]));
-        /** @noinspection UnserializeExploitsInspection */
         $data = unserialize($newEmailConfirmationFixture['_data']);
         $this->assertSame($data['newEmail'], $account->email);
     }

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\request;
 
 use Yii;
@@ -18,7 +20,14 @@ use yii\web\RequestParserInterface;
  */
 class RequestParser implements RequestParserInterface {
 
-    public function parse($rawBody, $contentType) {
+    /**
+     * @param string $rawBody
+     * @param string $contentType
+     *
+     * @return array
+     * @throws \yii\web\BadRequestHttpException
+     */
+    public function parse($rawBody, $contentType): array {
         if (!empty($_POST)) {
             return $_POST;
         }

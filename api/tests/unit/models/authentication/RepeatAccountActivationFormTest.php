@@ -100,7 +100,7 @@ class RepeatAccountActivationFormTest extends TestCase {
         return new class($params) extends RepeatAccountActivationForm {
             public $emailKey;
 
-            public function getActivation() {
+            public function getActivation(): ?EmailActivation {
                 return EmailActivation::findOne($this->emailKey);
             }
         };

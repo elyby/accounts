@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace common\models;
 
 use common\behaviors\DataBehavior;
@@ -33,11 +35,15 @@ class EmailActivation extends ActiveRecord {
     public const TYPE_CURRENT_EMAIL_CONFIRMATION = 2;
     public const TYPE_NEW_EMAIL_CONFIRMATION = 3;
 
-    public static function tableName() {
-        return '{{%email_activations}}';
+    public static function tableName(): string {
+        return 'email_activations';
     }
 
-    public function behaviors() {
+    public static function find(): EmailActivationQuery {
+        return new EmailActivationQuery(static::class);
+    }
+
+    public function behaviors(): array {
         return [
             [
                 'class' => TimestampBehavior::class,
@@ -61,7 +67,7 @@ class EmailActivation extends ActiveRecord {
         ];
     }
 
-    public function getAccount() {
+    public function getAccount(): AccountQuery {
         return $this->hasOne(Account::class, ['id' => 'account_id']);
     }
 
@@ -82,7 +88,7 @@ class EmailActivation extends ActiveRecord {
         return new $classMap[$type]();
     }
 
-    public static function getClassMap() {
+    public static function getClassMap(): array {
         return [
             self::TYPE_REGISTRATION_EMAIL_CONFIRMATION => confirmations\RegistrationConfirmation::class,
             self::TYPE_FORGOT_PASSWORD_KEY => confirmations\ForgotPassword::class,

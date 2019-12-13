@@ -1,7 +1,10 @@
 <?php
+declare(strict_types=1);
+
 namespace common\models\confirmations;
 
 use common\models\EmailActivation;
+use common\models\EmailActivationQuery;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -10,7 +13,11 @@ use yii\helpers\ArrayHelper;
  */
 class NewEmailConfirmation extends EmailActivation {
 
-    public function behaviors() {
+    public static function find(): EmailActivationQuery {
+        return parent::find()->withType(EmailActivation::TYPE_NEW_EMAIL_CONFIRMATION);
+    }
+
+    public function behaviors(): array {
         return ArrayHelper::merge(parent::behaviors(), [
             'expirationBehavior' => [
                 'repeatTimeout' => 5 * 60,
@@ -21,7 +28,7 @@ class NewEmailConfirmation extends EmailActivation {
         ]);
     }
 
-    public function init() {
+    public function init(): void {
         parent::init();
         $this->type = EmailActivation::TYPE_NEW_EMAIL_CONFIRMATION;
     }

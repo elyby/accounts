@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace common\models\confirmations;
 
 use common\behaviors\DataBehavior;

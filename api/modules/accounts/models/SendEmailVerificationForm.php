@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\modules\accounts\models;
 
 use api\aop\annotations\CollectModelMetrics;
@@ -26,7 +28,7 @@ class SendEmailVerificationForm extends AccountActionForm {
         ];
     }
 
-    public function validateFrequency($attribute): void {
+    public function validateFrequency(string $attribute): void {
         if (!$this->hasErrors()) {
             $emailConfirmation = $this->getEmailActivation();
             if ($emailConfirmation !== null && !$emailConfirmation->canRepeat()) {
@@ -82,12 +84,10 @@ class SendEmailVerificationForm extends AccountActionForm {
     public function getEmailActivation(): ?EmailActivation {
         return $this->getAccount()
             ->getEmailActivations()
-            ->andWhere([
-                'type' => [
-                    EmailActivation::TYPE_CURRENT_EMAIL_CONFIRMATION,
-                    EmailActivation::TYPE_NEW_EMAIL_CONFIRMATION,
-                ],
-            ])
+            ->withType(
+                EmailActivation::TYPE_CURRENT_EMAIL_CONFIRMATION,
+                EmailActivation::TYPE_NEW_EMAIL_CONFIRMATION
+            )
             ->one();
     }
 

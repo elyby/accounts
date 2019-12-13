@@ -1,7 +1,10 @@
 <?php
+declare(strict_types=1);
+
 namespace common\tests\unit\tasks;
 
 use common\models\Account;
+use common\models\AccountQuery;
 use common\models\confirmations\NewEmailConfirmation;
 use common\tasks\SendNewEmailConfirmation;
 use common\tests\unit\TestCase;
@@ -14,14 +17,15 @@ class SendNewEmailConfirmationTest extends TestCase {
         $account->username = 'mock-username';
         $account->lang = 'id';
 
-        /** @var \Mockery\Mock|NewEmailConfirmation $confirmation */
-        $confirmation = mock(NewEmailConfirmation::class)->makePartial();
+        $accountQuery = $this->createMock(AccountQuery::class);
+        $accountQuery->method('findFor')->willReturn($account);
+
+        $confirmation = $this->createPartialMock(NewEmailConfirmation::class, ['getAccount']);
+        $confirmation->method('getAccount')->willReturn($accountQuery);
+        $confirmation->setNewEmail('new-email@ely.by');
         $confirmation->key = 'ABCDEFG';
-        $confirmation->shouldReceive('getAccount')->andReturn($account);
-        $confirmation->shouldReceive('getNewEmail')->andReturn('new-email@ely.by');
 
         $result = SendNewEmailConfirmation::createFromConfirmation($confirmation);
-        $this->assertInstanceOf(SendNewEmailConfirmation::class, $result);
         $this->assertSame('mock-username', $result->username);
         $this->assertSame('new-email@ely.by', $result->email);
         $this->assertSame('ABCDEFG', $result->code);
@@ -33,7 +37,7 @@ class SendNewEmailConfirmationTest extends TestCase {
         $task->email = 'mock@ely.by';
         $task->code = 'GFEDCBA';
 
-        $task->execute(mock(Queue::class));
+        $task->execute($this->createMock(Queue::class));
 
         $this->tester->canSeeEmailIsSent(1);
         /** @var \yii\swiftmailer\Message $email */

@@ -5,6 +5,7 @@ namespace common\tests\unit\tasks;
 
 use common\emails\RendererInterface;
 use common\models\Account;
+use common\models\AccountQuery;
 use common\models\confirmations\ForgotPassword;
 use common\tasks\SendPasswordRecoveryEmail;
 use common\tests\unit\TestCase;
@@ -24,10 +25,12 @@ class SendPasswordRecoveryEmailTest extends TestCase {
         $account->email = 'mock@ely.by';
         $account->lang = 'id';
 
-        /** @var \Mockery\Mock|ForgotPassword $confirmation */
-        $confirmation = mock(ForgotPassword::class)->makePartial();
+        $accountQuery = $this->createMock(AccountQuery::class);
+        $accountQuery->method('findFor')->willReturn($account);
+
+        $confirmation = $this->createPartialMock(ForgotPassword::class, ['getAccount']);
+        $confirmation->method('getAccount')->willReturn($accountQuery);
         $confirmation->key = 'ABCDEFG';
-        $confirmation->shouldReceive('getAccount')->andReturn($account);
 
         $result = SendPasswordRecoveryEmail::createFromConfirmation($confirmation);
         $this->assertSame('mock-username', $result->username);
@@ -51,7 +54,7 @@ class SendPasswordRecoveryEmailTest extends TestCase {
             'link' => 'https://account.ely.by/recover-password/ABCDEFG',
         ])->willReturn('mock-template');
 
-        $task->execute(mock(Queue::class));
+        $task->execute($this->createMock(Queue::class));
 
         $this->tester->canSeeEmailIsSent(1);
         /** @var \yii\swiftmailer\Message $email */

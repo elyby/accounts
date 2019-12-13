@@ -1,10 +1,11 @@
 <?php
+declare(strict_types=1);
+
 namespace api\models\authentication;
 
 use api\aop\annotations\CollectModelMetrics;
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\base\ApiForm;
-use api\traits\AccountFinder;
 use common\components\UserFriendlyRandomKey;
 use common\helpers\Error as E;
 use common\models\Account;
@@ -15,13 +16,12 @@ use Yii;
 use yii\base\ErrorException;
 
 class ForgotPasswordForm extends ApiForm {
-    use AccountFinder;
 
     public $captcha;
 
     public $login;
 
-    public function rules() {
+    public function rules(): array {
         return [
             ['captcha', ReCaptchaValidator::class],
             ['login', 'required', 'message' => E::LOGIN_REQUIRED],
@@ -31,7 +31,7 @@ class ForgotPasswordForm extends ApiForm {
         ];
     }
 
-    public function validateLogin($attribute) {
+    public function validateLogin(string $attribute): void {
         if (!$this->hasErrors()) {
             if ($this->getAccount() === null) {
                 $this->addError($attribute, E::LOGIN_NOT_EXIST);
@@ -39,7 +39,7 @@ class ForgotPasswordForm extends ApiForm {
         }
     }
 
-    public function validateActivity($attribute) {
+    public function validateActivity(string $attribute): void {
         if (!$this->hasErrors()) {
             $account = $this->getAccount();
             if ($account->status !== Account::STATUS_ACTIVE) {
@@ -48,7 +48,7 @@ class ForgotPasswordForm extends ApiForm {
         }
     }
 
-    public function validateFrequency($attribute) {
+    public function validateFrequency(string $attribute): void {
         if (!$this->hasErrors()) {
             $emailConfirmation = $this->getEmailActivation();
             if ($emailConfirmation !== null && !$emailConfirmation->canRepeat()) {
@@ -57,12 +57,15 @@ class ForgotPasswordForm extends ApiForm {
         }
     }
 
+    public function getAccount(): ?Account {
+        return Account::find()->andWhereLogin($this->login)->one();
+    }
+
     /**
      * @CollectModelMetrics(prefix="authentication.forgotPassword")
      * @return bool
-     * @throws ErrorException
      */
-    public function forgotPassword() {
+    public function forgotPassword(): bool {
         if (!$this->validate()) {
             return false;
         }
@@ -86,23 +89,13 @@ class ForgotPasswordForm extends ApiForm {
         return true;
     }
 
-    public function getLogin(): string {
-        return $this->login;
-    }
-
-    /**
-     * @return EmailActivation|null
-     * @throws ErrorException
-     */
-    public function getEmailActivation() {
+    public function getEmailActivation(): ?EmailActivation {
         $account = $this->getAccount();
         if ($account === null) {
-            throw new ErrorException('Account not founded');
+            return null;
         }
 
-        return $account->getEmailActivations()
-            ->andWhere(['type' => EmailActivation::TYPE_FORGOT_PASSWORD_KEY])
-            ->one();
+        return $account->getEmailActivations()->withType(EmailActivation::TYPE_FORGOT_PASSWORD_KEY)->one();
     }
 
 }

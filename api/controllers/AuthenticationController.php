@@ -107,7 +107,7 @@ class AuthenticationController extends Controller {
             ],
         ];
 
-        if ($model->getLoginAttribute() !== 'email') {
+        if (strpos($model->login, '@') === false) {
             $response['data']['emailMask'] = StringHelper::getEmailMask($model->getAccount()->email);
         }
 

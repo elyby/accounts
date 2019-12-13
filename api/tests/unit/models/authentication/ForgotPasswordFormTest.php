@@ -126,8 +126,8 @@ class ForgotPasswordFormTest extends TestCase {
         return new class($params) extends ForgotPasswordForm {
             public $key;
 
-            public function getEmailActivation() {
-                return EmailActivation::findOne($this->key);
+            public function getEmailActivation(): ?EmailActivation {
+                return EmailActivation::findOne(['key' => $this->key]);
             }
         };
     }

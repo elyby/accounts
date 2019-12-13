@@ -5,6 +5,7 @@ namespace common\tests\unit\tasks;
 
 use common\emails\RendererInterface;
 use common\models\Account;
+use common\models\AccountQuery;
 use common\models\confirmations\RegistrationConfirmation;
 use common\tasks\SendRegistrationEmail;
 use common\tests\unit\TestCase;
@@ -24,10 +25,12 @@ class SendRegistrationEmailTest extends TestCase {
         $account->email = 'mock@ely.by';
         $account->lang = 'ru';
 
-        /** @var \Mockery\Mock|RegistrationConfirmation $confirmation */
-        $confirmation = mock(RegistrationConfirmation::class)->makePartial();
+        $accountQuery = $this->createMock(AccountQuery::class);
+        $accountQuery->method('findFor')->willReturn($account);
+
+        $confirmation = $this->createPartialMock(RegistrationConfirmation::class, ['getAccount']);
+        $confirmation->method('getAccount')->willReturn($accountQuery);
         $confirmation->key = 'ABCDEFG';
-        $confirmation->shouldReceive('getAccount')->andReturn($account);
 
         $result = SendRegistrationEmail::createFromConfirmation($confirmation);
         $this->assertSame('mock-username', $result->username);

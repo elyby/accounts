@@ -1,7 +1,10 @@
 <?php
+declare(strict_types=1);
+
 namespace common\tests\unit\tasks;
 
 use common\models\Account;
+use common\models\AccountQuery;
 use common\models\confirmations\CurrentEmailConfirmation;
 use common\tasks\SendCurrentEmailConfirmation;
 use common\tests\unit\TestCase;
@@ -15,13 +18,14 @@ class SendCurrentEmailConfirmationTest extends TestCase {
         $account->email = 'mock@ely.by';
         $account->lang = 'id';
 
-        /** @var \Mockery\Mock|CurrentEmailConfirmation $confirmation */
-        $confirmation = mock(CurrentEmailConfirmation::class)->makePartial();
+        $accountQuery = $this->createMock(AccountQuery::class);
+        $accountQuery->method('findFor')->willReturn($account);
+
+        $confirmation = $this->createPartialMock(CurrentEmailConfirmation::class, ['getAccount']);
+        $confirmation->method('getAccount')->willReturn($accountQuery);
         $confirmation->key = 'ABCDEFG';
-        $confirmation->shouldReceive('getAccount')->andReturn($account);
 
         $result = SendCurrentEmailConfirmation::createFromConfirmation($confirmation);
-        $this->assertInstanceOf(SendCurrentEmailConfirmation::class, $result);
         $this->assertSame('mock-username', $result->username);
         $this->assertSame('mock@ely.by', $result->email);
         $this->assertSame('ABCDEFG', $result->code);
@@ -33,7 +37,7 @@ class SendCurrentEmailConfirmationTest extends TestCase {
         $task->email = 'mock@ely.by';
         $task->code = 'GFEDCBA';
 
-        $task->execute(mock(Queue::class));
+        $task->execute($this->createMock(Queue::class));
 
         $this->tester->canSeeEmailIsSent(1);
         /** @var \yii\swiftmailer\Message $email */
