@@ -112,11 +112,14 @@ class RegistrationFormTest extends TestCase {
             ])
             ->one();
         $this->assertInstanceOf(EmailActivation::class, $activation, 'email activation code exists in database');
-        $this->assertTrue(UsernameHistory::find()->andWhere([
-            'username' => $account->username,
-            'account_id' => $account->id,
-            'applied_in' => $account->created_at,
-        ])->exists(), 'username history record exists in database');
+        $this->assertTrue(
+            UsernameHistory::find()
+                ->andWhere(['username' => $account->username])
+                ->andWhere(['account_id' => $account->id])
+                ->andWhere(['>=', 'applied_in', $account->created_at])
+                ->exists(),
+            'username history record exists in database'
+        );
 
         /** @var SendRegistrationEmail $job */
         $job = $this->tester->grabLastQueuedJob();

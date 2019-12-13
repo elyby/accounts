@@ -51,7 +51,7 @@ class JwtIdentityTest extends TestCase {
             'Incorrect token',
         ];
         yield 'revoked by oauth client' => [
-            'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudF9pbmZvLG1pbmVjcmFmdF9zZXJ2ZXJfc2Vzc2lvbiIsImlhdCI6MTU2NDYxMDUwMCwic3ViIjoiZWx5fDEiLCJhdWQiOiJjbGllbnR8dGxhdW5jaGVyIn0.YzUzvnREEoQPu8CvU6WLdysUU0bC_xzigQPs2LK1su38uysSYgSbPzNOZYkQnvcmVLehHY-ON44x-oA8Os-9ZA',
+            'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudF9pbmZvLG1pbmVjcmFmdF9zZXJ2ZXJfc2Vzc2lvbiIsImlhdCI6MTU2NDYxMDUwMCwic3ViIjoiZWx5fDEiLCJjbGllbnRfaWQiOiJ0bGF1bmNoZXIifQ.qmiPOjI8jGAQdP5LoAVHO8L75Ly7fRcrTB_iYsUgQ4azgsPnLEhvG7dUnQ9utEd3RK5swDpaZ0bXf90vRbvnmg',
             'Token has been revoked',
         ];
         yield 'revoked by unauthorized minecraft launcher' => [

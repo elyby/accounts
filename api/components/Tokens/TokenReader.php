@@ -31,19 +31,16 @@ class TokenReader {
     }
 
     public function getClientId(): ?string {
-        $aud = $this->token->getClaim('aud', false);
-        if ($aud === false) {
-            return null;
-        }
-
-        if (mb_strpos((string)$aud, TokensFactory::AUD_CLIENT_PREFIX) !== 0) {
-            return null;
-        }
-
-        return mb_substr($aud, mb_strlen(TokensFactory::AUD_CLIENT_PREFIX));
+        return $this->token->getClaim('client_id', false) ?: null;
     }
 
     public function getScopes(): ?array {
+        $scopes = $this->token->getClaim('scope', false);
+        if ($scopes !== false) {
+            return explode(' ', $scopes);
+        }
+
+        // Handle legacy tokens, which used "ely-scopes" claim and was delimited with comma
         $scopes = $this->token->getClaim('ely-scopes', false);
         if ($scopes === false) {
             return null;

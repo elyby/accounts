@@ -24,7 +24,7 @@ class AccessTokenEntityTest extends TestCase {
 
         $token = (string)$entity;
         $payloads = json_decode(base64_decode(explode('.', $token)[1]), true);
-        $this->assertSame('first,second', $payloads['ely-scopes']);
+        $this->assertSame('first second', $payloads['scope']);
     }
 
     private function createScopeEntity(string $id): ScopeEntityInterface {

@@ -26,7 +26,7 @@ class TokensFactoryTest extends TestCase {
         $this->assertEqualsWithDelta(time(), $token->getClaim('iat'), 1);
         $this->assertEqualsWithDelta(time() + 60 * 60 * 24 * 7, $token->getClaim('exp'), 2);
         $this->assertSame('ely|1', $token->getClaim('sub'));
-        $this->assertSame('accounts_web_user', $token->getClaim('ely-scopes'));
+        $this->assertSame('accounts_web_user', $token->getClaim('scope'));
         $this->assertArrayNotHasKey('jti', $token->getClaims());
 
         $session = new AccountSession();
@@ -38,7 +38,7 @@ class TokensFactoryTest extends TestCase {
         $this->assertEqualsWithDelta(time(), $token->getClaim('iat'), 1);
         $this->assertEqualsWithDelta(time() + 3600, $token->getClaim('exp'), 2);
         $this->assertSame('ely|1', $token->getClaim('sub'));
-        $this->assertSame('accounts_web_user', $token->getClaim('ely-scopes'));
+        $this->assertSame('accounts_web_user', $token->getClaim('scope'));
         $this->assertSame(2, $token->getClaim('jti'));
     }
 
@@ -67,8 +67,8 @@ class TokensFactoryTest extends TestCase {
         $this->assertEqualsWithDelta(time(), $token->getClaim('iat'), 1);
         $this->assertEqualsWithDelta($expiryDateTime->getTimestamp(), $token->getClaim('exp'), 2);
         $this->assertSame('ely|1', $token->getClaim('sub'));
-        $this->assertSame('client|clientId', $token->getClaim('aud'));
-        $this->assertSame('scope1,scope2', $token->getClaim('ely-scopes'));
+        $this->assertSame('clientId', $token->getClaim('client_id'));
+        $this->assertSame('scope1 scope2', $token->getClaim('scope'));
 
         // Create for client credentials grant
 
@@ -93,7 +93,7 @@ class TokensFactoryTest extends TestCase {
         $token = $factory->createForMinecraftAccount($account, $clientToken);
         $this->assertEqualsWithDelta(time(), $token->getClaim('iat'), 5);
         $this->assertEqualsWithDelta(time() + 60 * 60 * 24 * 2, $token->getClaim('exp'), 5);
-        $this->assertSame('minecraft_server_session', $token->getClaim('ely-scopes'));
+        $this->assertSame('minecraft_server_session', $token->getClaim('scope'));
         $this->assertNotSame('e44fae79-f80e-4975-952e-47e8a9ed9472', $token->getClaim('ely-client-token'));
         $this->assertSame('ely|1', $token->getClaim('sub'));
     }

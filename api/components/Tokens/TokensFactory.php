@@ -18,13 +18,12 @@ use yii\base\Component;
 class TokensFactory extends Component {
 
     public const SUB_ACCOUNT_PREFIX = 'ely|';
-    public const AUD_CLIENT_PREFIX = 'client|';
 
     public function createForWebAccount(Account $account, AccountSession $session = null): Token {
         $payloads = [
-            'ely-scopes' => $this->prepareScopes([R::ACCOUNTS_WEB_USER]),
             'sub' => $this->buildSub($account->id),
             'exp' => Carbon::now()->addHour()->getTimestamp(),
+            'scope' => $this->prepareScopes([R::ACCOUNTS_WEB_USER]),
         ];
         if ($session === null) {
             // If we don't remember a session, the token should live longer
@@ -39,8 +38,8 @@ class TokensFactory extends Component {
 
     public function createForOAuthClient(AccessTokenEntityInterface $accessToken): Token {
         $payloads = [
-            'aud' => $this->buildAud($accessToken->getClient()->getIdentifier()),
-            'ely-scopes' => $this->prepareScopes($accessToken->getScopes()),
+            'client_id' => $accessToken->getClient()->getIdentifier(),
+            'scope' => $this->prepareScopes($accessToken->getScopes()),
         ];
         if ($accessToken->getExpiryDateTime() > new DateTime()) {
             $payloads['exp'] = $accessToken->getExpiryDateTime()->getTimestamp();
@@ -55,7 +54,7 @@ class TokensFactory extends Component {
 
     public function createForMinecraftAccount(Account $account, string $clientToken): Token {
         return Yii::$app->tokens->create([
-            'ely-scopes' => $this->prepareScopes([P::MINECRAFT_SERVER_SESSION]),
+            'scope' => $this->prepareScopes([P::MINECRAFT_SERVER_SESSION]),
             'ely-client-token' => new EncryptedValue($clientToken),
             'sub' => $this->buildSub($account->id),
             'exp' => Carbon::now()->addDays(2)->getTimestamp(),
@@ -68,7 +67,7 @@ class TokensFactory extends Component {
      * @return string
      */
     private function prepareScopes(array $scopes): string {
-        return implode(',', array_map(function($scope): string { // TODO: replace to the space if it's possible
+        return implode(' ', array_map(function($scope): string {
             if ($scope instanceof ScopeEntityInterface) {
                 return $scope->getIdentifier();
             }
@@ -79,10 +78,6 @@ class TokensFactory extends Component {
 
     private function buildSub(int $accountId): string {
         return self::SUB_ACCOUNT_PREFIX . $accountId;
-    }
-
-    private function buildAud(string $clientId): string {
-        return self::AUD_CLIENT_PREFIX . $clientId;
     }
 
 }
