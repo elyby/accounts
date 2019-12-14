@@ -4,6 +4,9 @@
     "homepage": "https://account.ely.by",
     "type": "project",
     "minimum-stability": "stable",
+    "config": {
+        "sort-packages": true
+    },
     "require": {
         "php": "^7.3",
         "ext-intl": "*",
@@ -36,6 +39,7 @@
     "require-dev": {
         "codeception/base": "^3.1.0",
         "codeception/specify": "^1.0.0",
+        "cweagans/composer-patches": "^1.6",
         "ely/php-code-style": "^0.3.0",
         "flow/jsonpath": "^0.4.0",
         "fzaninotto/faker": "^1.8",
@@ -51,6 +55,13 @@
         "symfony/polyfill-php72": "*",
         "symfony/polyfill-php73": "*"
     },
+    "extra": {
+        "patches": {
+            "codeception/base": {
+                "Fix Codeception compatibility with PHPUnit8": "patches/codeception-phpunit-8-fix.patch"
+            }
+        }
+    },
     "repositories": [
         {
             "type": "composer",
@@ -61,9 +72,6 @@
             "url": "https://github.com/elyby/oauth2-server.git"
         }
     ],
-    "config": {
-        "sort-packages": true
-    },
     "autoload": {
         "psr-4": {
             "api\\": "api",

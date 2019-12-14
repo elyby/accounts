@@ -8,8 +8,6 @@ use api\tests\unit\TestCase;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Response;
-use phpmock\mockery\PHPMockery;
-use ReflectionClass;
 
 class ValidatorTest extends TestCase {
 
@@ -44,7 +42,7 @@ class ValidatorTest extends TestCase {
                 ],
             ])))
         );
-        PHPMockery::mock($this->getClassNamespace(Validator::class), 'sleep')->once();
+        $this->getFunctionMock(Validator::class, 'sleep')->expects($this->once());
 
         $validator = new Validator($mockClient);
         $this->assertTrue($validator->validate('12341234', $error));
@@ -54,7 +52,7 @@ class ValidatorTest extends TestCase {
     public function testValidateWithHugeNetworkTroubles() {
         $mockClient = $this->createMock(ClientInterface::class);
         $mockClient->expects($this->exactly(3))->method('request')->willThrowException($this->createMock(ConnectException::class));
-        PHPMockery::mock($this->getClassNamespace(Validator::class), 'sleep')->times(2);
+        $this->getFunctionMock(Validator::class, 'sleep')->expects($this->exactly(2));
 
         $validator = new Validator($mockClient);
         $this->expectException(ConnectException::class);
@@ -69,10 +67,6 @@ class ValidatorTest extends TestCase {
         $validator = new Validator($mockClient);
         $this->assertTrue($validator->validate('12341234', $error));
         $this->assertNull($error);
-    }
-
-    private function getClassNamespace(string $className): string {
-        return (new ReflectionClass($className))->getNamespaceName();
     }
 
 }
