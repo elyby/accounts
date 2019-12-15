@@ -53,6 +53,8 @@ Precache dependencies:
     - .vendorCache
   cache:
     policy: pull-push
+  before_script:
+    - sudo apk add --update --no-cache patch
   script:
     - composer install --ignore-platform-reqs
 
