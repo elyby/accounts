@@ -8,6 +8,7 @@ use api\models\base\ApiForm;
 use api\modules\authserver\exceptions\ForbiddenOperationException;
 use api\modules\authserver\validators\AccessTokenValidator;
 use api\modules\authserver\validators\RequiredValidator;
+use api\rbac\Permissions as P;
 use common\models\Account;
 use common\models\MinecraftAccessKey;
 use common\models\OauthClient;
