@@ -41,7 +41,7 @@ class OauthSession extends ActiveRecord {
     }
 
     public function getAccount(): ActiveQuery {
-        return $this->hasOne(Account::class, ['id' => 'owner_id']);
+        return $this->hasOne(Account::class, ['id' => 'account_id']);
     }
 
     public function getScopes(): array {
