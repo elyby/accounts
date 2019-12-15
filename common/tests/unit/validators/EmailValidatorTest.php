@@ -102,17 +102,22 @@ class EmailValidatorTest extends TestCase {
         $this->assertNotSame(['error.email_is_tempmail'], $model->getErrors('field'));
     }
 
-    public function testValidateAttributeIdna() {
+    /**
+     * @dataProvider getValidateAttributeIdnaTestCases
+     */
+    public function testValidateAttributeIdna(string $input, string $expectedOutput) {
         $this->getFunctionMock(YiiEmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
         $this->getFunctionMock(YiiEmailValidator::class, 'dns_get_record')->expects($this->any())->willReturn(['127.0.0.1']);
 
-        $model = $this->createModel('qdushyantasunassm@❕.gq');
+        $model = $this->createModel($input);
         $this->validator->validateAttribute($model, 'field');
-        $this->assertSame('qdushyantasunassm@xn--bei.gq', $model->field);
+        $this->assertSame($expectedOutput, $model->field);
+    }
 
-        $model = $this->createModel('valid-email@gmail.com');
-        $this->validator->validateAttribute($model, 'field');
-        $this->assertSame('valid-email@gmail.com', $model->field);
+    public function getValidateAttributeIdnaTestCases() {
+        yield ['qdushyantasunassm@❕.gq', 'qdushyantasunassm@xn--bei.gq'];
+        yield ['Rafaelaabraão@gmail.com', 'xn--rafaelaabrao-dcb@gmail.com'];
+        yield ['valid-email@gmail.com', 'valid-email@gmail.com'];
     }
 
     public function testValidateAttributeUnique() {

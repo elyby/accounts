@@ -40,7 +40,7 @@ class EmailValidator extends Validator {
 
         $idnaDomain = new validators\FilterValidator(['filter' => function(string $value): string {
             [$name, $domain] = explode('@', $value);
-            return $name . '@' . idn_to_ascii($domain, 0, INTL_IDNA_VARIANT_UTS46);
+            return idn_to_ascii($name, 0, INTL_IDNA_VARIANT_UTS46) . '@' . idn_to_ascii($domain, 0, INTL_IDNA_VARIANT_UTS46);
         }]);
 
         $unique = new validators\UniqueValidator();
