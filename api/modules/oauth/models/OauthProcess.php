@@ -340,9 +340,9 @@ class OauthProcess {
     }
 
     private function getScopesList(AuthorizationRequest $request): array {
-        return array_map(function(ScopeEntityInterface $scope): string {
+        return array_values(array_map(function(ScopeEntityInterface $scope): string {
             return $scope->getIdentifier();
-        }, $request->getScopes());
+        }, $request->getScopes()));
     }
 
     private function findOauthSession(Account $account, OauthClient $client): ?OauthSession {
