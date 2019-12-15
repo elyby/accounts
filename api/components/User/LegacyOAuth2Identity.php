@@ -27,11 +27,6 @@ class LegacyOAuth2Identity implements IdentityInterface {
      */
     private $scopes;
 
-    /**
-     * @var OauthSession|null
-     */
-    private $session = false;
-
     private function __construct(string $accessToken, int $sessionId, array $scopes) {
         $this->accessToken = $accessToken;
         $this->sessionId = $sessionId;
@@ -109,11 +104,7 @@ class LegacyOAuth2Identity implements IdentityInterface {
     }
 
     private function getSession(): ?OauthSession {
-        if ($this->session === false) {
-            $this->session = OauthSession::findOne(['id' => $this->sessionId]);
-        }
-
-        return $this->session;
+        return OauthSession::findOne(['legacy_id' => $this->sessionId]);
     }
 
 }
