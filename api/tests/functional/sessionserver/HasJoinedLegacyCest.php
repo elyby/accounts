@@ -4,7 +4,7 @@ namespace api\tests\functional\sessionserver;
 use api\tests\_pages\SessionServerRoute;
 use api\tests\functional\_steps\SessionServerSteps;
 use api\tests\FunctionalTester;
-use Faker\Provider\Uuid;
+use function Ramsey\Uuid\v4 as uuid;
 
 class HasJoinedLegacyCest {
 
@@ -42,7 +42,7 @@ class HasJoinedLegacyCest {
         $I->wantTo('hasJoined by legacy version to some server without join call');
         $this->route->hasJoinedLegacy([
             'user' => 'random-username',
-            'serverId' => Uuid::uuid(),
+            'serverId' => uuid(),
         ]);
         $I->seeResponseCodeIs(200);
         $I->canSeeResponseEquals('NO');

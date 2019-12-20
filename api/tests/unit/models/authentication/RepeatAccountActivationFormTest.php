@@ -6,9 +6,8 @@ namespace api\tests\_support\models\authentication;
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\authentication\RepeatAccountActivationForm;
 use api\tests\unit\TestCase;
-use Codeception\Specify;
+use common\models\Account;
 use common\models\confirmations\RegistrationConfirmation;
-use common\models\EmailActivation;
 use common\tasks\SendRegistrationEmail;
 use common\tests\fixtures\AccountFixture;
 use common\tests\fixtures\EmailActivationFixture;
@@ -16,7 +15,6 @@ use GuzzleHttp\ClientInterface;
 use Yii;
 
 class RepeatAccountActivationFormTest extends TestCase {
-    use Specify;
 
     protected function setUp(): void {
         parent::setUp();
@@ -35,41 +33,35 @@ class RepeatAccountActivationFormTest extends TestCase {
     }
 
     public function testValidateEmailForAccount() {
-        $this->specify('error.email_not_found if passed valid email, but it don\'t exists in database', function() {
-            $model = new RepeatAccountActivationForm(['email' => 'me-is-not@exists.net']);
-            $model->validateEmailForAccount('email');
-            $this->assertSame(['error.email_not_found'], $model->getErrors('email'));
-        });
+        $model = $this->createWithAccount(null);
+        $model->validateEmailForAccount('email');
+        $this->assertSame(['error.email_not_found'], $model->getErrors('email'));
 
-        $this->specify('error.account_already_activated if passed valid email, but account already activated', function() {
-            $fixture = $this->tester->grabFixture('accounts', 'admin');
-            $model = new RepeatAccountActivationForm(['email' => $fixture['email']]);
-            $model->validateEmailForAccount('email');
-            $this->assertSame(['error.account_already_activated'], $model->getErrors('email'));
-        });
+        $account = new Account();
+        $account->status = Account::STATUS_ACTIVE;
+        $model = $this->createWithAccount($account);
+        $model->validateEmailForAccount('email');
+        $this->assertSame(['error.account_already_activated'], $model->getErrors('email'));
 
-        $this->specify('no errors if passed valid email for not activated account', function() {
-            $fixture = $this->tester->grabFixture('accounts', 'not-activated-account');
-            $model = new RepeatAccountActivationForm(['email' => $fixture['email']]);
-            $model->validateEmailForAccount('email');
-            $this->assertEmpty($model->getErrors('email'));
-        });
+        $account = new Account();
+        $account->status = Account::STATUS_REGISTERED;
+        $model = $this->createWithAccount($account);
+        $model->validateEmailForAccount('email');
+        $this->assertEmpty($model->getErrors('email'));
     }
 
     public function testValidateExistsActivation() {
-        $this->specify('error.recently_sent_message if passed email has recently sent message', function() {
-            $fixture = $this->tester->grabFixture('activations', 'freshRegistrationConfirmation');
-            $model = $this->createModel(['emailKey' => $fixture['key']]);
-            $model->validateExistsActivation('email');
-            $this->assertSame(['error.recently_sent_message'], $model->getErrors('email'));
-        });
+        $activation = new RegistrationConfirmation();
+        $activation->created_at = time() - 10;
+        $model = $this->createWithActivation($activation);
+        $model->validateExistsActivation('email');
+        $this->assertSame(['error.recently_sent_message'], $model->getErrors('email'));
 
-        $this->specify('no errors if passed email has expired activation message', function() {
-            $fixture = $this->tester->grabFixture('activations', 'oldRegistrationConfirmation');
-            $model = $this->createModel(['emailKey' => $fixture['key']]);
-            $model->validateExistsActivation('email');
-            $this->assertEmpty($model->getErrors('email'));
-        });
+        $activation = new RegistrationConfirmation();
+        $activation->created_at = time() - 60 * 60 * 24;
+        $model = $this->createWithActivation($activation);
+        $model->validateExistsActivation('email');
+        $this->assertEmpty($model->getErrors('email'));
     }
 
     public function testSendRepeatMessage() {
@@ -93,18 +85,18 @@ class RepeatAccountActivationFormTest extends TestCase {
         $this->assertSame('http://localhost/activation/' . $activation->key, $job->link);
     }
 
-    /**
-     * @param array $params
-     * @return RepeatAccountActivationForm
-     */
-    private function createModel(array $params = []) {
-        return new class($params) extends RepeatAccountActivationForm {
-            public $emailKey;
+    private function createWithAccount(?Account $account): RepeatAccountActivationForm {
+        $model = $this->createPartialMock(RepeatAccountActivationForm::class, ['getAccount']);
+        $model->method('getAccount')->willReturn($account);
 
-            public function getActivation(): ?RegistrationConfirmation {
-                return EmailActivation::findOne($this->emailKey);
-            }
-        };
+        return $model;
+    }
+
+    private function createWithActivation(?RegistrationConfirmation $activation): RepeatAccountActivationForm {
+        $model = $this->createPartialMock(RepeatAccountActivationForm::class, ['getActivation']);
+        $model->method('getActivation')->willReturn($activation);
+
+        return $model;
     }
 
 }

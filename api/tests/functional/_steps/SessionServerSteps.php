@@ -4,7 +4,7 @@ namespace api\tests\functional\_steps;
 use api\rbac\Permissions as P;
 use api\tests\_pages\SessionServerRoute;
 use api\tests\FunctionalTester;
-use Faker\Provider\Uuid;
+use function Ramsey\Uuid\v4 as uuid;
 
 class SessionServerSteps extends FunctionalTester {
 
@@ -12,7 +12,7 @@ class SessionServerSteps extends FunctionalTester {
         $oauthSteps = new OauthSteps($this->scenario);
         $accessToken = $oauthSteps->getAccessToken([P::MINECRAFT_SERVER_SESSION]);
         $route = new SessionServerRoute($this);
-        $serverId = Uuid::uuid();
+        $serverId = uuid();
         $username = 'Admin';
 
         if ($byLegacy) {

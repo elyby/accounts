@@ -4,7 +4,7 @@ namespace api\tests\functional\sessionserver;
 use api\tests\_pages\SessionServerRoute;
 use api\tests\functional\_steps\SessionServerSteps;
 use api\tests\FunctionalTester;
-use Faker\Provider\Uuid;
+use function Ramsey\Uuid\v4 as uuid;
 
 class HasJoinedCest {
 
@@ -46,7 +46,7 @@ class HasJoinedCest {
         $I->wantTo('hasJoined to some server without join call');
         $this->route->hasJoined([
             'username' => 'some-username',
-            'serverId' => Uuid::uuid(),
+            'serverId' => uuid(),
         ]);
         $I->seeResponseCodeIs(401);
         $I->seeResponseIsJson();

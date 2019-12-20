@@ -6,7 +6,6 @@ namespace api\tests\unit\modules\session\filters;
 use api\modules\session\filters\RateLimiter;
 use api\tests\unit\TestCase;
 use common\models\OauthClient;
-use Faker\Provider\Internet;
 use Yii;
 use yii\redis\Connection;
 use yii\web\Request;
@@ -84,7 +83,7 @@ class RateLimiterTest extends TestCase {
             ->getMock();
 
         $request->method('getUserIp')
-            ->willReturn(Internet::localIpv4());
+            ->willReturn('10.1.1.17');
 
         /** @var RateLimiter|\PHPUnit\Framework\MockObject\MockObject $filter */
         $filter = $this->getMockBuilder(RateLimiter::class)

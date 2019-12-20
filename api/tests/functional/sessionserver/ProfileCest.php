@@ -4,7 +4,7 @@ namespace api\tests\functional\sessionserver;
 use api\tests\_pages\SessionServerRoute;
 use api\tests\functional\_steps\SessionServerSteps;
 use api\tests\FunctionalTester;
-use Faker\Provider\Uuid;
+use function Ramsey\Uuid\v4;
 
 class ProfileCest {
 
@@ -48,7 +48,7 @@ class ProfileCest {
 
     public function getProfileWithNonexistentUuid(FunctionalTester $I) {
         $I->wantTo('get info about nonexistent uuid');
-        $this->route->profile(Uuid::uuid());
+        $this->route->profile(v4());
         $I->canSeeResponseCodeIs(401);
         $I->canSeeResponseIsJson();
         $I->seeResponseIsJson();

@@ -6,7 +6,7 @@ use api\tests\_pages\SessionServerRoute;
 use api\tests\functional\_steps\AuthserverSteps;
 use api\tests\functional\_steps\OauthSteps;
 use api\tests\FunctionalTester;
-use Faker\Provider\Uuid;
+use function Ramsey\Uuid\v4 as uuid;
 
 class JoinCest {
 
@@ -25,7 +25,7 @@ class JoinCest {
         $this->route->join([
             'accessToken' => $accessToken,
             'selectedProfile' => 'df936908-b2e1-544d-96f8-2977ec213022',
-            'serverId' => Uuid::uuid(),
+            'serverId' => uuid(),
         ]);
         $this->expectSuccessResponse($I);
     }
@@ -36,7 +36,7 @@ class JoinCest {
         $this->route->join(json_encode([
             'accessToken' => $accessToken,
             'selectedProfile' => 'df936908-b2e1-544d-96f8-2977ec213022',
-            'serverId' => Uuid::uuid(),
+            'serverId' => uuid(),
         ]));
         $this->expectSuccessResponse($I);
     }
@@ -47,7 +47,7 @@ class JoinCest {
         $this->route->join([
             'accessToken' => $accessToken,
             'selectedProfile' => 'df936908-b2e1-544d-96f8-2977ec213022',
-            'serverId' => Uuid::uuid(),
+            'serverId' => uuid(),
         ]);
         $this->expectSuccessResponse($I);
     }
@@ -58,7 +58,7 @@ class JoinCest {
         $this->route->join([
             'accessToken' => $accessToken,
             'selectedProfile' => 'df936908b2e1544d96f82977ec213022',
-            'serverId' => Uuid::uuid(),
+            'serverId' => uuid(),
         ]);
         $this->expectSuccessResponse($I);
     }
@@ -69,7 +69,7 @@ class JoinCest {
         $this->route->join([
             'accessToken' => $accessToken,
             'selectedProfile' => 'df936908-b2e1-544d-96f8-2977ec213022',
-            'serverId' => Uuid::uuid(),
+            'serverId' => uuid(),
         ]);
         $I->seeResponseCodeIs(401);
         $I->seeResponseIsJson();
@@ -84,7 +84,7 @@ class JoinCest {
         $this->route->join([
             'accessToken' => '6042634a-a1e2-4aed-866c-c661fe4e63e2',
             'selectedProfile' => 'df936908-b2e1-544d-96f8-2977ec213022',
-            'serverId' => Uuid::uuid(),
+            'serverId' => uuid(),
         ]);
         $I->seeResponseCodeIs(401);
         $I->seeResponseIsJson();
@@ -110,9 +110,9 @@ class JoinCest {
     public function joinWithWrongAccessToken(FunctionalTester $I) {
         $I->wantTo('join to some server with wrong accessToken');
         $this->route->join([
-            'accessToken' => Uuid::uuid(),
+            'accessToken' => uuid(),
             'selectedProfile' => 'df936908-b2e1-544d-96f8-2977ec213022',
-            'serverId' => Uuid::uuid(),
+            'serverId' => uuid(),
         ]);
         $I->seeResponseCodeIs(401);
         $I->seeResponseIsJson();
@@ -127,7 +127,7 @@ class JoinCest {
         $this->route->join([
             'accessToken' => '00000000-0000-0000-0000-000000000000',
             'selectedProfile' => 'df936908-b2e1-544d-96f8-2977ec213022',
-            'serverId' => Uuid::uuid(),
+            'serverId' => uuid(),
         ]);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();

@@ -6,7 +6,7 @@ use api\tests\_pages\SessionServerRoute;
 use api\tests\functional\_steps\AuthserverSteps;
 use api\tests\functional\_steps\OauthSteps;
 use api\tests\FunctionalTester;
-use Faker\Provider\Uuid;
+use function Ramsey\Uuid\v4 as uuid;
 
 class JoinLegacyCest {
 
@@ -25,7 +25,7 @@ class JoinLegacyCest {
         $this->route->joinLegacy([
             'sessionId' => $accessToken,
             'user' => 'Admin',
-            'serverId' => Uuid::uuid(),
+            'serverId' => uuid(),
         ]);
         $this->expectSuccessResponse($I);
     }
@@ -36,7 +36,7 @@ class JoinLegacyCest {
         $this->route->joinLegacy([
             'sessionId' => $accessToken,
             'user' => 'admin',
-            'serverId' => Uuid::uuid(),
+            'serverId' => uuid(),
         ]);
         $this->expectSuccessResponse($I);
     }
@@ -47,7 +47,7 @@ class JoinLegacyCest {
         $this->route->joinLegacy([
             'sessionId' => 'token:' . $accessToken . ':' . 'df936908-b2e1-544d-96f8-2977ec213022',
             'user' => 'Admin',
-            'serverId' => Uuid::uuid(),
+            'serverId' => uuid(),
         ]);
         $this->expectSuccessResponse($I);
     }
@@ -58,7 +58,7 @@ class JoinLegacyCest {
         $this->route->joinLegacy([
             'sessionId' => 'token:' . $accessToken . ':' . 'df936908-b2e1-544d-96f8-2977ec213022',
             'user' => 'Admin',
-            'serverId' => Uuid::uuid(),
+            'serverId' => uuid(),
         ]);
         $this->expectSuccessResponse($I);
     }
@@ -75,9 +75,9 @@ class JoinLegacyCest {
     public function joinWithWrongAccessToken(FunctionalTester $I) {
         $I->wantTo('join to some server with wrong accessToken');
         $this->route->joinLegacy([
-            'sessionId' => 'token:' . Uuid::uuid() . ':' . Uuid::uuid(),
+            'sessionId' => 'token:' . uuid() . ':' . uuid(),
             'user' => 'random-username',
-            'serverId' => Uuid::uuid(),
+            'serverId' => uuid(),
         ]);
         $I->seeResponseCodeIs(401);
         $I->canSeeResponseContains('Ely.by authorization required');
@@ -89,7 +89,7 @@ class JoinLegacyCest {
         $this->route->joinLegacy([
             'sessionId' => 'token:' . $accessToken . ':' . 'df936908-b2e1-544d-96f8-2977ec213022',
             'user' => 'Admin',
-            'serverId' => Uuid::uuid(),
+            'serverId' => uuid(),
         ]);
         $I->seeResponseCodeIs(401);
         $I->canSeeResponseContains('Ely.by authorization required');
@@ -100,7 +100,7 @@ class JoinLegacyCest {
         $this->route->joinLegacy([
             'sessionId' => 'token:00000000-0000-0000-0000-000000000000:00000000-0000-0000-0000-000000000000',
             'user' => 'SomeUser',
-            'serverId' => Uuid::uuid(),
+            'serverId' => uuid(),
         ]);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContains('credentials can not be null.');

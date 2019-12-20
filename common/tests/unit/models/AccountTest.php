@@ -3,20 +3,16 @@ declare(strict_types=1);
 
 namespace common\tests\unit\models;
 
-use Codeception\Specify;
-use common\components\UserPass;
 use common\models\Account;
 use common\tasks\CreateWebHooksDeliveries;
 use common\tests\fixtures\MojangUsernameFixture;
 use common\tests\unit\TestCase;
-use Yii;
 use const common\LATEST_RULES_VERSION;
 
 /**
  * @covers \common\models\Account
  */
 class AccountTest extends TestCase {
-    use Specify;
 
     public function testSetPassword() {
         $model = new Account();
@@ -27,57 +23,47 @@ class AccountTest extends TestCase {
     }
 
     public function testValidatePassword() {
-        $this->specify('old Ely password should work', function() {
-            $model = new Account([
-                'email' => 'erick@skrauch.net',
-                'password_hash' => UserPass::make('erick@skrauch.net', '12345678'),
-            ]);
-            $this->assertTrue($model->validatePassword('12345678', Account::PASS_HASH_STRATEGY_OLD_ELY), 'valid password should pass');
-            $this->assertFalse($model->validatePassword('87654321', Account::PASS_HASH_STRATEGY_OLD_ELY), 'invalid password should fail');
-        });
+        // Use old hashing algorithm
+        $model = new Account();
+        $model->email = 'erick@skrauch.net';
+        $model->password_hash = '2cfdb29eb354af970865a923335d17d9'; // 12345678
+        $model->password_hash_strategy = null; // To be sure it's not set
+        $this->assertTrue($model->validatePassword('12345678', Account::PASS_HASH_STRATEGY_OLD_ELY), 'valid password should pass');
+        $this->assertFalse($model->validatePassword('87654321', Account::PASS_HASH_STRATEGY_OLD_ELY), 'invalid password should fail');
 
-        $this->specify('modern hash algorithm should work', function() {
-            $model = new Account([
-                'password_hash' => Yii::$app->security->generatePasswordHash('12345678'),
-            ]);
-            $this->assertTrue($model->validatePassword('12345678', Account::PASS_HASH_STRATEGY_YII2), 'valid password should pass');
-            $this->assertFalse($model->validatePassword('87654321', Account::PASS_HASH_STRATEGY_YII2), 'invalid password should fail');
-        });
+        // Modern hash algorithm should also work
+        $model = new Account();
+        $model->password_hash = '$2y$04$N0q8DaHzlYILCnLYrpZfEeWKEqkPZzbawiS07GbSr/.xbRNweSLU6'; // 12345678
+        $model->password_hash_strategy = null; // To be sure it's not set
+        $this->assertTrue($model->validatePassword('12345678', Account::PASS_HASH_STRATEGY_YII2), 'valid password should pass');
+        $this->assertFalse($model->validatePassword('87654321', Account::PASS_HASH_STRATEGY_YII2), 'invalid password should fail');
 
-        $this->specify('if second argument is not pass model value should be used', function() {
-            $model = new Account([
-                'email' => 'erick@skrauch.net',
-                'password_hash_strategy' => Account::PASS_HASH_STRATEGY_OLD_ELY,
-                'password_hash' => UserPass::make('erick@skrauch.net', '12345678'),
-            ]);
-            $this->assertTrue($model->validatePassword('12345678'), 'valid password should pass');
-            $this->assertFalse($model->validatePassword('87654321'), 'invalid password should fail');
+        // If the second arg isn't passed model's value should be used
+        $model = new Account();
+        $model->email = 'erick@skrauch.net';
+        $model->password_hash = '2cfdb29eb354af970865a923335d17d9'; // 12345678
+        $model->password_hash_strategy = Account::PASS_HASH_STRATEGY_OLD_ELY;
+        $this->assertTrue($model->validatePassword('12345678'), 'valid password should pass');
+        $this->assertFalse($model->validatePassword('87654321'), 'invalid password should fail');
 
-            $model = new Account([
-                'password_hash_strategy' => Account::PASS_HASH_STRATEGY_YII2,
-                'password_hash' => Yii::$app->security->generatePasswordHash('12345678'),
-            ]);
-            $this->assertTrue($model->validatePassword('12345678'), 'valid password should pass');
-            $this->assertFalse($model->validatePassword('87654321'), 'invalid password should fail');
-        });
+        // The same case for modern algorithm
+        $model = new Account();
+        $model->password_hash = '$2y$04$N0q8DaHzlYILCnLYrpZfEeWKEqkPZzbawiS07GbSr/.xbRNweSLU6'; // 12345678
+        $model->password_hash_strategy = Account::PASS_HASH_STRATEGY_YII2;
+        $this->assertTrue($model->validatePassword('12345678'), 'valid password should pass');
+        $this->assertFalse($model->validatePassword('87654321'), 'invalid password should fail');
     }
 
     public function testHasMojangUsernameCollision() {
+        $model = new Account();
+        $model->username = 'ErickSkrauch';
+        $this->assertFalse($model->hasMojangUsernameCollision());
+
         $this->tester->haveFixtures([
             'mojangUsernames' => MojangUsernameFixture::class,
         ]);
 
-        $this->specify('Expect true if collision with current username', function() {
-            $model = new Account();
-            $model->username = 'ErickSkrauch';
-            $this->assertTrue($model->hasMojangUsernameCollision());
-        });
-
-        $this->specify('Expect false if some rare username without any collision on Mojang', function() {
-            $model = new Account();
-            $model->username = 'rare-username';
-            $this->assertFalse($model->hasMojangUsernameCollision());
-        });
+        $this->assertTrue($model->hasMojangUsernameCollision());
     }
 
     public function testGetProfileLink() {
@@ -87,22 +73,14 @@ class AccountTest extends TestCase {
     }
 
     public function testIsAgreedWithActualRules() {
-        $this->specify('get false, if rules field set in null', function() {
-            $model = new Account();
-            $this->assertFalse($model->isAgreedWithActualRules());
-        });
+        $model = new Account();
+        $this->assertFalse($model->isAgreedWithActualRules(), 'field is null');
 
-        $this->specify('get false, if rules field have version less, then actual', function() {
-            $model = new Account();
-            $model->rules_agreement_version = 0;
-            $this->assertFalse($model->isAgreedWithActualRules());
-        });
+        $model->rules_agreement_version = 0;
+        $this->assertFalse($model->isAgreedWithActualRules(), 'actual version is greater than zero');
 
-        $this->specify('get true, if rules field have equals rules version', function() {
-            $model = new Account();
-            $model->rules_agreement_version = LATEST_RULES_VERSION;
-            $this->assertTrue($model->isAgreedWithActualRules());
-        });
+        $model->rules_agreement_version = LATEST_RULES_VERSION;
+        $this->assertTrue($model->isAgreedWithActualRules());
     }
 
     public function testSetRegistrationIp() {

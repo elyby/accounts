@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\models\authentication;
 
 use api\aop\annotations\CollectModelMetrics;

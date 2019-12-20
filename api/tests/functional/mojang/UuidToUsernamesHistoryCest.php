@@ -3,7 +3,7 @@ namespace api\tests\functional\authserver;
 
 use api\tests\_pages\MojangApiRoute;
 use api\tests\FunctionalTester;
-use Faker\Provider\Uuid;
+use function Ramsey\Uuid\v4 as uuid;
 
 class UuidToUsernamesHistoryCest {
 
@@ -50,7 +50,7 @@ class UuidToUsernamesHistoryCest {
 
     public function passWrongUuid(FunctionalTester $I) {
         $I->wantTo('get user username by some wrong uuid');
-        $this->route->usernamesByUuid(Uuid::uuid());
+        $this->route->usernamesByUuid(uuid());
         $I->canSeeResponseCodeIs(204);
         $I->canSeeResponseEquals('');
     }
