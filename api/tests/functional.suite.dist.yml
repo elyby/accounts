@@ -3,7 +3,6 @@ actor: FunctionalTester
 modules:
   enabled:
     - Asserts
-    - Filesystem
     - Yii2:
         configFile: tests/config/functional.php
         entryScript: /api/web/index.php
@@ -12,8 +11,3 @@ modules:
     - common\tests\_support\FixtureHelper
     - REST:
         depends: Yii2
-    - Redis:
-        host: redis
-        port: 6379
-        database: 0
-        cleanupBefore: 'suite'

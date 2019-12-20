@@ -1,5 +1,5 @@
 diff --git a/src/Codeception/Test/Cest.php b/src/Codeception/Test/Cest.php
-index c644ed2e..5426bf3f 100644
+index c644ed2..5426bf3 100644
 --- a/src/Codeception/Test/Cest.php
 +++ b/src/Codeception/Test/Cest.php
 @@ -150,7 +150,7 @@ protected function executeTestMethod($I)
@@ -12,7 +12,7 @@ index c644ed2e..5426bf3f 100644
          return sprintf('%s: %s', ReflectionHelper::getClassShortName($this->getTestClass()), Message::ucfirst($this->getFeature()));
      }
 diff --git a/src/Codeception/Test/Test.php b/src/Codeception/Test/Test.php
-index f5e8426f..99c9f0ae 100644
+index f5e8426..99c9f0a 100644
 --- a/src/Codeception/Test/Test.php
 +++ b/src/Codeception/Test/Test.php
 @@ -55,7 +55,7 @@ abstract class Test implements TestInterface, Interfaces\Descriptive
