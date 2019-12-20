@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace common\models;
 
-use common\behaviors\DataBehavior;
-use common\behaviors\EmailActivationExpirationBehavior;
 use common\behaviors\PrimaryKeyValueBehavior;
 use common\components\UserFriendlyRandomKey;
+use DateInterval;
+use DateTimeImmutable;
 use yii\base\InvalidConfigException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -14,19 +14,17 @@ use yii\helpers\ArrayHelper;
 
 /**
  * Fields:
- * @property string  $key
- * @property integer $account_id
- * @property integer $type
- * @property string  $_data
- * @property integer $created_at
+ * @property string     $key
+ * @property int        $account_id
+ * @property int        $type
+ * @property array|null $data
+ * @property int        $created_at
  *
  * Relations:
  * @property Account $account
  *
  * Behaviors:
  * @mixin TimestampBehavior
- * @mixin EmailActivationExpirationBehavior
- * @mixin DataBehavior
  */
 class EmailActivation extends ActiveRecord {
 
@@ -39,41 +37,15 @@ class EmailActivation extends ActiveRecord {
         return 'email_activations';
     }
 
-    public static function find(): EmailActivationQuery {
-        return new EmailActivationQuery(static::class);
-    }
-
-    public function behaviors(): array {
+    public static function getClassMap(): array {
         return [
-            [
-                'class' => TimestampBehavior::class,
-                'updatedAtAttribute' => false,
-            ],
-            [
-                'class' => PrimaryKeyValueBehavior::class,
-                'value' => function() {
-                    return UserFriendlyRandomKey::make();
-                },
-            ],
-            'expirationBehavior' => [
-                'class' => EmailActivationExpirationBehavior::class,
-                'repeatTimeout' => 5 * 60, // 5m
-                'expirationTimeout' => -1,
-            ],
-            'dataBehavior' => [
-                'class' => DataBehavior::class,
-                'attribute' => '_data',
-            ],
+            self::TYPE_REGISTRATION_EMAIL_CONFIRMATION => confirmations\RegistrationConfirmation::class,
+            self::TYPE_FORGOT_PASSWORD_KEY => confirmations\ForgotPassword::class,
+            self::TYPE_CURRENT_EMAIL_CONFIRMATION => confirmations\CurrentEmailConfirmation::class,
+            self::TYPE_NEW_EMAIL_CONFIRMATION => confirmations\NewEmailConfirmation::class,
         ];
     }
 
-    public function getAccount(): AccountQuery {
-        return $this->hasOne(Account::class, ['id' => 'account_id']);
-    }
-
-    /**
-     * @inheritdoc
-     */
     public static function instantiate($row) {
         $type = ArrayHelper::getValue($row, 'type');
         if ($type === null) {
@@ -88,13 +60,79 @@ class EmailActivation extends ActiveRecord {
         return new $classMap[$type]();
     }
 
-    public static function getClassMap(): array {
+    public static function find(): EmailActivationQuery {
+        return new EmailActivationQuery(static::class);
+    }
+
+    public function behaviors(): array {
         return [
-            self::TYPE_REGISTRATION_EMAIL_CONFIRMATION => confirmations\RegistrationConfirmation::class,
-            self::TYPE_FORGOT_PASSWORD_KEY => confirmations\ForgotPassword::class,
-            self::TYPE_CURRENT_EMAIL_CONFIRMATION => confirmations\CurrentEmailConfirmation::class,
-            self::TYPE_NEW_EMAIL_CONFIRMATION => confirmations\NewEmailConfirmation::class,
+            [
+                'class' => TimestampBehavior::class,
+                'updatedAtAttribute' => false,
+            ],
+            [
+                'class' => PrimaryKeyValueBehavior::class,
+                'value' => function(): string {
+                    return UserFriendlyRandomKey::make();
+                },
+            ],
         ];
+    }
+
+    public function getAccount(): AccountQuery {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
+        return $this->hasOne(Account::class, ['id' => 'account_id']);
+    }
+
+    public function canResend(): bool {
+        $timeout = $this->getResendTimeout();
+        if ($timeout === null) {
+            return true;
+        }
+
+        return $this->compareTime($timeout);
+    }
+
+    public function canResendAt(): DateTimeImmutable {
+        return $this->calculateTime($this->getResendTimeout() ?? new DateInterval('PT0S'));
+    }
+
+    public function isStale(): bool {
+        $duration = $this->getExpireDuration();
+        if ($duration === null) {
+            return false;
+        }
+
+        return $this->compareTime($duration);
+    }
+
+    /**
+     * After which time the message for this action type can be resended.
+     * When null returned the message can be sent immediately.
+     *
+     * @return DateInterval|null
+     */
+    protected function getResendTimeout(): ?DateInterval {
+        return new DateInterval('PT5M');
+    }
+
+    /**
+     * How long the activation code should be valid.
+     * When null returned the code is never expires
+     *
+     * @return DateInterval|null
+     */
+    protected function getExpireDuration(): ?DateInterval {
+        return null;
+    }
+
+    private function compareTime(DateInterval $value): bool {
+        return (new DateTimeImmutable()) > $this->calculateTime($value);
+    }
+
+    private function calculateTime(DateInterval $interval): DateTimeImmutable {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        return (new DateTimeImmutable('@' . $this->created_at))->add($interval);
     }
 
 }

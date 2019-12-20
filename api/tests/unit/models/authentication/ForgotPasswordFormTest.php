@@ -7,6 +7,7 @@ use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\authentication\ForgotPasswordForm;
 use api\tests\unit\TestCase;
 use common\models\Account;
+use common\models\confirmations\ForgotPassword;
 use common\models\EmailActivation;
 use common\tasks\SendPasswordRecoveryEmail;
 use common\tests\fixtures\AccountFixture;
@@ -126,7 +127,7 @@ class ForgotPasswordFormTest extends TestCase {
         return new class($params) extends ForgotPasswordForm {
             public $key;
 
-            public function getEmailActivation(): ?EmailActivation {
+            public function getEmailActivation(): ?ForgotPassword {
                 return EmailActivation::findOne(['key' => $this->key]);
             }
         };

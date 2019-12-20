@@ -53,7 +53,6 @@ class RepeatAccountActivationCest {
             ],
         ]);
         $I->canSeeResponseJsonMatchesJsonPath('$.data.canRepeatIn');
-        $I->canSeeResponseJsonMatchesJsonPath('$.data.repeatFrequency');
     }
 
     public function testSuccess(FunctionalTester $I) {

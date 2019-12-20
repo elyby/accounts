@@ -37,7 +37,7 @@ class EmailActivationKeyValidator extends Validator {
             return;
         }
 
-        if ($activation->isExpired()) {
+        if ($activation->isStale()) {
             $this->addError($model, $attribute, $this->expired);
             return;
         }

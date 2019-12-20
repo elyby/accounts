@@ -57,7 +57,6 @@ class ForgotPasswordCest {
             ],
         ]);
         $I->canSeeResponseJsonMatchesJsonPath('$.data.canRepeatIn');
-        $I->canSeeResponseJsonMatchesJsonPath('$.data.repeatFrequency');
     }
 
     /**
@@ -68,7 +67,6 @@ class ForgotPasswordCest {
             'success' => true,
         ]);
         $I->canSeeResponseJsonMatchesJsonPath('$.data.canRepeatIn');
-        $I->canSeeResponseJsonMatchesJsonPath('$.data.repeatFrequency');
         if ($expectEmailMask) {
             $I->canSeeResponseJsonMatchesJsonPath('$.data.emailMask');
         }

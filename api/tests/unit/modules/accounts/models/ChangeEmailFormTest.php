@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\unit\modules\accounts\models;
 
 use api\modules\accounts\models\ChangeEmailForm;
@@ -20,16 +22,17 @@ class ChangeEmailFormTest extends TestCase {
     public function testChangeEmail() {
         /** @var Account $account */
         $account = Account::findOne($this->getAccountId());
+        /** @var EmailActivation $newEmailConfirmationFixture */
         $newEmailConfirmationFixture = $this->tester->grabFixture('emailActivations', 'newEmailConfirmation');
         $model = new ChangeEmailForm($account, [
-            'key' => $newEmailConfirmationFixture['key'],
+            'key' => $newEmailConfirmationFixture->key,
         ]);
         $this->assertTrue($model->performAction());
         $this->assertNull(EmailActivation::findOne([
             'account_id' => $account->id,
             'type' => EmailActivation::TYPE_NEW_EMAIL_CONFIRMATION,
         ]));
-        $data = unserialize($newEmailConfirmationFixture['_data']);
+        $data = $newEmailConfirmationFixture->data;
         $this->assertSame($data['newEmail'], $account->email);
     }
 

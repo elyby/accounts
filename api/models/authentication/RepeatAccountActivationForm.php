@@ -50,7 +50,7 @@ class RepeatAccountActivationForm extends ApiForm {
     public function validateExistsActivation(string $attribute): void {
         if (!$this->hasErrors()) {
             $activation = $this->getActivation();
-            if ($activation !== null && !$activation->canRepeat()) {
+            if ($activation !== null && !$activation->canResend()) {
                 $this->addError($attribute, E::RECENTLY_SENT_MESSAGE);
             }
         }
@@ -94,7 +94,7 @@ class RepeatAccountActivationForm extends ApiForm {
             ->one();
     }
 
-    public function getActivation(): ?EmailActivation {
+    public function getActivation(): ?RegistrationConfirmation {
         return $this->getAccount()
             ->getEmailActivations()
             ->withType(EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION)

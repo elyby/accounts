@@ -25,7 +25,7 @@ class EmailActivationKeyValidatorTest extends TestCase {
             ->getMock();
 
         $expiredActivation = new ForgotPassword();
-        $expiredActivation->created_at = time() - $expiredActivation->expirationTimeout - 10;
+        $expiredActivation->created_at = time() - 60 * 60 - 10;
 
         $validActivation = new EmailActivation();
 

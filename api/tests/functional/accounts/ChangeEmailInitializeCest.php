@@ -39,7 +39,6 @@ class ChangeEmailInitializeCest {
             ],
         ]);
         $I->canSeeResponseJsonMatchesJsonPath('$.data.canRepeatIn');
-        $I->canSeeResponseJsonMatchesJsonPath('$.data.repeatFrequency');
     }
 
 }

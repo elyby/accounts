@@ -5,7 +5,7 @@ namespace common\models\confirmations;
 
 use common\models\EmailActivation;
 use common\models\EmailActivationQuery;
-use yii\helpers\ArrayHelper;
+use DateInterval;
 
 class ForgotPassword extends EmailActivation {
 
@@ -13,18 +13,17 @@ class ForgotPassword extends EmailActivation {
         return parent::find()->withType(EmailActivation::TYPE_FORGOT_PASSWORD_KEY);
     }
 
-    public function behaviors(): array {
-        return ArrayHelper::merge(parent::behaviors(), [
-            'expirationBehavior' => [
-                'repeatTimeout' => 30 * 60,
-                'expirationTimeout' => 1 * 60 * 60,
-            ],
-        ]);
-    }
-
     public function init(): void {
         parent::init();
         $this->type = EmailActivation::TYPE_FORGOT_PASSWORD_KEY;
+    }
+
+    protected function getResendTimeout(): ?DateInterval {
+        return new DateInterval('PT30M');
+    }
+
+    protected function getExpireDuration(): ?DateInterval {
+        return new DateInterval('PT1H');
     }
 
 }

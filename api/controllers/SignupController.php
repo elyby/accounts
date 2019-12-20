@@ -62,10 +62,10 @@ class SignupController extends Controller {
             ];
 
             if (ArrayHelper::getValue($response['errors'], 'email') === E::RECENTLY_SENT_MESSAGE) {
+                /** @var \common\models\confirmations\RegistrationConfirmation $activation */
                 $activation = $model->getActivation();
                 $response['data'] = [
-                    'canRepeatIn' => $activation->canRepeatIn(),
-                    'repeatFrequency' => $activation->repeatTimeout,
+                    'canRepeatIn' => $activation->canResendAt(),
                 ];
             }
 

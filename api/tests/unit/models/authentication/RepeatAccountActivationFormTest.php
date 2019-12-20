@@ -7,6 +7,7 @@ use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\authentication\RepeatAccountActivationForm;
 use api\tests\unit\TestCase;
 use Codeception\Specify;
+use common\models\confirmations\RegistrationConfirmation;
 use common\models\EmailActivation;
 use common\tasks\SendRegistrationEmail;
 use common\tests\fixtures\AccountFixture;
@@ -100,7 +101,7 @@ class RepeatAccountActivationFormTest extends TestCase {
         return new class($params) extends RepeatAccountActivationForm {
             public $emailKey;
 
-            public function getActivation(): ?EmailActivation {
+            public function getActivation(): ?RegistrationConfirmation {
                 return EmailActivation::findOne($this->emailKey);
             }
         };

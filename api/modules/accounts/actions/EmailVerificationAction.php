@@ -17,11 +17,11 @@ class EmailVerificationAction extends BaseAccountAction {
             return [];
         }
 
+        /** @var \common\models\EmailActivation $emailActivation */
         $emailActivation = $model->getEmailActivation();
 
         return [
-            'canRepeatIn' => $emailActivation->canRepeatIn(),
-            'repeatFrequency' => $emailActivation->repeatTimeout,
+            'canRepeatIn' => $emailActivation->canResendAt()->getTimestamp(),
         ];
     }
 

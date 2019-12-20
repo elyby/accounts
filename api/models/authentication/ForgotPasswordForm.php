@@ -51,7 +51,7 @@ class ForgotPasswordForm extends ApiForm {
     public function validateFrequency(string $attribute): void {
         if (!$this->hasErrors()) {
             $emailConfirmation = $this->getEmailActivation();
-            if ($emailConfirmation !== null && !$emailConfirmation->canRepeat()) {
+            if ($emailConfirmation !== null && !$emailConfirmation->canResend()) {
                 $this->addError($attribute, E::RECENTLY_SENT_MESSAGE);
             }
         }
@@ -89,7 +89,7 @@ class ForgotPasswordForm extends ApiForm {
         return true;
     }
 
-    public function getEmailActivation(): ?EmailActivation {
+    public function getEmailActivation(): ?ForgotPassword {
         $account = $this->getAccount();
         if ($account === null) {
             return null;

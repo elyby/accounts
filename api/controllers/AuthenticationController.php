@@ -88,10 +88,10 @@ class AuthenticationController extends Controller {
             ];
 
             if (ArrayHelper::getValue($data['errors'], 'login') === E::RECENTLY_SENT_MESSAGE) {
+                /** @var \common\models\confirmations\ForgotPassword $emailActivation */
                 $emailActivation = $model->getEmailActivation();
                 $data['data'] = [
-                    'canRepeatIn' => $emailActivation->canRepeatIn(),
-                    'repeatFrequency' => $emailActivation->repeatTimeout,
+                    'canRepeatIn' => $emailActivation->canResendAt()->getTimestamp(),
                 ];
             }
 
@@ -102,8 +102,7 @@ class AuthenticationController extends Controller {
         $response = [
             'success' => true,
             'data' => [
-                'canRepeatIn' => $emailActivation->canRepeatIn(),
-                'repeatFrequency' => $emailActivation->repeatTimeout,
+                'canRepeatIn' => $emailActivation->canResendAt()->getTimestamp(),
             ],
         ];
 
