@@ -1,11 +1,13 @@
 <?php
+declare(strict_types=1);
+
 namespace api\models;
 
 use api\models\base\ApiForm;
 use common\helpers\Error as E;
 use common\models\Account;
+use Webmozart\Assert\Assert;
 use Yii;
-use yii\base\ErrorException;
 use yii\base\InvalidConfigException;
 
 class FeedbackForm extends ApiForm {
@@ -18,11 +20,11 @@ class FeedbackForm extends ApiForm {
 
     public $message;
 
-    public function rules() {
+    public function rules(): array {
         return [
-            ['subject', 'required', 'message' => E::SUBJECT_REQUIRED],
-            ['email', 'required', 'message' => E::EMAIL_REQUIRED],
-            ['message', 'required', 'message' => E::MESSAGE_REQUIRED],
+            [['subject'], 'required', 'message' => E::SUBJECT_REQUIRED],
+            [['email'], 'required', 'message' => E::EMAIL_REQUIRED],
+            [['message'], 'required', 'message' => E::MESSAGE_REQUIRED],
             [['subject'], 'string', 'max' => 255],
             [['email'], 'email', 'message' => E::EMAIL_INVALID],
             [['message'], 'string', 'max' => 65535],
@@ -52,9 +54,7 @@ class FeedbackForm extends ApiForm {
             ->setFrom([$this->email => $account ? $account->username : $this->email])
             ->setSubject($this->subject);
 
-        if (!$message->send()) {
-            throw new ErrorException('Unable send feedback email.');
-        }
+        Assert::true($message->send(), 'Unable send feedback email.');
 
         return true;
     }

@@ -54,17 +54,11 @@ return [
             'viewPath' => '@common/mail',
             'transport' => [
                 'class' => Swift_SmtpTransport::class,
-                'host' => 'ely.by',
+                'host' => getenv('SMTP_HOST'),
                 'username' => getenv('SMTP_USER'),
                 'password' => getenv('SMTP_PASS'),
                 'port' => getenv('SMTP_PORT') ?: 587,
-                'encryption' => 'tls',
-                'streamOptions' => [
-                    'ssl' => [
-                        'allow_self_signed' => true,
-                        'verify_peer' => false,
-                    ],
-                ],
+                'encryption' => getenv('SMTP_ENCRYPTION') ?: 'tls',
             ],
         ],
         'sentry' => [
