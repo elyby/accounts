@@ -1,13 +1,10 @@
-FROM php:7.3.11-fpm-alpine3.10 AS app
-
-# ENV variables for composer
-ENV COMPOSER_NO_INTERACTION 1
-ENV COMPOSER_ALLOW_SUPERUSER 1
+FROM php:7.4.1-fpm-alpine3.11 AS app
 
 # bash needed to support wait-for-it script
 RUN apk add --update --no-cache \
     git \
     bash \
+    patch \
     openssh \
     dcron \
     zlib-dev \
@@ -23,7 +20,7 @@ RUN apk add --update --no-cache \
     pcntl \
     opcache \
  && apk add --no-cache --virtual ".phpize-deps" $PHPIZE_DEPS \
- && yes | pecl install xdebug-2.7.1 \
+ && yes | pecl install xdebug-2.9.0 \
  && yes | pecl install imagick \
  && docker-php-ext-enable imagick \
  && apk del ".phpize-deps" \
@@ -31,17 +28,18 @@ RUN apk add --update --no-cache \
  && rm -rf /tmp/* \
  && mkdir /etc/cron.d
 
-COPY --from=composer:1.8.4 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:1.9.1 /usr/bin/composer /usr/bin/composer
 COPY --from=node:11.13.0-alpine /usr/local/bin/node /usr/bin/
 COPY --from=node:11.13.0-alpine /usr/lib/libgcc* /usr/lib/libstdc* /usr/lib/* /usr/lib/
 
 RUN mkdir /root/.composer \
  && echo '{"github-oauth": {"github.com": "***REMOVED***"}}' > ~/.composer/auth.json \
- && composer global require --no-progress "hirak/prestissimo:^0.3.8" \
+ && composer global require --no-progress "hirak/prestissimo:>=0.3.8" \
  && composer clear-cache
 
 COPY ./docker/php/wait-for-it.sh /usr/local/bin/wait-for-it
 
+COPY ./patches /var/www/html/patches/
 COPY ./composer.* /var/www/html/
 
 ARG build_env=prod
