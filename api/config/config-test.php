@@ -25,8 +25,8 @@ return [
                     }
                 };
             },
-            common\components\SkinSystem\Api::class => function() {
-                return new class extends common\components\SkinSystem\Api {
+            common\components\SkinsSystemApi::class => function() {
+                return new class extends common\components\SkinsSystemApi {
                     public function textures(string $username): ?array {
                         return [
                             'SKIN' => [

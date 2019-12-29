@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace common\models;
 
-use common\components\SkinSystem\Api as SkinSystemApi;
+use common\components\SkinsSystemApi as SkinSystemApi;
 use DateInterval;
 use DateTime;
 use GuzzleHttp\Exception\GuzzleException;

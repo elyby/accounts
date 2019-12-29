@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace common\components\SkinSystem;
+namespace common\components;
 
 use GuzzleHttp\ClientInterface;
 use Yii;
 
 // TODO: convert to complete Chrly client library
-class Api {
+class SkinsSystemApi {
 
     private const BASE_DOMAIN = 'http://skinsystem.ely.by';
 

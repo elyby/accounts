@@ -1,11 +1,12 @@
 <?php
-namespace common\components\Sentry;
+declare(strict_types=1);
 
+namespace common\components;
+
+use mito\sentry\Component;
 use Yii;
 
-class Component extends \mito\sentry\Component {
-
-    public $jsNotifier = false;
+class Sentry extends Component {
 
     public function init() {
         if (!$this->enabled) {

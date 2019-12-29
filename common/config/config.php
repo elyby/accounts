@@ -19,7 +19,7 @@ return [
         'definitions' => [
             GuzzleHttp\ClientInterface::class => GuzzleHttp\Client::class,
             Ely\Mojang\Api::class => Ely\Mojang\Api::class,
-            common\components\SkinSystem\Api::class => common\components\SkinSystem\Api::class,
+            common\components\SkinsSystemApi::class => common\components\SkinsSystemApi::class,
         ],
     ],
     'components' => [
@@ -68,7 +68,7 @@ return [
             ],
         ],
         'sentry' => [
-            'class' => common\components\Sentry\Component::class,
+            'class' => common\components\Sentry::class,
             'enabled' => !empty(getenv('SENTRY_DSN')),
             'dsn' => getenv('SENTRY_DSN'),
             'environment' => YII_ENV_DEV ? 'development' : 'production',
