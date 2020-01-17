@@ -65,7 +65,7 @@ services:
     restart: always
     env_file: .env
     volumes:
-      - ./data/mysql:/var/lib/mysql
+      - ./data/mysql:/bitnami/mariadb
 
   redis:
     image: redis:3.0-alpine
