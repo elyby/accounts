@@ -1,7 +1,7 @@
 version: '3.4'
 services:
   web:
-    image: registry.ely.by/elyby/accounts-nginx:latest
+    image: elyby/accounts/nginx:local
     build:
       context: .
       target: web
@@ -11,14 +11,13 @@ services:
       - app
       - emails-renderer
     env_file: .env
+    ports:
+      - 80:80
     volumes:
       - ./:/var/www/html
-    networks:
-      - default
-      - nginx-proxy
 
   app:
-    image: registry.ely.by/elyby/accounts:dev
+    image: elyby/accounts:local
     build:
       context: .
       target: app
@@ -36,7 +35,7 @@ services:
           - php
 
   worker:
-    image: registry.ely.by/elyby/accounts:dev
+    image: elyby/accounts:local
     build:
       context: .
       target: app
@@ -51,7 +50,7 @@ services:
     env_file: .env
 
   cron:
-    image: registry.ely.by/elyby/accounts:dev
+    image: elyby/accounts:local
     build:
       context: .
       target: app
@@ -70,17 +69,23 @@ services:
     image: elyby/emails-renderer:dev
 
   db:
+    image: elyby/accounts/mariadb:local
     build:
       context: .
       target: db
       args:
         build_env: dev
-    env_file: .env
     volumes:
-      - ./data/mysql:/bitnami/mariadb
+      - ./data/mariadb:/bitnami/mariadb
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+      MARIADB_ROOT_PASSWORD: ""
+      MARIADB_DATABASE: ely_accounts
+      MARIADB_USER: ely_accounts_user
+      MARIADB_PASSWORD: ely_accounts_password
 
   redis:
-    image: redis:3.0-alpine
+    image: redis:5.0-alpine
     volumes:
       - ./data/redis:/data
 
@@ -113,33 +118,31 @@ services:
   #     ],
   # ];
   #
-  # 2) Clone api/tests/functional.suite.dist.yml into api/test/functional.suite.yml
-  #    and adjust Redis module host value to the "testredis".
-  #
-  # 3) Uncomment the next 2 services (testdb and testredis):
+  # 2) Uncomment the next 2 services (testdb and testredis):
   #
   # testdb:
+  #   image: elyby/accounts/mariadb:local
   #   build:
   #     context: .
   #     target: db
   #     args:
   #       build_env: dev
   #   volumes:
-  #     - ./data/mysql-test:/var/lib/mysql
+  #     - ./data/mariadb-test:/bitnami/mariadb
   #   environment:
-  #     - MYSQL_ALLOW_EMPTY_PASSWORD=yes
-  #     - MYSQL_ROOT_PASSWORD=
-  #     - MYSQL_DATABASE=test
-  #     - MYSQL_USER=test
-  #     - MYSQL_PASSWORD=test
+  #     ALLOW_EMPTY_PASSWORD: "yes"
+  #     MARIADB_ROOT_PASSWORD: ""
+  #     MARIADB_DATABASE: test
+  #     MARIADB_USER: test
+  #     MARIADB_PASSWORD: test
   #
   # testredis:
-  #   image: redis:3.0-alpine
+  #   image: redis:5.0-alpine
   #   volumes:
   #     - ./data/redis-test:/data
   #
-  # 4) To run migrations on tests database you must execute slightly adjusted
-  #    migrate command: env YII_ENV=test yii migrate
+  # 4) To run migrations on tests' database you must execute slightly adjusted
+  #    migrate command: "env YII_ENV=test yii migrate"
 
   phpmyadmin:
     build: ./docker/phpmyadmin
@@ -147,14 +150,7 @@ services:
       - PMA_ARBITRARY=1
       - PMA_USER=root
       - PMA_PASSWORD=
-      - VIRTUAL_HOST=pma.account.ely.by.local # Feel free to adjust this domain
     depends_on:
       - db
-    networks:
-      - default
-      - nginx-proxy
-
-networks:
-  nginx-proxy:
-    external:
-      name: nginx-proxy
+    ports:
+      - 8080:80
