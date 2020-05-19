@@ -1,62 +1,55 @@
 # Accounts Ely.by
 
-Сервис управления Аккаунтами Ely.by, предоставляющий единую точку входа для наших и внешних сервисов по протоколу
-OAuth2, а также реализующий сервер авторизации для серверов Minecraft и частично реализующий совместимое с API Mojang
-для получения информации об аккаунтах.
+Ely.by's accounts management service, which provides a single entry point for our own services, as well as for external 
+projects via the OAuth2 protocol. It also implements authorization server for Minecraft game servers and partially 
+implements Mojang-compatible API for obtaining accounts' information.
 
-**Предупреждение**: этот проект не предназначен для использования вне экосистемы сервисов Ely.by.
+**Warning**: this project isn't intended for use outside of the ecosystem of Ely.by's services.
 
-## Разработка
+## Development
 
-Проект ориентирован на работу в Docker окружении, так что для полноценной работы проекта запускать его следует именно в
-окружении Docker-контейнера. Ссылки на установки:
+The project is designed to work in the Docker environment. Installation links:
 - [Docker](https://docs.docker.com/install/)
 - [docker-compose](https://docs.docker.com/compose/install/)
 
-Далее необходимо создать форк репозитория, а после клонировать его:
-
-```sh
-git clone git@github.com:<your_username>/accounts.git
-cd accounts
-```
-
-Затем необходимо создать локальные файлы `.env` и `docker-compose.yml`:
+First you need to [fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the repository and 
+[clone](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) it.
+After that you need to create local `.env` and `docker-compose.yml` files:
 
 ```sh
 cp .env.dist .env
 cp docker-compose.dist.yml docker-compose.yml
 ```
 
-Скопированные файлы можно изменить под условия локальной среды разработки, но в общем случае они пригодны для
-использования без вашего вмешательства.
+The copied files can be adjusted for your local environment, but generally they are ready to use without any
+intervention.
 
-Контейнеры не умеют автоматически устанавливать зависимости, так что их нужно установить самостоятельно. Если у вас в
-системе установлен `php` и `composer`, то можно установить зависимости через команду `composer install`. Вы также всегда
-можете установить зависимости с помощью контейнера:
+Containers will not install dependencies automatically, so you have to install them manually. If you have `php` and 
+`composer` installed on your system, you can install dependencies with the `composer install` command. You can always
+install dependencies using the container:
 
 ```sh
 docker-compose run --rm --no-deps app composer install
 ```
 
-При первом запуске произойдёт процесс загрузки и построения необходимых образов, после чего все контейнеры начнут
-свою работу, и вы сможете приступить к разработке.
+At the first start, all base images will be loaded and built (it can take a long time for the application's image),
+after which you will be able to begin the development.
 
-Для запуска всех контейнеров, используйте следующую команду:
+To start all containers, use the following command:
 
 ```sh
 docker-compose up -d
 ```
 
-По умолчанию, в `docker-compose.yml` указан `80` порт для самого сервиса, а также `8080` порт для подключения
-к phpMyAdmin. Если сервисы `web` и `phpmyadmin` выбросят ошибку, связанную с занятостью портов, то необходимо или
-освободить необходимые порты (`80` и `8080`), или же изменить их, после чего заново выполнить команду
-`docker-compose up -d`.
+By default, `docker-compose.yml` specifies `80` port for the `web` service and `8080` port for `phpMyAdmin`. If these
+services emits ports-related errors, it is necessary to make the required ports available or change them, and then run
+the `docker-compose up -d` command again.
 
-### Пользовательский интерфейс
+### User interface
 
-Этот репозиторий содержит в себе только код для API бекенда, в то время как интерфейс находится в
-[соседнем репозитории](https://github.com/elyby/accounts-frontend). Пользователи Linux и Mac могут использовать
-следующий скрипт, чтобы получить последнюю версию пользовательского интерфейса:
+This repository contains only the source code for the backend API while the interface is in a
+[nearby repository](https://github.com/elyby/accounts-frontend). Linux and Mac users can use the following script
+to get the latest version of the UI:
 
 ```bash
 curl -s https://api.github.com/repos/elyby/accounts-frontend/releases/latest \
@@ -70,16 +63,20 @@ curl -s https://api.github.com/repos/elyby/accounts-frontend/releases/latest \
 && rm -f /tmp/accounts-frontend.tar.gz
 ```
 
-Если этот скрипт не сработал для вас, то вы можете самостоятельно перейти на
-[страницу релизов](https://github.com/elyby/accounts-frontend/releases), скачать подходящий `build`-архив и
-разархивировать всё его содержимое в папку `frontend`. 
+If this script didn't work for you, you can manually go to the
+[releases page](https://github.com/elyby/accounts-frontend/releases), download the suitable `build`-archive and extract
+all its contents into the `frontend` folder.
 
-### Как войти в работающий контейнер
+### How to enter into a working container
 
-Начиная с версии `docker-compose` 1.9.0, была добавлена команда `docker-compose exec`, которая позволяет выполнить
-на работающем контейнере произвольную команду, основываясь на имени сервиса в compose-файле. Так, например, чтобы
-войти в shell контейнера `app`, используйте следующую команду:
+Using the [`docker-compose exec`](https://docs.docker.com/compose/reference/exec/) command you can easily execute any
+desired command in running container by using its service's name from the `docker-compose.yml` file. For example,
+to enter the shell of the `app` container, use the following command:
 
 ```
 docker-compose exec app bash
 ```
+
+# License
+
+This library is released under the [Apache 2.0](LICENSE).
