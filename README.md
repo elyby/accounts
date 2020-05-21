@@ -4,11 +4,11 @@ Ely.by's accounts management service, which provides a single entry point for ou
 projects via the OAuth2 protocol. It also implements authorization server for Minecraft game servers and partially 
 implements Mojang-compatible API for obtaining accounts' information.
 
-**Warning**: this project isn't intended for use outside of the ecosystem of Ely.by's services.
+**Warning**: this project is not intended for use outside of the ecosystem of Ely.by's services.
 
 ## Development
 
-The project is designed to work in the Docker environment. Installation links:
+The project is designed to work in a Docker environment. Installation links:
 - [Docker](https://docs.docker.com/install/)
 - [docker-compose](https://docs.docker.com/compose/install/)
 
@@ -25,7 +25,7 @@ The copied files can be adjusted for your local environment, but generally they 
 intervention.
 
 Containers will not install dependencies automatically, so you have to install them manually. If you have `php` and 
-`composer` installed on your system, you can install dependencies with the `composer install` command. You can always
+`composer` installed on your system, you can install dependencies with the `composer install` command. You can also
 install dependencies using the container:
 
 ```sh
@@ -47,8 +47,8 @@ the `docker-compose up -d` command again.
 
 ### User interface
 
-This repository contains only the source code for the backend API while the interface is in a
-[nearby repository](https://github.com/elyby/accounts-frontend). Linux and Mac users can use the following script
+This repository contains only the source code for the backend API while the interface is in the
+[separate repository](https://github.com/elyby/accounts-frontend). Linux and Mac users can use the following script
 to get the latest version of the UI:
 
 ```bash
@@ -70,7 +70,7 @@ all its contents into the `frontend` folder.
 ### How to enter into a working container
 
 Using the [`docker-compose exec`](https://docs.docker.com/compose/reference/exec/) command you can easily execute any
-desired command in running container by using its service's name from the `docker-compose.yml` file. For example,
+desired command in a running container by using its service's name from the `docker-compose.yml` file. For example,
 to enter the shell of the `app` container, use the following command:
 
 ```
