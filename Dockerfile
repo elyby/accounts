@@ -33,7 +33,6 @@ COPY --from=node:11.13.0-alpine /usr/local/bin/node /usr/bin/
 COPY --from=node:11.13.0-alpine /usr/lib/libgcc* /usr/lib/libstdc* /usr/lib/* /usr/lib/
 
 RUN mkdir /root/.composer \
- && echo '{"github-oauth": {"github.com": "***REMOVED***"}}' > ~/.composer/auth.json \
  && composer global require --no-progress "hirak/prestissimo:>=0.3.8" \
  && composer clear-cache
 
