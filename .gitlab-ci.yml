@@ -4,7 +4,6 @@ stages:
   - prepare
   - testing
   - build
-  - cleanup
 
 variables:
   APP_IMAGE_NAME: "$CI_REGISTRY_IMAGE/app"
@@ -150,26 +149,6 @@ Docker images:
     - docker push $WEB_LATEST_IMAGE_NAME
     - docker push $DB_VERSIONED_IMAGE_NAME
     - docker push $DB_LATEST_IMAGE_NAME
-  only:
-    - master
-    - tags
-
-#################
-# Cleanup stage #
-#################
-
-Remove Docker images:
-  stage: cleanup
-  image: docker:19.03.2
-  variables:
-    GIT_STRATEGY: none
-  before_script:
-    - *defineVars
-  script:
-    - docker rmi "$APP_LATEST_IMAGE_NAME" "$APP_VERSIONED_IMAGE_NAME" || true
-    - docker rmi "$WEB_LATEST_IMAGE_NAME" "$WEB_VERSIONED_IMAGE_NAME" || true
-    - docker rmi "$DB_LATEST_IMAGE_NAME" "$DB_VERSIONED_IMAGE_NAME" || true
-  when: always
   only:
     - master
     - tags
