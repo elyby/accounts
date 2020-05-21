@@ -46,7 +46,7 @@ variables:
 # Prepare stage #
 #################
 
-Precache dependencies:
+Composer:
   stage: prepare
   extends:
     - .vendorCache
@@ -102,9 +102,9 @@ Codeception:
 # Build stage #
 ###############
 
-Docker images:
+Docker:
   stage: build
-  image: docker:19.03.2
+  image: docker:19.03.9-dind
   before_script:
     - *defineVars
     - *dockerLogin
