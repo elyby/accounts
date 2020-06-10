@@ -65,7 +65,13 @@ return [
             'class' => common\components\Sentry::class,
             'enabled' => !empty(getenv('SENTRY_DSN')),
             'dsn' => getenv('SENTRY_DSN'),
-            'environment' => YII_ENV_DEV ? 'development' : 'production',
+            'environment' => (function(): string {
+                if (!empty(getenv('SENTRY_ENV'))) {
+                    return getenv('SENTRY_ENV');
+                }
+
+                return YII_ENV_DEV ? 'Development' : 'Production';
+            })(),
             'client' => [
                 'curl_method' => 'async',
             ],

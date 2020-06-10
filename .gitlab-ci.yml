@@ -4,6 +4,7 @@ stages:
   - prepare
   - testing
   - build
+  - deploy
 
 variables:
   APP_IMAGE_NAME: "$CI_REGISTRY_IMAGE/app"
@@ -30,6 +31,16 @@ variables:
 
 .dockerLogin: &dockerLogin |-
   docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+.installSentry: &installSentry |-
+  apk add --update-cache --upgrade curl bash
+  curl -sL https://sentry.io/get-cli/ | bash
+
+.setupSSH: &setupSSH |-
+  mkdir ~/.ssh
+  echo -e "Host *\n    StrictHostKeyChecking no\n" > ~/.ssh/config
+  eval $(ssh-agent -s)
+  echo "$SSH_DEPLOY_KEY" | tr -d '\r' | ssh-add -
 
 ###################
 # Steps to extend #
@@ -158,3 +169,66 @@ Docker:
   only:
     - master
     - tags
+
+##########
+# Deploy #
+##########
+
+.beforeSentryDeploy: &beforeSentryDeploy |-
+  sentry-cli releases new $VERSION
+  sentry-cli releases set-commits --commit "elyby/accounts@${CI_COMMIT_SHA}" $VERSION
+
+.afterSentryDeploy: &afterSentryDeploy |-
+  sentry-cli releases deploys $VERSION new -e $CI_ENVIRONMENT_NAME
+  sentry-cli releases finalize $VERSION
+
+.deployJob:
+  stage: deploy
+  image: docksal/ssh-agent:1.3
+  needs:
+    - Docker
+  variables:
+    GIT_STRATEGY: none
+  before_script:
+    - *defineVars
+    - *installSentry
+    - *setupSSH
+  script:
+    - *beforeSentryDeploy
+    # Escape $ with backslash to prevent value evaluation from CI container.
+    # We're not using $APP_IMAGE_LATEST_NAME because on remote server might be
+    # a different semantic of preferred image version tag
+    - |
+      ssh -J deploy@ely.by:4534 -p 722 "root@$VM_HOST_NAME" /bin/bash << EOF
+        set -e
+        cd "$VM_DEPLOY_PATH"
+        docker pull "$APP_VERSIONED_IMAGE_NAME"
+        docker pull "$WEB_VERSIONED_IMAGE_NAME"
+        docker tag "$APP_VERSIONED_IMAGE_NAME" "$APP_IMAGE_NAME:latest"
+        docker tag "$WEB_VERSIONED_IMAGE_NAME" "$WEB_IMAGE_NAME:latest"
+        docker-compose stop app worker cron
+        docker-compose rm -fv app worker cron
+        docker-compose up -d app worker cron
+        docker-compose stop web
+        docker-compose rm -fv web
+        docker-compose up -d web
+      EOF
+    - *afterSentryDeploy
+
+Dev:
+  extends:
+    - .deployJob
+  environment:
+    name: Development
+  variables:
+    VM_HOST_NAME: playground.ely.local
+    VM_DEPLOY_PATH: /srv/dev.account.ely.by
+  rules:
+    - if: '$CI_COMMIT_TAG'
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+    - if: '$CI_COMMIT_MESSAGE =~ /\[deploy dev\]/'
+      when: on_success
+      # Default:
+    - when: never
