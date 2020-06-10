@@ -136,11 +136,8 @@ class ClientsController extends Controller {
 
         /** @var OauthClient[] $clients */
         $clients = $account->getOauthClients()->orderBy(['created_at' => SORT_ASC])->all();
-        $result = array_map(function(OauthClient $client) {
-            return $this->formatClient($client);
-        }, $clients);
 
-        return $result;
+        return array_map(fn(OauthClient $client): array => $this->formatClient($client), $clients);
     }
 
     private function formatClient(OauthClient $client): array {
