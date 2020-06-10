@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace common\db\mysql;
 
-use SamIT\Yii2\MariaDb\QueryBuilder as MysqlQueryBuilder;
+use SamIT\Yii2\MariaDb\QueryBuilder as MariaDbQueryBuilder;
 use yii\db\ExpressionInterface;
 
-class QueryBuilder extends MysqlQueryBuilder {
+class QueryBuilder extends MariaDbQueryBuilder {
 
     public function buildOrderBy($columns) {
         if (empty($columns)) {

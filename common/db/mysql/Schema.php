@@ -4,14 +4,15 @@ declare(strict_types=1);
 namespace common\db\mysql;
 
 use SamIT\Yii2\MariaDb\JsonExpressionBuilder;
-use SamIT\Yii2\MariaDb\Schema as MysqlSchema;
+use SamIT\Yii2\MariaDb\Schema as MariaDbSchema;
+use yii\db\JsonExpression;
 
-class Schema extends MysqlSchema {
+class Schema extends MariaDbSchema {
 
-    public function createQueryBuilder() {
+    public function createQueryBuilder(): QueryBuilder {
         $result = new QueryBuilder($this->db);
         $result->setExpressionBuilders([
-            'yii\db\JsonExpression' => JsonExpressionBuilder::class,
+            JsonExpression::class => JsonExpressionBuilder::class,
         ]);
 
         return $result;
