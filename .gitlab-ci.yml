@@ -196,7 +196,7 @@ Docker:
   script:
     - *beforeSentryDeploy
     # Escape $ with backslash to prevent value evaluation from CI container.
-    # We're not using $APP_IMAGE_LATEST_NAME because on remote server might be
+    # We're not using $APP_LATEST_IMAGE_NAME because on remote server might be
     # a different semantic of preferred image version tag
     - |
       ssh -J deploy@ely.by:4534 -p 722 "root@$VM_HOST_NAME" /bin/bash << EOF
@@ -208,7 +208,7 @@ Docker:
         docker tag "$WEB_VERSIONED_IMAGE_NAME" "$WEB_IMAGE_NAME:latest"
         docker-compose stop app worker cron
         docker-compose rm -fv app worker cron
-        docker-compose up -d app worker cron
+        docker-compose up -d --scale worker=3 app worker cron
         docker-compose stop web
         docker-compose rm -fv web
         docker-compose up -d web
@@ -232,3 +232,19 @@ Dev:
       when: on_success
       # Default:
     - when: never
+
+Prod:
+  extends:
+    - .deployJob
+  environment:
+    name: Production
+  variables:
+    VM_HOST_NAME: accounts.ely.local
+    VM_DEPLOY_PATH: /srv
+  rules:
+    - if: '$CI_COMMIT_BRANCH != "master"'
+      when: never
+    - if: '$CI_COMMIT_MESSAGE =~ /\[deploy\]/'
+      when: on_success
+      # Default:
+    - when: manual
