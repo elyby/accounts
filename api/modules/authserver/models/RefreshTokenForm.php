@@ -62,7 +62,7 @@ class RefreshTokenForm extends ApiForm {
             $account = Account::findOne(['id' => $tokenReader->getAccountId()]);
         }
 
-        if ($account === null) {
+        if ($account === null || $account->status === Account::STATUS_DELETED) {
             throw new ForbiddenOperationException('Invalid token.');
         }
 

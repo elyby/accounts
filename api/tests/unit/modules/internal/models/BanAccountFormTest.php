@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\unit\modules\internal\models;
 
 use api\modules\accounts\models\BanAccountForm;
@@ -6,8 +8,9 @@ use api\modules\internal\helpers\Error as E;
 use api\tests\unit\TestCase;
 use common\models\Account;
 use common\tasks\ClearAccountSessions;
+use ReflectionObject;
 
-class BanFormTest extends TestCase {
+class BanAccountFormTest extends TestCase {
 
     public function testValidateAccountActivity() {
         $account = new Account();
@@ -25,13 +28,9 @@ class BanFormTest extends TestCase {
 
     public function testBan() {
         /** @var Account|\PHPUnit\Framework\MockObject\MockObject $account */
-        $account = $this->getMockBuilder(Account::class)
-            ->setMethods(['save'])
-            ->getMock();
-
-        $account->expects($this->once())
-            ->method('save')
-            ->willReturn(true);
+        $account = $this->createPartialMock(Account::class, ['save']);
+        $account->expects($this->once())->method('save')->willReturn(true);
+        $account->id = 123;
 
         $model = new BanAccountForm($account);
         $this->assertTrue($model->performAction());
@@ -39,7 +38,10 @@ class BanFormTest extends TestCase {
         /** @var ClearAccountSessions $job */
         $job = $this->tester->grabLastQueuedJob();
         $this->assertInstanceOf(ClearAccountSessions::class, $job);
-        $this->assertSame($job->accountId, $account->id);
+        $obj = new ReflectionObject($job);
+        $property = $obj->getProperty('accountId');
+        $property->setAccessible(true);
+        $this->assertSame(123, $property->getValue($job));
     }
 
 }

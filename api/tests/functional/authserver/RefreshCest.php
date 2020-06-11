@@ -93,6 +93,19 @@ class RefreshCest {
         ]);
     }
 
+    public function refreshTokenFromDeletedUser(AuthserverSteps $I) {
+        $I->wantTo('refresh token from account marked for deletion');
+        $I->sendPOST('/api/authserver/authentication/refresh', [
+            'accessToken' => '239ba889-7020-4383-8d99-cd8c8aab4a2f',
+            'clientToken' => '47443658-4ff8-45e7-b33e-dc8915ab6421',
+        ]);
+        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseContainsJson([
+            'error' => 'ForbiddenOperationException',
+            'errorMessage' => 'Invalid token.',
+        ]);
+    }
+
     public function refreshTokenFromBannedUser(AuthserverSteps $I) {
         $I->wantTo('refresh token from suspended account');
         $I->sendPOST('/api/authserver/authentication/refresh', [

@@ -13,6 +13,7 @@ return [
         'created_at' => 1451775316,
         'updated_at' => 1451775316,
         'password_changed_at' => 1451775316,
+        'deleted_at' => null,
     ],
     'user-with-old-password-type' => [
         'id' => 2,
@@ -27,6 +28,7 @@ return [
         'created_at' => 1385225069,
         'updated_at' => 1385225069,
         'password_changed_at' => 1385225069,
+        'deleted_at' => null,
     ],
     'not-activated-account' => [
         'id' => 3,
@@ -41,6 +43,7 @@ return [
         'created_at' => 1453146616,
         'updated_at' => 1453146616,
         'password_changed_at' => 1453146616,
+        'deleted_at' => null,
     ],
     'not-activated-account-with-expired-message' => [
         'id' => 4,
@@ -55,6 +58,7 @@ return [
         'created_at' => 1457890086,
         'updated_at' => 1457890086,
         'password_changed_at' => 1457890086,
+        'deleted_at' => null,
     ],
     'account-with-fresh-forgot-password-message' => [
         'id' => 5,
@@ -69,6 +73,7 @@ return [
         'created_at' => 1462891432,
         'updated_at' => 1462891432,
         'password_changed_at' => 1462891432,
+        'deleted_at' => null,
     ],
     'account-with-expired-forgot-password-message' => [
         'id' => 6,
@@ -83,6 +88,7 @@ return [
         'created_at' => 1462891612,
         'updated_at' => 1462891612,
         'password_changed_at' => 1462891612,
+        'deleted_at' => null,
     ],
     'account-with-change-email-init-state' => [
         'id' => 7,
@@ -97,6 +103,7 @@ return [
         'created_at' => 1463427287,
         'updated_at' => 1463427287,
         'password_changed_at' => 1463427287,
+        'deleted_at' => null,
     ],
     'account-with-change-email-finish-state' => [
         'id' => 8,
@@ -111,6 +118,7 @@ return [
         'created_at' => 1463349615,
         'updated_at' => 1463349615,
         'password_changed_at' => 1463349615,
+        'deleted_at' => null,
     ],
     'account-with-old-rules-version' => [
         'id' => 9,
@@ -125,6 +133,7 @@ return [
         'created_at' => 1470499952,
         'updated_at' => 1470499952,
         'password_changed_at' => 1470499952,
+        'deleted_at' => null,
     ],
     'banned-account' => [
         'id' => 10,
@@ -139,6 +148,7 @@ return [
         'created_at' => 1472682343,
         'updated_at' => 1472682343,
         'password_changed_at' => 1472682343,
+        'deleted_at' => null,
     ],
     'account-with-usernames-history' => [
         'id' => 11,
@@ -153,6 +163,7 @@ return [
         'created_at' => 1474404139,
         'updated_at' => 1474404149,
         'password_changed_at' => 1474404149,
+        'deleted_at' => null,
     ],
     'account-with-otp-secret' => [
         'id' => 12,
@@ -169,6 +180,7 @@ return [
         'created_at' => 1485124615,
         'updated_at' => 1485124615,
         'password_changed_at' => 1485124615,
+        'deleted_at' => null,
     ],
     'account-with-enabled-otp' => [
         'id' => 13,
@@ -185,6 +197,7 @@ return [
         'created_at' => 1485124685,
         'updated_at' => 1485124685,
         'password_changed_at' => 1485124685,
+        'deleted_at' => null,
     ],
     'account-with-two-oauth-clients' => [
         'id' => 14,
@@ -201,5 +214,23 @@ return [
         'created_at' => 1519487320,
         'updated_at' => 1519487320,
         'password_changed_at' => 1519487320,
+        'deleted_at' => null,
+    ],
+    'deleted-account' => [
+        'id' => 15,
+        'uuid' => '6383de63-8f85-4ed5-92b7-5401a1fa68cd',
+        'username' => 'DeletedAccount',
+        'email' => 'deleted-account@ely.by',
+        'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
+        'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
+        'lang' => 'ru',
+        'status' => \common\models\Account::STATUS_DELETED,
+        'rules_agreement_version' => \common\LATEST_RULES_VERSION,
+        'otp_secret' => null,
+        'is_otp_enabled' => false,
+        'created_at' => 1591893532,
+        'updated_at' => 1591893532,
+        'password_changed_at' => 1591893532,
+        'deleted_at' => time(),
     ],
 ];

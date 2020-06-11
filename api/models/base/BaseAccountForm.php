@@ -1,14 +1,13 @@
 <?php
+declare(strict_types=1);
+
 namespace api\models\base;
 
 use common\models\Account;
 
 class BaseAccountForm extends ApiForm {
 
-    /**
-     * @var Account
-     */
-    private $account;
+    private Account $account;
 
     public function __construct(Account $account, array $config = []) {
         parent::__construct($config);

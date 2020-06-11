@@ -21,4 +21,11 @@ return [
         'created_at' => time() - 10,
         'updated_at' => time() - 10,
     ],
+    'deleted-token' => [
+        'access_token' => '239ba889-7020-4383-8d99-cd8c8aab4a2f',
+        'client_token' => '47443658-4ff8-45e7-b33e-dc8915ab6421',
+        'account_id' => 15,
+        'created_at' => time() - 10,
+        'updated_at' => time() - 10,
+    ],
 ];

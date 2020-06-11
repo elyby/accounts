@@ -13,10 +13,7 @@ use yii\validators\Validator;
 
 class AccessTokenValidator extends Validator {
 
-    /**
-     * @var bool
-     */
-    public $verifyExpiration = true;
+    public bool $verifyExpiration = true;
 
     /**
      * @param string $value

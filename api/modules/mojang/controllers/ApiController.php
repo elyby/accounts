@@ -32,7 +32,7 @@ class ApiController extends Controller {
             // who used the nickname has not changed it to something else
             $account = null;
             if ($record !== null) {
-                if ($record->account->username === $record->username || $record->findNext($at) !== null) {
+                if ($record->account->username === $record->username || $record->findNextOwnerUsername($at) !== null) {
                     $account = $record->account;
                 }
             }
@@ -41,7 +41,7 @@ class ApiController extends Controller {
             $account = Account::findOne(['username' => $username]);
         }
 
-        if ($account === null) {
+        if ($account === null || $account->status === Account::STATUS_DELETED) {
             return $this->noContentResponse();
         }
 
@@ -58,7 +58,7 @@ class ApiController extends Controller {
             return $this->illegalArgumentResponse('Invalid uuid format.');
         }
 
-        $account = Account::findOne(['uuid' => $uuid]);
+        $account = Account::find()->excludeDeleted()->andWhere(['uuid' => $uuid])->one();
         if ($account === null) {
             return $this->noContentResponse();
         }
@@ -103,6 +103,7 @@ class ApiController extends Controller {
         /** @var Account[] $accounts */
         $accounts = Account::find()
             ->andWhere(['username' => $usernames])
+            ->excludeDeleted()
             ->orderBy(['username' => $usernames])
             ->limit(count($usernames))
             ->all();

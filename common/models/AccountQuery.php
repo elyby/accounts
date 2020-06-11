@@ -10,6 +10,10 @@ use yii\db\ActiveQuery;
  */
 class AccountQuery extends ActiveQuery {
 
+    public function excludeDeleted(): self {
+        return $this->andWhere(['NOT', ['status' => Account::STATUS_DELETED]]);
+    }
+
     public function andWhereLogin(string $login): self {
         return $this->andWhere([$this->getLoginAttribute($login) => $login]);
     }

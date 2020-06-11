@@ -121,7 +121,8 @@ class SessionController extends Controller {
             throw new IllegalArgumentException('Invalid uuid format.');
         }
 
-        $account = Account::findOne(['uuid' => $uuid]);
+        /** @var Account|null $account */
+        $account = Account::find()->excludeDeleted()->andWhere(['uuid' => $uuid])->one();
         if ($account === null) {
             throw new ForbiddenOperationException('Invalid uuid.');
         }

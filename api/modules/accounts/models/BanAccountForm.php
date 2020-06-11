@@ -52,7 +52,7 @@ class BanAccountForm extends AccountActionForm {
         $account->status = Account::STATUS_BANNED;
         Assert::true($account->save(), 'Cannot ban account');
 
-        Yii::$app->queue->push(ClearAccountSessions::createFromAccount($account));
+        Yii::$app->queue->push(new ClearAccountSessions($account->id));
 
         $transaction->commit();
 
