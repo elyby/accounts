@@ -62,12 +62,8 @@ class RefreshTokenForm extends ApiForm {
             $account = Account::findOne(['id' => $tokenReader->getAccountId()]);
         }
 
-        if ($account === null || $account->status === Account::STATUS_DELETED) {
+        if ($account === null) {
             throw new ForbiddenOperationException('Invalid token.');
-        }
-
-        if ($account->status === Account::STATUS_BANNED) {
-            throw new ForbiddenOperationException('This account has been suspended.');
         }
 
         $token = Yii::$app->tokensFactory->createForMinecraftAccount($account, $this->clientToken);

@@ -60,6 +60,7 @@ class WebHookForm extends Model {
     public static function getEvents(): array {
         return [
             'account.edit',
+            'account.deletion',
         ];
     }
 

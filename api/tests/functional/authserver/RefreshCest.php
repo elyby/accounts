@@ -115,7 +115,7 @@ class RefreshCest {
         $I->canSeeResponseCodeIs(401);
         $I->canSeeResponseContainsJson([
             'error' => 'ForbiddenOperationException',
-            'errorMessage' => 'This account has been suspended.',
+            'errorMessage' => 'Invalid token.',
         ]);
     }
 

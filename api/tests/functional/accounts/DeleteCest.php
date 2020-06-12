@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace api\tests\functional\accounts;
 
-use api\tests\_pages\AccountsRoute;
 use api\tests\FunctionalTester;
 
 class DeleteCest {
