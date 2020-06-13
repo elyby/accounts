@@ -6,6 +6,7 @@ namespace common\tasks;
 use common\models\Account;
 use common\models\WebHook;
 use Yii;
+use yii\db\Expression;
 use yii\queue\RetryableJobInterface;
 
 final class CreateWebHooksDeliveries implements RetryableJobInterface {
@@ -67,8 +68,9 @@ final class CreateWebHooksDeliveries implements RetryableJobInterface {
     public function execute($queue): void {
         /** @var WebHook[] $targets */
         $targets = WebHook::find()
-            ->joinWith('events e', false)
-            ->andWhere(['e.event_type' => $this->type])
+            // It's very important to use exactly single quote to begin the string
+            // and double quote to specify the string value
+            ->andWhere(new Expression("JSON_CONTAINS(`events`, '\"{$this->type}\"')"))
             ->all();
         foreach ($targets as $target) {
             $job = new DeliveryWebHook();

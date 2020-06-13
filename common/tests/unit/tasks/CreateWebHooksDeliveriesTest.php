@@ -18,7 +18,6 @@ class CreateWebHooksDeliveriesTest extends TestCase {
     public function _fixtures(): array {
         return [
             'webhooks' => fixtures\WebHooksFixture::class,
-            'webhooksEvents' => fixtures\WebHooksEventsFixture::class,
         ];
     }
 
