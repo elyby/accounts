@@ -137,6 +137,19 @@ class JoinCest {
         ]);
     }
 
+    public function joinByAccountMarkedForDeletion(FunctionalTester $I) {
+        $this->route->join([
+            'accessToken' => '239ba889-7020-4383-8d99-cd8c8aab4a2f',
+            'selectedProfile' => '6383de63-8f85-4ed5-92b7-5401a1fa68cd',
+            'serverId' => uuid(),
+        ]);
+        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseContainsJson([
+            'error' => 'ForbiddenOperationException',
+            'errorMessage' => 'Invalid credentials',
+        ]);
+    }
+
     private function expectSuccessResponse(FunctionalTester $I) {
         $I->seeResponseCodeIs(200);
         $I->seeResponseIsJson();

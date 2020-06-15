@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace common\tests\unit\tasks;
 
-use common\models\Account;
 use common\tasks\ClearAccountSessions;
 use common\tests\fixtures;
 use common\tests\unit\TestCase;
@@ -23,18 +22,10 @@ class ClearAccountSessionsTest extends TestCase {
         ];
     }
 
-    public function testCreateFromAccount() {
-        $account = new Account();
-        $account->id = 123;
-        $task = ClearAccountSessions::createFromAccount($account);
-        $this->assertSame(123, $task->accountId);
-    }
-
     public function testExecute() {
         /** @var \common\models\Account $bannedAccount */
         $bannedAccount = $this->tester->grabFixture('accounts', 'banned-account');
-        $task = new ClearAccountSessions();
-        $task->accountId = $bannedAccount->id;
+        $task = new ClearAccountSessions($bannedAccount->id);
         $task->execute($this->createMock(Queue::class));
         $this->assertEmpty($bannedAccount->sessions);
         $this->assertEmpty($bannedAccount->minecraftAccessKeys);

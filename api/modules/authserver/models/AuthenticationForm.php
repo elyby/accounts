@@ -52,10 +52,14 @@ class AuthenticationForm extends ApiForm {
 
         Authserver::info("Trying to authenticate user by login = '{$this->username}'.");
 
+        // The previous authorization server implementation used the nickname field instead of username,
+        // so we keep such behavior
+        $attribute = strpos($this->username, '@') === false ? 'nickname' : 'email';
+
         $loginForm = new LoginForm();
         $loginForm->login = $this->username;
         $loginForm->password = $this->password;
-        if (!$loginForm->validate()) {
+        if (!$loginForm->validate() || $loginForm->getAccount()->status === Account::STATUS_DELETED) {
             $errors = $loginForm->getFirstErrors();
             if (isset($errors['totp'])) {
                 Authserver::error("User with login = '{$this->username}' protected by two factor auth.");
@@ -72,10 +76,6 @@ class AuthenticationForm extends ApiForm {
             } elseif (isset($errors['password'])) {
                 Authserver::error("User with login = '{$this->username}' passed wrong password.");
             }
-
-            // The previous authorization server implementation used the nickname field instead of username,
-            // so we keep such behavior
-            $attribute = strpos($this->username, '@') === false ? 'nickname' : 'email';
 
             // TODO: эта логика дублируется с логикой в SignoutForm
 

@@ -12,6 +12,8 @@ final class Permissions {
     public const CHANGE_ACCOUNT_PASSWORD = 'change_account_password';
     public const CHANGE_ACCOUNT_EMAIL = 'change_account_email';
     public const MANAGE_TWO_FACTOR_AUTH = 'manage_two_factor_auth';
+    public const DELETE_ACCOUNT = 'delete_account';
+    public const RESTORE_ACCOUNT = 'restore_account';
     public const BLOCK_ACCOUNT = 'block_account';
     public const COMPLETE_OAUTH_FLOW = 'complete_oauth_flow';
     public const CREATE_OAUTH_CLIENTS = 'create_oauth_clients';
@@ -27,6 +29,8 @@ final class Permissions {
     public const CHANGE_OWN_ACCOUNT_PASSWORD = 'change_own_account_password';
     public const CHANGE_OWN_ACCOUNT_EMAIL = 'change_own_account_email';
     public const MANAGE_OWN_TWO_FACTOR_AUTH = 'manage_own_two_factor_auth';
+    public const DELETE_OWN_ACCOUNT = 'delete_own_account';
+    public const RESTORE_OWN_ACCOUNT = 'restore_own_account';
     public const MINECRAFT_SERVER_SESSION = 'minecraft_server_session';
     public const VIEW_OWN_OAUTH_CLIENTS = 'view_own_oauth_clients';
     public const MANAGE_OWN_OAUTH_CLIENTS = 'manage_own_oauth_clients';

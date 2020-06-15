@@ -4,18 +4,21 @@ return [
         'id' => 1,
         'url' => 'http://localhost:80/webhooks/ely',
         'secret' => 'my-secret',
+        'events' => ['account.edit'],
         'created_at' => 1531054333,
     ],
     'webhook-without-secret' => [
         'id' => 2,
         'url' => 'http://localhost:81/webhooks/ely',
         'secret' => null,
+        'events' => ['account.edit'],
         'created_at' => 1531054837,
     ],
     'webhook-without-events' => [
         'id' => 3,
         'url' => 'http://localhost:82/webhooks/ely',
         'secret' => null,
+        'events' => [],
         'created_at' => 1531054990,
     ],
 ];

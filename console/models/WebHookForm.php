@@ -4,9 +4,7 @@ declare(strict_types=1);
 namespace console\models;
 
 use common\models\WebHook;
-use common\models\WebHookEvent;
 use Webmozart\Assert\Assert;
-use Yii;
 use yii\base\Model;
 
 class WebHookForm extends Model {
@@ -22,6 +20,9 @@ class WebHookForm extends Model {
     public function __construct(WebHook $webHook, array $config = []) {
         parent::__construct($config);
         $this->webHook = $webHook;
+        $this->url = $webHook->url;
+        $this->secret = $webHook->secret;
+        $this->events = (array)$webHook->events;
     }
 
     public function rules(): array {
@@ -38,21 +39,11 @@ class WebHookForm extends Model {
             return false;
         }
 
-        $transaction = Yii::$app->db->beginTransaction();
-
         $webHook = $this->webHook;
         $webHook->url = $this->url;
         $webHook->secret = $this->secret;
+        $webHook->events = array_values($this->events); // Drop the keys order
         Assert::true($webHook->save(), 'Cannot save webhook.');
-
-        foreach ($this->events as $event) {
-            $eventModel = new WebHookEvent();
-            $eventModel->webhook_id = $webHook->id;
-            $eventModel->event_type = $event;
-            Assert::true($eventModel->save(), 'Cannot save webhook event.');
-        }
-
-        $transaction->commit();
 
         return true;
     }
@@ -60,6 +51,7 @@ class WebHookForm extends Model {
     public static function getEvents(): array {
         return [
             'account.edit',
+            'account.deletion',
         ];
     }
 

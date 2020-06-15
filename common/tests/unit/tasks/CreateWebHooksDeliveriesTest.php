@@ -18,7 +18,6 @@ class CreateWebHooksDeliveriesTest extends TestCase {
     public function _fixtures(): array {
         return [
             'webhooks' => fixtures\WebHooksFixture::class,
-            'webhooksEvents' => fixtures\WebHooksEventsFixture::class,
         ];
     }
 
@@ -52,9 +51,7 @@ class CreateWebHooksDeliveriesTest extends TestCase {
     }
 
     public function testExecute() {
-        $task = new CreateWebHooksDeliveries();
-        $task->type = 'account.edit';
-        $task->payloads = [
+        $task = new CreateWebHooksDeliveries('account.edit', [
             'id' => 123,
             'uuid' => 'afc8dc7a-4bbf-4d3a-8699-68890088cf84',
             'username' => 'mock-username',
@@ -68,7 +65,7 @@ class CreateWebHooksDeliveriesTest extends TestCase {
                 'email' => 'old-email@ely.by',
                 'status' => 0,
             ],
-        ];
+        ]);
         $task->execute($this->createMock(Queue::class));
         /** @var DeliveryWebHook[] $tasks */
         $tasks = $this->tester->grabQueueJobs();

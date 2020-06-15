@@ -58,6 +58,13 @@ class UsernameToUuidCest {
         $I->canSeeResponseEquals('');
     }
 
+    public function getUuidForDeletedAccount(FunctionalTester $I) {
+        $I->wantTo('get uuid for account that marked for deleting');
+        $this->route->usernameToUuid('DeletedAccount');
+        $I->canSeeResponseCodeIs(204);
+        $I->canSeeResponseEquals('');
+    }
+
     public function nonPassedUsername(FunctionalTester $I) {
         $I->wantTo('get 404 on not passed username');
         $this->route->usernameToUuid('');

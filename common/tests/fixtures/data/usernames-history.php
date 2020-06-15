@@ -24,4 +24,10 @@ return [
         'account_id' => 11,
         'applied_in' => 1474404143,
     ],
+    [
+        'id' => 5,
+        'username' => 'DeletedAccount',
+        'account_id' => 15,
+        'applied_in' => 1591893532,
+    ],
 ];

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\functional\accounts;
 
 use api\tests\_pages\AccountsRoute;
@@ -6,10 +8,7 @@ use api\tests\FunctionalTester;
 
 class GetCest {
 
-    /**
-     * @var AccountsRoute
-     */
-    private $route;
+    private AccountsRoute $route;
 
     public function _before(FunctionalTester $I) {
         $this->route = new AccountsRoute($I);
@@ -29,6 +28,7 @@ class GetCest {
             'email' => 'admin@ely.by',
             'lang' => 'en',
             'isActive' => true,
+            'isDeleted' => false,
             'hasMojangUsernameCollision' => false,
             'shouldAcceptRules' => false,
             'elyProfileLink' => 'http://ely.by/u1',
@@ -51,6 +51,7 @@ class GetCest {
             'email' => 'admin@ely.by',
             'lang' => 'en',
             'isActive' => true,
+            'isDeleted' => false,
             'hasMojangUsernameCollision' => false,
             'shouldAcceptRules' => false,
             'elyProfileLink' => 'http://ely.by/u1',
@@ -72,11 +73,25 @@ class GetCest {
             'isOtpEnabled' => false,
             'lang' => 'en',
             'isActive' => true,
+            'isDeleted' => false,
             'hasMojangUsernameCollision' => false,
             'shouldAcceptRules' => true,
             'elyProfileLink' => 'http://ely.by/u9',
         ]);
         $I->canSeeResponseJsonMatchesJsonPath('$.passwordChangedAt');
+    }
+
+    public function testGetInfoFromAccountMarkedForDeleting(FunctionalTester $I) {
+        // We're setting up a known expired token
+        $id = $I->amAuthenticated('DeletedAccount');
+
+        $I->sendGET("/api/v1/accounts/{$id}");
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseContainsJson([
+            'id' => $id,
+            'isActive' => true,
+            'isDeleted' => true,
+        ]);
     }
 
     public function testGetInfoWithExpiredToken(FunctionalTester $I) {

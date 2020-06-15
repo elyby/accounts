@@ -3,8 +3,11 @@ declare(strict_types=1);
 
 namespace common\models;
 
+use Carbon\Carbon;
 use common\components\UserPass;
 use common\tasks\CreateWebHooksDeliveries;
+use DateInterval;
+use Webmozart\Assert\Assert;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\behaviors\TimestampBehavior;
@@ -14,21 +17,22 @@ use const common\LATEST_RULES_VERSION;
 
 /**
  * Fields:
- * @property int     $id
- * @property string  $uuid
- * @property string  $username
- * @property string  $email
- * @property string  $password_hash
- * @property int     $password_hash_strategy
- * @property string  $lang
- * @property int     $status
- * @property int     $rules_agreement_version
- * @property string  $registration_ip
- * @property string  $otp_secret
- * @property int     $is_otp_enabled
- * @property int     $created_at
- * @property int     $updated_at
- * @property int     $password_changed_at
+ * @property int         $id
+ * @property string      $uuid
+ * @property string      $username
+ * @property string      $email
+ * @property string      $password_hash
+ * @property int         $password_hash_strategy
+ * @property string      $lang
+ * @property int         $status
+ * @property int|null    $rules_agreement_version
+ * @property string|null $registration_ip
+ * @property string|null $otp_secret
+ * @property int         $is_otp_enabled
+ * @property int         $created_at
+ * @property int         $updated_at
+ * @property int         $password_changed_at
+ * @property int|null    $deleted_at shows the time, when the account was marked as deleted
  *
  * Getters-setters:
  * @property-write string $password plain user's password
@@ -55,8 +59,10 @@ class Account extends ActiveRecord {
     public const PASS_HASH_STRATEGY_OLD_ELY = 0;
     public const PASS_HASH_STRATEGY_YII2 = 1;
 
+    public const ACCOUNT_DELETION_DELAY = 'P7D';
+
     public static function tableName(): string {
-        return '{{%accounts}}';
+        return 'accounts';
     }
 
     public static function find(): AccountQuery {
@@ -153,22 +159,34 @@ class Account extends ActiveRecord {
         return $this->registration_ip === null ? null : inet_ntop($this->registration_ip);
     }
 
-    public function afterSave($insert, $changedAttributes) {
+    public function getDeleteAt(): Carbon {
+        Assert::notNull($this->deleted_at, 'This method should not be called on not deleted records');
+        return Carbon::createFromTimestamp($this->deleted_at)->add(new DateInterval(Account::ACCOUNT_DELETION_DELAY));
+    }
+
+    public function afterSave($insert, $changedAttributes): void {
         parent::afterSave($insert, $changedAttributes);
 
         if ($insert) {
             return;
         }
 
-        $meaningfulFields = ['username', 'email', 'uuid', 'status', 'lang'];
-        $meaningfulChangedAttributes = array_filter($changedAttributes, function(string $key) use ($meaningfulFields) {
-            return in_array($key, $meaningfulFields, true);
-        }, ARRAY_FILTER_USE_KEY);
+        $meaningfulFields = ['username', 'email', 'uuid', 'status', 'lang', 'deleted_at'];
+        $meaningfulChangedAttributes = array_filter(
+            $changedAttributes,
+            fn(string $key): bool => in_array($key, $meaningfulFields, true),
+            ARRAY_FILTER_USE_KEY,
+        );
         if (empty($meaningfulChangedAttributes)) {
             return;
         }
 
         Yii::$app->queue->push(CreateWebHooksDeliveries::createAccountEdit($this, $meaningfulChangedAttributes));
+    }
+
+    public function afterDelete(): void {
+        parent::afterDelete();
+        Yii::$app->queue->push(CreateWebHooksDeliveries::createAccountDeletion($this));
     }
 
 }

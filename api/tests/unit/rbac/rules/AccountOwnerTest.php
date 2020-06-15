@@ -39,14 +39,25 @@ class AccountOwnerTest extends TestCase {
 
         Yii::$app->user->setIdentity($identity);
 
+        // Assert that account id matches
         $this->assertFalse($rule->execute('token', $item, ['accountId' => 2]));
         $this->assertFalse($rule->execute('token', $item, ['accountId' => '2']));
         $this->assertTrue($rule->execute('token', $item, ['accountId' => 1]));
         $this->assertTrue($rule->execute('token', $item, ['accountId' => '1']));
+
+        // Check accepted latest rules
         $account->rules_agreement_version = null;
         $this->assertFalse($rule->execute('token', $item, ['accountId' => 1]));
         $this->assertTrue($rule->execute('token', $item, ['accountId' => 1, 'optionalRules' => true]));
         $account->rules_agreement_version = LATEST_RULES_VERSION;
+        $this->assertTrue($rule->execute('token', $item, ['accountId' => 1]));
+
+        // Check deleted account behavior
+        $account->status = Account::STATUS_DELETED;
+        $this->assertFalse($rule->execute('token', $item, ['accountId' => 1]));
+        $this->assertTrue($rule->execute('token', $item, ['accountId' => 1, 'allowDeleted' => true]));
+
+        // Banned account should always be not allowed
         $account->status = Account::STATUS_BANNED;
         $this->assertFalse($rule->execute('token', $item, ['accountId' => 1]));
         $this->assertFalse($rule->execute('token', $item, ['accountId' => 1, 'optionalRules' => true]));

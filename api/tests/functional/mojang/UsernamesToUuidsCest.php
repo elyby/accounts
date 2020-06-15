@@ -42,7 +42,7 @@ class UsernamesToUuidsCest {
 
     public function getUuidsByPartialNonexistentUsernames(FunctionalTester $I) {
         $I->wantTo('get uuids by few usernames and some nonexistent');
-        $this->route->uuidsByUsernames(['Admin', 'not-exists-user']);
+        $this->route->uuidsByUsernames(['Admin', 'DeletedAccount', 'not-exists-user']);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -51,6 +51,8 @@ class UsernamesToUuidsCest {
                 'name' => 'Admin',
             ],
         ]);
+        $I->cantSeeResponseJsonMatchesJsonPath('$.[?(@.name="DeletedAccount")]');
+        $I->cantSeeResponseJsonMatchesJsonPath('$.[?(@.name="not-exists-user")]');
     }
 
     public function passAllNonexistentUsernames(FunctionalTester $I) {

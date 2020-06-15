@@ -8,7 +8,7 @@ use Webmozart\Assert\Assert;
 use Yii;
 use yii\rbac\Rule;
 
-class AccountOwner extends Rule {
+final class AccountOwner extends Rule {
 
     public $name = 'account_owner';
 
@@ -43,7 +43,11 @@ class AccountOwner extends Rule {
             return false;
         }
 
-        if ($account->status !== Account::STATUS_ACTIVE) {
+        $allowDeleted = $params['allowDeleted'] ?? false;
+        if ($account->status !== Account::STATUS_ACTIVE
+            // if deleted accounts are allowed, but the passed one is not in deleted state
+            && (!$allowDeleted || $account->status !== Account::STATUS_DELETED)
+        ) {
             return false;
         }
 

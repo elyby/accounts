@@ -7,26 +7,22 @@ use common\models\OauthClient;
 use Yii;
 use yii\queue\RetryableJobInterface;
 
-class ClearOauthSessions implements RetryableJobInterface {
+final class ClearOauthSessions implements RetryableJobInterface {
+
+    public string $clientId;
 
     /**
-     * @var int
+     * @var int|null unix timestamp, that allows to limit this task to clear only some old sessions
      */
-    public $clientId;
+    public ?int $notSince;
 
-    /**
-     * @var int unix timestamp, that allows to limit this task to clear only some old sessions
-     */
-    public $notSince;
+    public function __construct(string $clientId, int $notSince = null) {
+        $this->clientId = $clientId;
+        $this->notSince = $notSince;
+    }
 
     public static function createFromOauthClient(OauthClient $client, int $notSince = null): self {
-        $result = new static();
-        $result->clientId = $client->id;
-        if ($notSince !== null) {
-            $result->notSince = $notSince;
-        }
-
-        return $result;
+        return new self($client->id, $notSince);
     }
 
     public function getTtr(): int {

@@ -97,6 +97,20 @@ class AuthorizationCest {
         ]);
     }
 
+    public function deletedAccount(FunctionalTester $I) {
+        $I->wantTo('authenticate in account marked for deletion');
+        $I->sendPOST('/api/authserver/authentication/authenticate', [
+            'username' => 'DeletedAccount',
+            'password' => 'password_0',
+            'clientToken' => Uuid::uuid4()->toString(),
+        ]);
+        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseContainsJson([
+            'error' => 'ForbiddenOperationException',
+            'errorMessage' => 'Invalid credentials. Invalid nickname or password.',
+        ]);
+    }
+
     public function bannedAccount(FunctionalTester $I) {
         $I->wantTo('authenticate in suspended account');
         $I->sendPOST('/api/authserver/authentication/authenticate', [

@@ -195,4 +195,15 @@ class AuthCodeCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
     }
 
+    public function finalizeByAccountMarkedForDeletion(FunctionalTester $I) {
+        $I->amAuthenticated('DeletedAccount');
+        $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
+            'client_id' => 'ely',
+            'redirect_uri' => 'http://ely.by',
+            'response_type' => 'code',
+            'scope' => 'minecraft_server_session',
+        ]), ['accept' => true]);
+        $I->canSeeResponseCodeIs(403);
+    }
+
 }

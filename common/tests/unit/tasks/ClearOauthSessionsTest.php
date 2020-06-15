@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace common\tests\unit\tasks;
 
 use common\models\OauthClient;
@@ -33,22 +35,18 @@ class ClearOauthSessionsTest extends TestCase {
     }
 
     public function testExecute() {
-        $task = new ClearOauthSessions();
-        $task->clientId = 'deleted-oauth-client-with-sessions';
-        $task->notSince = 1519510065;
+        $task = new ClearOauthSessions('deleted-oauth-client-with-sessions', 1519510065);
         $task->execute($this->createMock(Queue::class));
 
         $this->assertFalse(OauthSession::find()->andWhere(['legacy_id' => 3])->exists());
         $this->assertTrue(OauthSession::find()->andWhere(['legacy_id' => 4])->exists());
 
-        $task = new ClearOauthSessions();
-        $task->clientId = 'deleted-oauth-client-with-sessions';
+        $task = new ClearOauthSessions('deleted-oauth-client-with-sessions');
         $task->execute($this->createMock(Queue::class));
 
         $this->assertFalse(OauthSession::find()->andWhere(['legacy_id' => 4])->exists());
 
-        $task = new ClearOauthSessions();
-        $task->clientId = 'some-not-exists-client-id';
+        $task = new ClearOauthSessions('some-not-exists-client-id');
         $task->execute($this->createMock(Queue::class));
     }
 

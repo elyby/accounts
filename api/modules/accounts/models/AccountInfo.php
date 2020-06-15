@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\modules\accounts\models;
 
 use api\models\base\BaseAccountForm;
@@ -14,7 +16,7 @@ class AccountInfo extends BaseAccountForm {
      */
     public $user = 'user';
 
-    public function init() {
+    public function init(): void {
         parent::init();
         $this->user = Instance::ensure($this->user, User::class);
     }
@@ -35,6 +37,7 @@ class AccountInfo extends BaseAccountForm {
         $authManagerParams = [
             'accountId' => $account->id,
             'optionalRules' => true,
+            'allowDeleted' => true,
         ];
 
         if ($this->user->can(P::OBTAIN_ACCOUNT_EMAIL, $authManagerParams)) {
@@ -42,7 +45,8 @@ class AccountInfo extends BaseAccountForm {
         }
 
         if ($this->user->can(P::OBTAIN_EXTENDED_ACCOUNT_INFO, $authManagerParams)) {
-            $response['isActive'] = $account->status === Account::STATUS_ACTIVE;
+            $response['isActive'] = !in_array($account->status, [Account::STATUS_REGISTERED, Account::STATUS_BANNED]);
+            $response['isDeleted'] = $account->status === Account::STATUS_DELETED;
             $response['passwordChangedAt'] = $account->password_changed_at;
             $response['hasMojangUsernameCollision'] = $account->hasMojangUsernameCollision();
             $response['shouldAcceptRules'] = !$account->isAgreedWithActualRules();

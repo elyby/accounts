@@ -79,4 +79,16 @@ class ValidateCest {
         ]);
     }
 
+    public function credentialsFromBannedAccount(AuthserverSteps $I) {
+        $I->wantTo('get error on expired legacy accessToken');
+        $I->sendPOST('/api/authserver/authentication/validate', [
+            'accessToken' => '239ba889-7020-4383-8d99-cd8c8aab4a2f',
+        ]);
+        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseContainsJson([
+            'error' => 'ForbiddenOperationException',
+            'errorMessage' => 'Invalid token.',
+        ]);
+    }
+
 }

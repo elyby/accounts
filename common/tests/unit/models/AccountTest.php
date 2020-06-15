@@ -133,7 +133,19 @@ class AccountTest extends TestCase {
         /** @var CreateWebHooksDeliveries $job */
         $job = $this->tester->grabLastQueuedJob();
         $this->assertInstanceOf(CreateWebHooksDeliveries::class, $job);
-        $this->assertSame($job->payloads['changedAttributes'], $changedAttributes);
+        $this->assertSame('account.edit', $job->type);
+        $this->assertSame($changedAttributes, $job->payloads['changedAttributes']);
+    }
+
+    public function testAfterDeletePushEvent() {
+        $account = new Account();
+        $account->id = 1;
+        $account->afterDelete();
+        /** @var CreateWebHooksDeliveries $job */
+        $job = $this->tester->grabLastQueuedJob();
+        $this->assertInstanceOf(CreateWebHooksDeliveries::class, $job);
+        $this->assertSame('account.deletion', $job->type);
+        $this->assertSame(1, $job->payloads['id']);
     }
 
 }

@@ -7,15 +7,12 @@ use common\models\Account;
 use Yii;
 use yii\queue\RetryableJobInterface;
 
-class ClearAccountSessions implements RetryableJobInterface {
+final class ClearAccountSessions implements RetryableJobInterface {
 
-    public $accountId;
+    private int $accountId;
 
-    public static function createFromAccount(Account $account): self {
-        $result = new static();
-        $result->accountId = $account->id;
-
-        return $result;
+    public function __construct(int $accountId) {
+        $this->accountId = $accountId;
     }
 
     /**
@@ -40,23 +37,23 @@ class ClearAccountSessions implements RetryableJobInterface {
      * @throws \Exception
      */
     public function execute($queue): void {
-        $account = Account::findOne($this->accountId);
+        $account = Account::findOne(['id' => $this->accountId]);
         if ($account === null) {
             return;
         }
 
+        /** @var \common\models\AccountSession $authSession */
         foreach ($account->getSessions()->each(100, Yii::$app->unbufferedDb) as $authSession) {
-            /** @var \common\models\AccountSession $authSession */
             $authSession->delete();
         }
 
+        /** @var \common\models\MinecraftAccessKey $key */
         foreach ($account->getMinecraftAccessKeys()->each(100, Yii::$app->unbufferedDb) as $key) {
-            /** @var \common\models\MinecraftAccessKey $key */
             $key->delete();
         }
 
+        /** @var \common\models\OauthSession $oauthSession */
         foreach ($account->getOauthSessions()->each(100, Yii::$app->unbufferedDb) as $oauthSession) {
-            /** @var \common\models\OauthSession $oauthSession */
             $oauthSession->delete();
         }
     }

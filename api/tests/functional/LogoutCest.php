@@ -1,19 +1,28 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\functional;
 
-use api\tests\_pages\AuthenticationRoute;
 use api\tests\FunctionalTester;
+use Codeception\Example;
 
 class LogoutCest {
 
-    public function testLoginEmailOrUsername(FunctionalTester $I) {
-        $route = new AuthenticationRoute($I);
-
-        $I->amAuthenticated();
-        $route->logout();
+    /**
+     * @dataProvider getLogoutCases
+     */
+    public function logout(FunctionalTester $I, Example $example) {
+        $I->amAuthenticated($example[0]);
+        $I->sendPOST('/api/authentication/logout');
         $I->canSeeResponseContainsJson([
             'success' => true,
         ]);
+    }
+
+    protected function getLogoutCases() {
+        yield 'active account' => ['admin'];
+        yield 'account that not accepted the rules' => ['Veleyaba'];
+        yield 'account marked for deleting' => ['DeletedAccount'];
     }
 
 }

@@ -55,6 +55,13 @@ class UuidToUsernamesHistoryCest {
         $I->canSeeResponseEquals('');
     }
 
+    public function passUuidOfDeletedAccount(FunctionalTester $I) {
+        $I->wantTo('get username by passing uuid of the account marked for deleting');
+        $this->route->usernamesByUuid('6383de63-8f85-4ed5-92b7-5401a1fa68cd');
+        $I->canSeeResponseCodeIs(204);
+        $I->canSeeResponseEquals('');
+    }
+
     public function passWrongUuidFormat(FunctionalTester $I) {
         $I->wantTo('call profile route with invalid uuid string');
         $this->route->usernamesByUuid('bla-bla-bla');

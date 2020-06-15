@@ -4,7 +4,6 @@ namespace common\models;
 use common\behaviors\PrimaryKeyValueBehavior;
 use Ramsey\Uuid\Uuid;
 use yii\behaviors\TimestampBehavior;
-use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -52,7 +51,8 @@ class MinecraftAccessKey extends ActiveRecord {
         ];
     }
 
-    public function getAccount(): ActiveQuery {
+    public function getAccount(): AccountQuery {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->hasOne(Account::class, ['id' => 'account_id']);
     }
 

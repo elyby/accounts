@@ -1,10 +1,13 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\functional;
 
 use api\tests\_pages\AuthenticationRoute;
 use api\tests\FunctionalTester;
 use OTPHP\TOTP;
 
+// TODO: very outdated tests. Need to rewrite
 class LoginCest {
 
     public function testLoginEmailOrUsername(FunctionalTester $I) {
@@ -213,6 +216,29 @@ class LoginCest {
         ]);
         $I->cantSeeResponseJsonMatchesJsonPath('$.errors');
         $I->canSeeAuthCredentials(false);
+    }
+
+    public function testLoginIntoDeletedAccount(FunctionalTester $I) {
+        $route = new AuthenticationRoute($I);
+
+        $I->wantTo('login into account that marked for deleting');
+        $route->login('DeletedAccount', 'password_0');
+        $I->canSeeResponseContainsJson([
+            'success' => true,
+        ]);
+    }
+
+    public function testLoginIntoBannedAccount(FunctionalTester $I) {
+        $route = new AuthenticationRoute($I);
+
+        $I->wantTo('login into banned account');
+        $route->login('Banned', 'password_0');
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+            'errors' => [
+                'login' => 'error.account_banned',
+            ],
+        ]);
     }
 
 }

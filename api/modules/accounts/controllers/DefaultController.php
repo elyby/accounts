@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\modules\accounts\controllers;
 
 use api\controllers\Controller;
@@ -9,29 +11,13 @@ use api\rbac\Permissions as P;
 use common\models\Account;
 use Yii;
 use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 
 class DefaultController extends Controller {
 
     public function behaviors(): array {
-        $paramsCallback = function(): array {
-            $id = (int)Yii::$app->request->get('id');
-            if ($id === 0) {
-                $identity = Yii::$app->user->getIdentity();
-                if ($identity !== null) {
-                    $account = $identity->getAccount();
-                    if ($account !== null) {
-                        $id = $account->id;
-                    }
-                }
-            }
-
-            return [
-                'accountId' => $id,
-            ];
-        };
-
         return ArrayHelper::merge(parent::behaviors(), [
             'access' => [
                 'class' => AccessControl::class,
@@ -40,29 +26,28 @@ class DefaultController extends Controller {
                         'allow' => true,
                         'actions' => ['get'],
                         'roles' => [P::OBTAIN_ACCOUNT_INFO],
-                        'roleParams' => function() use ($paramsCallback) {
-                            return array_merge($paramsCallback(), [
-                                'optionalRules' => true,
-                            ]);
-                        },
+                        'roleParams' => $this->createParams([
+                            'optionalRules' => true,
+                            'allowDeleted' => true,
+                        ]),
                     ],
                     [
                         'allow' => true,
                         'actions' => ['username'],
                         'roles' => [P::CHANGE_ACCOUNT_USERNAME],
-                        'roleParams' => $paramsCallback,
+                        'roleParams' => $this->createParams(),
                     ],
                     [
                         'allow' => true,
                         'actions' => ['password'],
                         'roles' => [P::CHANGE_ACCOUNT_PASSWORD],
-                        'roleParams' => $paramsCallback,
+                        'roleParams' => $this->createParams(),
                     ],
                     [
                         'allow' => true,
                         'actions' => ['language'],
                         'roles' => [P::CHANGE_ACCOUNT_LANGUAGE],
-                        'roleParams' => $paramsCallback,
+                        'roleParams' => $this->createParams(),
                     ],
                     [
                         'allow' => true,
@@ -72,17 +57,15 @@ class DefaultController extends Controller {
                             'new-email-verification',
                         ],
                         'roles' => [P::CHANGE_ACCOUNT_EMAIL],
-                        'roleParams' => $paramsCallback,
+                        'roleParams' => $this->createParams(),
                     ],
                     [
                         'allow' => true,
                         'actions' => ['rules'],
                         'roles' => [P::ACCEPT_NEW_PROJECT_RULES],
-                        'roleParams' => function() use ($paramsCallback) {
-                            return array_merge($paramsCallback(), [
-                                'optionalRules' => true,
-                            ]);
-                        },
+                        'roleParams' => $this->createParams([
+                            'optionalRules' => true,
+                        ]),
                     ],
                     [
                         'allow' => true,
@@ -92,7 +75,7 @@ class DefaultController extends Controller {
                             'disable-two-factor-auth',
                         ],
                         'roles' => [P::MANAGE_TWO_FACTOR_AUTH],
-                        'roleParams' => $paramsCallback,
+                        'roleParams' => $this->createParams(),
                     ],
                     [
                         'allow' => true,
@@ -101,8 +84,33 @@ class DefaultController extends Controller {
                             'pardon',
                         ],
                         'roles' => [P::BLOCK_ACCOUNT],
-                        'roleParams' => $paramsCallback,
+                        'roleParams' => $this->createParams(),
                     ],
+                    [
+                        'allow' => true,
+                        'actions' => ['delete'],
+                        'roles' => [P::DELETE_ACCOUNT],
+                        'roleParams' => $this->createParams([
+                            'optionalRules' => true,
+                            'allowDeleted' => true, // This case will be validated by route handler
+                        ]),
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['restore'],
+                        'roles' => [P::RESTORE_ACCOUNT],
+                        'roleParams' => $this->createParams([
+                            'optionalRules' => true,
+                            'allowDeleted' => true,
+                        ]),
+                    ],
+                ],
+            ],
+            'verb' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'delete' => ['DELETE'],
+                    'restore' => ['POST'],
                 ],
             ],
         ]);
@@ -121,6 +129,8 @@ class DefaultController extends Controller {
             'disable-two-factor-auth' => actions\DisableTwoFactorAuthAction::class,
             'ban' => actions\BanAccountAction::class,
             'pardon' => actions\PardonAccountAction::class,
+            'delete' => actions\DeleteAccountAction::class,
+            'restore' => actions\RestoreAccountAction::class,
         ];
     }
 
@@ -142,6 +152,25 @@ class DefaultController extends Controller {
         }
 
         return parent::bindActionParams($action, $params);
+    }
+
+    private function createParams(array $options = []): callable {
+        return function() use ($options): array {
+            $id = (int)Yii::$app->request->get('id');
+            if ($id === 0) {
+                $identity = Yii::$app->user->getIdentity();
+                if ($identity !== null) {
+                    $account = $identity->getAccount();
+                    if ($account !== null) {
+                        $id = $account->id;
+                    }
+                }
+            }
+
+            return array_merge([
+                'accountId' => $id,
+            ], $options);
+        };
     }
 
     private function findAccount(int $id): Account {

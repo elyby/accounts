@@ -6,41 +6,49 @@ namespace common\tasks;
 use common\models\Account;
 use common\models\WebHook;
 use Yii;
+use yii\db\Expression;
 use yii\queue\RetryableJobInterface;
 
-class CreateWebHooksDeliveries implements RetryableJobInterface {
+final class CreateWebHooksDeliveries implements RetryableJobInterface {
 
-    /**
-     * @var string
-     */
-    public $type;
+    public string $type;
 
-    /**
-     * @var array
-     */
-    public $payloads;
+    public array $payloads;
+
+    public function __construct(string $type, array $payloads) {
+        $this->type = $type;
+        $this->payloads = $payloads;
+    }
 
     public static function createAccountEdit(Account $account, array $changedAttributes): self {
-        $result = new static();
-        $result->type = 'account.edit';
-        $result->payloads = [
+        return new static('account.edit', [
             'id' => $account->id,
             'uuid' => $account->uuid,
             'username' => $account->username,
             'email' => $account->email,
             'lang' => $account->lang,
             'isActive' => $account->status === Account::STATUS_ACTIVE,
+            'isDeleted' => $account->status === Account::STATUS_DELETED,
             'registered' => date('c', (int)$account->created_at),
             'changedAttributes' => $changedAttributes,
-        ];
+        ]);
+    }
 
-        return $result;
+    public static function createAccountDeletion(Account $account): self {
+        return new static('account.deletion', [
+            'id' => $account->id,
+            'uuid' => $account->uuid,
+            'username' => $account->username,
+            'email' => $account->email,
+            'registered' => date('c', (int)$account->created_at),
+            'deleted' => date('c', (int)$account->deleted_at),
+        ]);
     }
 
     /**
      * @return int time to reserve in seconds
      */
-    public function getTtr() {
+    public function getTtr(): int {
         return 10;
     }
 
@@ -50,18 +58,19 @@ class CreateWebHooksDeliveries implements RetryableJobInterface {
      *
      * @return bool
      */
-    public function canRetry($attempt, $error) {
+    public function canRetry($attempt, $error): bool {
         return true;
     }
 
     /**
      * @param \yii\queue\Queue $queue which pushed and is handling the job
      */
-    public function execute($queue) {
+    public function execute($queue): void {
         /** @var WebHook[] $targets */
         $targets = WebHook::find()
-            ->joinWith('events e', false)
-            ->andWhere(['e.event_type' => $this->type])
+            // It's very important to use exactly single quote to begin the string
+            // and double quote to specify the string value
+            ->andWhere(new Expression("JSON_CONTAINS(`events`, '\"{$this->type}\"')"))
             ->all();
         foreach ($targets as $target) {
             $job = new DeliveryWebHook();

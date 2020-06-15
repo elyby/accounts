@@ -12,6 +12,7 @@ return [
 
     // Accounts module routes
     'GET /v1/accounts/<id:\d+>' => 'accounts/default/get',
+    'DELETE /v1/accounts/<id:\d+>' => 'accounts/default/delete',
     'GET /v1/accounts/<id:\d+>/two-factor-auth' => 'accounts/default/get-two-factor-auth-credentials',
     'POST /v1/accounts/<id:\d+>/two-factor-auth' => 'accounts/default/enable-two-factor-auth',
     'DELETE /v1/accounts/<id:\d+>/two-factor-auth' => 'accounts/default/disable-two-factor-auth',

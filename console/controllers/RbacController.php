@@ -31,6 +31,8 @@ class RbacController extends Controller {
         $permChangeAccountPassword = $this->createPermission(P::CHANGE_ACCOUNT_PASSWORD);
         $permChangeAccountEmail = $this->createPermission(P::CHANGE_ACCOUNT_EMAIL);
         $permManageTwoFactorAuth = $this->createPermission(P::MANAGE_TWO_FACTOR_AUTH);
+        $permDeleteAccount = $this->createPermission(P::DELETE_ACCOUNT);
+        $permRestoreAccount = $this->createPermission(P::RESTORE_ACCOUNT);
         $permBlockAccount = $this->createPermission(P::BLOCK_ACCOUNT);
         $permCreateOauthClients = $this->createPermission(P::CREATE_OAUTH_CLIENTS);
         $permViewOauthClients = $this->createPermission(P::VIEW_OAUTH_CLIENTS);
@@ -48,6 +50,8 @@ class RbacController extends Controller {
         $permChangeOwnAccountPassword = $this->createPermission(P::CHANGE_OWN_ACCOUNT_PASSWORD, AccountOwner::class);
         $permChangeOwnAccountEmail = $this->createPermission(P::CHANGE_OWN_ACCOUNT_EMAIL, AccountOwner::class);
         $permManageOwnTwoFactorAuth = $this->createPermission(P::MANAGE_OWN_TWO_FACTOR_AUTH, AccountOwner::class);
+        $permDeleteOwnAccount = $this->createPermission(P::DELETE_OWN_ACCOUNT, AccountOwner::class);
+        $permRestoreOwnAccount = $this->createPermission(P::RESTORE_OWN_ACCOUNT, AccountOwner::class);
         $permMinecraftServerSession = $this->createPermission(P::MINECRAFT_SERVER_SESSION);
         $permViewOwnOauthClients = $this->createPermission(P::VIEW_OWN_OAUTH_CLIENTS, OauthClientOwner::class);
         $permManageOwnOauthClients = $this->createPermission(P::MANAGE_OWN_OAUTH_CLIENTS, OauthClientOwner::class);
@@ -63,6 +67,8 @@ class RbacController extends Controller {
         $authManager->addChild($permChangeOwnAccountPassword, $permChangeAccountPassword);
         $authManager->addChild($permChangeOwnAccountEmail, $permChangeAccountEmail);
         $authManager->addChild($permManageOwnTwoFactorAuth, $permManageTwoFactorAuth);
+        $authManager->addChild($permDeleteOwnAccount, $permDeleteAccount);
+        $authManager->addChild($permRestoreOwnAccount, $permRestoreAccount);
         $authManager->addChild($permViewOwnOauthClients, $permViewOauthClients);
         $authManager->addChild($permManageOwnOauthClients, $permManageOauthClients);
 
@@ -76,6 +82,8 @@ class RbacController extends Controller {
         $authManager->addChild($roleAccountsWebUser, $permChangeOwnAccountPassword);
         $authManager->addChild($roleAccountsWebUser, $permChangeOwnAccountEmail);
         $authManager->addChild($roleAccountsWebUser, $permManageOwnTwoFactorAuth);
+        $authManager->addChild($roleAccountsWebUser, $permDeleteOwnAccount);
+        $authManager->addChild($roleAccountsWebUser, $permRestoreOwnAccount);
         $authManager->addChild($roleAccountsWebUser, $permCompleteOauthFlow);
         $authManager->addChild($roleAccountsWebUser, $permCreateOauthClients);
         $authManager->addChild($roleAccountsWebUser, $permViewOwnOauthClients);

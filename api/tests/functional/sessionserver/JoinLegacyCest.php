@@ -106,6 +106,17 @@ class JoinLegacyCest {
         $I->canSeeResponseContains('credentials can not be null.');
     }
 
+    public function joinByAccountMarkedForDeletion(FunctionalTester $I) {
+        $I->wantTo('join to some server by legacy protocol with nil accessToken and selectedProfile');
+        $this->route->joinLegacy([
+            'sessionId' => 'token:239ba889-7020-4383-8d99-cd8c8aab4a2f:6383de63-8f85-4ed5-92b7-5401a1fa68cd',
+            'user' => 'DeletedAccount',
+            'serverId' => uuid(),
+        ]);
+        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseContains('Ely.by authorization required');
+    }
+
     private function expectSuccessResponse(FunctionalTester $I) {
         $I->seeResponseCodeIs(200);
         $I->canSeeResponseEquals('OK');

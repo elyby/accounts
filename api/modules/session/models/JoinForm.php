@@ -165,6 +165,10 @@ class JoinForm extends Model {
             throw new ForbiddenOperationException('Invalid credentials');
         }
 
+        if ($account->status === Account::STATUS_DELETED) {
+            throw new ForbiddenOperationException('Invalid credentials');
+        }
+
         $this->account = $account;
     }
 
