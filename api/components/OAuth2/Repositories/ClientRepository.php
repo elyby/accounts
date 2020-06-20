@@ -16,7 +16,7 @@ class ClientRepository implements ClientRepositoryInterface {
             return null;
         }
 
-        return new ClientEntity($client->id, $client->name, $client->redirect_uri, (bool)$client->is_trusted);
+        return new ClientEntity($client->id, $client->name, $client->redirect_uri ?? '', (bool)$client->is_trusted);
     }
 
     public function validateClient($clientId, $clientSecret, $grantType): bool {
