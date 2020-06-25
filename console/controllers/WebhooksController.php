@@ -17,7 +17,7 @@ class WebhooksController extends Controller {
     public function actionList(): void {
         $rows = [];
         /** @var WebHook $webHook */
-        foreach (WebHook::find()->with('events')->all() as $webHook) {
+        foreach (WebHook::find()->all() as $webHook) {
             $rows[] = [$webHook->id, $webHook->url, $webHook->secret, implode(', ', $webHook->events)];
         }
 
