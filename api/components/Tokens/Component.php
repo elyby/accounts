@@ -107,6 +107,13 @@ class Component extends BaseComponent {
         return $cipher;
     }
 
+    /**
+     * @param string $encryptedValue
+     *
+     * @return string
+     * @throws \SodiumException
+     * @throws \RangeException
+     */
     public function decryptValue(string $encryptedValue): string {
         $decoded = Base64UrlSafe::decode($encryptedValue);
         Assert::true(mb_strlen($decoded, '8bit') >= (SODIUM_CRYPTO_SECRETBOX_NONCEBYTES + SODIUM_CRYPTO_SECRETBOX_MACBYTES));

@@ -6,12 +6,9 @@ namespace api\components\Tokens;
 use Lcobucci\JWT\Token;
 use Yii;
 
-class TokenReader {
+final class TokenReader {
 
-    /**
-     * @var Token
-     */
-    private $token;
+    private Token $token;
 
     public function __construct(Token $token) {
         $this->token = $token;
@@ -55,6 +52,10 @@ class TokenReader {
             return null;
         }
 
+        /**
+         * It really might throw an exception but we have not seen any case of such exception yet
+         * @noinspection PhpUnhandledExceptionInspection
+         */
         return Yii::$app->tokens->decryptValue($encodedClientToken);
     }
 

@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace api\components\OAuth2;
 
+use LogicException;
+use RangeException;
+use SodiumException;
 use Yii;
 
 /**
@@ -20,7 +23,11 @@ trait CryptTrait {
     }
 
     protected function decrypt($encryptedData): string {
-        return Yii::$app->tokens->decryptValue($encryptedData);
+        try {
+            return Yii::$app->tokens->decryptValue($encryptedData);
+        } catch (SodiumException | RangeException $e) {
+            throw new LogicException($e->getMessage(), 0, $e);
+        }
     }
 
 }
