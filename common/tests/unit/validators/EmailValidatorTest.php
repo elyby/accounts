@@ -11,10 +11,7 @@ use yii\validators\EmailValidator as YiiEmailValidator;
 
 class EmailValidatorTest extends TestCase {
 
-    /**
-     * @var EmailValidator
-     */
-    private $validator;
+    private EmailValidator $validator;
 
     public function _before() {
         parent::_before();
@@ -100,6 +97,28 @@ class EmailValidatorTest extends TestCase {
         $model = $this->createModel('valid-email@gmail.com');
         $this->validator->validateAttribute($model, 'field');
         $this->assertNotSame(['error.email_is_tempmail'], $model->getErrors('field'));
+    }
+
+    /**
+     * @dataProvider getValidateAttributeBlacklistedHostTestCases
+     */
+    public function testValidateAttributeBlacklistedHost(string $email, bool $expectValid) {
+        $this->getFunctionMock(YiiEmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
+        $this->getFunctionMock(YiiEmailValidator::class, 'dns_get_record')->expects($this->any())->willReturn(['127.0.0.1']);
+
+        $model = $this->createModel($email);
+        $this->validator->validateAttribute($model, 'field');
+        $errors = $model->getErrors('field');
+        if ($expectValid) {
+            $this->assertEmpty($errors);
+        } else {
+            $this->assertSame(['error.email_host_is_not_allowed'], $errors);
+        }
+    }
+
+    public function getValidateAttributeBlacklistedHostTestCases() {
+        yield 'seznam.cz' => ['user@seznam.cz', false];
+        yield 'valid' => ['valid@google.com', true];
     }
 
     /**

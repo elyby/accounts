@@ -13,6 +13,7 @@ final class Error {
     public const EMAIL_TOO_LONG = 'error.email_too_long';
     public const EMAIL_INVALID = 'error.email_invalid';
     public const EMAIL_IS_TEMPMAIL = 'error.email_is_tempmail';
+    public const EMAIL_HOST_IS_NOT_ALLOWED = 'error.email_host_is_not_allowed';
     public const EMAIL_NOT_AVAILABLE = 'error.email_not_available';
     public const EMAIL_NOT_FOUND = 'error.email_not_found';
 

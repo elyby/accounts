@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace common\validators;
 
 use common\helpers\Error as E;
@@ -13,15 +15,15 @@ use yii\validators\Validator;
 class EmailValidator extends Validator {
 
     /**
-     * @var \Closure the function must return the account id for which the current validation is being performed.
-     * Allows you to skip the email check for the current account.
+     * @var callable(): int the function must return the account id for which the current validation is being performed.
+     * Allows you to skip the email uniqueness check for the current account.
      */
     public $accountCallback;
 
     public $skipOnEmpty = false;
 
-    public function validateAttribute($model, $attribute) {
-        $filter = new validators\FilterValidator(['filter' => [StringHelper::class, 'trim']]);
+    public function validateAttribute($model, $attribute): void {
+        $trim = new validators\FilterValidator(['filter' => [StringHelper::class, 'trim']]);
 
         $required = new validators\RequiredValidator();
         $required->message = E::EMAIL_REQUIRED;
@@ -38,6 +40,21 @@ class EmailValidator extends Validator {
         $tempmail = new TempmailValidator();
         $tempmail->message = E::EMAIL_IS_TEMPMAIL;
 
+        $blacklist = new class extends Validator {
+            public $hosts = [
+                'seznam.cz',
+            ];
+
+            protected function validateValue($value): ?array {
+                $host = explode('@', $value)[1];
+                if (in_array($host, $this->hosts, true)) {
+                    return [E::EMAIL_HOST_IS_NOT_ALLOWED, []];
+                }
+
+                return null;
+            }
+        };
+
         $idnaDomain = new validators\FilterValidator(['filter' => function(string $value): string {
             [$name, $domain] = explode('@', $value);
             return idn_to_ascii($name, 0, INTL_IDNA_VARIANT_UTS46) . '@' . idn_to_ascii($domain, 0, INTL_IDNA_VARIANT_UTS46);
@@ -48,16 +65,17 @@ class EmailValidator extends Validator {
         $unique->targetClass = Account::class;
         $unique->targetAttribute = 'email';
         if ($this->accountCallback !== null) {
-            $unique->filter = function(QueryInterface $query) {
+            $unique->filter = function(QueryInterface $query): void {
                 $query->andWhere(['NOT', ['id' => ($this->accountCallback)()]]);
             };
         }
 
-        $this->executeValidation($filter, $model, $attribute) &&
+        $this->executeValidation($trim, $model, $attribute) &&
         $this->executeValidation($required, $model, $attribute) &&
         $this->executeValidation($length, $model, $attribute) &&
         $this->executeValidation($email, $model, $attribute) &&
         $this->executeValidation($tempmail, $model, $attribute) &&
+        $this->executeValidation($blacklist, $model, $attribute) &&
         $this->executeValidation($idnaDomain, $model, $attribute) &&
         $this->executeValidation($unique, $model, $attribute);
     }
