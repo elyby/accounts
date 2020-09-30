@@ -8,6 +8,8 @@ return [
     'DELETE /v1/oauth2/<clientId>' => 'oauth/clients/delete',
     'POST /v1/oauth2/<clientId>/reset' => 'oauth/clients/reset',
     'GET /v1/accounts/<accountId:\d+>/oauth2/clients' => 'oauth/clients/get-per-account',
+    'GET /v1/accounts/<accountId:\d+>/oauth2/authorized' => 'oauth/clients/get-authorized-clients',
+    'DELETE /v1/accounts/<accountId:\d+>/oauth2/authorized/<clientId>' => 'oauth/clients/revoke-client',
     '/account/v1/info' => 'oauth/identity/index',
 
     // Accounts module routes

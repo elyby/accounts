@@ -16,6 +16,7 @@ final class Permissions {
     public const RESTORE_ACCOUNT = 'restore_account';
     public const BLOCK_ACCOUNT = 'block_account';
     public const COMPLETE_OAUTH_FLOW = 'complete_oauth_flow';
+    public const MANAGE_OAUTH_SESSIONS = 'manage_oauth_sessions';
     public const CREATE_OAUTH_CLIENTS = 'create_oauth_clients';
     public const VIEW_OAUTH_CLIENTS = 'view_oauth_clients';
     public const MANAGE_OAUTH_CLIENTS = 'manage_oauth_clients';
@@ -32,6 +33,7 @@ final class Permissions {
     public const DELETE_OWN_ACCOUNT = 'delete_own_account';
     public const RESTORE_OWN_ACCOUNT = 'restore_own_account';
     public const MINECRAFT_SERVER_SESSION = 'minecraft_server_session';
+    public const MANAGE_OWN_OAUTH_SESSIONS = 'manage_own_oauth_sessions';
     public const VIEW_OWN_OAUTH_CLIENTS = 'view_own_oauth_clients';
     public const MANAGE_OWN_OAUTH_CLIENTS = 'manage_own_oauth_clients';
 
