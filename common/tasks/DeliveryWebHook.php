@@ -16,39 +16,18 @@ use yii\queue\RetryableJobInterface;
 
 class DeliveryWebHook implements RetryableJobInterface {
 
-    /**
-     * @var string
-     */
-    public $type;
+    public string $type;
 
-    /**
-     * @var string
-     */
-    public $url;
+    public string $url;
 
-    /**
-     * @var string|null
-     */
-    public $secret;
+    public ?string $secret;
 
-    /**
-     * @var array
-     */
-    public $payloads;
+    public array $payloads;
 
-    /**
-     * @return int time to reserve in seconds
-     */
     public function getTtr(): int {
         return 65;
     }
 
-    /**
-     * @param int $attempt number
-     * @param \Exception|\Throwable $error from last execute of the job
-     *
-     * @return bool
-     */
     public function canRetry($attempt, $error): bool {
         if ($attempt >= 5) {
             return false;

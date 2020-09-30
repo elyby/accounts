@@ -11,6 +11,8 @@ use api\modules\oauth\models\OauthClientTypeForm;
 use api\rbac\Permissions as P;
 use common\models\Account;
 use common\models\OauthClient;
+use common\notifications\OAuthSessionRevokedNotification;
+use common\tasks\CreateWebHooksDeliveries;
 use Webmozart\Assert\Assert;
 use Yii;
 use yii\db\ActiveQuery;
@@ -197,6 +199,8 @@ class ClientsController extends Controller {
         if ($session !== null && !$session->isRevoked()) {
             $session->revoked_at = time();
             Assert::true($session->save());
+
+            Yii::$app->queue->push(new CreateWebHooksDeliveries(new OAuthSessionRevokedNotification($session)));
         }
 
         return ['success' => true];
