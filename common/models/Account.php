@@ -189,7 +189,9 @@ class Account extends ActiveRecord {
 
     public function afterDelete(): void {
         parent::afterDelete();
-        Yii::$app->queue->push(new CreateWebHooksDeliveries(new AccountDeletedNotification($this)));
+        if ($this->status !== self::STATUS_REGISTERED) {
+            Yii::$app->queue->push(new CreateWebHooksDeliveries(new AccountDeletedNotification($this)));
+        }
     }
 
 }
