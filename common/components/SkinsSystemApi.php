@@ -22,7 +22,7 @@ class SkinsSystemApi {
      */
     public function textures(string $username): ?array {
         $response = $this->getClient()->request('GET', $this->buildUrl('/textures/' . $username));
-        if ($response->getStatusCode() !== 204) {
+        if ($response->getStatusCode() !== 200) {
             return null;
         }
 
