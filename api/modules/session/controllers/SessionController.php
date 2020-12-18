@@ -110,11 +110,10 @@ class SessionController extends Controller {
     /**
      * @param string $uuid
      *
-     * @return array
-     * @throws ForbiddenOperationException
+     * @return array|null
      * @throws IllegalArgumentException
      */
-    public function actionProfile(string $uuid): array {
+    public function actionProfile(string $uuid): ?array {
         try {
             $uuid = Uuid::fromString($uuid)->toString();
         } catch (\InvalidArgumentException $e) {
@@ -124,7 +123,8 @@ class SessionController extends Controller {
         /** @var Account|null $account */
         $account = Account::find()->excludeDeleted()->andWhere(['uuid' => $uuid])->one();
         if ($account === null) {
-            throw new ForbiddenOperationException('Invalid uuid.');
+            Yii::$app->response->setStatusCode(204);
+            return null;
         }
 
         return (new Textures($account))->getMinecraftResponse();

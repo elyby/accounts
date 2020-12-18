@@ -49,24 +49,14 @@ class ProfileCest {
     public function getProfileWithNonexistentUuid(FunctionalTester $I) {
         $I->wantTo('get info about nonexistent uuid');
         $this->route->profile(v4());
-        $I->canSeeResponseCodeIs(401);
-        $I->canSeeResponseIsJson();
-        $I->seeResponseIsJson();
-        $I->canSeeResponseContainsJson([
-            'error' => 'ForbiddenOperationException',
-            'errorMessage' => 'Invalid uuid.',
-        ]);
+        $I->canSeeResponseCodeIs(204);
+        $I->canSeeResponseEquals('');
     }
 
     public function getProfileOfAccountMarkedForDeletion(FunctionalTester $I) {
         $this->route->profile('6383de63-8f85-4ed5-92b7-5401a1fa68cd');
-        $I->canSeeResponseCodeIs(401);
-        $I->canSeeResponseIsJson();
-        $I->seeResponseIsJson();
-        $I->canSeeResponseContainsJson([
-            'error' => 'ForbiddenOperationException',
-            'errorMessage' => 'Invalid uuid.',
-        ]);
+        $I->canSeeResponseCodeIs(204);
+        $I->canSeeResponseEquals('');
     }
 
 }
