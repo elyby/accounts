@@ -223,6 +223,10 @@ class OauthProcess {
             return false;
         }
 
+        if ($session->isRevoked()) {
+            return false;
+        }
+
         return empty(array_diff($this->getScopesList($request), $session->getScopes()));
     }
 
@@ -235,6 +239,7 @@ class OauthProcess {
         }
 
         $session->scopes = array_unique(array_merge($session->getScopes(), $this->getScopesList($request)));
+        $session->last_used_at = time();
 
         Assert::true($session->save());
     }
@@ -346,7 +351,6 @@ class OauthProcess {
     }
 
     private function findOauthSession(Account $account, OauthClient $client): ?OauthSession {
-        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $account->getOauthSessions()->andWhere(['client_id' => $client->id])->one();
     }
 

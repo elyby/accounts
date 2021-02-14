@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace console\models;
 
 use common\models\WebHook;
+use common\notifications;
 use Webmozart\Assert\Assert;
 use yii\base\Model;
 
@@ -50,8 +51,9 @@ class WebHookForm extends Model {
 
     public static function getEvents(): array {
         return [
-            'account.edit',
-            'account.deletion',
+            notifications\AccountEditNotification::getType(),
+            notifications\AccountDeletedNotification::getType(),
+            notifications\OAuthSessionRevokedNotification::getType(),
         ];
     }
 

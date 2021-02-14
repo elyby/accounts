@@ -38,6 +38,7 @@ class RbacController extends Controller {
         $permViewOauthClients = $this->createPermission(P::VIEW_OAUTH_CLIENTS);
         $permManageOauthClients = $this->createPermission(P::MANAGE_OAUTH_CLIENTS);
         $permCompleteOauthFlow = $this->createPermission(P::COMPLETE_OAUTH_FLOW, AccountOwner::class);
+        $permManageOauthSessions = $this->createPermission(P::MANAGE_OAUTH_SESSIONS);
 
         $permObtainAccountEmail = $this->createPermission(P::OBTAIN_ACCOUNT_EMAIL);
         $permObtainExtendedAccountInfo = $this->createPermission(P::OBTAIN_EXTENDED_ACCOUNT_INFO);
@@ -53,6 +54,7 @@ class RbacController extends Controller {
         $permDeleteOwnAccount = $this->createPermission(P::DELETE_OWN_ACCOUNT, AccountOwner::class);
         $permRestoreOwnAccount = $this->createPermission(P::RESTORE_OWN_ACCOUNT, AccountOwner::class);
         $permMinecraftServerSession = $this->createPermission(P::MINECRAFT_SERVER_SESSION);
+        $permManageOwnOauthSessions = $this->createPermission(P::MANAGE_OWN_OAUTH_SESSIONS, AccountOwner::class);
         $permViewOwnOauthClients = $this->createPermission(P::VIEW_OWN_OAUTH_CLIENTS, OauthClientOwner::class);
         $permManageOwnOauthClients = $this->createPermission(P::MANAGE_OWN_OAUTH_CLIENTS, OauthClientOwner::class);
 
@@ -69,6 +71,7 @@ class RbacController extends Controller {
         $authManager->addChild($permManageOwnTwoFactorAuth, $permManageTwoFactorAuth);
         $authManager->addChild($permDeleteOwnAccount, $permDeleteAccount);
         $authManager->addChild($permRestoreOwnAccount, $permRestoreAccount);
+        $authManager->addChild($permManageOwnOauthSessions, $permManageOauthSessions);
         $authManager->addChild($permViewOwnOauthClients, $permViewOauthClients);
         $authManager->addChild($permManageOwnOauthClients, $permManageOauthClients);
 
@@ -86,6 +89,7 @@ class RbacController extends Controller {
         $authManager->addChild($roleAccountsWebUser, $permRestoreOwnAccount);
         $authManager->addChild($roleAccountsWebUser, $permCompleteOauthFlow);
         $authManager->addChild($roleAccountsWebUser, $permCreateOauthClients);
+        $authManager->addChild($roleAccountsWebUser, $permManageOwnOauthSessions);
         $authManager->addChild($roleAccountsWebUser, $permViewOwnOauthClients);
         $authManager->addChild($roleAccountsWebUser, $permManageOwnOauthClients);
     }

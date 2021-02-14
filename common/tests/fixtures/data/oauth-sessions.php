@@ -7,6 +7,7 @@ return [
         'scopes' => null,
         'created_at' => 1479944472,
         'revoked_at' => null,
+        'last_used_at' => 1479944472,
     ],
     'revoked-tlauncher' => [
         'account_id' => 1,
@@ -15,6 +16,7 @@ return [
         'scopes' => null,
         'created_at' => Carbon\Carbon::create(2019, 8, 1, 0, 0, 0, 'Europe/Minsk')->unix(),
         'revoked_at' => Carbon\Carbon::create(2019, 8, 1, 1, 2, 0, 'Europe/Minsk')->unix(),
+        'last_used_at' => Carbon\Carbon::create(2019, 8, 1, 0, 0, 0, 'Europe/Minsk')->unix(),
     ],
     'revoked-minecraft-game-launchers' => [
         'account_id' => 1,
@@ -23,6 +25,7 @@ return [
         'scopes' => null,
         'created_at' => Carbon\Carbon::create(2019, 8, 1, 0, 0, 0, 'Europe/Minsk')->unix(),
         'revoked_at' => Carbon\Carbon::create(2019, 8, 1, 1, 2, 0, 'Europe/Minsk')->unix(),
+        'last_used_at' => Carbon\Carbon::create(2019, 8, 1, 0, 0, 0, 'Europe/Minsk')->unix(),
     ],
     'banned-account-session' => [
         'account_id' => 10,
@@ -31,6 +34,7 @@ return [
         'scopes' => null,
         'created_at' => 1481421663,
         'revoked_at' => null,
+        'last_used_at' => 1481421663,
     ],
     'deleted-client-session' => [
         'account_id' => 1,
@@ -39,6 +43,7 @@ return [
         'scopes' => null,
         'created_at' => 1519510065,
         'revoked_at' => null,
+        'last_used_at' => 1519510065,
     ],
     'actual-deleted-client-session' => [
         'account_id' => 2,
@@ -47,5 +52,6 @@ return [
         'scopes' => null,
         'created_at' => 1519511568,
         'revoked_at' => null,
+        'last_used_at' => 1519511568,
     ],
 ];

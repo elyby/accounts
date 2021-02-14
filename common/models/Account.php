@@ -5,6 +5,8 @@ namespace common\models;
 
 use Carbon\Carbon;
 use common\components\UserPass;
+use common\notifications\AccountDeletedNotification;
+use common\notifications\AccountEditNotification;
 use common\tasks\CreateWebHooksDeliveries;
 use DateInterval;
 use Webmozart\Assert\Assert;
@@ -181,12 +183,15 @@ class Account extends ActiveRecord {
             return;
         }
 
-        Yii::$app->queue->push(CreateWebHooksDeliveries::createAccountEdit($this, $meaningfulChangedAttributes));
+        $notification = new AccountEditNotification($this, $meaningfulChangedAttributes);
+        Yii::$app->queue->push(new CreateWebHooksDeliveries($notification));
     }
 
     public function afterDelete(): void {
         parent::afterDelete();
-        Yii::$app->queue->push(CreateWebHooksDeliveries::createAccountDeletion($this));
+        if ($this->status !== self::STATUS_REGISTERED) {
+            Yii::$app->queue->push(new CreateWebHooksDeliveries(new AccountDeletedNotification($this)));
+        }
     }
 
 }

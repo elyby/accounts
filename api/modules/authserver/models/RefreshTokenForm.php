@@ -70,16 +70,18 @@ class RefreshTokenForm extends ApiForm {
 
         // TODO: This behavior duplicates with the AuthenticationForm. Need to find a way to avoid duplication.
         /** @var OauthSession|null $minecraftOauthSession */
-        $hasMinecraftOauthSession = $account->getOauthSessions()
+        $minecraftOauthSession = $account->getOauthSessions()
             ->andWhere(['client_id' => OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER])
-            ->exists();
-        if ($hasMinecraftOauthSession === false) {
+            ->one();
+        if ($minecraftOauthSession === null) {
             $minecraftOauthSession = new OauthSession();
             $minecraftOauthSession->account_id = $account->id;
             $minecraftOauthSession->client_id = OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER;
             $minecraftOauthSession->scopes = [P::MINECRAFT_SERVER_SESSION];
-            Assert::true($minecraftOauthSession->save());
         }
+
+        $minecraftOauthSession->last_used_at = time();
+        Assert::true($minecraftOauthSession->save());
 
         return new AuthenticateData($account, (string)$token, $this->clientToken);
     }

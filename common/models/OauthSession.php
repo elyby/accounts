@@ -16,10 +16,14 @@ use yii\db\ActiveRecord;
  * @property array $scopes
  * @property int $created_at
  * @property int|null $revoked_at
+ * @property int $last_used_at
  *
  * Relations:
- * @property-read OauthClient $client
+ * @property-read OauthClient|null $client
  * @property-read Account $account
+ *
+ * Mixins:
+ * @mixin TimestampBehavior
  */
 class OauthSession extends ActiveRecord {
 
@@ -34,6 +38,10 @@ class OauthSession extends ActiveRecord {
                 'updatedAtAttribute' => false,
             ],
         ];
+    }
+
+    public function isRevoked(): bool {
+        return $this->revoked_at > $this->last_used_at;
     }
 
     public function getClient(): ActiveQuery {

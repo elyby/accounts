@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\modules\oauth\controllers;
 
 use api\controllers\Controller;
@@ -9,9 +11,14 @@ use api\modules\oauth\models\OauthClientTypeForm;
 use api\rbac\Permissions as P;
 use common\models\Account;
 use common\models\OauthClient;
+use common\notifications\OAuthSessionRevokedNotification;
+use common\tasks\CreateWebHooksDeliveries;
 use Webmozart\Assert\Assert;
 use Yii;
+use yii\db\ActiveQuery;
+use yii\db\Expression;
 use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 
@@ -31,32 +38,47 @@ class ClientsController extends Controller {
                         'actions' => ['update', 'delete', 'reset'],
                         'allow' => true,
                         'permissions' => [P::MANAGE_OAUTH_CLIENTS],
-                        'roleParams' => function() {
-                            return [
-                                'clientId' => Yii::$app->request->get('clientId'),
-                            ];
-                        },
+                        'roleParams' => fn() => [
+                            'clientId' => Yii::$app->request->get('clientId'),
+                        ],
                     ],
                     [
                         'actions' => ['get'],
                         'allow' => true,
                         'permissions' => [P::VIEW_OAUTH_CLIENTS],
-                        'roleParams' => function() {
-                            return [
-                                'clientId' => Yii::$app->request->get('clientId'),
-                            ];
-                        },
+                        'roleParams' => fn() => [
+                            'clientId' => Yii::$app->request->get('clientId'),
+                        ],
                     ],
                     [
                         'actions' => ['get-per-account'],
                         'allow' => true,
                         'permissions' => [P::VIEW_OAUTH_CLIENTS],
-                        'roleParams' => function() {
-                            return [
-                                'accountId' => Yii::$app->request->get('accountId'),
-                            ];
-                        },
+                        'roleParams' => fn() => [
+                            'accountId' => Yii::$app->request->get('accountId'),
+                        ],
                     ],
+                    [
+                        'actions' => ['get-authorized-clients', 'revoke-client'],
+                        'allow' => true,
+                        'permissions' => [P::MANAGE_OAUTH_SESSIONS],
+                        'roleParams' => fn() => [
+                            'accountId' => Yii::$app->request->get('accountId'),
+                        ],
+                    ],
+                ],
+            ],
+            'verb' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'get' => ['GET'],
+                    'create' => ['POST'],
+                    'update' => ['PUT'],
+                    'delete' => ['DELETE'],
+                    'reset' => ['POST'],
+                    'get-per-account' => ['GET'],
+                    'get-authorized-clients' => ['GET'],
+                    'revoke-client' => ['DELETE'],
                 ],
             ],
         ]);
@@ -128,16 +150,60 @@ class ClientsController extends Controller {
     }
 
     public function actionGetPerAccount(int $accountId): array {
-        /** @var Account|null $account */
-        $account = Account::findOne(['id' => $accountId]);
-        if ($account === null) {
-            throw new NotFoundHttpException();
-        }
-
         /** @var OauthClient[] $clients */
-        $clients = $account->getOauthClients()->orderBy(['created_at' => SORT_ASC])->all();
+        $clients = $this->findAccount($accountId)->getOauthClients()->orderBy(['created_at' => SORT_ASC])->all();
 
         return array_map(fn(OauthClient $client): array => $this->formatClient($client), $clients);
+    }
+
+    public function actionGetAuthorizedClients(int $accountId): array {
+        $account = $this->findAccount($accountId);
+
+        $result = [];
+        /** @var \common\models\OauthSession[] $oauthSessions */
+        $oauthSessions = $account->getOauthSessions()
+            ->innerJoinWith(['client c' => function(ActiveQuery $query): void {
+                $query->andOnCondition(['c.type' => OauthClient::TYPE_APPLICATION]);
+            }])
+            ->andWhere([
+                'OR',
+                ['revoked_at' => null],
+                ['>', 'last_used_at', new Expression('`revoked_at`')],
+            ])
+            ->all();
+        foreach ($oauthSessions as $oauthSession) {
+            $client = $oauthSession->client;
+            if ($client === null) {
+                continue;
+            }
+
+            $result[] = [
+                'id' => $client->id,
+                'name' => $client->name,
+                'description' => $client->description,
+                'scopes' => $oauthSession->getScopes(),
+                'authorizedAt' => $oauthSession->created_at,
+                'lastUsedAt' => $oauthSession->last_used_at,
+            ];
+        }
+
+        return $result;
+    }
+
+    public function actionRevokeClient(int $accountId, string $clientId): ?array {
+        $account = $this->findAccount($accountId);
+        $client = $this->findOauthClient($clientId);
+
+        /** @var \common\models\OauthSession|null $session */
+        $session = $account->getOauthSessions()->andWhere(['client_id' => $client->id])->one();
+        if ($session !== null && !$session->isRevoked()) {
+            $session->revoked_at = time();
+            Assert::true($session->save());
+
+            Yii::$app->queue->push(new CreateWebHooksDeliveries(new OAuthSessionRevokedNotification($session)));
+        }
+
+        return ['success' => true];
     }
 
     private function formatClient(OauthClient $client): array {
@@ -168,16 +234,26 @@ class ClientsController extends Controller {
         try {
             $model = OauthClientFormFactory::create($client);
         } catch (UnsupportedOauthClientType $e) {
-            Yii::warning('Someone tried use ' . $client->type . ' type of oauth form.');
+            Yii::warning('Someone tried to use ' . $client->type . ' type of oauth form.');
             throw new NotFoundHttpException(null, 0, $e);
         }
 
         return $model;
     }
 
+    private function findAccount(int $id): Account {
+        /** @var Account|null $account */
+        $account = Account::findOne(['id' => $id]);
+        if ($account === null) {
+            throw new NotFoundHttpException();
+        }
+
+        return $account;
+    }
+
     private function findOauthClient(string $clientId): OauthClient {
         /** @var OauthClient|null $client */
-        $client = OauthClient::findOne($clientId);
+        $client = OauthClient::findOne(['id' => $clientId]);
         if ($client === null) {
             throw new NotFoundHttpException();
         }

@@ -3,7 +3,10 @@ declare(strict_types=1);
 
 namespace common\tests\unit\models;
 
+use Codeception\Util\ReflectionHelper;
 use common\models\Account;
+use common\notifications\AccountDeletedNotification;
+use common\notifications\AccountEditNotification;
 use common\tasks\CreateWebHooksDeliveries;
 use common\tests\fixtures\MojangUsernameFixture;
 use common\tests\unit\TestCase;
@@ -129,23 +132,37 @@ class AccountTest extends TestCase {
         ];
 
         $account = new Account();
+        $account->id = 123;
         $account->afterSave(false, $changedAttributes);
         /** @var CreateWebHooksDeliveries $job */
         $job = $this->tester->grabLastQueuedJob();
         $this->assertInstanceOf(CreateWebHooksDeliveries::class, $job);
-        $this->assertSame('account.edit', $job->type);
-        $this->assertSame($changedAttributes, $job->payloads['changedAttributes']);
+        /** @var AccountEditNotification $notification */
+        $notification = ReflectionHelper::readPrivateProperty($job, 'notification');
+        $this->assertInstanceOf(AccountEditNotification::class, $notification);
+        $this->assertSame(123, $notification->getPayloads()['id']);
+        $this->assertSame($changedAttributes, $notification->getPayloads()['changedAttributes']);
     }
 
     public function testAfterDeletePushEvent() {
         $account = new Account();
         $account->id = 1;
+        $account->status = Account::STATUS_REGISTERED;
+        $account->created_at = time() - 60 * 60 * 24;
+        $account->deleted_at = time();
+
+        $account->afterDelete();
+        $this->assertNull($this->tester->grabLastQueuedJob());
+
+        $account->status = Account::STATUS_ACTIVE;
         $account->afterDelete();
         /** @var CreateWebHooksDeliveries $job */
         $job = $this->tester->grabLastQueuedJob();
         $this->assertInstanceOf(CreateWebHooksDeliveries::class, $job);
-        $this->assertSame('account.deletion', $job->type);
-        $this->assertSame(1, $job->payloads['id']);
+        /** @var AccountDeletedNotification $notification */
+        $notification = ReflectionHelper::readPrivateProperty($job, 'notification');
+        $this->assertInstanceOf(AccountDeletedNotification::class, $notification);
+        $this->assertSame(1, $notification->getPayloads()['id']);
     }
 
 }

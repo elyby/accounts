@@ -5,7 +5,9 @@ namespace api\tests\unit\modules\accounts\models;
 
 use api\modules\accounts\models\DeleteAccountForm;
 use api\tests\unit\TestCase;
+use Codeception\Util\ReflectionHelper;
 use common\models\Account;
+use common\notifications\AccountEditNotification;
 use common\tasks\CreateWebHooksDeliveries;
 use common\tasks\DeleteAccount;
 use common\tests\fixtures\AccountFixture;
@@ -46,7 +48,12 @@ class DeleteAccountFormTest extends TestCase {
             ->method('push')
             ->withConsecutive(
                 [$this->callback(function(CreateWebHooksDeliveries $task) use ($account): bool {
-                    $this->assertSame($account->id, $task->payloads['id']);
+                    /** @var AccountEditNotification $notification */
+                    $notification = ReflectionHelper::readPrivateProperty($task, 'notification');
+                    $this->assertInstanceOf(AccountEditNotification::class, $notification);
+                    $this->assertSame($account->id, $notification->getPayloads()['id']);
+                    $this->assertTrue($notification->getPayloads()['isDeleted']);
+
                     return true;
                 })],
                 [$this->callback(function(DeleteAccount $task) use ($account): bool {
