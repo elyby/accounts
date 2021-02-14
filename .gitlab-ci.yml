@@ -66,7 +66,9 @@ Composer:
   before_script:
     - sudo composer self-update --2
     - composer config github-oauth.github.com "$GITHUB_TOKEN"
-    - sudo apk add --update --no-cache patch # necessary to make cweagans/composer-patches work
+    # patch is necessary to make cweagans/composer-patches work
+    # unzip is required by composer v2
+    - sudo apk add --update --no-cache patch unzip
   script:
     - composer install --ignore-platform-reqs
 
