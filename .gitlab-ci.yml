@@ -111,7 +111,7 @@ Codeception:
     - sudo chmod a+x /usr/local/bin/wait-for-it
   script:
     - php yii rbac/generate
-    - wait-for-it "${DB_HOST}:3306" -s -t 0 -- php /var/www/html/yii migrate/up --interactive=0
+    - wait-for-it "${DB_HOST}:3306" -s -t 0 -- php yii migrate/up --interactive=0
     - vendor/bin/codecept run
 
 ###############
