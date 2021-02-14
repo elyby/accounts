@@ -64,7 +64,9 @@ Composer:
   cache:
     policy: pull-push
   before_script:
-    - sudo apk add --update --no-cache patch
+    - sudo composer self-update --2
+    - composer config github-oauth.github.com "$GITHUB_TOKEN"
+    - sudo apk add --update --no-cache patch # necessary to make cweagans/composer-patches work
   script:
     - composer install --ignore-platform-reqs
 
@@ -104,9 +106,12 @@ Codeception:
   before_script:
     # We don't count code coverage yet, so xdebug can be removed
     - sudo rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    # Install wait-for-it script
+    - sudo curl "https://raw.githubusercontent.com/vishnubob/wait-for-it/81b1373f17855/wait-for-it.sh" -o /usr/local/bin/wait-for-it
+    - sudo chmod a+x /usr/local/bin/wait-for-it
   script:
     - php yii rbac/generate
-    - ./docker/php/wait-for-it.sh "${DB_HOST}:3306" -s -t 0 -- "php yii migrate/up --interactive=0"
+    - wait-for-it "${DB_HOST}:3306" -s -t 0 -- php /var/www/html/yii migrate/up --interactive=0
     - vendor/bin/codecept run
 
 ###############
@@ -133,24 +138,24 @@ Docker:
     - docker pull "$DB_LATEST_IMAGE_NAME" || true
     # Build images
     - >
-      docker build
+      docker build .
       --pull
       --target app
       --build-arg "build_env=prod"
       --cache-from "$APP_LATEST_IMAGE_NAME"
       -t "$APP_VERSIONED_IMAGE_NAME"
-      -t "$APP_LATEST_IMAGE_NAME" .
+      -t "$APP_LATEST_IMAGE_NAME"
     - >
-      docker build
+      docker build .
       --pull
       --target web
       --build-arg "build_env=prod"
       --cache-from "$APP_VERSIONED_IMAGE_NAME"
       --cache-from "$WEB_LATEST_IMAGE_NAME"
       -t "$WEB_VERSIONED_IMAGE_NAME"
-      -t "$WEB_LATEST_IMAGE_NAME" .
+      -t "$WEB_LATEST_IMAGE_NAME"
     - >
-      docker build
+      docker build .
       --pull
       --target db
       --build-arg "build_env=prod"
@@ -158,7 +163,7 @@ Docker:
       --cache-from "$WEB_VERSIONED_IMAGE_NAME"
       --cache-from "$DB_LATEST_IMAGE_NAME"
       -t "$DB_VERSIONED_IMAGE_NAME"
-      -t "$DB_LATEST_IMAGE_NAME" .
+      -t "$DB_LATEST_IMAGE_NAME"
     # Push images to the registry
     - docker push $APP_VERSIONED_IMAGE_NAME
     - docker push $APP_LATEST_IMAGE_NAME

@@ -48,12 +48,17 @@
         "codeception/module-asserts": "^1.1.0",
         "codeception/module-rest": "^1.0.0",
         "codeception/module-yii2": "^1.0.0",
-        "cweagans/composer-patches": "^1.6",
+        "cweagans/composer-patches": "^1.7",
         "ely/php-code-style": "^0.3.0",
         "php-mock/php-mock-phpunit": "^2.5",
         "roave/security-advisories": "dev-master"
     },
     "replace": {
+        "bower-asset/inputmask": "*",
+        "bower-asset/jquery": "*",
+        "bower-asset/punycode": "*",
+        "bower-asset/raven-js": "*",
+        "bower-asset/yii2-pjax": "*",
         "paragonie/random_compat": "2.99.99",
         "symfony/polyfill-ctype": "*",
         "symfony/polyfill-iconv": "*",

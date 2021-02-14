@@ -1,4 +1,4 @@
-FROM php:7.4.1-fpm-alpine3.11 AS app
+FROM php:7.4.15-fpm-alpine3.13 AS app
 
 # bash needed to support wait-for-it script
 RUN apk add --update --no-cache \
@@ -20,23 +20,23 @@ RUN apk add --update --no-cache \
     pcntl \
     opcache \
  && apk add --no-cache --virtual ".phpize-deps" $PHPIZE_DEPS \
- && yes | pecl install xdebug-2.9.0 \
+ && yes | pecl install xdebug-2.9.8 \
  && yes | pecl install imagick \
  && docker-php-ext-enable imagick \
  && apk del ".phpize-deps" \
  && rm -rf /usr/share/man \
  && rm -rf /tmp/* \
- && mkdir /etc/cron.d
-
-COPY --from=composer:1.9.1 /usr/bin/composer /usr/bin/composer
-COPY --from=node:11.13.0-alpine /usr/local/bin/node /usr/bin/
-COPY --from=node:11.13.0-alpine /usr/lib/libgcc* /usr/lib/libstdc* /usr/lib/* /usr/lib/
-
-RUN mkdir /root/.composer \
- && composer global require --no-progress "hirak/prestissimo:>=0.3.8" \
- && composer clear-cache
-
-COPY ./docker/php/wait-for-it.sh /usr/local/bin/wait-for-it
+ # Create cron directory
+ && mkdir -p /etc/cron.d \
+ # Install wait-for-it script
+ && curl "https://raw.githubusercontent.com/vishnubob/wait-for-it/81b1373f17855/wait-for-it.sh" -o /usr/local/bin/wait-for-it \
+ && chmod a+x /usr/local/bin/wait-for-it \
+ # Install composer and global dependencies
+ && curl "https://getcomposer.org/download/2.0.9/composer.phar" -o /usr/bin/composer \
+ && chmod a+x /usr/bin/composer
+ # TODO: migrate to the build-pack secrets when they will implement compatibility with the docker-compose
+ # Feature: https://docs.docker.com/develop/develop-images/build_enhancements/#new-docker-build-secret-information
+ # Track issues: https://github.com/docker/compose/issues/6358, https://github.com/compose-spec/compose-spec/issues/81
 
 COPY ./patches /var/www/html/patches/
 COPY ./composer.* /var/www/html/

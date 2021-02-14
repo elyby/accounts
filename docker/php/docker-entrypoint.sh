@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
+YII_EXEC="/var/www/html/yii"
 XDEBUG_EXTENSION_FILE="/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini"
 PHP_PROD_INI="/usr/local/etc/php/conf.d/php.prod.ini"
 PHP_DEV_INI="/usr/local/etc/php/conf.d/php.dev.ini"
@@ -32,13 +33,6 @@ for path in ${APP_DIRS[*]}; do
         chown -R www-data:www-data "$path"
     fi
 done
-
-if [ "$YII_ENV" = "test" ]
-then
-    YII_EXEC="/var/www/html/tests/codeception/bin/yii"
-else
-    YII_EXEC="/var/www/html/yii"
-fi
 
 # Fix permissions for cron tasks
 chmod 644 /etc/cron.d/*
@@ -73,11 +67,6 @@ fi
 echo "Generating RBAC rules"
 php $YII_EXEC rbac/generate
 
-if [ "$YII_ENV" != "test" ]
-then
-    wait-for-it "${DB_HOST:-db}:3306" -s -t 0 -- "php $YII_EXEC migrate/up --interactive=0"
-else
-    wait-for-it "${DB_HOST:-testdb}:3306" -s -t 0 -- "php $YII_EXEC migrate/up --interactive=0"
-fi
+wait-for-it "${DB_HOST:-db}:${DB_PORT:-3306}" -s -t 0 -- php $YII_EXEC migrate/up --interactive=0
 
 exec "$@"
