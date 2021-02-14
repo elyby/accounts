@@ -68,7 +68,8 @@
         "symfony/polyfill-mbstring": "*",
         "symfony/polyfill-php70": "*",
         "symfony/polyfill-php72": "*",
-        "symfony/polyfill-php73": "*"
+        "symfony/polyfill-php73": "*",
+        "yiisoft/yii2-composer": "*"
     },
     "extra": {
         "composer-exit-on-patch-failure": true,
