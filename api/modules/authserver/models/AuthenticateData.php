@@ -34,7 +34,7 @@ class AuthenticateData {
             'accessToken' => $this->accessToken,
             'clientToken' => $this->clientToken,
             'selectedProfile' => [
-                'id' => $this->account->uuid,
+                'id' => str_replace('-', '', $this->account->uuid),
                 'name' => $this->account->username,
                 'legacy' => false,
             ],

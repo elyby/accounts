@@ -27,9 +27,9 @@ class AuthenticationFormTest extends TestCase {
         $authForm->password = 'password_0';
         $authForm->clientToken = Uuid::uuid4()->toString();
         $result = $authForm->authenticate()->getResponseData();
-        $this->assertRegExp('/^[\w=-]+\.[\w=-]+\.[\w=-]+$/', $result['accessToken']);
+        $this->assertMatchesRegularExpression('/^[\w=-]+\.[\w=-]+\.[\w=-]+$/', $result['accessToken']);
         $this->assertSame($authForm->clientToken, $result['clientToken']);
-        $this->assertSame('df936908-b2e1-544d-96f8-2977ec213022', $result['selectedProfile']['id']);
+        $this->assertSame('df936908b2e1544d96f82977ec213022', $result['selectedProfile']['id']);
         $this->assertSame('Admin', $result['selectedProfile']['name']);
         $this->assertFalse($result['selectedProfile']['legacy']);
         $this->assertTrue(OauthSession::find()->andWhere([
