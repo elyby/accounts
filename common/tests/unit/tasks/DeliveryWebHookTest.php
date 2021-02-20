@@ -10,8 +10,9 @@ use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
-use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use yii\queue\Queue;
 
 /**
@@ -29,11 +30,12 @@ class DeliveryWebHookTest extends TestCase {
     public function testCanRetry() {
         $task = new DeliveryWebHook();
         $this->assertFalse($task->canRetry(1, new \Exception()));
-        $request = new Request('POST', 'http://localhost');
+        $request = $this->createMock(RequestInterface::class);
+        $response = $this->createMock(ResponseInterface::class);
         $this->assertTrue($task->canRetry(4, new ConnectException('', $request)));
-        $this->assertTrue($task->canRetry(4, new ServerException('', $request)));
+        $this->assertTrue($task->canRetry(4, new ServerException('', $request, $response)));
         $this->assertFalse($task->canRetry(5, new ConnectException('', $request)));
-        $this->assertFalse($task->canRetry(5, new ServerException('', $request)));
+        $this->assertFalse($task->canRetry(5, new ServerException('', $request, $response)));
     }
 
     public function testExecuteSuccessDelivery() {
@@ -46,7 +48,7 @@ class DeliveryWebHookTest extends TestCase {
             'another' => 'value',
         ];
         $task->execute($this->createMock(Queue::class));
-        /** @var Request $request */
+        /** @var \GuzzleHttp\Psr7\Request $request */
         $request = $this->historyContainer[0]['request'];
         $this->assertSame('http://localhost:81/webhooks/ely', (string)$request->getUri());
         $this->assertStringStartsWith('Account-Ely-Hookshot/', $request->getHeaders()['User-Agent'][0]);
@@ -67,7 +69,7 @@ class DeliveryWebHookTest extends TestCase {
             'another' => 'value',
         ];
         $task->execute($this->createMock(Queue::class));
-        /** @var Request $request */
+        /** @var \GuzzleHttp\Psr7\Request $request */
         $request = $this->historyContainer[0]['request'];
         $this->assertSame('http://localhost:81/webhooks/ely', (string)$request->getUri());
         $this->assertStringStartsWith('Account-Ely-Hookshot/', $request->getHeaders()['User-Agent'][0]);
