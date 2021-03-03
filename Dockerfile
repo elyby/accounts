@@ -65,11 +65,39 @@ CMD ["php-fpm"]
 
 # ================================================================================
 
-FROM fholzer/nginx-brotli:v1.16.0 AS web
+FROM fholzer/nginx-brotli:v1.19.1 AS web
 
 ENV PHP_SERVERS php:9000
 
-RUN rm /etc/nginx/conf.d/default.conf \
+# Add headers-more-nginx-module
+RUN apk add --update --no-cache --virtual ".nginx-module-build-deps" \
+    gcc \
+    make \
+    libc-dev \
+    g++ \
+    openssl-dev \
+    linux-headers \
+    pcre-dev \
+    zlib-dev \
+    libtool \
+    automake \
+    autoconf \
+    git \
+ && cd /opt \
+ && git clone --depth 1 -b v0.33 --single-branch https://github.com/openresty/headers-more-nginx-module.git \
+ && cd /opt/headers-more-nginx-module \
+ && git submodule update --init \
+ && cd /opt \
+ && wget -O - http://nginx.org/download/nginx-$(nginx -v 2>&1 | sed 's@.*/@@').tar.gz | tar zxfv - \
+ && cd /opt/nginx* \
+ && ./configure --with-compat --add-dynamic-module=/opt/headers-more-nginx-module \
+ && make modules \
+ && cp /opt/nginx*/objs/ngx_http_headers_more_filter_module.so /usr/lib/nginx/modules/ \
+ && sed -i '1iload_module \/usr\/lib\/nginx\/modules\/ngx_http_headers_more_filter_module.so;' /etc/nginx/nginx.conf \
+ && rm -rf /opt/* \
+ && apk del ".nginx-module-build-deps" \
+ # Prepare image for the application
+ && rm /etc/nginx/conf.d/default.conf \
  && mkdir -p /data/nginx/cache \
  && mkdir -p /var/www/html
 

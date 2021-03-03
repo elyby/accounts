@@ -35,6 +35,10 @@ server {
     }
 
     location / {
+        if ($request_uri = '/') {
+            more_set_headers "X-Authlib-Injector-API-Location: /api/authlib-injector";
+        }
+
         root       $frontend_path;
         access_log off;
         etag       on;
