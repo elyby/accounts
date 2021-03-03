@@ -85,7 +85,7 @@ class SessionController extends Controller {
         $account = $hasJoinedForm->hasJoined();
         $textures = new Textures($account);
 
-        return $textures->getMinecraftResponse();
+        return $textures->getMinecraftResponse(true);
     }
 
     public function actionHasJoinedLegacy(): string {
@@ -109,11 +109,12 @@ class SessionController extends Controller {
 
     /**
      * @param string $uuid
+     * @param string $unsigned
      *
      * @return array|null
      * @throws IllegalArgumentException
      */
-    public function actionProfile(string $uuid): ?array {
+    public function actionProfile(string $uuid, string $unsigned = null): ?array {
         try {
             $uuid = Uuid::fromString($uuid)->toString();
         } catch (\InvalidArgumentException $e) {
@@ -127,7 +128,7 @@ class SessionController extends Controller {
             return null;
         }
 
-        return (new Textures($account))->getMinecraftResponse();
+        return (new Textures($account))->getMinecraftResponse($unsigned === 'false');
     }
 
 }

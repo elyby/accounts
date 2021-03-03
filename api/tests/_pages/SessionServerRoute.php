@@ -19,8 +19,13 @@ class SessionServerRoute extends BasePage {
         $this->getActor()->sendGET('/api/minecraft/session/legacy/hasJoined', $params);
     }
 
-    public function profile($profileUuid) {
-        $this->getActor()->sendGET("/api/minecraft/session/profile/{$profileUuid}");
+    public function profile(string $profileUuid, bool $signed = false) {
+        $url = "/api/minecraft/session/profile/{$profileUuid}";
+        if ($signed) {
+            $url .= '?unsigned=false';
+        }
+
+        $this->getActor()->sendGET($url);
     }
 
 }
