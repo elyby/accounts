@@ -21,7 +21,9 @@ return [
             Ely\Mojang\Api::class => Ely\Mojang\Api::class,
             common\components\SkinsSystemApi::class => [
                 'class' => common\components\SkinsSystemApi::class,
-                '__construct()' => 'http://' . (getenv('CHRLY_HOST') ?: 'skinsystem.ely.by'),
+                '__construct()' => [
+                    'http://' . (getenv('CHRLY_HOST') ?: 'skinsystem.ely.by'),
+                ],
             ],
         ],
     ],
