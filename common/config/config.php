@@ -16,10 +16,13 @@ return [
         'supportEmail' => 'support@ely.by',
     ],
     'container' => [
-        'definitions' => [
+        'singletons' => [
             GuzzleHttp\ClientInterface::class => GuzzleHttp\Client::class,
             Ely\Mojang\Api::class => Ely\Mojang\Api::class,
-            common\components\SkinsSystemApi::class => common\components\SkinsSystemApi::class,
+            common\components\SkinsSystemApi::class => [
+                'class' => common\components\SkinsSystemApi::class,
+                '__construct()' => 'http://' . (getenv('CHRLY_HOST') ?: 'skinsystem.ely.by'),
+            ],
         ],
     ],
     'components' => [

@@ -17,7 +17,7 @@ return [
         'authserverHost' => 'localhost',
     ],
     'container' => [
-        'definitions' => [
+        'singletons' => [
             api\components\ReCaptcha\Validator::class => function() {
                 return new class(new GuzzleHttp\Client()) extends api\components\ReCaptcha\Validator {
                     protected function validateValue($value) {
@@ -26,13 +26,52 @@ return [
                 };
             },
             common\components\SkinsSystemApi::class => function() {
-                return new class extends common\components\SkinsSystemApi {
+                return new class('http://chrly.ely.by') extends common\components\SkinsSystemApi {
                     public function textures(string $username): ?array {
                         return [
                             'SKIN' => [
                                 'url' => 'http://localhost/skin.png',
                             ],
                         ];
+                    }
+
+                    public function profile(string $username, bool $signed = false): ?array {
+                        $account = common\models\Account::findOne(['username' => $username]);
+                        $uuid = $account ? str_replace('-', '', $account->uuid) : '00000000000000000000000000000000';
+
+                        $profile = [
+                            'name' => $username,
+                            'id' => $uuid,
+                            'properties' => [
+                                [
+                                    'name' => 'textures',
+                                    'value' => base64_encode(json_encode([
+                                        'timestamp' => Carbon\Carbon::now()->getPreciseTimestamp(3),
+                                        'profileId' => $uuid,
+                                        'profileName' => $username,
+                                        'textures' => [
+                                            'SKIN' => [
+                                                'url' => 'http://ely.by/skin.png',
+                                            ],
+                                        ],
+                                    ])),
+                                ],
+                                [
+                                    'name' => 'ely',
+                                    'value' => 'but why are you asking?',
+                                ],
+                            ],
+                        ];
+
+                        if ($signed) {
+                            $profile['properties'][0]['signature'] = 'signature';
+                        }
+
+                        return $profile;
+                    }
+
+                    public function getSignatureVerificationKey(string $format = 'pem'): string {
+                        return "-----BEGIN PUBLIC KEY-----\nMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANbUpVCZkMKpfvYZ08W3lumdAaYxLBnm\nUDlzHBQH3DpYef5WCO32TDU6feIJ58A0lAywgtZ4wwi2dGHOz/1hAvcCAwEAAQ==\n-----END PUBLIC KEY-----";
                     }
                 };
             },

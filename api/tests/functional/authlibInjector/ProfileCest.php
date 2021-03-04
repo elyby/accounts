@@ -1,7 +1,8 @@
 <?php
-namespace api\tests\functional\sessionserver;
+declare(strict_types=1);
 
-use api\tests\_pages\SessionServerRoute;
+namespace api\tests\functional\authlibInjector;
+
 use api\tests\functional\_steps\SessionServerSteps;
 use api\tests\FunctionalTester;
 use Codeception\Example;
@@ -10,39 +11,27 @@ use function Ramsey\Uuid\v4;
 class ProfileCest {
 
     /**
-     * @var SessionServerRoute
-     */
-    private $route;
-
-    public function _before(FunctionalTester $I) {
-        $this->route = new SessionServerRoute($I);
-    }
-
-    /**
      * @example ["df936908-b2e1-544d-96f8-2977ec213022"]
      * @example ["df936908b2e1544d96f82977ec213022"]
      */
     public function getProfile(SessionServerSteps $I, Example $case) {
-        $I->wantTo('get info about player textures by uuid');
-        $this->route->profile($case[0]);
-        $I->canSeeValidTexturesResponse('Admin', 'df936908b2e1544d96f82977ec213022');
+        $I->sendGET("/api/authlib-injector/sessionserver/session/minecraft/profile/{$case[0]}");
+        $I->canSeeValidTexturesResponse('Admin', 'df936908b2e1544d96f82977ec213022', false);
     }
 
-    public function getProfileWithSignedTextures(SessionServerSteps $I) {
-        $I->wantTo('get info about player textures by uuid');
-        $this->route->profile('df936908b2e1544d96f82977ec213022', true);
+    public function getProfileSigned(SessionServerSteps $I) {
+        $I->sendGET('/api/authlib-injector/sessionserver/session/minecraft/profile/df936908b2e1544d96f82977ec213022?unsigned=false');
         $I->canSeeValidTexturesResponse('Admin', 'df936908b2e1544d96f82977ec213022', true);
     }
 
     public function directCallWithoutUuidPart(FunctionalTester $I) {
-        $I->wantTo('call profile route without passing uuid');
-        $this->route->profile('');
+        $I->sendGET('/api/authlib-injector/sessionserver/session/minecraft/profile/');
         $I->canSeeResponseCodeIs(404);
     }
 
     public function callWithInvalidUuid(FunctionalTester $I) {
         $I->wantTo('call profile route with invalid uuid string');
-        $this->route->profile('bla-bla-bla');
+        $I->sendGET('/api/authlib-injector/sessionserver/session/minecraft/profile/bla-bla-bla');
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -53,13 +42,13 @@ class ProfileCest {
 
     public function getProfileWithNonexistentUuid(FunctionalTester $I) {
         $I->wantTo('get info about nonexistent uuid');
-        $this->route->profile(v4());
+        $I->sendGET('/api/authlib-injector/sessionserver/session/minecraft/profile/' . v4());
         $I->canSeeResponseCodeIs(204);
         $I->canSeeResponseEquals('');
     }
 
     public function getProfileOfAccountMarkedForDeletion(FunctionalTester $I) {
-        $this->route->profile('6383de63-8f85-4ed5-92b7-5401a1fa68cd');
+        $I->sendGET('/api/authlib-injector/sessionserver/session/minecraft/profile/6383de63-8f85-4ed5-92b7-5401a1fa68cd');
         $I->canSeeResponseCodeIs(204);
         $I->canSeeResponseEquals('');
     }

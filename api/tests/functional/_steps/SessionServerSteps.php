@@ -36,19 +36,31 @@ class SessionServerSteps extends FunctionalTester {
         return [$username, $serverId];
     }
 
-    public function canSeeValidTexturesResponse($expectedUsername, $expectedUuid) {
+    public function canSeeValidTexturesResponse(
+        string $expectedUsername,
+        string $expectedUuid,
+        bool $shouldBeSigned = false
+    ) {
         $this->seeResponseIsJson();
         $this->canSeeResponseContainsJson([
             'name' => $expectedUsername,
             'id' => $expectedUuid,
-            'ely' => true,
             'properties' => [
                 [
                     'name' => 'textures',
-                    'signature' => 'Cg==',
+                ],
+                [
+                    'name' => 'ely',
+                    'value' => 'but why are you asking?',
                 ],
             ],
         ]);
+        if ($shouldBeSigned) {
+            $this->canSeeResponseJsonMatchesJsonPath('$.properties[?(@.name == "textures")].signature');
+        } else {
+            $this->cantSeeResponseJsonMatchesJsonPath('$.properties[?(@.name == "textures")].signature');
+        }
+
         $this->canSeeResponseJsonMatchesJsonPath('$.properties[0].value');
         $value = $this->grabDataFromResponseByJsonPath('$.properties[0].value')[0];
         $decoded = json_decode(base64_decode($value), true);
@@ -56,7 +68,6 @@ class SessionServerSteps extends FunctionalTester {
         $this->assertArrayHasKey('textures', $decoded);
         $this->assertSame($expectedUuid, $decoded['profileId']);
         $this->assertSame($expectedUsername, $decoded['profileName']);
-        $this->assertTrue($decoded['ely']);
         $textures = $decoded['textures'];
         $this->assertArrayHasKey('SKIN', $textures);
         $skinTextures = $textures['SKIN'];

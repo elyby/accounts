@@ -4,15 +4,19 @@ declare(strict_types=1);
 namespace common\components;
 
 use GuzzleHttp\ClientInterface;
+use Webmozart\Assert\Assert;
 use Yii;
 
 // TODO: convert to complete Chrly client library
 class SkinsSystemApi {
 
-    private const BASE_DOMAIN = 'http://skinsystem.ely.by';
+    private string $baseDomain;
 
-    /** @var ClientInterface */
-    private $client;
+    private ?ClientInterface $client = null;
+
+    public function __construct(string $baseDomain) {
+        $this->baseDomain = $baseDomain;
+    }
 
     /**
      * @param string $username
@@ -29,12 +33,47 @@ class SkinsSystemApi {
         return json_decode($response->getBody()->getContents(), true);
     }
 
+    /**
+     * @param string $username
+     *
+     * @return array|null
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function profile(string $username, bool $signed = false): ?array {
+        $url = "/profile/{$username}";
+        if ($signed) {
+            $url .= '?unsigned=false';
+        }
+
+        $response = $this->getClient()->request('GET', $this->buildUrl($url));
+        if ($response->getStatusCode() !== 200) {
+            return null;
+        }
+
+        return json_decode($response->getBody()->getContents(), true);
+    }
+
+    /**
+     * @param 'pem'|'der' $format
+     *
+     * @return string
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getSignatureVerificationKey(string $format = 'pem'): string {
+        Assert::inArray($format, ['pem', 'der']);
+
+        return $this->getClient()
+            ->request('GET', $this->buildUrl("/signature-verification-key.{$format}"))
+            ->getBody()
+            ->getContents();
+    }
+
     public function setClient(ClientInterface $client): void {
         $this->client = $client;
     }
 
     private function buildUrl(string $url): string {
-        return self::BASE_DOMAIN . $url;
+        return $this->baseDomain . $url;
     }
 
     private function getClient(): ClientInterface {
