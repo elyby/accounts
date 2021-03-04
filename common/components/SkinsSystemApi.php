@@ -10,9 +10,13 @@ use Yii;
 // TODO: convert to complete Chrly client library
 class SkinsSystemApi {
 
-    private const BASE_DOMAIN = 'http://skinsystem.ely.by';
+    private string $baseDomain;
 
     private ?ClientInterface $client = null;
+
+    public function __construct(string $baseDomain) {
+        $this->baseDomain = $baseDomain;
+    }
 
     /**
      * @param string $username
@@ -69,7 +73,7 @@ class SkinsSystemApi {
     }
 
     private function buildUrl(string $url): string {
-        return static::BASE_DOMAIN . $url;
+        return $this->baseDomain . $url;
     }
 
     private function getClient(): ClientInterface {

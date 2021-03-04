@@ -7,7 +7,7 @@ return [
     ],
     'components' => [
         'cache' => [
-            'class' => \yii\caching\FileCache::class,
+            'class' => yii\caching\FileCache::class,
         ],
         'security' => [
             // It's allows us to increase tests speed by decreasing password hashing algorithm complexity
