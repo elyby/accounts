@@ -21,10 +21,8 @@ class Textures {
         $uuid = str_replace('-', '', $this->account->uuid);
         $profile = $this->getProfile($signed);
         if ($profile === null) {
-            // This case shouldn't happen at all, but until we find out how it'll actually behave,
-            // provide for a fallback solution
-            Yii::warning("By some reasons there is no profile for \"{$this->account->username}\".");
-
+            // This case shouldn't happen at all, but synchronization isn't perfect and sometimes
+            // information might be now updated. Provide fallback solution
             $profile = [
                 'name' => $this->account->username,
                 'id' => $uuid,
@@ -52,7 +50,6 @@ class Textures {
             }
         } elseif ($profile['id'] !== $uuid) {
             // Also a case that shouldn't happen, but is technically possible
-            Yii::warning("By an unknown reason username \"{$this->account->username}\" has an invalid id from chrly");
             $profile['id'] = $uuid;
         }
 
