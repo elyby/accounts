@@ -28,10 +28,16 @@ class RefreshTokenForm extends ApiForm {
      */
     public $clientToken;
 
+    /**
+     * @var string|bool
+     */
+    public $requestUser;
+
     public function rules(): array {
         return [
             [['accessToken', 'clientToken'], RequiredValidator::class],
             [['accessToken'], AccessTokenValidator::class, 'verifyExpiration' => false],
+            [['requestUser'], 'boolean'],
         ];
     }
 
@@ -83,7 +89,7 @@ class RefreshTokenForm extends ApiForm {
         $minecraftOauthSession->last_used_at = time();
         Assert::true($minecraftOauthSession->save());
 
-        return new AuthenticateData($account, (string)$token, $this->clientToken);
+        return new AuthenticateData($account, (string)$token, $this->clientToken, (bool)$this->requestUser);
     }
 
 }

@@ -34,10 +34,16 @@ class AuthenticationForm extends ApiForm {
      */
     public $clientToken;
 
+    /**
+     * @var string|bool
+     */
+    public $requestUser;
+
     public function rules(): array {
         return [
             [['username', 'password', 'clientToken'], RequiredValidator::class],
             [['clientToken'], ClientTokenValidator::class],
+            [['requestUser'], 'boolean'],
         ];
     }
 
@@ -85,7 +91,7 @@ class AuthenticationForm extends ApiForm {
         /** @var Account $account */
         $account = $loginForm->getAccount();
         $token = Yii::$app->tokensFactory->createForMinecraftAccount($account, $this->clientToken);
-        $dataModel = new AuthenticateData($account, (string)$token, $this->clientToken);
+        $dataModel = new AuthenticateData($account, (string)$token, $this->clientToken, (bool)$this->requestUser);
         /** @var OauthSession|null $minecraftOauthSession */
         $minecraftOauthSession = $account->getOauthSessions()
             ->andWhere(['client_id' => OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER])

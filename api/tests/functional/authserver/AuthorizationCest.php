@@ -10,33 +10,70 @@ use Ramsey\Uuid\Uuid;
 class AuthorizationCest {
 
     /**
+     * # Matrix:
+     * # * login: username/email
+     * # * requestUser: true/false
+     * # * json: true/false
+     *
+     * JSON: false
      * @example {"login": "admin", "password": "password_0"}
+     * @example {"login": "admin", "password": "password_0", "requestUser": true}
      * @example {"login": "admin@ely.by", "password": "password_0"}
+     * @example {"login": "admin@ely.by", "password": "password_0", "requestUser": true}
+     *
+     * JSON: true
+     * @example {"json": true, "login": "admin", "password": "password_0"}
+     * @example {"json": true, "login": "admin", "password": "password_0", "requestUser": true}
+     * @example {"json": true, "login": "admin@ely.by", "password": "password_0"}
+     * @example {"json": true, "login": "admin@ely.by", "password": "password_0", "requestUser": true}
      */
-    public function byFormParamsPostRequest(FunctionalTester $I, Example $example) {
-        $I->wantTo('authenticate by username and password');
-        $I->sendPOST('/api/authserver/authentication/authenticate', [
-            'username' => $example['login'],
-            'password' => $example['password'],
+    public function authenticate(FunctionalTester $I, Example $case) {
+        $params = [
+            'username' => $case['login'],
+            'password' => $case['password'],
             'clientToken' => Uuid::uuid4()->toString(),
+        ];
+        if ($case['requestUser'] ?? false) {
+            $params['requestUser'] = true;
+        }
+
+        if ($case['json'] ?? false) {
+            $params = json_encode($params);
+        }
+
+        $I->sendPOST('/api/authserver/authentication/authenticate', $params);
+
+        $I->canSeeResponseJsonMatchesJsonPath('$.accessToken');
+        $I->canSeeResponseJsonMatchesJsonPath('$.clientToken');
+        $I->canSeeResponseContainsJson([
+            'selectedProfile' => [
+                'id' => 'df936908b2e1544d96f82977ec213022',
+                'name' => 'Admin',
+            ],
+            'availableProfiles' => [
+                [
+                    'id' => 'df936908b2e1544d96f82977ec213022',
+                    'name' => 'Admin',
+                ],
+            ],
         ]);
 
-        $this->testSuccessResponse($I);
-    }
-
-    /**
-     * @example {"login": "admin", "password": "password_0"}
-     * @example {"login": "admin@ely.by", "password": "password_0"}
-     */
-    public function byJsonPostRequest(FunctionalTester $I, Example $example) {
-        $I->wantTo('authenticate by username and password sent via post body');
-        $I->sendPOST('/api/authserver/authentication/authenticate', json_encode([
-            'username' => $example['login'],
-            'password' => $example['password'],
-            'clientToken' => Uuid::uuid4()->toString(),
-        ]));
-
-        $this->testSuccessResponse($I);
+        if ($case['requestUser'] ?? false) {
+            $I->canSeeResponseContainsJson([
+                'user' => [
+                    'id' => 'df936908b2e1544d96f82977ec213022',
+                    'username' => 'Admin',
+                    'properties' => [
+                        [
+                            'name' => 'preferredLanguage',
+                            'value' => 'en',
+                        ],
+                    ],
+                ],
+            ]);
+        } else {
+            $I->cantSeeResponseJsonMatchesJsonPath('$.user');
+        }
     }
 
     public function byEmailWithEnabledTwoFactorAuth(FunctionalTester $I) {
@@ -123,19 +160,6 @@ class AuthorizationCest {
             'error' => 'ForbiddenOperationException',
             'errorMessage' => 'This account has been suspended.',
         ]);
-    }
-
-    private function testSuccessResponse(FunctionalTester $I) {
-        $I->seeResponseCodeIs(200);
-        $I->seeResponseIsJson();
-        $I->canSeeResponseJsonMatchesJsonPath('$.accessToken');
-        $I->canSeeResponseJsonMatchesJsonPath('$.clientToken');
-        $I->canSeeResponseJsonMatchesJsonPath('$.availableProfiles[0].id');
-        $I->canSeeResponseJsonMatchesJsonPath('$.availableProfiles[0].name');
-        $I->canSeeResponseJsonMatchesJsonPath('$.availableProfiles[0].legacy');
-        $I->canSeeResponseJsonMatchesJsonPath('$.selectedProfile.id');
-        $I->canSeeResponseJsonMatchesJsonPath('$.selectedProfile.name');
-        $I->canSeeResponseJsonMatchesJsonPath('$.selectedProfile.legacy');
     }
 
 }

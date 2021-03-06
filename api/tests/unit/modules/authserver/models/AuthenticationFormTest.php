@@ -31,11 +31,24 @@ class AuthenticationFormTest extends TestCase {
         $this->assertSame($authForm->clientToken, $result['clientToken']);
         $this->assertSame('df936908b2e1544d96f82977ec213022', $result['selectedProfile']['id']);
         $this->assertSame('Admin', $result['selectedProfile']['name']);
-        $this->assertFalse($result['selectedProfile']['legacy']);
         $this->assertTrue(OauthSession::find()->andWhere([
             'account_id' => 1,
             'client_id' => OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER,
         ])->exists());
+        $this->assertArrayNotHasKey('user', $result);
+
+        $authForm->requestUser = true;
+        $result = $authForm->authenticate()->getResponseData();
+        $this->assertSame([
+            'id' => 'df936908b2e1544d96f82977ec213022',
+            'username' => 'Admin',
+            'properties' => [
+                [
+                    'name' => 'preferredLanguage',
+                    'value' => 'en',
+                ],
+            ],
+        ], $result['user']);
     }
 
     /**

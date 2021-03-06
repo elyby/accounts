@@ -9,23 +9,33 @@ use Ramsey\Uuid\Uuid;
 
 class RefreshCest {
 
-    public function refresh(AuthserverSteps $I) {
+    /**
+     * @example [true]
+     * @example [false]
+     */
+    public function refresh(AuthserverSteps $I, Example $case) {
         $I->wantTo('refresh accessToken');
         [$accessToken, $clientToken] = $I->amAuthenticated();
         $I->sendPOST('/api/authserver/authentication/refresh', [
             'accessToken' => $accessToken,
             'clientToken' => $clientToken,
+            'requestUser' => $case[0],
         ]);
-        $this->assertSuccessResponse($I);
+        $this->assertSuccessResponse($I, $case[0]);
     }
 
-    public function refreshLegacyAccessToken(AuthserverSteps $I) {
+    /**
+     * @example [true]
+     * @example [false]
+     */
+    public function refreshLegacyAccessToken(AuthserverSteps $I, Example $case) {
         $I->wantTo('refresh legacy accessToken');
         $I->sendPOST('/api/authserver/authentication/refresh', [
             'accessToken' => 'e7bb6648-2183-4981-9b86-eba5e7f87b42',
             'clientToken' => '6f380440-0c05-47bd-b7c6-d011f1b5308f',
+            'requestUser' => $case[0],
         ]);
-        $this->assertSuccessResponse($I);
+        $this->assertSuccessResponse($I, $case[0]);
     }
 
     public function refreshWithInvalidClientToken(AuthserverSteps $I) {
@@ -63,7 +73,7 @@ class RefreshCest {
             'accessToken' => $example['accessToken'],
             'clientToken' => $example['clientToken'],
         ]);
-        $this->assertSuccessResponse($I);
+        $this->assertSuccessResponse($I, false);
     }
 
     public function wrongArguments(AuthserverSteps $I) {
@@ -119,15 +129,36 @@ class RefreshCest {
         ]);
     }
 
-    private function assertSuccessResponse(AuthserverSteps $I) {
+    private function assertSuccessResponse(AuthserverSteps $I, bool $requestUser) {
         $I->seeResponseCodeIs(200);
         $I->seeResponseIsJson();
         $I->canSeeResponseJsonMatchesJsonPath('$.accessToken');
         $I->canSeeResponseJsonMatchesJsonPath('$.clientToken');
+        $I->canSeeResponseContainsJson([
+            'selectedProfile' => [
+                'id' => 'df936908b2e1544d96f82977ec213022',
+                'name' => 'Admin',
+            ],
+        ]);
         $I->canSeeResponseJsonMatchesJsonPath('$.selectedProfile.id');
         $I->canSeeResponseJsonMatchesJsonPath('$.selectedProfile.name');
-        $I->canSeeResponseJsonMatchesJsonPath('$.selectedProfile.legacy');
         $I->cantSeeResponseJsonMatchesJsonPath('$.availableProfiles');
+        if ($requestUser) {
+            $I->canSeeResponseContainsJson([
+                'user' => [
+                    'id' => 'df936908b2e1544d96f82977ec213022',
+                    'username' => 'Admin',
+                    'properties' => [
+                        [
+                            'name' => 'preferredLanguage',
+                            'value' => 'en',
+                        ],
+                    ],
+                ],
+            ]);
+        } else {
+            $I->cantSeeResponseJsonMatchesJsonPath('$.user');
+        }
     }
 
 }
