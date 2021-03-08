@@ -95,8 +95,7 @@ class AuthorizationCest {
     public function byEmailWithEnabledTwoFactorAuthAndCorrectToken(FunctionalTester $I) {
         $I->sendPOST('/api/authserver/authentication/authenticate', [
             'username' => 'otp@gmail.com',
-            'password' => 'password_0',
-            'totp' => TOTP::create('BBBB')->now(),
+            'password' => 'password_0:' . TOTP::create('BBBB')->now(),
             'clientToken' => Uuid::uuid4()->toString(),
         ]);
         $I->canSeeResponseCodeIs(200);

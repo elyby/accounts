@@ -6,12 +6,13 @@ namespace codeception\api\unit\modules\authserver\models;
 use api\modules\authserver\exceptions\ForbiddenOperationException;
 use api\modules\authserver\models\AuthenticationForm;
 use api\tests\unit\TestCase;
+use common\models\Account;
 use common\models\OauthClient;
 use common\models\OauthSession;
 use common\tests\fixtures\AccountFixture;
 use common\tests\fixtures\OauthClientFixture;
 use OTPHP\TOTP;
-use Ramsey\Uuid\Uuid;
+use function Ramsey\Uuid\v4 as uuid4;
 
 class AuthenticationFormTest extends TestCase {
 
@@ -26,7 +27,7 @@ class AuthenticationFormTest extends TestCase {
         $authForm = new AuthenticationForm();
         $authForm->username = 'admin';
         $authForm->password = 'password_0';
-        $authForm->clientToken = Uuid::uuid4()->toString();
+        $authForm->clientToken = uuid4();
         $result = $authForm->authenticate()->getResponseData();
         $this->assertMatchesRegularExpression('/^[\w=-]+\.[\w=-]+\.[\w=-]+$/', $result['accessToken']);
         $this->assertSame($authForm->clientToken, $result['clientToken']);
@@ -55,9 +56,29 @@ class AuthenticationFormTest extends TestCase {
     public function testAuthenticateByValidCredentialsWith2FA() {
         $authForm = new AuthenticationForm();
         $authForm->username = 'otp@gmail.com';
-        $authForm->password = 'password_0';
-        $authForm->totp = TOTP::create('BBBB')->now();
-        $authForm->clientToken = Uuid::uuid4()->toString();
+        $authForm->password = 'password_0:' . TOTP::create('BBBB')->now();
+        $authForm->clientToken = uuid4();
+
+        // Just ensure that there is no exception
+        $this->expectNotToPerformAssertions();
+
+        $authForm->authenticate();
+    }
+
+    /**
+     * This is a special case which ensures that if the user has a password that looks like
+     * a two-factor code passed in the password field, than he can still log in into his account
+     */
+    public function testAuthenticateEdgyCaseFor2FA() {
+        /** @var Account $account */
+        $account = Account::findOne(['email' => 'admin@ely.by']);
+        $account->setPassword('password_0:123456');
+        $account->save();
+
+        $authForm = new AuthenticationForm();
+        $authForm->username = 'admin@ely.by';
+        $authForm->password = 'password_0:123456';
+        $authForm->clientToken = uuid4();
 
         // Just ensure that there is no exception
         $this->expectNotToPerformAssertions();
@@ -68,14 +89,19 @@ class AuthenticationFormTest extends TestCase {
     /**
      * @dataProvider getInvalidCredentialsCases
      */
-    public function testAuthenticateByWrongNicknamePass(string $expectedExceptionMessage, string $login, string $password) {
+    public function testAuthenticateByWrongCredentials(
+        string $expectedExceptionMessage,
+        string $login,
+        string $password,
+        string $totp = null
+    ) {
         $this->expectException(ForbiddenOperationException::class);
         $this->expectExceptionMessage($expectedExceptionMessage);
 
         $authForm = new AuthenticationForm();
         $authForm->username = $login;
-        $authForm->password = $password;
-        $authForm->clientToken = Uuid::uuid4()->toString();
+        $authForm->password = $password . ($totp ? ":{$totp}" : '');
+        $authForm->clientToken = uuid4();
         $authForm->authenticate();
     }
 
@@ -84,6 +110,7 @@ class AuthenticationFormTest extends TestCase {
         yield ['Invalid credentials. Invalid email or password.', 'wrong-email@ely.by', 'wrong-password'];
         yield ['This account has been suspended.', 'Banned', 'password_0'];
         yield ['Account protected with two factor auth.', 'AccountWithEnabledOtp', 'password_0'];
+        yield ['Invalid credentials. Invalid nickname or password.', 'AccountWithEnabledOtp', 'password_0', '123456'];
     }
 
 }
