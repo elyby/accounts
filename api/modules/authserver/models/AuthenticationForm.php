@@ -32,6 +32,11 @@ class AuthenticationForm extends ApiForm {
     /**
      * @var string
      */
+    public $totp;
+
+    /**
+     * @var string
+     */
     public $clientToken;
 
     /**
@@ -42,6 +47,7 @@ class AuthenticationForm extends ApiForm {
     public function rules(): array {
         return [
             [['username', 'password', 'clientToken'], RequiredValidator::class],
+            [['totp'], 'string'],
             [['clientToken'], ClientTokenValidator::class],
             [['requestUser'], 'boolean'],
         ];
@@ -65,6 +71,7 @@ class AuthenticationForm extends ApiForm {
         $loginForm = new LoginForm();
         $loginForm->login = $this->username;
         $loginForm->password = $this->password;
+        $loginForm->totp = $this->totp;
         if (!$loginForm->validate() || $loginForm->getAccount()->status === Account::STATUS_DELETED) {
             $errors = $loginForm->getFirstErrors();
             if (isset($errors['totp'])) {

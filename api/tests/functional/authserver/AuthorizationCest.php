@@ -5,6 +5,7 @@ namespace api\tests\functional\authserver;
 
 use api\tests\FunctionalTester;
 use Codeception\Example;
+use OTPHP\TOTP;
 use Ramsey\Uuid\Uuid;
 
 class AuthorizationCest {
@@ -88,6 +89,22 @@ class AuthorizationCest {
         $I->canSeeResponseContainsJson([
             'error' => 'ForbiddenOperationException',
             'errorMessage' => 'Account protected with two factor auth.',
+        ]);
+    }
+
+    public function byEmailWithEnabledTwoFactorAuthAndCorrectToken(FunctionalTester $I) {
+        $I->sendPOST('/api/authserver/authentication/authenticate', [
+            'username' => 'otp@gmail.com',
+            'password' => 'password_0',
+            'totp' => TOTP::create('BBBB')->now(),
+            'clientToken' => Uuid::uuid4()->toString(),
+        ]);
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseContainsJson([
+            'selectedProfile' => [
+                'id' => '15d0afa7a2bb44d39f31964cbccc6043',
+                'name' => 'AccountWithEnabledOtp',
+            ],
         ]);
     }
 

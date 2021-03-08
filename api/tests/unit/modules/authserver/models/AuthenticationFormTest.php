@@ -10,6 +10,7 @@ use common\models\OauthClient;
 use common\models\OauthSession;
 use common\tests\fixtures\AccountFixture;
 use common\tests\fixtures\OauthClientFixture;
+use OTPHP\TOTP;
 use Ramsey\Uuid\Uuid;
 
 class AuthenticationFormTest extends TestCase {
@@ -49,6 +50,19 @@ class AuthenticationFormTest extends TestCase {
                 ],
             ],
         ], $result['user']);
+    }
+
+    public function testAuthenticateByValidCredentialsWith2FA() {
+        $authForm = new AuthenticationForm();
+        $authForm->username = 'otp@gmail.com';
+        $authForm->password = 'password_0';
+        $authForm->totp = TOTP::create('BBBB')->now();
+        $authForm->clientToken = Uuid::uuid4()->toString();
+
+        // Just ensure that there is no exception
+        $this->expectNotToPerformAssertions();
+
+        $authForm->authenticate();
     }
 
     /**
