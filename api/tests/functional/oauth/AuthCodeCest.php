@@ -134,8 +134,8 @@ class AuthCodeCest {
             'error' => 'access_denied',
             'parameter' => null,
             'statusCode' => 401,
+            'redirectUri' => 'http://ely.by?&error=access_denied&error_description=The+resource+owner+or+authorization+server+denied+the+request.&hint=The+user+denied+the+request&message=The+resource+owner+or+authorization+server+denied+the+request.',
         ]);
-        $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
     }
 
     public function invalidClientId(FunctionalTester $I) {

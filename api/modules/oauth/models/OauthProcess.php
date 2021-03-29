@@ -25,10 +25,7 @@ class OauthProcess {
         P::OBTAIN_ACCOUNT_EMAIL => 'account_email',
     ];
 
-    /**
-     * @var AuthorizationServer
-     */
-    private $server;
+    private AuthorizationServer $server;
 
     public function __construct(AuthorizationServer $server) {
         $this->server = $server;
@@ -96,19 +93,22 @@ class OauthProcess {
             /** @var OauthClient $client */
             $client = $this->findClient($authRequest->getClient()->getIdentifier());
 
-            $approved = $this->canAutoApprove($account, $client, $authRequest);
-            if (!$approved) {
-                Yii::$app->statsd->inc('oauth.complete.approve_required');
+            $canBeAutoApproved = $this->canBeAutoApproved($account, $client, $authRequest);
+            $acceptParam = ((array)$request->getParsedBody())['accept'] ?? null;
+            if ($acceptParam === null && !$canBeAutoApproved) {
+                throw $this->createAcceptRequiredException();
+            }
 
-                $acceptParam = ((array)$request->getParsedBody())['accept'] ?? null;
-                if ($acceptParam === null) {
-                    throw $this->createAcceptRequiredException();
-                }
+            Yii::$app->statsd->inc('oauth.complete.approve_required');
 
+            if ($acceptParam === null && $canBeAutoApproved) {
+                $approved = true;
+            } else {
                 $approved = in_array($acceptParam, [1, '1', true, 'true'], true);
-                if ($approved) {
-                    $this->storeOauthSession($account, $client, $authRequest);
-                }
+            }
+
+            if ($approved) {
+                $this->storeOauthSession($account, $client, $authRequest);
             }
 
             $authRequest->setUser(new UserEntity($account->id));
@@ -123,6 +123,7 @@ class OauthProcess {
             Yii::$app->statsd->inc('oauth.complete.success');
         } catch (OAuthServerException $e) {
             if ($e->getErrorType() === 'accept_required') {
+                // TODO: revoke access if there previously was an oauth session?
                 Yii::$app->statsd->inc('oauth.complete.fail');
             }
 
@@ -213,7 +214,7 @@ class OauthProcess {
      *
      * @return bool
      */
-    private function canAutoApprove(Account $account, OauthClient $client, AuthorizationRequest $request): bool {
+    private function canBeAutoApproved(Account $account, OauthClient $client, AuthorizationRequest $request): bool {
         if ($client->is_trusted) {
             return true;
         }
