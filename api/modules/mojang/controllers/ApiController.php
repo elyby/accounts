@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\modules\mojang\controllers;
 
 use api\controllers\Controller;
@@ -6,15 +8,23 @@ use common\models\Account;
 use common\models\UsernameHistory;
 use Ramsey\Uuid\Uuid;
 use Yii;
+use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
+use yii\helpers\UnsetArrayValue;
 use yii\web\Response;
 
 class ApiController extends Controller {
 
     public function behaviors(): array {
-        $behaviors = parent::behaviors();
-        unset($behaviors['authenticator']);
-
-        return $behaviors;
+        return ArrayHelper::merge(parent::behaviors(), [
+            'authenticator' => new UnsetArrayValue(),
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'actionUuidsByUsernames' => ['POST'],
+                ],
+            ],
+        ]);
     }
 
     public function actionUuidByUsername($username, $at = null) {

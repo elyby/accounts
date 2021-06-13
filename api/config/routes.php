@@ -52,4 +52,5 @@ return [
     '/authlib-injector/sessionserver/session/minecraft/join' => 'session/session/join',
     '/authlib-injector/sessionserver/session/minecraft/hasJoined' => 'session/session/has-joined',
     '/authlib-injector/sessionserver/session/minecraft/profile/<uuid>' => 'session/session/profile',
+    '/authlib-injector/api/profiles/minecraft' => 'mojang/api/uuids-by-usernames',
 ];
