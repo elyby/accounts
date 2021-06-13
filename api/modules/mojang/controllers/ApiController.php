@@ -27,7 +27,7 @@ class ApiController extends Controller {
         ]);
     }
 
-    public function actionUuidByUsername($username, $at = null) {
+    public function actionUuidByUsername(string $username, int $at = null) {
         if ($at !== null) {
             /** @var UsernameHistory|null $record */
             $record = UsernameHistory::find()
@@ -61,7 +61,7 @@ class ApiController extends Controller {
         ];
     }
 
-    public function actionUsernamesByUuid($uuid) {
+    public function actionUsernamesByUuid(string $uuid) {
         try {
             $uuid = Uuid::fromString($uuid)->toString();
         } catch (\InvalidArgumentException $e) {
