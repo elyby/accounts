@@ -53,6 +53,24 @@ class Textures {
             $profile['id'] = $uuid;
         }
 
+        if ($signed) {
+            // This is a completely impossible case. But the most impossible things happen most of the time.
+            // We have received complaints that sometimes an empty value comes in the signature field.
+            // This code is an attempt at an investigation. If no such cases are reported for the foreseeable future,
+            // then this code can be removed
+            foreach ($profile['properties'] as &$property) {
+                if ($property['name'] === 'textures') {
+                    if (!isset($property['signature'])) {
+                        Yii::warning('Signature was required, but field was not returned from the skinsystem\'s server');
+                        $property['signature'] = 'Cg==';
+                    } elseif (empty($property['signature'])) {
+                        Yii::warning('Signature was required, but contains an empty value from skinsystem\'s server');
+                        $property['signature'] = 'Cg==';
+                    }
+                }
+            }
+        }
+
         return $profile;
     }
 
