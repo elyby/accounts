@@ -46,6 +46,7 @@ return [
     '/mojang/profiles/<username>' => 'mojang/api/uuid-by-username',
     '/mojang/profiles/<uuid>/names' => 'mojang/api/usernames-by-uuid',
     'POST /mojang/profiles' => 'mojang/api/uuids-by-usernames',
+    'GET /mojang/services/minecraft/profile' => 'mojang/services/profile',
 
     // authlib-injector
     '/authlib-injector/authserver/<action>' => 'authserver/authentication/<action>',

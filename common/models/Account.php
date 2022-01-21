@@ -20,7 +20,7 @@ use const common\LATEST_RULES_VERSION;
 /**
  * Fields:
  * @property int         $id
- * @property string      $uuid
+ * @property string      $uuid UUID with dashes
  * @property string      $username
  * @property string      $email
  * @property string      $password_hash
