@@ -93,7 +93,7 @@ class TokensFactoryTest extends TestCase {
         $token = $factory->createForMinecraftAccount($account, $clientToken);
         $this->assertEqualsWithDelta(time(), $token->getClaim('iat'), 5);
         $this->assertEqualsWithDelta(time() + 60 * 60 * 24 * 2, $token->getClaim('exp'), 5);
-        $this->assertSame('minecraft_server_session', $token->getClaim('scope'));
+        $this->assertSame('obtain_own_account_info minecraft_server_session', $token->getClaim('scope'));
         $this->assertNotSame('e44fae79-f80e-4975-952e-47e8a9ed9472', $token->getClaim('ely-client-token'));
         $this->assertSame('ely|1', $token->getClaim('sub'));
     }
