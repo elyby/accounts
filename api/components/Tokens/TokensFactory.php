@@ -54,7 +54,7 @@ class TokensFactory extends Component {
 
     public function createForMinecraftAccount(Account $account, string $clientToken): Token {
         return Yii::$app->tokens->create([
-            'scope' => $this->prepareScopes([P::MINECRAFT_SERVER_SESSION]),
+            'scope' => $this->prepareScopes([P::OBTAIN_OWN_ACCOUNT_INFO, P::MINECRAFT_SERVER_SESSION]),
             'ely-client-token' => new EncryptedValue($clientToken),
             'sub' => $this->buildSub($account->id),
             'exp' => Carbon::now()->addDays(2)->getTimestamp(),
