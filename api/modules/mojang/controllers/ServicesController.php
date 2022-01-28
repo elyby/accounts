@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace api\modules\mojang\controllers;
 
 use api\controllers\Controller;
+use api\modules\mojang\behaviors\ServiceErrorConverterBehavior;
 use api\rbac\Permissions;
 use common\components\SkinsSystemApi;
 use Exception;
@@ -12,6 +13,7 @@ use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\web\NotFoundHttpException;
 use function Ramsey\Uuid\v3;
 
 final class ServicesController extends Controller {
@@ -44,9 +46,16 @@ final class ServicesController extends Controller {
         ]);
     }
 
+    public function init(): void {
+        parent::init();
+        $this->response->attachBehavior('errorFormatter', ServiceErrorConverterBehavior::class);
+    }
+
     public function actionProfile(SkinsSystemApi $skinsSystemApi): array {
-        /** @var \common\models\Account $account at this point null value isn't possible */
         $account = Yii::$app->user->identity->getAccount();
+        if ($account === null) {
+            throw new NotFoundHttpException();
+        }
 
         try {
             $textures = $skinsSystemApi->textures($account->username);
