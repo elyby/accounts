@@ -233,4 +233,21 @@ return [
         'password_changed_at' => 1591893532,
         'deleted_at' => time(),
     ],
+    'not-synchronized-on-chrly-account' => [
+        'id' => 16,
+        'uuid' => '7ff4a9dc-d177-4ea0-ab56-7f31218004f9',
+        'username' => 'NotSynchronized',
+        'email' => 'not-synchronized@ely.by',
+        'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
+        'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
+        'lang' => 'ru',
+        'status' => \common\models\Account::STATUS_ACTIVE,
+        'rules_agreement_version' => \common\LATEST_RULES_VERSION,
+        'otp_secret' => null,
+        'is_otp_enabled' => false,
+        'created_at' => 1670264178,
+        'updated_at' => 1670264178,
+        'password_changed_at' => 1670264178,
+        'deleted_at' => null,
+    ],
 ];

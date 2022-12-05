@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace common\models;
 
+use ArrayObject;
 use Carbon\Carbon;
 use common\components\SkinsSystemApi;
 use GuzzleHttp\Client as GuzzleHttpClient;
@@ -22,7 +23,7 @@ class Textures {
         $profile = $this->getProfile($signed);
         if ($profile === null) {
             // This case shouldn't happen at all, but synchronization isn't perfect and sometimes
-            // information might be now updated. Provide fallback solution
+            // information might be not updated. Provide fallback solution
             $profile = [
                 'name' => $this->account->username,
                 'id' => $uuid,
@@ -33,7 +34,7 @@ class Textures {
                             'timestamp' => Carbon::now()->getPreciseTimestamp(3),
                             'profileId' => $uuid,
                             'profileName' => $this->account->username,
-                            'textures' => [],
+                            'textures' => new ArrayObject(), // Force {} rather than [] when json_encode
                         ])),
                     ],
                     [

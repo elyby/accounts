@@ -36,6 +36,10 @@ return [
                     }
 
                     public function profile(string $username, bool $signed = false): ?array {
+                        if ($username === 'NotSynchronized') {
+                            return null;
+                        }
+
                         $account = common\models\Account::findOne(['username' => $username]);
                         $uuid = $account ? str_replace('-', '', $account->uuid) : '00000000000000000000000000000000';
 

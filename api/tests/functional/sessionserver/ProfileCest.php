@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\functional\sessionserver;
 
 use api\tests\_pages\SessionServerRoute;
@@ -32,6 +34,20 @@ class ProfileCest {
         $I->wantTo('get info about player textures by uuid');
         $this->route->profile('df936908b2e1544d96f82977ec213022', true);
         $I->canSeeValidTexturesResponse('Admin', 'df936908b2e1544d96f82977ec213022', true);
+    }
+
+    public function getProfileWhichIsNotSynchronized(SessionServerSteps $I) {
+        $I->wantTo('get info about player textures by uuid');
+        $this->route->profile('7ff4a9dcd1774ea0ab567f31218004f9', true);
+
+        // Ensure that empty textures was serialized as an empty object
+        $I->seeResponseIsJson();
+        $I->canSeeResponseContainsJson([
+            'id' => '7ff4a9dcd1774ea0ab567f31218004f9',
+        ]);
+        $texturesValue = $I->grabDataFromResponseByJsonPath('$.properties[0].value')[0];
+        $texturesJson = base64_decode($texturesValue);
+        $I->assertStringContainsString('"textures":{}', $texturesJson);
     }
 
     public function directCallWithoutUuidPart(FunctionalTester $I) {
