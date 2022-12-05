@@ -1,39 +1,17 @@
-FROM php:7.4.15-fpm-alpine3.13 AS app
+FROM php:7.4.33-fpm-alpine3.16 AS app
 
 # bash needed to support wait-for-it script
-RUN apk add --update --no-cache \
-    git \
-    bash \
-    patch \
-    openssh \
-    dcron \
-    zlib-dev \
-    libzip-dev \
-    icu-dev \
-    libintl \
-    imagemagick-dev \
-    imagemagick \
- && docker-php-ext-install \
-    zip \
-    pdo_mysql \
-    intl \
-    pcntl \
-    opcache \
- && apk add --no-cache --virtual ".phpize-deps" $PHPIZE_DEPS \
- && yes | pecl install xdebug-2.9.8 \
- && yes | pecl install imagick \
- && docker-php-ext-enable imagick \
- && apk del ".phpize-deps" \
- && rm -rf /usr/share/man \
- && rm -rf /tmp/* \
+RUN apk add --update --no-cache git bash patch openssh dcron \
+ && curl -sSLf \
+         -o /usr/local/bin/install-php-extensions \
+         https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions \
+ && chmod +x /usr/local/bin/install-php-extensions \
+ && install-php-extensions @composer zip pdo_mysql intl pcntl opcache imagick xdebug-^2 \
  # Create cron directory
  && mkdir -p /etc/cron.d \
  # Install wait-for-it script
  && curl "https://raw.githubusercontent.com/vishnubob/wait-for-it/81b1373f17855/wait-for-it.sh" -o /usr/local/bin/wait-for-it \
- && chmod a+x /usr/local/bin/wait-for-it \
- # Install composer and global dependencies
- && curl "https://getcomposer.org/download/2.0.9/composer.phar" -o /usr/bin/composer \
- && chmod a+x /usr/bin/composer
+ && chmod a+x /usr/local/bin/wait-for-it
  # TODO: migrate to the build-pack secrets when they will implement compatibility with the docker-compose
  # Feature: https://docs.docker.com/develop/develop-images/build_enhancements/#new-docker-build-secret-information
  # Track issues: https://github.com/docker/compose/issues/6358, https://github.com/compose-spec/compose-spec/issues/81
