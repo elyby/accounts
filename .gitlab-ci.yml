@@ -120,9 +120,9 @@ Codeception:
 
 Docker:
   stage: build
-  image: docker:19.03.9
+  image: docker:20.10.21
   services:
-    - docker:19.03.9-dind
+    - docker:20.10.21-dind
   variables:
     # Use TLS https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#tls-enabled
     DOCKER_HOST: tcp://docker:2376
