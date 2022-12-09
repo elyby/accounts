@@ -171,9 +171,15 @@ Docker:
     - docker push $WEB_LATEST_IMAGE_NAME
     - docker push $DB_VERSIONED_IMAGE_NAME
     - docker push $DB_LATEST_IMAGE_NAME
-  only:
-    - master
-    - tags
+  rules:
+    - if: '$CI_COMMIT_TAG'
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+    - if: '$CI_COMMIT_MESSAGE =~ /\[deploy.*\]/'
+      when: on_success
+      # Default:
+    - when: never
 
 ##########
 # Deploy #
