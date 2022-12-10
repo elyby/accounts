@@ -63,7 +63,15 @@ class AuthorizationController extends Controller {
     }
 
     private function getServerRequest(): ServerRequestInterface {
-        return ServerRequest::fromGlobals();
+        $request = Yii::$app->request;
+
+        return (new ServerRequest(
+            $request->getMethod(),
+            $request->getAbsoluteUrl() . '?' . $request->getQueryString(),
+            $request->getHeaders()->toArray(),
+        ))
+            ->withParsedBody($request->getBodyParams())
+            ->withQueryParams($request->getQueryParams());
     }
 
 }

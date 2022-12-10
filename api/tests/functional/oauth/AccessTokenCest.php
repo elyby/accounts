@@ -5,9 +5,9 @@ namespace api\tests\functional\oauth;
 
 use api\tests\functional\_steps\OauthSteps;
 
-class AccessTokenCest {
+final class AccessTokenCest {
 
-    public function successfullyIssueToken(OauthSteps $I) {
+    public function successfullyIssueTokenWithUrlEncodedBody(OauthSteps $I): void {
         $I->wantTo('complete oauth flow and obtain access_token');
         $authCode = $I->obtainAuthCode();
         $I->sendPOST('/api/oauth2/v1/token', [
@@ -26,16 +26,17 @@ class AccessTokenCest {
         $I->cantSeeResponseJsonMatchesJsonPath('$.refresh_token');
     }
 
-    public function successfullyIssueOfflineToken(OauthSteps $I) {
+    public function successfullyIssueOfflineTokenWithJsonEncodedBody(OauthSteps $I): void {
         $I->wantTo('complete oauth flow with offline_access scope and obtain access_token and refresh_token');
         $authCode = $I->obtainAuthCode(['offline_access']);
-        $I->sendPOST('/api/oauth2/v1/token', [
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPOST('/api/oauth2/v1/token', json_encode([
             'grant_type' => 'authorization_code',
             'code' => $authCode,
             'client_id' => 'ely',
             'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
             'redirect_uri' => 'http://ely.by',
-        ]);
+        ]));
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseContainsJson([
             'token_type' => 'Bearer',

@@ -78,6 +78,8 @@ return [
             'baseUrl' => '/api',
             'enableCsrfCookie' => false,
             'parsers' => [
+                'application/json' => yii\web\JsonParser::class,
+                'multipart/form-data' => yii\web\MultipartFormDataParser::class,
                 '*' => api\request\RequestParser::class,
             ],
         ],
