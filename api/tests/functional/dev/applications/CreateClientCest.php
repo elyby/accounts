@@ -6,41 +6,12 @@ namespace api\tests\functional\dev\applications;
 use api\tests\_pages\OauthRoute;
 use api\tests\FunctionalTester;
 
-class CreateClientCest {
+final class CreateClientCest {
 
-    /**
-     * @var OauthRoute
-     */
-    private $route;
+    private OauthRoute $route;
 
     public function _before(FunctionalTester $I) {
         $this->route = new OauthRoute($I);
-    }
-
-    public function testCreateApplicationWithWrongParams(FunctionalTester $I) {
-        $I->amAuthenticated('admin');
-
-        $this->route->createClient('application', []);
-        $I->canSeeResponseCodeIs(200);
-        $I->canSeeResponseContainsJson([
-            'success' => false,
-            'errors' => [
-                'name' => 'error.name_required',
-                'redirectUri' => 'error.redirectUri_required',
-            ],
-        ]);
-
-        $this->route->createClient('application', [
-            'name' => 'my test oauth client',
-            'redirectUri' => 'localhost',
-        ]);
-        $I->canSeeResponseCodeIs(200);
-        $I->canSeeResponseContainsJson([
-            'success' => false,
-            'errors' => [
-                'redirectUri' => 'error.redirectUri_invalid',
-            ],
-        ]);
     }
 
     public function testCreateApplication(FunctionalTester $I) {
@@ -105,6 +76,20 @@ class CreateClientCest {
             'success' => true,
             'data' => [
                 'clientId' => 'deleted-oauth-client1',
+            ],
+        ]);
+    }
+
+    public function testCreateApplicationWithWrongParams(FunctionalTester $I): void {
+        $I->amAuthenticated('admin');
+
+        $this->route->createClient('application', []);
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+            'errors' => [
+                'name' => 'error.name_required',
+                'redirectUri' => 'error.redirectUri_required',
             ],
         ]);
     }

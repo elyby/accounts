@@ -3,11 +3,12 @@ declare(strict_types=1);
 
 namespace api\modules\oauth\models;
 
+use Closure;
 use common\helpers\Error as E;
 use common\models\OauthClient;
 use yii\helpers\ArrayHelper;
 
-class ApplicationType extends BaseOauthClientType {
+final class ApplicationType extends BaseOauthClientType {
 
     public $description;
 
@@ -16,7 +17,7 @@ class ApplicationType extends BaseOauthClientType {
     public function rules(): array {
         return ArrayHelper::merge(parent::rules(), [
             ['redirectUri', 'required', 'message' => E::REDIRECT_URI_REQUIRED],
-            ['redirectUri', 'url', 'validSchemes' => ['[\w]+'], 'message' => E::REDIRECT_URI_INVALID],
+            ['redirectUri', Closure::fromCallable([$this, 'validateUrl'])],
             ['description', 'string'],
         ]);
     }
@@ -25,6 +26,12 @@ class ApplicationType extends BaseOauthClientType {
         parent::applyToClient($client);
         $client->description = $this->description;
         $client->redirect_uri = $this->redirectUri;
+    }
+
+    private function validateUrl(string $attribute): void {
+        if (!filter_var($this->$attribute, FILTER_VALIDATE_URL)) {
+            $this->addError($attribute, E::REDIRECT_URI_INVALID);
+        }
     }
 
 }
