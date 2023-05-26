@@ -18,7 +18,7 @@ class ClientTokenValidator extends Validator {
      * @throws \api\modules\authserver\exceptions\AuthserverException
      */
     protected function validateValue($value): ?array {
-        if (mb_strlen($value) > 255) {
+        if (mb_strlen((string)$value) > 255) {
             throw new IllegalArgumentException('clientToken is too long.');
         }
 
