@@ -9,7 +9,10 @@ use common\validators\EmailValidator;
 use yii\base\Model;
 use yii\validators\EmailValidator as YiiEmailValidator;
 
-class EmailValidatorTest extends TestCase {
+/**
+ * @covers \common\validators\EmailValidator
+ */
+final class EmailValidatorTest extends TestCase {
 
     private EmailValidator $validator;
 
@@ -84,6 +87,15 @@ class EmailValidatorTest extends TestCase {
         $model = $this->createModel('valid-email@gmail.com');
         $this->validator->validateAttribute($model, 'field');
         $this->assertNotSame(['error.email_invalid'], $model->getErrors('field'));
+    }
+
+    public function testValidateAttributeStartingWithSlash(): void {
+        $this->getFunctionMock(YiiEmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
+        $this->getFunctionMock(YiiEmailValidator::class, 'dns_get_record')->expects($this->any())->willReturn(['mx.google.com']);
+
+        $model = $this->createModel('\slash@gmail.com');
+        $this->validator->validateAttribute($model, 'field');
+        $this->assertSame(['error.email_invalid'], $model->getErrors('field'));
     }
 
     public function testValidateAttributeTempmail() {

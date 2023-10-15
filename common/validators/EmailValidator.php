@@ -12,7 +12,7 @@ use yii\db\QueryInterface;
 use yii\validators;
 use yii\validators\Validator;
 
-class EmailValidator extends Validator {
+final class EmailValidator extends Validator {
 
     /**
      * @var callable(): int the function must return the account id for which the current validation is being performed.
@@ -37,6 +37,17 @@ class EmailValidator extends Validator {
         $email->enableIDN = true;
         $email->message = E::EMAIL_INVALID;
 
+        $additionalEmail = new class extends Validator {
+            protected function validateValue($value): ?array {
+                // Disallow emails starting with slash since Postfix (or someone before?) can't correctly handle it
+                if (str_starts_with($value, '/')) {
+                    return [E::EMAIL_INVALID, []];
+                }
+
+                return null;
+            }
+        };
+
         $tempmail = new TempmailValidator();
         $tempmail->message = E::EMAIL_IS_TEMPMAIL;
 
@@ -57,7 +68,7 @@ class EmailValidator extends Validator {
 
         $idnaDomain = new validators\FilterValidator(['filter' => function(string $value): string {
             [$name, $domain] = explode('@', $value);
-            return idn_to_ascii($name, 0, INTL_IDNA_VARIANT_UTS46) . '@' . idn_to_ascii($domain, 0, INTL_IDNA_VARIANT_UTS46);
+            return idn_to_ascii($name) . '@' . idn_to_ascii($domain);
         }]);
 
         $unique = new validators\UniqueValidator();
@@ -74,6 +85,7 @@ class EmailValidator extends Validator {
         $this->executeValidation($required, $model, $attribute) &&
         $this->executeValidation($length, $model, $attribute) &&
         $this->executeValidation($email, $model, $attribute) &&
+        $this->executeValidation($additionalEmail, $model, $attribute) &&
         $this->executeValidation($tempmail, $model, $attribute) &&
         $this->executeValidation($blacklist, $model, $attribute) &&
         $this->executeValidation($idnaDomain, $model, $attribute) &&
