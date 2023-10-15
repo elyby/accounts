@@ -77,9 +77,6 @@ return [
 
                 return YII_ENV_DEV ? 'Development' : 'Production';
             })(),
-            'client' => [
-                'curl_method' => 'async',
-            ],
         ],
         'security' => [
             'passwordHashStrategy' => 'password_hash',
