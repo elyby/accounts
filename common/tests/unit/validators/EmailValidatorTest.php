@@ -93,7 +93,7 @@ final class EmailValidatorTest extends TestCase {
         $this->getFunctionMock(YiiEmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
         $this->getFunctionMock(YiiEmailValidator::class, 'dns_get_record')->expects($this->any())->willReturn(['mx.google.com']);
 
-        $model = $this->createModel('\slash@gmail.com');
+        $model = $this->createModel('/slash@gmail.com');
         $this->validator->validateAttribute($model, 'field');
         $this->assertSame(['error.email_invalid'], $model->getErrors('field'));
     }
