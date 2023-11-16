@@ -91,7 +91,7 @@ CMD ["nginx", "-g", "daemon off;"]
 
 # ================================================================================
 
-FROM bitnami/mariadb:10.3.20-debian-9-r4 AS db
+FROM bitnami/mariadb:10.6-debian-11 AS db
 
 USER 0
 
@@ -123,5 +123,5 @@ RUN set -ex \
 
 USER 1001
 
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["/run.sh"]
+ENTRYPOINT ["/opt/bitnami/scripts/mariadb/entrypoint.sh"]
+CMD ["/opt/bitnami/scripts/mariadb/run.sh"]
