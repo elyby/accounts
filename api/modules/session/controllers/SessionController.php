@@ -34,19 +34,18 @@ class SessionController extends Controller {
     }
 
     /**
-     * @return array
      * @throws ForbiddenOperationException
      * @throws IllegalArgumentException
      */
-    public function actionJoin(): array {
-        Yii::$app->response->format = Response::FORMAT_JSON;
-
+    public function actionJoin(Response $response): void {
         $data = Yii::$app->request->post();
         $protocol = new ModernJoin($data['accessToken'] ?? '', $data['selectedProfile'] ?? '', $data['serverId'] ?? '');
         $joinForm = new JoinForm($protocol);
         $joinForm->join(); // will throw an exception in case of any error
 
-        return ['id' => 'OK'];
+        $response->statusCode = 204;
+        $response->format = Response::FORMAT_RAW;
+        $response->content = '';
     }
 
     public function actionJoinLegacy(): string {

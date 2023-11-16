@@ -30,7 +30,7 @@ class SessionServerSteps extends FunctionalTester {
                 'serverId' => $serverId,
             ]);
 
-            $this->canSeeResponseContainsJson(['id' => 'OK']);
+            $this->seeResponseCodeIs(204);
         }
 
         return [$username, $serverId];
