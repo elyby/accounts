@@ -137,11 +137,8 @@ class JoinCest {
     }
 
     private function expectSuccessResponse(FunctionalTester $I) {
-        $I->seeResponseCodeIs(200);
-        $I->seeResponseIsJson();
-        $I->canSeeResponseContainsJson([
-            'id' => 'OK',
-        ]);
+        $I->seeResponseCodeIs(204);
+        $I->canSeeResponseEquals('');
     }
 
 }
