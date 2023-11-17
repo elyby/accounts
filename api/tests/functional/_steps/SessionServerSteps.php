@@ -22,6 +22,7 @@ class SessionServerSteps extends FunctionalTester {
                 'serverId' => $serverId,
             ]);
 
+            $this->seeResponseCodeIs(200);
             $this->canSeeResponseEquals('OK');
         } else {
             $route->join([
@@ -31,6 +32,7 @@ class SessionServerSteps extends FunctionalTester {
             ]);
 
             $this->seeResponseCodeIs(204);
+            $this->canSeeResponseEquals('');
         }
 
         return [$username, $serverId];
