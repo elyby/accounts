@@ -9,8 +9,7 @@ use Codeception\Example;
 final class MinecraftProfilesCest {
 
     /**
-     * @example ["/api/authlib-injector/api/profiles/minecraft"]
-     * @example ["/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname"]
+     * @dataProvider bulkProfilesEndpoints
      */
     public function getUuidByOneUsername(FunctionalTester $I, Example $url) {
         $I->sendPOST($url[0], ['Admin']);
@@ -24,8 +23,7 @@ final class MinecraftProfilesCest {
     }
 
     /**
-     * @example ["/api/authlib-injector/api/profiles/minecraft"]
-     * @example ["/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname"]
+     * @dataProvider bulkProfilesEndpoints
      */
     public function getUuidsByUsernames(FunctionalTester $I, Example $url) {
         $I->sendPOST($url[0], ['Admin', 'AccWithOldPassword', 'Notch']);
@@ -34,8 +32,7 @@ final class MinecraftProfilesCest {
 
 
     /**
-     * @example ["/api/authlib-injector/api/profiles/minecraft"]
-     * @example ["/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname"]
+     * @dataProvider bulkProfilesEndpoints
      */
     public function getUuidsByUsernamesWithPostString(FunctionalTester $I, Example $url) {
         $I->sendPOST(
@@ -47,8 +44,7 @@ final class MinecraftProfilesCest {
 
 
     /**
-     * @example ["/api/authlib-injector/api/profiles/minecraft"]
-     * @example ["/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname"]
+     * @dataProvider bulkProfilesEndpoints
      */
     public function getUuidsByPartialNonexistentUsernames(FunctionalTester $I, Example $url) {
         $I->sendPOST($url[0], ['Admin', 'DeletedAccount', 'not-exists-user']);
@@ -65,8 +61,7 @@ final class MinecraftProfilesCest {
 
 
     /**
-     * @example ["/api/authlib-injector/api/profiles/minecraft"]
-     * @example ["/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname"]
+     * @dataProvider bulkProfilesEndpoints
      */
     public function passAllNonexistentUsernames(FunctionalTester $I, Example $url) {
         $I->sendPOST($url[0], ['not-exists-1', 'not-exists-2']);
@@ -77,8 +72,7 @@ final class MinecraftProfilesCest {
 
 
     /**
-     * @example ["/api/authlib-injector/api/profiles/minecraft"]
-     * @example ["/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname"]
+     * @dataProvider bulkProfilesEndpoints
      */
     public function passTooManyUsernames(FunctionalTester $I, Example $url) {
         $usernames = [];
@@ -96,8 +90,7 @@ final class MinecraftProfilesCest {
 
 
     /**
-     * @example ["/api/authlib-injector/api/profiles/minecraft"]
-     * @example ["/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname"]
+     * @dataProvider bulkProfilesEndpoints
      */
     public function passEmptyUsername(FunctionalTester $I, Example $url) {
         $I->sendPOST($url[0], ['Admin', '']);
@@ -110,8 +103,7 @@ final class MinecraftProfilesCest {
 
 
     /**
-     * @example ["/api/authlib-injector/api/profiles/minecraft"]
-     * @example ["/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname"]
+     * @dataProvider bulkProfilesEndpoints
      */
     public function passEmptyField(FunctionalTester $I, Example $url) {
         $I->sendPOST($url[0], []);
@@ -139,6 +131,13 @@ final class MinecraftProfilesCest {
                 'name' => 'Notch',
             ],
         ]);
+    }
+
+    private function bulkProfilesEndpoints() : array {
+        return [
+            ["/api/authlib-injector/api/profiles/minecraft"],
+            ["/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname"]
+        ];
     }
 
 }

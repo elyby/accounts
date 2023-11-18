@@ -1,28 +1,16 @@
 <?php
 namespace api\tests\functional\authserver;
 
-use api\tests\_pages\MojangApiRoute;
 use api\tests\FunctionalTester;
 use Codeception\Example;
 
 class UsernamesToUuidsCest {
-
     /**
-     * @var MojangApiRoute
+     * @dataProvider bulkProfilesEndpoints
      */
-    private $route;
-
-    public function _before(FunctionalTester $I) {
-        $this->route = new MojangApiRoute($I);
-    }
-
-    /**
-     * @example ["/api/authlib-injector/api/profiles/minecraft"]
-     * @example ["/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname"]
-     */
-    public function getUuidByOneUsername(FunctionalTester $I, Example $url) {
+    public function getUuidByOneUsername(FunctionalTester $I, Example $url) : void {
         $I->wantTo('get uuid by one username');
-        $this->route->uuidsByUsernames($url[0], ['Admin']);
+        $I->sendPost($url[0], ['Admin']);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -34,32 +22,29 @@ class UsernamesToUuidsCest {
     }
 
     /**
-     * @example ["/api/authlib-injector/api/profiles/minecraft"]
-     * @example ["/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname"]
+     * @dataProvider bulkProfilesEndpoints
      */
-    public function getUuidsByUsernames(FunctionalTester $I, Example $url) {
+    public function getUuidsByUsernames(FunctionalTester $I, Example $url) : void {
         $I->wantTo('get uuids by few usernames');
-        $this->route->uuidsByUsernames($url[0], ['Admin', 'AccWithOldPassword', 'Notch']);
+        $I->sendPost($url[0], ['Admin', 'AccWithOldPassword', 'Notch']);
         $this->validateFewValidUsernames($I);
     }
 
     /**
-     * @example ["/api/authlib-injector/api/profiles/minecraft"]
-     * @example ["/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname"]
+     * @dataProvider bulkProfilesEndpoints
      */
-    public function getUuidsByUsernamesWithPostString(FunctionalTester $I, Example $url) {
+    public function getUuidsByUsernamesWithPostString(FunctionalTester $I, Example $url) : void {
         $I->wantTo('get uuids by few usernames');
-        $this->route->uuidsByUsernames($url[0], json_encode(['Admin', 'AccWithOldPassword', 'Notch']));
+        $I->sendPost($url[0], json_encode(['Admin', 'AccWithOldPassword', 'Notch']));
         $this->validateFewValidUsernames($I);
     }
 
     /**
-     * @example ["/api/authlib-injector/api/profiles/minecraft"]
-     * @example ["/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname"]
+     * @dataProvider bulkProfilesEndpoints
      */
-    public function getUuidsByPartialNonexistentUsernames(FunctionalTester $I, Example $url) {
+    public function getUuidsByPartialNonexistentUsernames(FunctionalTester $I, Example $url) : void {
         $I->wantTo('get uuids by few usernames and some nonexistent');
-        $this->route->uuidsByUsernames($url[0], ['Admin', 'DeletedAccount', 'not-exists-user']);
+        $I->sendPost($url[0], ['Admin', 'DeletedAccount', 'not-exists-user']);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -73,29 +58,27 @@ class UsernamesToUuidsCest {
     }
 
     /**
-     * @example ["/api/authlib-injector/api/profiles/minecraft"]
-     * @example ["/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname"]
+     * @dataProvider bulkProfilesEndpoints
      */
-    public function passAllNonexistentUsernames(FunctionalTester $I, Example $url) {
+    public function passAllNonexistentUsernames(FunctionalTester $I, Example $url) : void {
         $I->wantTo('get specific response when pass all nonexistent usernames');
-        $this->route->uuidsByUsernames($url[0], ['not-exists-1', 'not-exists-2']);
+        $I->sendPost($url[0], ['not-exists-1', 'not-exists-2']);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([]);
     }
 
     /**
-     * @example ["/api/authlib-injector/api/profiles/minecraft"]
-     * @example ["/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname"]
+     * @dataProvider bulkProfilesEndpoints
      */
-    public function passTooManyUsernames(FunctionalTester $I, Example $url) {
+    public function passTooManyUsernames(FunctionalTester $I, Example $url) : void {
         $I->wantTo('get specific response when pass too many usernames');
         $usernames = [];
         for ($i = 0; $i < 150; $i++) {
             $usernames[] = random_bytes(10);
         }
 
-        $this->route->uuidsByUsernames($url[0], $usernames);
+        $I->sendPost($url[0], $usernames);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -105,12 +88,11 @@ class UsernamesToUuidsCest {
     }
 
     /**
-     * @example ["/api/authlib-injector/api/profiles/minecraft"]
-     * @example ["/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname"]
+     * @dataProvider bulkProfilesEndpoints
      */
-    public function passEmptyUsername(FunctionalTester $I, Example $url) {
+    public function passEmptyUsername(FunctionalTester $I, Example $url) : void {
         $I->wantTo('get specific response when pass empty username');
-        $this->route->uuidsByUsernames($url[0], ['Admin', '']);
+        $I->sendPost($url[0], ['Admin', '']);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -120,12 +102,11 @@ class UsernamesToUuidsCest {
     }
 
     /**
-     * @example ["/api/authlib-injector/api/profiles/minecraft"]
-     * @example ["/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname"]
+     * @dataProvider bulkProfilesEndpoints
      */
-    public function passEmptyField(FunctionalTester $I, Example $url) {
+    public function passEmptyField(FunctionalTester $I, Example $url) : void {
         $I->wantTo('get response when pass empty array');
-        $this->route->uuidsByUsernames($url[0], []);
+        $I->sendPost($url[0], []);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -134,7 +115,7 @@ class UsernamesToUuidsCest {
         ]);
     }
 
-    private function validateFewValidUsernames(FunctionalTester $I) {
+    private function validateFewValidUsernames(FunctionalTester $I) : void {
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -153,4 +134,10 @@ class UsernamesToUuidsCest {
         ]);
     }
 
+    private function bulkProfilesEndpoints() : array {
+        return [
+            ["/api/authlib-injector/api/profiles/minecraft"],
+            ["/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname"]
+        ];
+    }
 }
