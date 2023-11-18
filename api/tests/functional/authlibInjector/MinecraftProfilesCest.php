@@ -11,7 +11,7 @@ final class MinecraftProfilesCest {
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function getUuidByOneUsername(FunctionalTester $I, Example $url) {
+    public function getUuidByOneUsername(FunctionalTester $I, Example $url) : void {
         $I->sendPOST($url[0], ['Admin']);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseContainsJson([
@@ -25,7 +25,7 @@ final class MinecraftProfilesCest {
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function getUuidsByUsernames(FunctionalTester $I, Example $url) {
+    public function getUuidsByUsernames(FunctionalTester $I, Example $url) : void {
         $I->sendPOST($url[0], ['Admin', 'AccWithOldPassword', 'Notch']);
         $this->validateFewValidUsernames($I);
     }
@@ -34,7 +34,7 @@ final class MinecraftProfilesCest {
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function getUuidsByUsernamesWithPostString(FunctionalTester $I, Example $url) {
+    public function getUuidsByUsernamesWithPostString(FunctionalTester $I, Example $url) : void {
         $I->sendPOST(
             $url[0],
             json_encode(['Admin', 'AccWithOldPassword', 'Notch']),
@@ -46,7 +46,7 @@ final class MinecraftProfilesCest {
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function getUuidsByPartialNonexistentUsernames(FunctionalTester $I, Example $url) {
+    public function getUuidsByPartialNonexistentUsernames(FunctionalTester $I, Example $url) : void {
         $I->sendPOST($url[0], ['Admin', 'DeletedAccount', 'not-exists-user']);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseContainsJson([
@@ -63,7 +63,7 @@ final class MinecraftProfilesCest {
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function passAllNonexistentUsernames(FunctionalTester $I, Example $url) {
+    public function passAllNonexistentUsernames(FunctionalTester $I, Example $url) : void {
         $I->sendPOST($url[0], ['not-exists-1', 'not-exists-2']);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
@@ -74,7 +74,7 @@ final class MinecraftProfilesCest {
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function passTooManyUsernames(FunctionalTester $I, Example $url) {
+    public function passTooManyUsernames(FunctionalTester $I, Example $url) : void {
         $usernames = [];
         for ($i = 0; $i < 150; $i++) {
             $usernames[] = random_bytes(10);
@@ -92,7 +92,7 @@ final class MinecraftProfilesCest {
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function passEmptyUsername(FunctionalTester $I, Example $url) {
+    public function passEmptyUsername(FunctionalTester $I, Example $url) : void {
         $I->sendPOST($url[0], ['Admin', '']);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
@@ -105,7 +105,7 @@ final class MinecraftProfilesCest {
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function passEmptyField(FunctionalTester $I, Example $url) {
+    public function passEmptyField(FunctionalTester $I, Example $url) : void {
         $I->sendPOST($url[0], []);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
@@ -114,7 +114,7 @@ final class MinecraftProfilesCest {
         ]);
     }
 
-    private function validateFewValidUsernames(FunctionalTester $I) {
+    private function validateFewValidUsernames(FunctionalTester $I) : void {
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
