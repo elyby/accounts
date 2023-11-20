@@ -4,11 +4,15 @@ declare(strict_types=1);
 namespace api\tests\functional\authlibInjector;
 
 use api\tests\FunctionalTester;
+use Codeception\Example;
 
 final class MinecraftProfilesCest {
 
-    public function geUuidByOneUsername(FunctionalTester $I) {
-        $I->sendPOST('/api/authlib-injector/api/profiles/minecraft', ['Admin']);
+    /**
+     * @dataProvider bulkProfilesEndpoints
+     */
+    public function getUuidByOneUsername(FunctionalTester $I, Example $url) : void {
+        $I->sendPOST($url[0], ['Admin']);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseContainsJson([
             [
@@ -18,21 +22,32 @@ final class MinecraftProfilesCest {
         ]);
     }
 
-    public function getUuidsByUsernames(FunctionalTester $I) {
-        $I->sendPOST('/api/authlib-injector/api/profiles/minecraft', ['Admin', 'AccWithOldPassword', 'Notch']);
+    /**
+     * @dataProvider bulkProfilesEndpoints
+     */
+    public function getUuidsByUsernames(FunctionalTester $I, Example $url) : void {
+        $I->sendPOST($url[0], ['Admin', 'AccWithOldPassword', 'Notch']);
         $this->validateFewValidUsernames($I);
     }
 
-    public function getUuidsByUsernamesWithPostString(FunctionalTester $I) {
+
+    /**
+     * @dataProvider bulkProfilesEndpoints
+     */
+    public function getUuidsByUsernamesWithPostString(FunctionalTester $I, Example $url) : void {
         $I->sendPOST(
-            '/api/authlib-injector/api/profiles/minecraft',
+            $url[0],
             json_encode(['Admin', 'AccWithOldPassword', 'Notch']),
         );
         $this->validateFewValidUsernames($I);
     }
 
-    public function getUuidsByPartialNonexistentUsernames(FunctionalTester $I) {
-        $I->sendPOST('/api/authlib-injector/api/profiles/minecraft', ['Admin', 'DeletedAccount', 'not-exists-user']);
+
+    /**
+     * @dataProvider bulkProfilesEndpoints
+     */
+    public function getUuidsByPartialNonexistentUsernames(FunctionalTester $I, Example $url) : void {
+        $I->sendPOST($url[0], ['Admin', 'DeletedAccount', 'not-exists-user']);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseContainsJson([
             [
@@ -44,20 +59,28 @@ final class MinecraftProfilesCest {
         $I->cantSeeResponseJsonMatchesJsonPath('$.[?(@.name="not-exists-user")]');
     }
 
-    public function passAllNonexistentUsernames(FunctionalTester $I) {
-        $I->sendPOST('/api/authlib-injector/api/profiles/minecraft', ['not-exists-1', 'not-exists-2']);
+
+    /**
+     * @dataProvider bulkProfilesEndpoints
+     */
+    public function passAllNonexistentUsernames(FunctionalTester $I, Example $url) : void {
+        $I->sendPOST($url[0], ['not-exists-1', 'not-exists-2']);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseEquals('[]');
     }
 
-    public function passTooManyUsernames(FunctionalTester $I) {
+
+    /**
+     * @dataProvider bulkProfilesEndpoints
+     */
+    public function passTooManyUsernames(FunctionalTester $I, Example $url) : void {
         $usernames = [];
         for ($i = 0; $i < 150; $i++) {
             $usernames[] = random_bytes(10);
         }
 
-        $I->sendPOST('/api/authlib-injector/api/profiles/minecraft', $usernames);
+        $I->sendPOST($url[0], $usernames);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
             'error' => 'IllegalArgumentException',
@@ -65,8 +88,12 @@ final class MinecraftProfilesCest {
         ]);
     }
 
-    public function passEmptyUsername(FunctionalTester $I) {
-        $I->sendPOST('/api/authlib-injector/api/profiles/minecraft', ['Admin', '']);
+
+    /**
+     * @dataProvider bulkProfilesEndpoints
+     */
+    public function passEmptyUsername(FunctionalTester $I, Example $url) : void {
+        $I->sendPOST($url[0], ['Admin', '']);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
             'error' => 'IllegalArgumentException',
@@ -74,8 +101,12 @@ final class MinecraftProfilesCest {
         ]);
     }
 
-    public function passEmptyField(FunctionalTester $I) {
-        $I->sendPOST('/api/authlib-injector/api/profiles/minecraft', []);
+
+    /**
+     * @dataProvider bulkProfilesEndpoints
+     */
+    public function passEmptyField(FunctionalTester $I, Example $url) : void {
+        $I->sendPOST($url[0], []);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
             'error' => 'IllegalArgumentException',
@@ -83,7 +114,7 @@ final class MinecraftProfilesCest {
         ]);
     }
 
-    private function validateFewValidUsernames(FunctionalTester $I) {
+    private function validateFewValidUsernames(FunctionalTester $I) : void {
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -100,6 +131,13 @@ final class MinecraftProfilesCest {
                 'name' => 'Notch',
             ],
         ]);
+    }
+
+    private function bulkProfilesEndpoints() : array {
+        return [
+            ["/api/authlib-injector/api/profiles/minecraft"],
+            ["/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname"]
+        ];
     }
 
 }
