@@ -5,12 +5,13 @@ use api\tests\FunctionalTester;
 use Codeception\Example;
 
 class UsernamesToUuidsCest {
+
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function getUuidByOneUsername(FunctionalTester $I, Example $url) : void {
+    public function getUuidByOneUsername(FunctionalTester $I, Example $case): void {
         $I->wantTo('get uuid by one username');
-        $I->sendPost($url[0], ['Admin']);
+        $I->sendPost($case[0], ['Admin']);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -24,27 +25,27 @@ class UsernamesToUuidsCest {
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function getUuidsByUsernames(FunctionalTester $I, Example $url) : void {
+    public function getUuidsByUsernames(FunctionalTester $I, Example $case): void {
         $I->wantTo('get uuids by few usernames');
-        $I->sendPost($url[0], ['Admin', 'AccWithOldPassword', 'Notch']);
+        $I->sendPost($case[0], ['Admin', 'AccWithOldPassword', 'Notch']);
         $this->validateFewValidUsernames($I);
     }
 
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function getUuidsByUsernamesWithPostString(FunctionalTester $I, Example $url) : void {
+    public function getUuidsByUsernamesWithPostString(FunctionalTester $I, Example $case): void {
         $I->wantTo('get uuids by few usernames');
-        $I->sendPost($url[0], json_encode(['Admin', 'AccWithOldPassword', 'Notch']));
+        $I->sendPost($case[0], json_encode(['Admin', 'AccWithOldPassword', 'Notch']));
         $this->validateFewValidUsernames($I);
     }
 
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function getUuidsByPartialNonexistentUsernames(FunctionalTester $I, Example $url) : void {
+    public function getUuidsByPartialNonexistentUsernames(FunctionalTester $I, Example $case): void {
         $I->wantTo('get uuids by few usernames and some nonexistent');
-        $I->sendPost($url[0], ['Admin', 'DeletedAccount', 'not-exists-user']);
+        $I->sendPost($case[0], ['Admin', 'DeletedAccount', 'not-exists-user']);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -60,9 +61,9 @@ class UsernamesToUuidsCest {
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function passAllNonexistentUsernames(FunctionalTester $I, Example $url) : void {
+    public function passAllNonexistentUsernames(FunctionalTester $I, Example $case): void {
         $I->wantTo('get specific response when pass all nonexistent usernames');
-        $I->sendPost($url[0], ['not-exists-1', 'not-exists-2']);
+        $I->sendPost($case[0], ['not-exists-1', 'not-exists-2']);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([]);
@@ -71,14 +72,14 @@ class UsernamesToUuidsCest {
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function passTooManyUsernames(FunctionalTester $I, Example $url) : void {
+    public function passTooManyUsernames(FunctionalTester $I, Example $case): void {
         $I->wantTo('get specific response when pass too many usernames');
         $usernames = [];
         for ($i = 0; $i < 150; $i++) {
             $usernames[] = random_bytes(10);
         }
 
-        $I->sendPost($url[0], $usernames);
+        $I->sendPost($case[0], $usernames);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -90,9 +91,9 @@ class UsernamesToUuidsCest {
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function passEmptyUsername(FunctionalTester $I, Example $url) : void {
+    public function passEmptyUsername(FunctionalTester $I, Example $case): void {
         $I->wantTo('get specific response when pass empty username');
-        $I->sendPost($url[0], ['Admin', '']);
+        $I->sendPost($case[0], ['Admin', '']);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -104,9 +105,9 @@ class UsernamesToUuidsCest {
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function passEmptyField(FunctionalTester $I, Example $url) : void {
+    public function passEmptyField(FunctionalTester $I, Example $case): void {
         $I->wantTo('get response when pass empty array');
-        $I->sendPost($url[0], []);
+        $I->sendPost($case[0], []);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -115,7 +116,7 @@ class UsernamesToUuidsCest {
         ]);
     }
 
-    private function validateFewValidUsernames(FunctionalTester $I) : void {
+    private function validateFewValidUsernames(FunctionalTester $I): void {
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -134,10 +135,11 @@ class UsernamesToUuidsCest {
         ]);
     }
 
-    private function bulkProfilesEndpoints() : array {
+    private function bulkProfilesEndpoints(): array {
         return [
-            ["/api/authlib-injector/api/profiles/minecraft"],
-            ["/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname"]
+            ['/api/authlib-injector/api/profiles/minecraft'],
+            ['/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname'],
         ];
     }
+
 }

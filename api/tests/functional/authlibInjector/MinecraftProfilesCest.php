@@ -11,8 +11,8 @@ final class MinecraftProfilesCest {
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function getUuidByOneUsername(FunctionalTester $I, Example $url) : void {
-        $I->sendPOST($url[0], ['Admin']);
+    public function getUuidByOneUsername(FunctionalTester $I, Example $case): void {
+        $I->sendPOST($case[0], ['Admin']);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseContainsJson([
             [
@@ -25,29 +25,27 @@ final class MinecraftProfilesCest {
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function getUuidsByUsernames(FunctionalTester $I, Example $url) : void {
-        $I->sendPOST($url[0], ['Admin', 'AccWithOldPassword', 'Notch']);
+    public function getUuidsByUsernames(FunctionalTester $I, Example $case): void {
+        $I->sendPOST($case[0], ['Admin', 'AccWithOldPassword', 'Notch']);
         $this->validateFewValidUsernames($I);
     }
-
 
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function getUuidsByUsernamesWithPostString(FunctionalTester $I, Example $url) : void {
+    public function getUuidsByUsernamesWithPostString(FunctionalTester $I, Example $case): void {
         $I->sendPOST(
-            $url[0],
+            $case[0],
             json_encode(['Admin', 'AccWithOldPassword', 'Notch']),
         );
         $this->validateFewValidUsernames($I);
     }
 
-
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function getUuidsByPartialNonexistentUsernames(FunctionalTester $I, Example $url) : void {
-        $I->sendPOST($url[0], ['Admin', 'DeletedAccount', 'not-exists-user']);
+    public function getUuidsByPartialNonexistentUsernames(FunctionalTester $I, Example $case): void {
+        $I->sendPOST($case[0], ['Admin', 'DeletedAccount', 'not-exists-user']);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseContainsJson([
             [
@@ -59,28 +57,26 @@ final class MinecraftProfilesCest {
         $I->cantSeeResponseJsonMatchesJsonPath('$.[?(@.name="not-exists-user")]');
     }
 
-
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function passAllNonexistentUsernames(FunctionalTester $I, Example $url) : void {
-        $I->sendPOST($url[0], ['not-exists-1', 'not-exists-2']);
+    public function passAllNonexistentUsernames(FunctionalTester $I, Example $case): void {
+        $I->sendPOST($case[0], ['not-exists-1', 'not-exists-2']);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseEquals('[]');
     }
 
-
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function passTooManyUsernames(FunctionalTester $I, Example $url) : void {
+    public function passTooManyUsernames(FunctionalTester $I, Example $case): void {
         $usernames = [];
         for ($i = 0; $i < 150; $i++) {
             $usernames[] = random_bytes(10);
         }
 
-        $I->sendPOST($url[0], $usernames);
+        $I->sendPOST($case[0], $usernames);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
             'error' => 'IllegalArgumentException',
@@ -88,12 +84,11 @@ final class MinecraftProfilesCest {
         ]);
     }
 
-
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function passEmptyUsername(FunctionalTester $I, Example $url) : void {
-        $I->sendPOST($url[0], ['Admin', '']);
+    public function passEmptyUsername(FunctionalTester $I, Example $case): void {
+        $I->sendPOST($case[0], ['Admin', '']);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
             'error' => 'IllegalArgumentException',
@@ -101,12 +96,11 @@ final class MinecraftProfilesCest {
         ]);
     }
 
-
     /**
      * @dataProvider bulkProfilesEndpoints
      */
-    public function passEmptyField(FunctionalTester $I, Example $url) : void {
-        $I->sendPOST($url[0], []);
+    public function passEmptyField(FunctionalTester $I, Example $case): void {
+        $I->sendPOST($case[0], []);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
             'error' => 'IllegalArgumentException',
@@ -114,7 +108,7 @@ final class MinecraftProfilesCest {
         ]);
     }
 
-    private function validateFewValidUsernames(FunctionalTester $I) : void {
+    private function validateFewValidUsernames(FunctionalTester $I): void {
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -133,10 +127,10 @@ final class MinecraftProfilesCest {
         ]);
     }
 
-    private function bulkProfilesEndpoints() : array {
+    private function bulkProfilesEndpoints(): array {
         return [
-            ["/api/authlib-injector/api/profiles/minecraft"],
-            ["/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname"]
+            ['/api/authlib-injector/api/profiles/minecraft'],
+            ['/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname'],
         ];
     }
 

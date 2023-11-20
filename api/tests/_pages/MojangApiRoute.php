@@ -11,4 +11,5 @@ class MojangApiRoute extends BasePage {
     public function usernamesByUuid($uuid) {
         $this->getActor()->sendGET("/api/mojang/profiles/{$uuid}/names");
     }
+
 }
