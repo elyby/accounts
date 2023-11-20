@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace api\models\authentication;
 
-use api\aop\annotations\CollectModelMetrics;
 use api\models\base\ApiForm;
 use api\validators\EmailActivationKeyValidator;
 use common\models\Account;
@@ -22,9 +21,6 @@ class ConfirmEmailForm extends ApiForm {
         ];
     }
 
-    /**
-     * @CollectModelMetrics(prefix="signup.confirmEmail")
-     */
     public function confirm(): ?AuthenticationResult {
         if (!$this->validate()) {
             return null;

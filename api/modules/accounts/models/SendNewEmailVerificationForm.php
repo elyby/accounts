@@ -1,7 +1,6 @@
 <?php
 namespace api\modules\accounts\models;
 
-use api\aop\annotations\CollectModelMetrics;
 use api\validators\EmailActivationKeyValidator;
 use common\models\confirmations\NewEmailConfirmation;
 use common\models\EmailActivation;
@@ -23,9 +22,6 @@ class SendNewEmailVerificationForm extends AccountActionForm {
         ];
     }
 
-    /**
-     * @CollectModelMetrics(prefix="accounts.sendNewEmailVerification")
-     */
     public function performAction(): bool {
         if (!$this->validate()) {
             return false;

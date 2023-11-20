@@ -1,6 +1,5 @@
 <?php
 
-use api\aop\AspectKernel;
 use common\config\ConfigLoader;
 use yii\web\Application;
 
@@ -10,17 +9,6 @@ require __DIR__ . '/../vendor/autoload.php';
 
 defined('YII_DEBUG') || define('YII_DEBUG', in_array(getenv('YII_DEBUG'), ['true', '1'], false));
 defined('YII_ENV') || define('YII_ENV', getenv('YII_ENV'));
-
-// Initialize an application aspect container
-AspectKernel::getInstance()->init([
-    'debug' => YII_DEBUG,
-    'appDir' => dirname(__DIR__),
-    'cacheDir' => __DIR__ . '/runtime/aspect',
-    'excludePaths' => [
-        __DIR__ . '/runtime/aspect',
-        __DIR__ . '/../vendor',
-    ],
-]);
 
 require __DIR__ . '/../vendor/yiisoft/yii2/Yii.php';
 require __DIR__ . '/../common/config/bootstrap.php';

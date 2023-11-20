@@ -30,7 +30,6 @@
         "domnikl/statsd": "^3.0.0",
         "ely/mojang-api": "^0.2.0",
         "ely/yii2-tempmail-validator": "^2.0",
-        "goaop/framework": "^2.2.0",
         "guzzlehttp/guzzle": "^6|^7",
         "lcobucci/jwt": "^3.3",
         "league/oauth2-server": "dev-adaptation",

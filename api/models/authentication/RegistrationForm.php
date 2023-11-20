@@ -1,7 +1,6 @@
 <?php
 namespace api\models\authentication;
 
-use api\aop\annotations\CollectModelMetrics;
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\base\ApiForm;
 use common\components\UserFriendlyRandomKey;
@@ -63,11 +62,6 @@ class RegistrationForm extends ApiForm {
         }
     }
 
-    /**
-     * @CollectModelMetrics(prefix="signup.register")
-     * @return Account|null the saved model or null if saving fails
-     * @throws Exception
-     */
     public function signup() {
         if (!$this->validate() && !$this->canContinue($this->getFirstErrors())) {
             return null;

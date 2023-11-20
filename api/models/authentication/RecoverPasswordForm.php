@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace api\models\authentication;
 
-use api\aop\annotations\CollectModelMetrics;
 use api\models\base\ApiForm;
 use api\validators\EmailActivationKeyValidator;
 use common\helpers\Error as E;
@@ -36,9 +35,6 @@ class RecoverPasswordForm extends ApiForm {
         }
     }
 
-    /**
-     * @CollectModelMetrics(prefix="authentication.recoverPassword")
-     */
     public function recoverPassword(): ?AuthenticationResult {
         if (!$this->validate()) {
             return null;

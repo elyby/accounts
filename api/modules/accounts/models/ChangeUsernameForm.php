@@ -1,7 +1,6 @@
 <?php
 namespace api\modules\accounts\models;
 
-use api\aop\annotations\CollectModelMetrics;
 use api\validators\PasswordRequiredValidator;
 use common\models\UsernameHistory;
 use common\tasks\PullMojangUsername;
@@ -24,9 +23,6 @@ class ChangeUsernameForm extends AccountActionForm {
         ];
     }
 
-    /**
-     * @CollectModelMetrics(prefix="accounts.changeUsername")
-     */
     public function performAction(): bool {
         if (!$this->validate()) {
             return false;

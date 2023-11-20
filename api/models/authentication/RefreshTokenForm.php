@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace api\models\authentication;
 
-use api\aop\annotations\CollectModelMetrics;
 use api\models\base\ApiForm;
 use common\helpers\Error as E;
 use common\models\AccountSession;
@@ -32,9 +31,6 @@ class RefreshTokenForm extends ApiForm {
         }
     }
 
-    /**
-     * @CollectModelMetrics(prefix="authentication.renew")
-     */
     public function renew(): ?AuthenticationResult {
         if (!$this->validate()) {
             return null;

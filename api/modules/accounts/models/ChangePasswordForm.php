@@ -1,7 +1,6 @@
 <?php
 namespace api\modules\accounts\models;
 
-use api\aop\annotations\CollectModelMetrics;
 use api\components\User\Component;
 use api\validators\PasswordRequiredValidator;
 use common\helpers\Error as E;
@@ -44,9 +43,6 @@ class ChangePasswordForm extends AccountActionForm {
         }
     }
 
-    /**
-     * @CollectModelMetrics(prefix="accounts.changePassword")
-     */
     public function performAction(): bool {
         if (!$this->validate()) {
             return false;

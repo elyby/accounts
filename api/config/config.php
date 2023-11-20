@@ -2,7 +2,14 @@
 return [
     'id' => 'accounts-site-api',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log', 'authserver', 'internal', 'mojang'],
+    'bootstrap' => [
+        'log',
+        'authserver',
+        'internal',
+        'mojang',
+        api\eventListeners\MockDataResponse::class,
+        api\eventListeners\LogMetricsToStatsd::class,
+    ],
     'controllerNamespace' => 'api\controllers',
     'params' => [
         'authserverHost' => getenv('AUTHSERVER_HOST') ?: 'authserver.ely.by',

@@ -1,7 +1,6 @@
 <?php
 namespace api\modules\accounts\models;
 
-use api\aop\annotations\CollectModelMetrics;
 use api\validators\PasswordRequiredValidator;
 use api\validators\TotpValidator;
 use common\helpers\Error as E;
@@ -22,9 +21,6 @@ class DisableTwoFactorAuthForm extends AccountActionForm {
         ];
     }
 
-    /**
-     * @CollectModelMetrics(prefix="accounts.disableTwoFactorAuth")
-     */
     public function performAction(): bool {
         if (!$this->validate()) {
             return false;

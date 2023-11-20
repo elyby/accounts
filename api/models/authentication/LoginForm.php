@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace api\models\authentication;
 
-use api\aop\annotations\CollectModelMetrics;
 use api\models\base\ApiForm;
 use api\validators\TotpValidator;
 use common\helpers\Error as E;
@@ -104,9 +103,6 @@ class LoginForm extends ApiForm {
         return Account::find()->andWhereLogin($this->login)->one();
     }
 
-    /**
-     * @CollectModelMetrics(prefix="authentication.login")
-     */
     public function login(): ?AuthenticationResult {
         if (!$this->validate()) {
             return null;

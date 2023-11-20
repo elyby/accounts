@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace api\modules\accounts\models;
 
-use api\aop\annotations\CollectModelMetrics;
 use api\validators\PasswordRequiredValidator;
 use common\helpers\Error as E;
 use common\models\confirmations\CurrentEmailConfirmation;
@@ -37,9 +36,6 @@ class SendEmailVerificationForm extends AccountActionForm {
         }
     }
 
-    /**
-     * @CollectModelMetrics(prefix="accounts.sendEmailVerification")
-     */
     public function performAction(): bool {
         if (!$this->validate()) {
             return false;

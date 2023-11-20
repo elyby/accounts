@@ -1,7 +1,6 @@
 <?php
 namespace api\modules\accounts\models;
 
-use api\aop\annotations\CollectModelMetrics;
 use common\validators\LanguageValidator;
 use Webmozart\Assert\Assert;
 
@@ -16,9 +15,6 @@ class ChangeLanguageForm extends AccountActionForm {
         ];
     }
 
-    /**
-     * @CollectModelMetrics(prefix="accounts.switchLanguage")
-     */
     public function performAction(): bool {
         if (!$this->validate()) {
             return false;

@@ -1,7 +1,6 @@
 <?php
 namespace api\modules\accounts\models;
 
-use api\aop\annotations\CollectModelMetrics;
 use api\validators\EmailActivationKeyValidator;
 use common\models\EmailActivation;
 use Webmozart\Assert\Assert;
@@ -17,9 +16,6 @@ class ChangeEmailForm extends AccountActionForm {
         ];
     }
 
-    /**
-     * @CollectModelMetrics(prefix="accounts.changeEmail")
-     */
     public function performAction(): bool {
         if (!$this->validate()) {
             return false;
