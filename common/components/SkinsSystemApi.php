@@ -49,7 +49,7 @@ class SkinsSystemApi {
             $query['onUnknownProfileRespondWithUuid'] = $fallbackUuid;
         }
 
-        $url = "/profile/{$username}" . (empty($query) ? '' : http_build_query($query));
+        $url = "/profile/{$username}" . (empty($query) ? '' : ('?' . http_build_query($query)));
         $response = $this->getClient()->request('GET', $this->buildUrl($url));
         if ($response->getStatusCode() !== 200) {
             return null;
