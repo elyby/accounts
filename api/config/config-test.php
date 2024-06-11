@@ -35,9 +35,37 @@ return [
                         ];
                     }
 
-                    public function profile(string $username, bool $signed = false): ?array {
+                    public function profile(string $username, bool $signed = false, ?string $fallbackUuid = null): ?array {
                         if ($username === 'NotSynchronized') {
-                            return null;
+                            if ($fallbackUuid === null) {
+                                return null;
+                            }
+
+                            $profile = [
+                                'name' => $username,
+                                'id' => $fallbackUuid,
+                                'properties' => [
+                                    [
+                                        'name' => 'textures',
+                                        'value' => base64_encode(json_encode([
+                                            'timestamp' => Carbon\Carbon::now()->getPreciseTimestamp(3),
+                                            'profileId' => $fallbackUuid,
+                                            'profileName' => $username,
+                                            'textures' => new ArrayObject(),
+                                        ])),
+                                    ],
+                                    [
+                                        'name' => 'ely',
+                                        'value' => 'but why are you asking?',
+                                    ],
+                                ],
+                            ];
+
+                            if ($signed) {
+                                $profile['properties'][0]['signature'] = 'signature';
+                            }
+
+                            return $profile;
                         }
 
                         $account = common\models\Account::findOne(['username' => $username]);

@@ -39,12 +39,17 @@ class SkinsSystemApi {
      * @return array|null
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function profile(string $username, bool $signed = false): ?array {
-        $url = "/profile/{$username}";
+    public function profile(string $username, bool $signed = false, ?string $fallbackUuid = null): ?array {
+        $query = [];
         if ($signed) {
-            $url .= '?unsigned=false';
+            $query['unsigned'] = 'false';
         }
 
+        if ($fallbackUuid !== null) {
+            $query['onUnknownProfileRespondWithUuid'] = $fallbackUuid;
+        }
+
+        $url = "/profile/{$username}" . empty($query) ? '' : http_build_query($query);
         $response = $this->getClient()->request('GET', $this->buildUrl($url));
         if ($response->getStatusCode() !== 200) {
             return null;
