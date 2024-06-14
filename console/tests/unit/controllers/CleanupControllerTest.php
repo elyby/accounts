@@ -5,7 +5,6 @@ namespace console\tests\unit\controllers;
 
 use common\models\AccountSession;
 use common\models\EmailActivation;
-use common\models\MinecraftAccessKey;
 use common\models\OauthClient;
 use common\tasks\ClearOauthSessions;
 use common\tests\fixtures;
@@ -18,7 +17,6 @@ class CleanupControllerTest extends TestCase {
     public function _fixtures(): array {
         return [
             'emailActivations' => fixtures\EmailActivationFixture::class,
-            'minecraftSessions' => fixtures\MinecraftAccessKeyFixture::class,
             'accountsSessions' => fixtures\AccountSessionFixture::class,
             'oauthClients' => fixtures\OauthClientFixture::class,
             'oauthSessions' => fixtures\OauthSessionFixture::class,
@@ -33,16 +31,6 @@ class CleanupControllerTest extends TestCase {
         $this->assertSame(0, $controller->actionEmailKeys());
 
         $this->tester->cantSeeRecord(EmailActivation::class, ['key' => $expiredConfirmation->key]);
-    }
-
-    public function testActionMinecraftSessions() {
-        /** @var MinecraftAccessKey $expiredSession */
-        $expiredSession = $this->tester->grabFixture('minecraftSessions', 'expired-token');
-
-        $controller = new CleanupController('cleanup', Yii::$app);
-        $this->assertSame(0, $controller->actionMinecraftSessions());
-
-        $this->tester->cantSeeRecord(MinecraftAccessKey::class, ['access_token' => $expiredSession->access_token]);
     }
 
     public function testActionWebSessions() {

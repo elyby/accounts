@@ -68,7 +68,7 @@ class JoinCest {
     public function joinWithExpiredToken(FunctionalTester $I) {
         $I->wantTo('join to some server with expired accessToken');
         $I->sendPOST('/api/authlib-injector/sessionserver/session/minecraft/join', [
-            'accessToken' => '6042634a-a1e2-4aed-866c-c661fe4e63e2',
+            'accessToken' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpYXQiOjE1MTgzMzQ3NDMsImV4cCI6MTUxODMzNDc5MCwiY2xpZW50X2lkIjoiZWx5Iiwic2NvcGUiOiJtaW5lY3JhZnRfc2VydmVyX3Nlc3Npb24iLCJzdWIiOiJlbHl8MSJ9.0mBXezB2p0eGuusZDklthR8xQLGo-v1qoP0GPdEPpYvckJMoHmlSqiW-2WwLlxGK0_J4KmYlp5vM4ynE14armw',
             'selectedProfile' => 'df936908-b2e1-544d-96f8-2977ec213022',
             'serverId' => uuid(),
         ]);
@@ -125,7 +125,7 @@ class JoinCest {
 
     public function joinByAccountMarkedForDeletion(FunctionalTester $I) {
         $I->sendPOST('/api/authlib-injector/sessionserver/session/minecraft/join', [
-            'accessToken' => '239ba889-7020-4383-8d99-cd8c8aab4a2f',
+            'accessToken' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpYXQiOjE1MTgzMzQ3NDMsImNsaWVudF9pZCI6ImVseSIsInNjb3BlIjoibWluZWNyYWZ0X3NlcnZlcl9zZXNzaW9uIiwic3ViIjoiZWx5fDE1In0.2qla7RzReBi2WtfgP3x8T6ZA0wn9HOrQo57xaZc2wMKPo1Zc49_o6w-5Ku1tbvzmESZfAxNQpfY4EwclEWjHYA',
             'selectedProfile' => '6383de63-8f85-4ed5-92b7-5401a1fa68cd',
             'serverId' => uuid(),
         ]);

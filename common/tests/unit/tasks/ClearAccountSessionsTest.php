@@ -17,7 +17,6 @@ class ClearAccountSessionsTest extends TestCase {
         return [
             'accounts' => fixtures\AccountFixture::class,
             'oauthSessions' => fixtures\OauthSessionFixture::class,
-            'minecraftAccessKeys' => fixtures\MinecraftAccessKeyFixture::class,
             'authSessions' => fixtures\AccountSessionFixture::class,
         ];
     }
@@ -28,7 +27,6 @@ class ClearAccountSessionsTest extends TestCase {
         $task = new ClearAccountSessions($bannedAccount->id);
         $task->execute($this->createMock(Queue::class));
         $this->assertEmpty($bannedAccount->sessions);
-        $this->assertEmpty($bannedAccount->minecraftAccessKeys);
         $this->assertEmpty($bannedAccount->oauthSessions);
     }
 

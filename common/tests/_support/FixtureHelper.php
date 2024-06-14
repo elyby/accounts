@@ -56,7 +56,6 @@ class FixtureHelper extends Module {
             'legacyOauthAccessTokens' => fixtures\LegacyOauthAccessTokenFixture::class,
             'legacyOauthAccessTokensScopes' => fixtures\LegacyOauthAccessTokenScopeFixture::class,
             'legacyOauthRefreshTokens' => fixtures\LegacyOauthRefreshTokenFixture::class,
-            'minecraftAccessKeys' => fixtures\MinecraftAccessKeyFixture::class,
         ];
     }
 

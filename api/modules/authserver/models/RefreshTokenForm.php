@@ -10,7 +10,6 @@ use api\modules\authserver\validators\AccessTokenValidator;
 use api\modules\authserver\validators\RequiredValidator;
 use api\rbac\Permissions as P;
 use common\models\Account;
-use common\models\MinecraftAccessKey;
 use common\models\OauthClient;
 use common\models\OauthSession;
 use Webmozart\Assert\Assert;
@@ -48,26 +47,13 @@ class RefreshTokenForm extends ApiForm {
      */
     public function refresh(): AuthenticateData {
         $this->validate();
-        $account = null;
-        if (mb_strlen($this->accessToken) === 36) {
-            /** @var MinecraftAccessKey $token */
-            $token = MinecraftAccessKey::findOne([
-                'access_token' => $this->accessToken,
-                'client_token' => $this->clientToken,
-            ]);
-            if ($token !== null) {
-                $account = $token->account;
-            }
-        } else {
-            $token = Yii::$app->tokens->parse($this->accessToken);
-            $tokenReader = new TokenReader($token);
-            if ($tokenReader->getMinecraftClientToken() !== $this->clientToken) {
-                throw new ForbiddenOperationException('Invalid token.');
-            }
-
-            $account = Account::findOne(['id' => $tokenReader->getAccountId()]);
+        $token = Yii::$app->tokens->parse($this->accessToken);
+        $tokenReader = new TokenReader($token);
+        if ($tokenReader->getMinecraftClientToken() !== $this->clientToken) {
+            throw new ForbiddenOperationException('Invalid token.');
         }
 
+        $account = Account::findOne(['id' => $tokenReader->getAccountId()]);
         if ($account === null) {
             throw new ForbiddenOperationException('Invalid token.');
         }

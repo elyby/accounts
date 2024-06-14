@@ -9,9 +9,9 @@ use api\modules\session\models\protocols\JoinInterface;
 use api\modules\session\Module as Session;
 use api\modules\session\validators\RequiredValidator;
 use api\rbac\Permissions as P;
+use Closure;
 use common\helpers\StringHelper;
 use common\models\Account;
-use common\models\MinecraftAccessKey;
 use Ramsey\Uuid\Uuid;
 use Webmozart\Assert\Assert;
 use Yii;
@@ -47,13 +47,12 @@ class JoinForm extends Model {
     public function rules(): array {
         return [
             [['accessToken', 'serverId'], RequiredValidator::class],
-            [['accessToken', 'selectedProfile'], 'validateUuid'],
-            [['accessToken'], 'validateAccessToken'],
+            [['accessToken', 'selectedProfile'], Closure::fromCallable([$this, 'validateUuid'])],
+            [['accessToken'], Closure::fromCallable([$this, 'validateAccessToken'])],
         ];
     }
 
     /**
-     * @return bool
      * @throws IllegalArgumentException
      * @throws ForbiddenOperationException
      */
@@ -66,7 +65,7 @@ class JoinForm extends Model {
             return false;
         }
 
-        $account = $this->getAccount();
+        $account = $this->account;
         $sessionModel = new SessionModel($account->username, $serverId);
         Assert::true($sessionModel->save());
 
@@ -96,7 +95,7 @@ class JoinForm extends Model {
      *
      * @throws IllegalArgumentException
      */
-    public function validateUuid(string $attribute): void {
+    private function validateUuid(string $attribute): void {
         if ($this->hasErrors($attribute)) {
             return;
         }
@@ -109,45 +108,35 @@ class JoinForm extends Model {
     /**
      * @throws \api\modules\session\exceptions\ForbiddenOperationException
      */
-    public function validateAccessToken(): void {
+    private function validateAccessToken(): void {
         $accessToken = $this->accessToken;
-        /** @var MinecraftAccessKey|null $accessModel */
-        $accessModel = MinecraftAccessKey::findOne(['access_token' => $accessToken]);
-        if ($accessModel !== null) {
-            Yii::$app->statsd->inc('sessionserver.authentication.legacy_minecraft_protocol');
-            /** @var MinecraftAccessKey|\api\components\OAuth2\Entities\AccessTokenEntity $accessModel */
-            if ($accessModel->isExpired()) {
-                Session::error("User with access_token = '{$accessToken}' failed join by expired access_token.");
-                Yii::$app->statsd->inc('sessionserver.authentication.legacy_minecraft_protocol_token_expired');
-
-                throw new ForbiddenOperationException('Expired access_token.');
+        try {
+            $identity = Yii::$app->user->loginByAccessToken($accessToken);
+        } catch (UnauthorizedHttpException $e) {
+            if ($e->getMessage() === 'Token expired') {
+                throw new ForbiddenOperationException('Expired access_token.', 0, $e);
             }
 
-            $account = $accessModel->account;
-        } else {
-            try {
-                $identity = Yii::$app->user->loginByAccessToken($accessToken);
-            } catch (UnauthorizedHttpException $e) {
-                $identity = null;
-            }
-
-            if ($identity === null) {
-                Session::error("User with access_token = '{$accessToken}' failed join by wrong access_token.");
-                Yii::$app->statsd->inc('sessionserver.join.fail_wrong_token');
-
-                throw new ForbiddenOperationException('Invalid access_token.');
-            }
-
-            Yii::$app->statsd->inc('sessionserver.authentication.oauth2');
-            if (!Yii::$app->user->can(P::MINECRAFT_SERVER_SESSION)) {
-                Session::error("User with access_token = '{$accessToken}' doesn't have enough scopes to make join.");
-                Yii::$app->statsd->inc('sessionserver.authentication.oauth2_not_enough_scopes');
-
-                throw new ForbiddenOperationException('The token does not have required scope.');
-            }
-
-            $account = $identity->getAccount();
+            $identity = null;
         }
+
+        if ($identity === null) {
+            Session::error("User with access_token = '{$accessToken}' failed join by wrong access_token.");
+            Yii::$app->statsd->inc('sessionserver.join.fail_wrong_token');
+
+            throw new ForbiddenOperationException('Invalid access_token.');
+        }
+
+        Yii::$app->statsd->inc('sessionserver.authentication.oauth2');
+        if (!Yii::$app->user->can(P::MINECRAFT_SERVER_SESSION)) {
+            Session::error("User with access_token = '{$accessToken}' doesn't have enough scopes to make join.");
+            Yii::$app->statsd->inc('sessionserver.authentication.oauth2_not_enough_scopes');
+
+            throw new ForbiddenOperationException('The token does not have required scope.');
+        }
+
+        /** @var Account $account */
+        $account = $identity->getAccount();
 
         $selectedProfile = $this->selectedProfile;
         $isUuid = StringHelper::isUuid($selectedProfile);
@@ -170,10 +159,6 @@ class JoinForm extends Model {
         }
 
         $this->account = $account;
-    }
-
-    protected function getAccount(): Account {
-        return $this->account;
     }
 
     private function normalizeUUID(string $uuid): string {

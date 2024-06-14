@@ -47,11 +47,6 @@ final class ClearAccountSessions implements RetryableJobInterface {
             $authSession->delete();
         }
 
-        /** @var \common\models\MinecraftAccessKey $key */
-        foreach ($account->getMinecraftAccessKeys()->each(100, Yii::$app->unbufferedDb) as $key) {
-            $key->delete();
-        }
-
         /** @var \common\models\OauthSession $oauthSession */
         foreach ($account->getOauthSessions()->each(100, Yii::$app->unbufferedDb) as $oauthSession) {
             $oauthSession->delete();

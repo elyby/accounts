@@ -19,7 +19,6 @@ class DeleteAccountTest extends TestCase {
             'accounts' => fixtures\AccountFixture::class,
             'authSessions' => fixtures\AccountSessionFixture::class,
             'emailActivations' => fixtures\EmailActivationFixture::class,
-            'minecraftAccessKeys' => fixtures\MinecraftAccessKeyFixture::class,
             'usernamesHistory' => fixtures\UsernameHistoryFixture::class,
             'oauthClients' => fixtures\OauthClientFixture::class,
             'oauthSessions' => fixtures\OauthSessionFixture::class,
@@ -37,7 +36,6 @@ class DeleteAccountTest extends TestCase {
         $task->execute($this->createMock(Queue::class));
         $this->assertEmpty($account->emailActivations);
         $this->assertEmpty($account->sessions);
-        $this->assertEmpty($account->minecraftAccessKeys);
         $this->assertEmpty($account->oauthSessions);
         $this->assertEmpty($account->usernameHistory);
         $this->assertEmpty($account->oauthClients);
@@ -57,7 +55,6 @@ class DeleteAccountTest extends TestCase {
         $task->execute($this->createMock(Queue::class));
         $this->assertNotEmpty($account->emailActivations);
         $this->assertNotEmpty($account->sessions);
-        $this->assertNotEmpty($account->minecraftAccessKeys);
         $this->assertNotEmpty($account->oauthSessions);
         $this->assertNotEmpty($account->usernameHistory);
         $this->assertNotEmpty($account->oauthClients);
@@ -80,7 +77,6 @@ class DeleteAccountTest extends TestCase {
         $task->execute($this->createMock(Queue::class));
         $this->assertNotEmpty($account->emailActivations);
         $this->assertNotEmpty($account->sessions);
-        $this->assertNotEmpty($account->minecraftAccessKeys);
         $this->assertNotEmpty($account->oauthSessions);
         $this->assertNotEmpty($account->usernameHistory);
         $this->assertNotEmpty($account->oauthClients);

@@ -1,10 +1,8 @@
 <?php
 namespace console\controllers;
 
-use Carbon\Carbon;
 use common\models\AccountSession;
 use common\models\EmailActivation;
-use common\models\MinecraftAccessKey;
 use common\models\OauthClient;
 use common\tasks\ClearOauthSessions;
 use Yii;
@@ -26,18 +24,6 @@ class CleanupController extends Controller {
         foreach ($query->each(100, Yii::$app->unbufferedDb) as $email) {
             /** @var EmailActivation $email */
             $email->delete();
-        }
-
-        return ExitCode::OK;
-    }
-
-    public function actionMinecraftSessions(): int {
-        $expiredMinecraftSessionsQuery = MinecraftAccessKey::find()
-            ->andWhere(['<', 'updated_at', Carbon::now()->subMonths(3)->getTimestamp()]);
-
-        foreach ($expiredMinecraftSessionsQuery->each(100, Yii::$app->unbufferedDb) as $minecraftSession) {
-            /** @var MinecraftAccessKey $minecraftSession */
-            $minecraftSession->delete();
         }
 
         return ExitCode::OK;

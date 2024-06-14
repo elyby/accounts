@@ -7,7 +7,6 @@ use api\components\Tokens\TokenReader;
 use api\modules\authserver\exceptions\ForbiddenOperationException;
 use Carbon\Carbon;
 use common\models\Account;
-use common\models\MinecraftAccessKey;
 use Exception;
 use Yii;
 use yii\validators\Validator;
@@ -22,16 +21,10 @@ class AccessTokenValidator extends Validator {
     public bool $verifyAccount = true;
 
     /**
-     * @param string $value
-     *
      * @return array|null
      * @throws ForbiddenOperationException
      */
     protected function validateValue($value): ?array {
-        if (mb_strlen($value) === 36) {
-            return $this->validateLegacyToken($value);
-        }
-
         try {
             $token = Yii::$app->tokens->parse($value);
         } catch (Exception $e) {
@@ -47,30 +40,6 @@ class AccessTokenValidator extends Validator {
         }
 
         if ($this->verifyAccount && !$this->validateAccount((new TokenReader($token))->getAccountId())) {
-            throw new ForbiddenOperationException(self::INVALID_TOKEN);
-        }
-
-        return null;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return array|null
-     * @throws ForbiddenOperationException
-     */
-    private function validateLegacyToken(string $value): ?array {
-        /** @var MinecraftAccessKey|null $result */
-        $result = MinecraftAccessKey::findOne(['access_token' => $value]);
-        if ($result === null) {
-            throw new ForbiddenOperationException(self::INVALID_TOKEN);
-        }
-
-        if ($this->verifyExpiration && $result->isExpired()) {
-            throw new ForbiddenOperationException(self::TOKEN_EXPIRED);
-        }
-
-        if ($this->verifyAccount && !$this->validateAccount($result->account_id)) {
             throw new ForbiddenOperationException(self::INVALID_TOKEN);
         }
 

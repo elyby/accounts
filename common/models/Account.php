@@ -46,7 +46,6 @@ use const common\LATEST_RULES_VERSION;
  * @property-read OauthClient[] $oauthClients
  * @property-read UsernameHistory[] $usernameHistory
  * @property-read AccountSession[] $sessions
- * @property-read MinecraftAccessKey[] $minecraftAccessKeys
  *
  * Behaviors:
  * @mixin TimestampBehavior
@@ -119,10 +118,6 @@ class Account extends ActiveRecord {
 
     public function getSessions(): ActiveQuery {
         return $this->hasMany(AccountSession::class, ['account_id' => 'id']);
-    }
-
-    public function getMinecraftAccessKeys(): ActiveQuery {
-        return $this->hasMany(MinecraftAccessKey::class, ['account_id' => 'id']);
     }
 
     public function hasMojangUsernameCollision(): bool {

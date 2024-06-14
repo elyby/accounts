@@ -88,10 +88,6 @@ class Component extends YiiUserComponent {
                 $minecraftSession->revoked_at = time();
                 Assert::true($minecraftSession->save());
             }
-
-            foreach ($account->minecraftAccessKeys as $minecraftAccessKey) {
-                $minecraftAccessKey->delete();
-            }
         }
     }
 
