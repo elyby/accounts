@@ -28,11 +28,6 @@ class Component extends BaseComponent {
     /**
      * @var string
      */
-    public $publicKeyPath;
-
-    /**
-     * @var string
-     */
     public $privateKeyPath;
 
     /**
@@ -45,16 +40,12 @@ class Component extends BaseComponent {
      */
     public $encryptionKey;
 
-    /**
-     * @var AlgorithmsManager|null
-     */
-    private $algorithmManager;
+    private ?AlgorithmsManager $algorithmManager = null;
 
     public function init(): void {
         parent::init();
         Assert::notEmpty($this->hmacKey, 'hmacKey must be set');
         Assert::notEmpty($this->privateKeyPath, 'privateKeyPath must be set');
-        Assert::notEmpty($this->publicKeyPath, 'publicKeyPath must be set');
         Assert::notEmpty($this->encryptionKey, 'encryptionKey must be set');
     }
 
@@ -131,11 +122,7 @@ class Component extends BaseComponent {
         if ($this->algorithmManager === null) {
             $this->algorithmManager = new AlgorithmsManager([
                 new Algorithms\HS256($this->hmacKey),
-                new Algorithms\ES256(
-                    "file://{$this->privateKeyPath}",
-                    $this->privateKeyPass,
-                    "file://{$this->publicKeyPath}"
-                ),
+                new Algorithms\ES256("file://{$this->privateKeyPath}", $this->privateKeyPass),
             ]);
         }
 

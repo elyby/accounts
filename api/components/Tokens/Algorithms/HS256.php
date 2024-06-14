@@ -23,10 +23,6 @@ class HS256 implements AlgorithmInterface {
         $this->key = $key;
     }
 
-    public function getAlgorithmId(): string {
-        return 'HS256';
-    }
-
     public function getSigner(): Signer {
         return new Sha256();
     }

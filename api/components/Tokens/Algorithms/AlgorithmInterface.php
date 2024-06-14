@@ -8,8 +8,6 @@ use Lcobucci\JWT\Signer\Key;
 
 interface AlgorithmInterface {
 
-    public function getAlgorithmId(): string;
-
     public function getSigner(): Signer;
 
     public function getPrivateKey(): Key;

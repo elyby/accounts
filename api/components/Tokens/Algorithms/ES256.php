@@ -7,68 +7,45 @@ use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Ecdsa\Sha256;
 use Lcobucci\JWT\Signer\Key;
 
-class ES256 implements AlgorithmInterface {
+final class ES256 implements AlgorithmInterface {
 
-    /**
-     * @var string
-     */
-    private $privateKey;
+    private string $privateKeyPath;
 
-    /**
-     * @var string|null
-     */
-    private $privateKeyPass;
+    private ?string $privateKeyPass;
 
-    /**
-     * @var string
-     */
-    private $publicKey;
+    private ?Key $privateKey = null;
 
-    /**
-     * @var Key|null
-     */
-    private $loadedPrivateKey;
+    private ?Key $publicKey = null;
 
-    /**
-     * @var Key|null
-     */
-    private $loadedPublicKey;
+    private Sha256 $signer;
 
-    /**
-     * TODO: document arguments
-     *
-     * @param string $privateKey
-     * @param string|null $privateKeyPass
-     * @param string $publicKey
-     */
-    public function __construct(string $privateKey, ?string $privateKeyPass, string $publicKey) {
-        $this->privateKey = $privateKey;
+    public function __construct(string $privateKeyPath, ?string $privateKeyPass = null) {
+        $this->privateKeyPath = $privateKeyPath;
         $this->privateKeyPass = $privateKeyPass;
-        $this->publicKey = $publicKey;
-    }
-
-    public function getAlgorithmId(): string {
-        return 'ES256';
+        $this->signer = new Sha256();
     }
 
     public function getSigner(): Signer {
-        return new Sha256();
+        return $this->signer;
     }
 
     public function getPrivateKey(): Key {
-        if ($this->loadedPrivateKey === null) {
-            $this->loadedPrivateKey = new Key($this->privateKey, $this->privateKeyPass);
+        if ($this->privateKey === null) {
+            $this->privateKey = new Key($this->privateKeyPath, $this->privateKeyPass);
         }
 
-        return $this->loadedPrivateKey;
+        return $this->privateKey;
     }
 
     public function getPublicKey(): Key {
-        if ($this->loadedPublicKey === null) {
-            $this->loadedPublicKey = new Key($this->publicKey);
+        if ($this->publicKey === null) {
+            $privateKey = $this->getPrivateKey();
+            $privateKeyOpenSSL = openssl_pkey_get_private($privateKey->getContent(), $privateKey->getPassphrase() ?? '');
+            $publicPem = openssl_pkey_get_details($privateKeyOpenSSL)['key'];
+            $this->publicKey = new Key($publicPem);
         }
 
-        return $this->loadedPublicKey;
+        return $this->publicKey;
     }
 
 }
