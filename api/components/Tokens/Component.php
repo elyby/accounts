@@ -108,6 +108,10 @@ class Component extends BaseComponent {
         return $rawValue;
     }
 
+    public function getPublicKey(): string {
+        return $this->getAlgorithmManager()->get(self::PREFERRED_ALGORITHM)->getPublicKey()->getContent();
+    }
+
     private function getAlgorithmManager(): AlgorithmsManager {
         if ($this->algorithmManager === null) {
             $this->algorithmManager = new AlgorithmsManager([
