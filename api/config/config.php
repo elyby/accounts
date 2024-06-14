@@ -31,7 +31,6 @@ return [
         ],
         'tokens' => [
             'class' => api\components\Tokens\Component::class,
-            'hmacKey' => getenv('JWT_USER_SECRET'),
             'privateKeyPath' => getenv('JWT_PRIVATE_KEY_PATH') ?: __DIR__ . '/../../data/certs/private.pem',
             'privateKeyPass' => getenv('JWT_PRIVATE_KEY_PASS') ?: null,
             'encryptionKey' => getenv('JWT_ENCRYPTION_KEY'),

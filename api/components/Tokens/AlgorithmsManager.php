@@ -6,6 +6,11 @@ namespace api\components\Tokens;
 use api\components\Tokens\Algorithms\AlgorithmInterface;
 use Webmozart\Assert\Assert;
 
+/**
+ * This class is used to hold multiple keys signing mechanisms.
+ * This may be useful when we change the key signing algorithm to allow during the transition period
+ * the keys with both algorithms to work simultaneously.
+ */
 final class AlgorithmsManager {
 
     /**

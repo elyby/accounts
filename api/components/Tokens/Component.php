@@ -18,15 +18,6 @@ class Component extends BaseComponent {
 
     /**
      * @var string
-     * @deprecated In earlier versions of the application, JWT were signed by a synchronous encryption algorithm.
-     * Now asynchronous encryption is used instead, and this logic is saved for a transitional period.
-     * I think it can be safely removed, but I'll not do it yet, because at the time of writing the comment
-     * there were enough changes in the code already.
-     */
-    public $hmacKey;
-
-    /**
-     * @var string
      */
     public $privateKeyPath;
 
@@ -44,7 +35,6 @@ class Component extends BaseComponent {
 
     public function init(): void {
         parent::init();
-        Assert::notEmpty($this->hmacKey, 'hmacKey must be set');
         Assert::notEmpty($this->privateKeyPath, 'privateKeyPath must be set');
         Assert::notEmpty($this->encryptionKey, 'encryptionKey must be set');
     }
@@ -121,7 +111,6 @@ class Component extends BaseComponent {
     private function getAlgorithmManager(): AlgorithmsManager {
         if ($this->algorithmManager === null) {
             $this->algorithmManager = new AlgorithmsManager([
-                new Algorithms\HS256($this->hmacKey),
                 new Algorithms\ES256("file://{$this->privateKeyPath}", $this->privateKeyPass),
             ]);
         }

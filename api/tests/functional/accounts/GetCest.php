@@ -97,6 +97,25 @@ class GetCest {
     public function testGetInfoWithExpiredToken(FunctionalTester $I) {
         // We're setting up a known expired token
         $I->amBearerAuthenticated(
+            'eyJhbGciOiJFUzI1NiJ9.eyJpYXQiOjE0NjQ2Mjc1NDUsImV4cCI6MTQ2NDYzMTE0NSwic3ViIjoiZWx5fDEiLCJlbHktc2NvcGVzIjoi' .
+            'YWNjb3VudHNfd2ViX3VzZXIifQ.m9Di3MC1SkF0dwKP0zIw1Hl0H2mB3PqwoRCXfoF0VuIQnnMurkmJoxa3A02B1zolmCPy3Wd1wKvJz3' .
+            'TMpKJY2g',
+        );
+
+        $this->route->get(1);
+        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseIsJson();
+        $I->canSeeResponseContainsJson([
+            'name' => 'Unauthorized',
+            'message' => 'Token expired',
+            'code' => 0,
+            'status' => 401,
+        ]);
+    }
+
+    public function testGetInfoWithTokenWithOutdatedAlg(FunctionalTester $I) {
+        // We're setting up a known expired token
+        $I->amBearerAuthenticated(
             'eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0NjQ2Mjc1NDUsImV4cCI6MTQ2NDYzMTE0NSwic3ViIjoiZWx5fDEiLCJlbHktc' .
             '2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIifQ.v1u8V5wk2RkWmnZtH3jZvM3zO1Gpgbp2DQFfLfy8jHY'
         );
@@ -106,7 +125,7 @@ class GetCest {
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
             'name' => 'Unauthorized',
-            'message' => 'Token expired',
+            'message' => 'Incorrect token',
             'code' => 0,
             'status' => 401,
         ]);

@@ -2,7 +2,6 @@
 return [
     'components' => [
         'tokens' => [
-            'hmacKey' => 'tests-secret-key',
             'privateKeyPath' => codecept_data_dir('certs/private.pem'),
             'privateKeyPass' => null,
             'encryptionKey' => 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
