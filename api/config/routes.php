@@ -41,13 +41,13 @@ return [
     '/minecraft/session/hasJoined' => 'session/session/has-joined',
     '/minecraft/session/legacy/hasJoined' => 'session/session/has-joined-legacy',
     '/minecraft/session/profile/<uuid>' => 'session/session/profile',
-    'POST /minecraft/session/profile/lookup/bulk/byname' => 'mojang/api/uuids-by-usernames',
 
     // Mojang API module routes
     '/mojang/profiles/<username>' => 'mojang/api/uuid-by-username',
     '/mojang/profiles/<uuid>/names' => 'mojang/api/usernames-by-uuid',
     'POST /mojang/profiles' => 'mojang/api/uuids-by-usernames',
     'GET /mojang/services/minecraft/profile' => 'mojang/services/profile',
+    'POST /mojang/services/minecraft/profile/lookup/bulk/byname' => 'mojang/api/uuids-by-usernames',
 
     // authlib-injector
     '/authlib-injector/authserver/<action>' => 'authserver/authentication/<action>',
