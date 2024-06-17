@@ -137,8 +137,8 @@ class UsernamesToUuidsCest {
 
     private function bulkProfilesEndpoints(): array {
         return [
-            ['/api/authlib-injector/api/profiles/minecraft'],
-            ['/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname'],
+            ['/api/mojang/profiles'],
+            ['/api/mojang/services/minecraft/profile/lookup/bulk/byname'],
         ];
     }
 
