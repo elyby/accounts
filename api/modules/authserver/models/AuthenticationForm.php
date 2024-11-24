@@ -14,6 +14,7 @@ use common\helpers\Error as E;
 use common\models\Account;
 use common\models\OauthClient;
 use common\models\OauthSession;
+use Ramsey\Uuid\Uuid;
 use Webmozart\Assert\Assert;
 use Yii;
 
@@ -41,7 +42,7 @@ class AuthenticationForm extends ApiForm {
 
     public function rules(): array {
         return [
-            [['username', 'password', 'clientToken'], RequiredValidator::class],
+            [['username', 'password'], RequiredValidator::class],
             [['clientToken'], ClientTokenValidator::class],
             [['requestUser'], 'boolean'],
         ];
@@ -110,8 +111,9 @@ class AuthenticationForm extends ApiForm {
 
         /** @var Account $account */
         $account = $loginForm->getAccount();
-        $token = Yii::$app->tokensFactory->createForMinecraftAccount($account, $this->clientToken);
-        $dataModel = new AuthenticateData($account, (string)$token, $this->clientToken, (bool)$this->requestUser);
+        $clientToken = $this->clientToken ?: Uuid::uuid4()->toString();
+        $token = Yii::$app->tokensFactory->createForMinecraftAccount($account, $clientToken);
+        $dataModel = new AuthenticateData($account, (string)$token, $clientToken, (bool)$this->requestUser);
         /** @var OauthSession|null $minecraftOauthSession */
         $minecraftOauthSession = $account->getOauthSessions()
             ->andWhere(['client_id' => OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER])

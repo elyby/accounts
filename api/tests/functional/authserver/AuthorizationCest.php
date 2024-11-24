@@ -107,6 +107,16 @@ class AuthorizationCest {
         ]);
     }
 
+    public function withoutClientToken(FunctionalTester $I): void {
+        $I->sendPOST('/api/authserver/authentication/authenticate', [
+            'username' => 'admin',
+            'password' => 'password_0',
+        ]);
+        $I->canSeeResponseCodeIs(200);
+        $clientToken = $I->grabDataFromResponseByJsonPath('$.clientToken')[0];
+        $I->assertNotEmpty($clientToken);
+    }
+
     public function tooLongClientToken(FunctionalTester $I) {
         $I->wantTo('send non uuid clientToken with more then 255 characters length');
         $I->sendPOST('/api/authserver/authentication/authenticate', [
