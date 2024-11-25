@@ -1,4 +1,4 @@
-image: edbizarro/gitlab-ci-pipeline-php:7.4-alpine
+image: thecodingmachine/php:8.3-v4-cli
 
 stages:
   - prepare

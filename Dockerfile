@@ -1,4 +1,4 @@
-FROM php:7.4.33-fpm-alpine3.16 AS app
+FROM php:8.3.12-fpm-alpine3.20 AS app
 
 # bash needed to support wait-for-it script
 RUN apk add --update --no-cache git bash patch openssh dcron \

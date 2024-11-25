@@ -18,7 +18,7 @@
         }
     },
     "require": {
-        "php": "^7.4",
+        "php": "^8.3",
         "ext-intl": "*",
         "ext-json": "*",
         "ext-libxml": "*",
@@ -30,10 +30,10 @@
         "bacon/bacon-qr-code": "^1.0",
         "domnikl/statsd": "^3.0.0",
         "ely/mojang-api": "^0.2.0",
-        "ely/yii2-tempmail-validator": "^2.0",
+        "ely/yii2-tempmail-validator": "dev-master",
         "guzzlehttp/guzzle": "^6|^7",
-        "lcobucci/jwt": "^3.3",
-        "league/oauth2-server": "dev-adaptation",
+        "lcobucci/jwt": "^5.4",
+        "league/oauth2-server": "^9.1.0",
         "mito/yii2-sentry": "^1.0",
         "nesbot/carbon": "^2.22",
         "paragonie/constant_time_encoding": "^2.0",
@@ -47,12 +47,12 @@
         "yiisoft/yii2-swiftmailer": "~2.1.0"
     },
     "require-dev": {
-        "codeception/codeception": "^4.0.0",
-        "codeception/module-asserts": "^1.1.0",
-        "codeception/module-rest": "^1.0.0",
-        "codeception/module-yii2": "^1.0.0",
+        "codeception/codeception": "^5.1.0",
+        "codeception/module-asserts": "^3.0.0",
+        "codeception/module-rest": "^3.4.0",
+        "codeception/module-yii2": "^1.1.0",
         "cweagans/composer-patches": "^1.7",
-        "ely/php-code-style": "^0.3.0",
+        "ely/php-code-style": "^1.0.1",
         "php-mock/php-mock-phpunit": "^2.5",
         "roave/security-advisories": "dev-master"
     },
@@ -74,22 +74,10 @@
         "symfony/polyfill-php73": "*",
         "yiisoft/yii2-composer": "*"
     },
-    "extra": {
-        "composer-exit-on-patch-failure": true,
-        "patches": {
-            "codeception/codeception": {
-                "Fix Codeception compatibility with PHPUnit8": "patches/codeception-phpunit-8-fix.patch"
-            }
-        }
-    },
     "repositories": [
         {
             "type": "composer",
             "url": "https://asset-packagist.org"
-        },
-        {
-            "type": "github",
-            "url": "https://github.com/elyby/oauth2-server.git"
         }
     ],
     "autoload": {
