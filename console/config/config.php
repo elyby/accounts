@@ -8,7 +8,7 @@ return [
         'log' => [
             'targets' => [
                 [
-                    'class' => mito\sentry\Target::class,
+                    'class' => nohnaimer\sentry\Target::class,
                     'levels' => ['error', 'warning'],
                 ],
                 [

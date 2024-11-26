@@ -21,7 +21,7 @@ class StringHelperTest extends TestCase {
     }
 
     /**
-     * @dataProvider trimProvider()
+     * @dataProvider trimProvider
      */
     public function testTrim($expected, $string) {
         $result = StringHelper::trim($string);
@@ -34,7 +34,8 @@ class StringHelperTest extends TestCase {
      *
      * @return array
      */
-    public function trimProvider() {
+    public static function trimProvider(): array
+    {
         return [
             ['foo   bar', '  foo   bar  '], // Simple spaces
             ['foo bar', ' foo bar'], // Only left side space

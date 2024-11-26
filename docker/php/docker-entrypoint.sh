@@ -68,6 +68,8 @@ fi
 echo "Generating RBAC rules"
 php $YII_EXEC rbac/generate
 
+echo "Running database migrations"
 wait-for-it "${DB_HOST:-db}:${DB_PORT:-3306}" -s -t 0 -- php $YII_EXEC migrate/up --interactive=0
 
+echo "Launching"
 exec "$@"

@@ -21,7 +21,7 @@ class Yii extends \yii\BaseYii {
  * @property \yii\redis\Connection            $redis
  * @property \GuzzleHttp\Client               $guzzle
  * @property \common\components\EmailsRenderer\Component $emailsRenderer
- * @property \mito\sentry\Component           $sentry
+ * @property \nohnaimer\sentry\Component      $sentry
  * @property \common\components\StatsD        $statsd
  * @property \yii\queue\Queue                 $queue
  */
