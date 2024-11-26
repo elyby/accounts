@@ -8,6 +8,7 @@ use common\models\AccountQuery;
 use common\models\confirmations\CurrentEmailConfirmation;
 use common\tasks\SendCurrentEmailConfirmation;
 use common\tests\unit\TestCase;
+use yii\mail\MailerInterface;
 use yii\queue\Queue;
 
 class SendCurrentEmailConfirmationTest extends TestCase {
@@ -32,7 +33,7 @@ class SendCurrentEmailConfirmationTest extends TestCase {
     }
 
     public function testExecute() {
-        $task = new SendCurrentEmailConfirmation();
+        $task = new SendCurrentEmailConfirmation($this->createMock(MailerInterface::class));
         $task->username = 'mock-username';
         $task->email = 'mock@ely.by';
         $task->code = 'GFEDCBA';
