@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 set -e
 
-YII_EXEC="/var/www/html/yii"
 XDEBUG_EXTENSION_FILE="/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini"
+XDEBUG_CONFIG_FILE="/usr/local/etc/php/conf.d/xdebug.ini"
 PHP_PROD_INI="/usr/local/etc/php/conf.d/php.prod.ini"
 PHP_DEV_INI="/usr/local/etc/php/conf.d/php.dev.ini"
+YII_EXEC="/var/www/html/yii"
 
 if [ "$YII_DEBUG" = "true" ] || [ "$YII_DEBUG" = "1" ] ; then
     echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > $XDEBUG_EXTENSION_FILE
+    HOST_IP="$(ip route | awk '/default/ { print $3 }')"
+    sed -i "/xdebug\.client_host/s/=.*/=${HOST_IP}/" $XDEBUG_CONFIG_FILE
     mv ${PHP_PROD_INI}{,.disabled} 2> /dev/null || true
     mv ${PHP_DEV_INI}{.disabled,} 2> /dev/null || true
 else

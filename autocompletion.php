@@ -17,7 +17,7 @@ class Yii extends \yii\BaseYii {
  * Used for properties that are identical for both WebApplication and ConsoleApplication
  *
  * @property \yii\db\Connection               $unbufferedDb
- * @property \yii\swiftmailer\Mailer          $mailer
+ * @property \yii\symfonymailer\Mailer        $mailer
  * @property \yii\redis\Connection            $redis
  * @property \GuzzleHttp\Client               $guzzle
  * @property \common\components\EmailsRenderer\Component $emailsRenderer

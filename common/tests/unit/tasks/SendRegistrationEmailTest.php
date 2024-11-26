@@ -57,11 +57,11 @@ class SendRegistrationEmailTest extends TestCase {
         $task->execute($this->createMock(Queue::class));
 
         $this->tester->canSeeEmailIsSent(1);
-        /** @var \yii\swiftmailer\Message $email */
+        /** @var \yii\symfonymailer\Message $email */
         $email = $this->tester->grabSentEmails()[0];
         $this->assertSame(['mock@ely.by' => 'mock-username'], $email->getTo());
         $this->assertSame('Ely.by Account registration', $email->getSubject());
-        $this->assertSame('mock-template', $email->getSwiftMessage()->getBody());
+        $this->assertSame('mock-template', $email->getSymfonyEmail()->getBody());
     }
 
     protected function _before() {

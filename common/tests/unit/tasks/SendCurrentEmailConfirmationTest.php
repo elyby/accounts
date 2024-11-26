@@ -10,6 +10,7 @@ use common\tasks\SendCurrentEmailConfirmation;
 use common\tests\unit\TestCase;
 use yii\mail\MailerInterface;
 use yii\queue\Queue;
+use yii\symfonymailer\Message;
 
 class SendCurrentEmailConfirmationTest extends TestCase {
 
@@ -41,11 +42,11 @@ class SendCurrentEmailConfirmationTest extends TestCase {
         $task->execute($this->createMock(Queue::class));
 
         $this->tester->canSeeEmailIsSent(1);
-        /** @var \yii\swiftmailer\Message $email */
+        /** @var Message $email */
         $email = $this->tester->grabSentEmails()[0];
         $this->assertSame(['mock@ely.by' => 'mock-username'], $email->getTo());
         $this->assertSame('Ely.by Account change E-mail confirmation', $email->getSubject());
-        $children = $email->getSwiftMessage()->getChildren()[0];
+        $children = $email->getSymfonyEmail()->getAttachments()[0];
         $this->assertStringContainsString('GFEDCBA', $children->getBody());
     }
 

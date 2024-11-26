@@ -45,7 +45,7 @@
         "yiisoft/yii2": "~2.0.38",
         "yiisoft/yii2-queue": "^2.2.0",
         "yiisoft/yii2-redis": "~2.0.0",
-        "yiisoft/yii2-swiftmailer": "~2.1.0"
+        "yiisoft/yii2-symfonymailer": "~4.0.0"
     },
     "require-dev": {
         "codeception/codeception": "^5.1.0",

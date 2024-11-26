@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace codeception\api\unit\models\authentication;
+namespace api\tests\unit\models\authentication;
 
 use api\models\authentication\RefreshTokenForm;
 use api\tests\unit\TestCase;

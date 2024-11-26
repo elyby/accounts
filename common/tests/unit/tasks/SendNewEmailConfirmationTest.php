@@ -40,11 +40,11 @@ class SendNewEmailConfirmationTest extends TestCase {
         $task->execute($this->createMock(Queue::class));
 
         $this->tester->canSeeEmailIsSent(1);
-        /** @var \yii\swiftmailer\Message $email */
+        /** @var \yii\symfonymailer\Message $email */
         $email = $this->tester->grabSentEmails()[0];
         $this->assertSame(['mock@ely.by' => 'mock-username'], $email->getTo());
         $this->assertSame('Ely.by Account new E-mail confirmation', $email->getSubject());
-        $children = $email->getSwiftMessage()->getChildren()[0];
+        $children = $email->getSymfonyEmail()->getAttachments()[0];
         $this->assertStringContainsString('GFEDCBA', $children->getBody());
     }
 

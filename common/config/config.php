@@ -1,4 +1,7 @@
 <?php
+
+use Symfony\Component\Mailer\Transport\Smtp\SmtpTransport;
+
 return [
     'version' => '{{PLACE_VERSION_HERE}}', // This will be replaced by build tool
     'vendorPath' => dirname(__DIR__, 2) . '/vendor',
@@ -55,10 +58,10 @@ return [
             ],
         ],
         'mailer' => [
-            'class' => yii\swiftmailer\Mailer::class,
+            'class' => yii\symfonymailer\Mailer::class,
             'viewPath' => '@common/mail',
             'transport' => [
-                'class' => Swift_SmtpTransport::class,
+                'class' => SmtpTransport::class,
                 'host' => getenv('SMTP_HOST'),
                 'username' => getenv('SMTP_USER'),
                 'password' => getenv('SMTP_PASS'),

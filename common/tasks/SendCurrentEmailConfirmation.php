@@ -18,9 +18,6 @@ class SendCurrentEmailConfirmation implements RetryableJobInterface {
 
     public string $code;
 
-    /**
-     * @var MailerInterface
-     */
     public MailerInterface $mailer;
 
     public function __construct(MailerInterface $mailer) {
