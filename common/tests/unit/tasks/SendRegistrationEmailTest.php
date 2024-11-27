@@ -61,7 +61,7 @@ class SendRegistrationEmailTest extends TestCase {
         $email = $this->tester->grabSentEmails()[0];
         $this->assertSame(['mock@ely.by' => 'mock-username'], $email->getTo());
         $this->assertSame('Ely.by Account registration', $email->getSubject());
-        $this->assertSame('mock-template', $email->getSymfonyEmail()->getBody());
+        $this->assertSame('mock-template', $email->getSymfonyEmail()->getHtmlBody());
     }
 
     protected function _before() {

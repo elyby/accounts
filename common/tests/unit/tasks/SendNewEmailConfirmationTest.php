@@ -44,8 +44,7 @@ class SendNewEmailConfirmationTest extends TestCase {
         $email = $this->tester->grabSentEmails()[0];
         $this->assertSame(['mock@ely.by' => 'mock-username'], $email->getTo());
         $this->assertSame('Ely.by Account new E-mail confirmation', $email->getSubject());
-        $children = $email->getSymfonyEmail()->getAttachments()[0];
-        $this->assertStringContainsString('GFEDCBA', $children->getBody());
+        $this->assertStringContainsString('GFEDCBA', $email->getSymfonyEmail()->getTextBody());
     }
 
 }
