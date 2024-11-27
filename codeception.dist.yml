@@ -4,7 +4,7 @@ include:
   - console
 
 paths:
-  log: console/runtime/logs
+  output: console/runtime/logs
 
 settings:
   colors: true

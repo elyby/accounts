@@ -25,7 +25,8 @@ abstract class Template {
      * @return array|string
      * @throws InvalidConfigException
      */
-    public function getFrom() {
+    public function getFrom(): array|string
+    {
         $fromEmail = Yii::$app->params['fromEmail'] ?? '';
         if (!$fromEmail) {
             throw new InvalidConfigException('Please specify fromEmail app in app params');
@@ -39,11 +40,11 @@ abstract class Template {
     }
 
     /**
-     * @param string|array $to see \yii\mail\MessageInterface::setTo to know the format.
+     * @param array|string $to see \yii\mail\MessageInterface::setTo to know the format.
      *
      * @throws \common\emails\exceptions\CannotSendEmailException
      */
-    public function send($to): void {
+    public function send(array|string $to): void {
         if (!$this->createMessage($to)->send()) {
             throw new exceptions\CannotSendEmailException();
         }

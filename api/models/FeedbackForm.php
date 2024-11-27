@@ -9,6 +9,8 @@ use common\models\Account;
 use Webmozart\Assert\Assert;
 use Yii;
 use yii\base\InvalidConfigException;
+use yii\symfonymailer\Mailer;
+use yii\symfonymailer\Message;
 
 class FeedbackForm extends ApiForm {
 
@@ -31,12 +33,15 @@ class FeedbackForm extends ApiForm {
         ];
     }
 
+    /**
+     * @throws InvalidConfigException
+     */
     public function sendMessage(): bool {
         if (!$this->validate()) {
             return false;
         }
 
-        /** @var \yii\swiftmailer\Mailer $mailer */
+        /** @var Mailer $mailer */
         $mailer = Yii::$app->mailer;
         $supportEmail = Yii::$app->params['supportEmail'];
         if (!$supportEmail) {
@@ -44,7 +49,7 @@ class FeedbackForm extends ApiForm {
         }
 
         $account = $this->getAccount();
-        /** @var \yii\swiftmailer\Message $message */
+        /** @var Message $message */
         $message = $mailer->compose('@common/emails/views/feedback', [
             'model' => $this,
             'account' => $account,

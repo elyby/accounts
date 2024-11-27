@@ -1,10 +1,11 @@
 <?php
-namespace codeception\api\unit\models;
+namespace api\tests\unit\models;
 
 use api\models\FeedbackForm;
 use api\tests\unit\TestCase;
 use common\models\Account;
-use yii\swiftmailer\Message;
+use PHPUnit\Framework\MockObject\MockObject;
+use yii\symfonymailer\Message;
 
 class FeedbackFormTest extends TestCase {
 
@@ -19,7 +20,7 @@ class FeedbackFormTest extends TestCase {
     }
 
     public function testSendMessageWithEmail() {
-        /** @var FeedbackForm|\PHPUnit\Framework\MockObject\MockObject $model */
+        /** @var FeedbackForm|MockObject $model */
         $model = $this->getMockBuilder(FeedbackForm::class)
             ->setMethods(['getAccount'])
             ->setConstructorArgs([[

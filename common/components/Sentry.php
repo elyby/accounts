@@ -3,18 +3,21 @@ declare(strict_types=1);
 
 namespace common\components;
 
-use mito\sentry\Component;
+use nohnaimer\sentry\Component;
 use Yii;
 
 class Sentry extends Component {
 
-    public function init() {
+    public bool $enabled = true;
+
+    public function init(): void
+    {
         if (!$this->enabled) {
             return;
         }
 
-        if (is_array($this->client) && !isset($this->client['release'])) {
-            $this->client['release'] = Yii::$app->version;
+        if (is_array($this->clientOptions) && !isset($this->clientOptions['release'])) {
+            $this->clientOptions['release'] = Yii::$app->version;
         }
 
         parent::init();
