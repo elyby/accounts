@@ -31,7 +31,7 @@ final class ES256 implements AlgorithmInterface {
 
     public function getPrivateKey(): Key {
         if ($this->privateKey === null) {
-            $this->privateKey = new Key($this->privateKeyPath, $this->privateKeyPass);
+            $this->privateKey = Signer\Key\InMemory::plainText($this->privateKeyPath, $this->privateKeyPass ?? '');
         }
 
         return $this->privateKey;
@@ -40,9 +40,9 @@ final class ES256 implements AlgorithmInterface {
     public function getPublicKey(): Key {
         if ($this->publicKey === null) {
             $privateKey = $this->getPrivateKey();
-            $privateKeyOpenSSL = openssl_pkey_get_private($privateKey->getContent(), $privateKey->getPassphrase() ?? '');
+            $privateKeyOpenSSL = openssl_pkey_get_private($privateKey->contents(), $privateKey->passphrase() ?? '');
             $publicPem = openssl_pkey_get_details($privateKeyOpenSSL)['key'];
-            $this->publicKey = new Key($publicPem);
+            $this->publicKey = Signer\Key\InMemory::plainText($publicPem);
         }
 
         return $this->publicKey;

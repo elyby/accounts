@@ -17,20 +17,20 @@ use yii\base\Component;
 
 class TokensFactory extends Component {
 
-    public const SUB_ACCOUNT_PREFIX = 'ely|';
+    public const string SUB_ACCOUNT_PREFIX = 'ely|';
 
     public function createForWebAccount(Account $account, AccountSession $session = null): Token {
         $payloads = [
             'sub' => $this->buildSub($account->id),
-            'exp' => Carbon::now()->addHour()->getTimestamp(),
+            'exp' => Carbon::now()->addHour()->toDateTimeImmutable(),
             'scope' => $this->prepareScopes([R::ACCOUNTS_WEB_USER]),
         ];
         if ($session === null) {
             // If we don't remember a session, the token should live longer
             // so that the session doesn't end while working with the account
-            $payloads['exp'] = Carbon::now()->addDays(7)->getTimestamp();
+            $payloads['exp'] = Carbon::now()->addDays(7)->toDateTimeImmutable();
         } else {
-            $payloads['jti'] = $session->id;
+            $payloads['jti'] = (string) $session->id;
         }
 
         return Yii::$app->tokens->create($payloads);
@@ -42,11 +42,11 @@ class TokensFactory extends Component {
             'scope' => $this->prepareScopes($accessToken->getScopes()),
         ];
         if ($accessToken->getExpiryDateTime() > new DateTime()) {
-            $payloads['exp'] = $accessToken->getExpiryDateTime()->getTimestamp();
+            $payloads['exp'] = $accessToken->getExpiryDateTime();
         }
 
         if ($accessToken->getUserIdentifier() !== null) {
-            $payloads['sub'] = $this->buildSub($accessToken->getUserIdentifier());
+            $payloads['sub'] = $this->buildSub((int)$accessToken->getUserIdentifier());
         }
 
         return Yii::$app->tokens->create($payloads);
@@ -57,7 +57,7 @@ class TokensFactory extends Component {
             'scope' => $this->prepareScopes([P::OBTAIN_OWN_ACCOUNT_INFO, P::MINECRAFT_SERVER_SESSION]),
             'ely-client-token' => new EncryptedValue($clientToken),
             'sub' => $this->buildSub($account->id),
-            'exp' => Carbon::now()->addDays(2)->getTimestamp(),
+            'exp' => Carbon::now()->addDays(2)->toDateTimeImmutable(),
         ]);
     }
 

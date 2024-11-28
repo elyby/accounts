@@ -8,9 +8,12 @@ use Carbon\Carbon;
 use common\models\Account;
 use common\models\OauthClient;
 use common\models\OauthSession;
+use DateTimeImmutable;
 use Exception;
 use Lcobucci\JWT\Token;
-use Lcobucci\JWT\ValidationData;
+use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
+use Lcobucci\JWT\Validation\Validator;
+use Psr\Clock\ClockInterface as Clock;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\web\UnauthorizedHttpException;
@@ -20,17 +23,18 @@ class JwtIdentity implements IdentityInterface {
     /**
      * @var Token
      */
-    private $token;
+    private Token $token;
 
     /**
      * @var TokenReader|null
      */
-    private $reader;
+    private ?TokenReader $reader = null;
 
     private function __construct(Token $token) {
         $this->token = $token;
     }
 
+    /** @noinspection PhpParameterNameChangedDuringInheritanceInspection */
     public static function findIdentityByAccessToken($rawToken, $type = null): IdentityInterface {
         try {
             $token = Yii::$app->tokens->parse($rawToken);
@@ -48,14 +52,21 @@ class JwtIdentity implements IdentityInterface {
             throw new UnauthorizedHttpException('Token expired');
         }
 
-        if (!$token->validate(new ValidationData($now->getTimestamp()))) {
+        // very cool how Carbon doesn't even HAVE A REAL CLOCK (it's just null)
+        // PHP is fucking hell.
+        if (!(new Validator())->validate($token, new LooseValidAt($now->getClock() ?? new class implements Clock {
+            public function now(): DateTimeImmutable
+            {
+                return new DateTimeImmutable();
+            }
+        }))) {
             throw new UnauthorizedHttpException('Incorrect token');
         }
 
         $tokenReader = new TokenReader($token);
         $accountId = $tokenReader->getAccountId();
         if ($accountId !== null) {
-            $iat = $token->getClaim('iat');
+            $iat = $token->claims()->get('iat');
             if ($tokenReader->getMinecraftClientToken() !== null
              && self::isRevoked($accountId, OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER, $iat)
             ) {
@@ -85,7 +96,7 @@ class JwtIdentity implements IdentityInterface {
     }
 
     public function getId(): string {
-        return (string)$this->token;
+        return $this->token->toString();
     }
 
     // @codeCoverageIgnoreStart

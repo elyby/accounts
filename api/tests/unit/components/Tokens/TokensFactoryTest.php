@@ -23,11 +23,11 @@ class TokensFactoryTest extends TestCase {
         // Create for account
 
         $token = $factory->createForWebAccount($account);
-        $this->assertEqualsWithDelta(time(), $token->getClaim('iat'), 1);
-        $this->assertEqualsWithDelta(time() + 60 * 60 * 24 * 7, $token->getClaim('exp'), 2);
-        $this->assertSame('ely|1', $token->getClaim('sub'));
-        $this->assertSame('accounts_web_user', $token->getClaim('scope'));
-        $this->assertArrayNotHasKey('jti', $token->getClaims());
+        $this->assertEqualsWithDelta(time(), $token->claims()->get('iat'), 1);
+        $this->assertEqualsWithDelta(time() + 60 * 60 * 24 * 7, $token->claims()->get('exp'), 2);
+        $this->assertSame('ely|1', $token->claims()->get('sub'));
+        $this->assertSame('accounts_web_user', $token->claims()->get('scope'));
+        $this->assertArrayNotHasKey('jti', $token->claims()->all());
 
         $session = new AccountSession();
         $session->id = 2;
@@ -35,11 +35,11 @@ class TokensFactoryTest extends TestCase {
         // Create for account with remember me
 
         $token = $factory->createForWebAccount($account, $session);
-        $this->assertEqualsWithDelta(time(), $token->getClaim('iat'), 1);
-        $this->assertEqualsWithDelta(time() + 3600, $token->getClaim('exp'), 2);
-        $this->assertSame('ely|1', $token->getClaim('sub'));
-        $this->assertSame('accounts_web_user', $token->getClaim('scope'));
-        $this->assertSame(2, $token->getClaim('jti'));
+        $this->assertEqualsWithDelta(time(), $token->claims()->get('iat'), 1);
+        $this->assertEqualsWithDelta(time() + 3600, $token->claims()->get('exp'), 2);
+        $this->assertSame('ely|1', $token->claims()->get('sub'));
+        $this->assertSame('accounts_web_user', $token->claims()->get('scope'));
+        $this->assertSame(2, $token->claims()->get('jti'));
     }
 
     public function testCreateForOauthClient() {
@@ -64,11 +64,11 @@ class TokensFactoryTest extends TestCase {
         $accessToken->method('getUserIdentifier')->willReturn(1);
 
         $token = $factory->createForOAuthClient($accessToken);
-        $this->assertEqualsWithDelta(time(), $token->getClaim('iat'), 1);
-        $this->assertEqualsWithDelta($expiryDateTime->getTimestamp(), $token->getClaim('exp'), 2);
-        $this->assertSame('ely|1', $token->getClaim('sub'));
-        $this->assertSame('clientId', $token->getClaim('client_id'));
-        $this->assertSame('scope1 scope2', $token->getClaim('scope'));
+        $this->assertEqualsWithDelta(time(), $token->claims()->get('iat'), 1);
+        $this->assertEqualsWithDelta($expiryDateTime->getTimestamp(), $token->claims()->get('exp'), 2);
+        $this->assertSame('ely|1', $token->claims()->get('sub'));
+        $this->assertSame('clientId', $token->claims()->get('client_id'));
+        $this->assertSame('scope1 scope2', $token->claims()->get('scope'));
 
         // Create for client credentials grant
 
@@ -79,8 +79,8 @@ class TokensFactoryTest extends TestCase {
         $accessToken->method('getUserIdentifier')->willReturn(null);
 
         $token = $factory->createForOAuthClient($accessToken);
-        $this->assertSame('no value', $token->getClaim('exp', 'no value'));
-        $this->assertSame('no value', $token->getClaim('sub', 'no value'));
+        $this->assertSame('no value', $token->claims()->get('exp', 'no value'));
+        $this->assertSame('no value', $token->claims()->get('sub', 'no value'));
     }
 
     public function testCreateForMinecraftAccount() {
@@ -91,11 +91,11 @@ class TokensFactoryTest extends TestCase {
         $clientToken = 'e44fae79-f80e-4975-952e-47e8a9ed9472';
 
         $token = $factory->createForMinecraftAccount($account, $clientToken);
-        $this->assertEqualsWithDelta(time(), $token->getClaim('iat'), 5);
-        $this->assertEqualsWithDelta(time() + 60 * 60 * 24 * 2, $token->getClaim('exp'), 5);
-        $this->assertSame('obtain_own_account_info minecraft_server_session', $token->getClaim('scope'));
-        $this->assertNotSame('e44fae79-f80e-4975-952e-47e8a9ed9472', $token->getClaim('ely-client-token'));
-        $this->assertSame('ely|1', $token->getClaim('sub'));
+        $this->assertEqualsWithDelta(time(), $token->claims()->get('iat'), 5);
+        $this->assertEqualsWithDelta(time() + 60 * 60 * 24 * 2, $token->claims()->get('exp'), 5);
+        $this->assertSame('obtain_own_account_info minecraft_server_session', $token->claims()->get('scope'));
+        $this->assertNotSame('e44fae79-f80e-4975-952e-47e8a9ed9472', $token->claims()->get('ely-client-token'));
+        $this->assertSame('ely|1', $token->claims()->get('sub'));
     }
 
 }

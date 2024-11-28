@@ -5,11 +5,10 @@ namespace api\tests\unit\components\Tokens;
 
 use api\components\Tokens\Component;
 use api\tests\unit\TestCase;
+use DateTimeImmutable;
 use Generator;
 use InvalidArgumentException;
-use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Token;
-use Lcobucci\JWT\Token\Parser;
 use Yii;
 
 class ComponentTest extends TestCase {
@@ -22,24 +21,24 @@ class ComponentTest extends TestCase {
     public function testCreate() {
         // Run without any arguments
         $token = $this->component->create();
-        $this->assertSame('ES256', $token->getHeader('alg'));
-        $this->assertEmpty(array_diff(array_keys($token->getClaims()), ['iat', 'exp']));
-        $this->assertEqualsWithDelta(time(), $token->getClaim('iat'), 1);
+        $this->assertSame('ES256', $token->headers()->get('alg'));
+        $this->assertEmpty(array_diff(array_keys($token->claims()->all()), ['iat', 'exp']));
+        $this->assertEqualsWithDelta(time(), $token->claims()->get('iat'), 1);
 
         // Pass exp claim
         $time = time() + 60;
-        $token = $this->component->create(['exp' => $time]);
-        $this->assertSame($time, $token->getClaim('exp'));
+        $token = $this->component->create(['exp' => new DateTimeImmutable("@$time", null)]);
+        $this->assertSame($time, $token->claims()->get('exp'));
 
         // Pass custom payloads
         $token = $this->component->create(['find' => 'me']);
-        $this->assertArrayHasKey('find', $token->getClaims());
-        $this->assertSame('me', $token->getClaim('find'));
+        $this->assertArrayHasKey('find', $token->claims()->all());
+        $this->assertSame('me', $token->claims()->get('find'));
 
         // Pass custom headers
         $token = $this->component->create([], ['find' => 'me']);
-        $this->assertArrayHasKey('find', $token->getHeaders());
-        $this->assertSame('me', $token->getHeader('find'));
+        $this->assertArrayHasKey('find', $token->headers()->all());
+        $this->assertSame('me', $token->headers()->get('find'));
     }
 
     public function testParse() {
@@ -89,12 +88,12 @@ class ComponentTest extends TestCase {
 
     private function assertValidParsedToken(Token $token, string $expectedAlg): void
     {
-        $this->assertSame($expectedAlg, $token->getHeader('alg'));
-        $this->assertSame(1564527476, $token->getClaim('iat'));
-        $this->assertSame(1564531076, $token->getClaim('exp'));
-        $this->assertSame('ely|1', $token->getClaim('sub'));
-        $this->assertSame(3069592, $token->getClaim('jti'));
-        $this->assertSame('accounts_web_user', $token->getClaim('ely-scopes'));
+        $this->assertSame($expectedAlg, $token->headers()->get('alg'));
+        $this->assertSame(1564527476, $token->claims()->get('iat'));
+        $this->assertSame(1564531076, $token->claims()->get('exp'));
+        $this->assertSame('ely|1', $token->claims()->get('sub'));
+        $this->assertSame(3069592, $token->claims()->get('jti'));
+        $this->assertSame('accounts_web_user', $token->claims()->get('ely-scopes'));
     }
 
 }

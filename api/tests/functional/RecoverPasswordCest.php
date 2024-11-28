@@ -15,7 +15,7 @@ class RecoverPasswordCest {
         $I->canSeeResponseContainsJson([
             'success' => true,
         ]);
-        $I->canSeeAuthCredentials(false);
+        $I->canSeeAuthCredentials();
 
         $I->wantTo('ensure, that jwt token is valid');
         $jwt = $I->grabDataFromResponseByJsonPath('$.access_token')[0];

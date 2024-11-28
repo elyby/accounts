@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace codeception\api\unit\components\User;
+namespace api\tests\unit\components\User;
 
 use api\components\User\Component;
 use api\components\User\JwtIdentity;
@@ -14,21 +14,13 @@ use common\tests\fixtures\AccountFixture;
 use common\tests\fixtures\AccountSessionFixture;
 use common\tests\fixtures\OauthClientFixture;
 use common\tests\fixtures\OauthSessionFixture;
-use Lcobucci\JWT\Claim\Basic;
-use Lcobucci\JWT\Token;
+use DateTimeImmutable;
+use Lcobucci\JWT\JwtFacade;
+use Lcobucci\JWT\Signer\Key;
+use Lcobucci\JWT\Signer\Rsa\Sha256;
+use Lcobucci\JWT\Token\Builder;
 
 class ComponentTest extends TestCase {
-
-    /**
-     * @var Component|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $component;
-
-    public function _before() {
-        parent::_before();
-        $this->component = new Component();
-    }
-
     public function _fixtures(): array {
         return [
             'accounts' => AccountFixture::class,
@@ -49,19 +41,19 @@ class ComponentTest extends TestCase {
 
         // Identity is correct, but have no jti claim
         $identity = $this->createMock(JwtIdentity::class);
-        $identity->method('getToken')->willReturn(new Token());
+        $identity->method('getToken')->willReturn((new JwtFacade())->issue(new Sha256(), Key\InMemory::plainText(''), static fn (Builder $builder, DateTimeImmutable $issuedAt): Builder => $builder));
         $component->setIdentity($identity);
         $this->assertNull($component->getActiveSession());
 
         // Identity is correct and has jti claim, but there is no associated session
         $identity = $this->createMock(JwtIdentity::class);
-        $identity->method('getToken')->willReturn(new Token([], ['jti' => new Basic('jti', 999999)]));
+        $identity->method('getToken')->willReturn((new JwtFacade())->issue(new Sha256(), Key\InMemory::plainText(''), static fn (Builder $builder, DateTimeImmutable $issuedAt): Builder => $builder->identifiedBy('999999')));
         $component->setIdentity($identity);
         $this->assertNull($component->getActiveSession());
 
         // Identity is correct, has jti claim and associated session exists
         $identity = $this->createMock(JwtIdentity::class);
-        $identity->method('getToken')->willReturn(new Token([], ['jti' => new Basic('jti', 1)]));
+        $identity->method('getToken')->willReturn((new JwtFacade())->issue(new Sha256(), Key\InMemory::plainText(''), static fn (Builder $builder, DateTimeImmutable $issuedAt): Builder => $builder->identifiedBy('1')));
         $component->setIdentity($identity);
         $session = $component->getActiveSession();
         $this->assertNotNull($session);

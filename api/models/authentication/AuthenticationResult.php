@@ -10,12 +10,12 @@ class AuthenticationResult {
     /**
      * @var Token
      */
-    private $token;
+    private Token $token;
 
     /**
      * @var string|null
      */
-    private $refreshToken;
+    private ?string $refreshToken;
 
     public function __construct(Token $token, string $refreshToken = null) {
         $this->token = $token;
@@ -32,8 +32,8 @@ class AuthenticationResult {
 
     public function formatAsOAuth2Response(): array {
         $response = [
-            'access_token' => (string)$this->token,
-            'expires_in' => $this->token->getClaim('exp') - time(),
+            'access_token' => $this->token->toString(),
+            'expires_in' => $this->token->claims()->get('exp') - time(),
         ];
 
         $refreshToken = $this->refreshToken;

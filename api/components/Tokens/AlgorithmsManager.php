@@ -26,7 +26,7 @@ final class AlgorithmsManager {
     }
 
     public function add(AlgorithmInterface $algorithm): self {
-        $id = $algorithm->getSigner()->getAlgorithmId();
+        $id = $algorithm->getSigner()->algorithmId();
         Assert::keyNotExists($this->algorithms, $id, 'passed algorithm is already exists');
         $this->algorithms[$id] = $algorithm;
 

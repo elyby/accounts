@@ -30,11 +30,11 @@ class RefreshTokenFormTest extends TestCase {
         $this->assertSame('SOutIr6Seeaii3uqMVy3Wan8sKFVFrNz', $result->getRefreshToken());
 
         $token = $result->getToken();
-        $this->assertSame('ely|1', $token->getClaim('sub'));
-        $this->assertSame('accounts_web_user', $token->getClaim('scope'));
-        $this->assertEqualsWithDelta(time(), $token->getClaim('iat'), 5);
-        $this->assertEqualsWithDelta(time() + 3600, $token->getClaim('exp'), 5);
-        $this->assertSame(1, $token->getClaim('jti'));
+        $this->assertSame('ely|1', $token->claims()->get('sub'));
+        $this->assertSame('accounts_web_user', $token->claims()->get('scope'));
+        $this->assertEqualsWithDelta(time(), $token->claims()->get('iat'), 5);
+        $this->assertEqualsWithDelta(time() + 3600, $token->claims()->get('exp'), 5);
+        $this->assertSame(1, $token->claims()->get('jti'));
 
         /** @var AccountSession $session */
         $session = AccountSession::findOne(['refresh_token' => 'SOutIr6Seeaii3uqMVy3Wan8sKFVFrNz']);

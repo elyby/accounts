@@ -6,6 +6,7 @@ namespace api\components\User;
 use common\models\Account;
 use common\models\AccountSession;
 use common\models\OauthClient;
+use common\models\OauthSession;
 use Webmozart\Assert\Assert;
 use yii\web\User as YiiUserComponent;
 
@@ -18,9 +19,9 @@ use yii\web\User as YiiUserComponent;
  */
 class Component extends YiiUserComponent {
 
-    public const KEEP_MINECRAFT_SESSIONS = 1;
-    public const KEEP_SITE_SESSIONS = 2;
-    public const KEEP_CURRENT_SESSION = 4;
+    public const int KEEP_MINECRAFT_SESSIONS = 1;
+    public const int KEEP_SITE_SESSIONS = 2;
+    public const int KEEP_CURRENT_SESSION = 4;
 
     public $enableSession = false;
 
@@ -57,7 +58,7 @@ class Component extends YiiUserComponent {
             return null;
         }
 
-        $sessionId = $identity->getToken()->getClaim('jti', false);
+        $sessionId = $identity->getToken()->claims()->get('jti', false);
         if ($sessionId === false) {
             return null;
         }
@@ -80,7 +81,7 @@ class Component extends YiiUserComponent {
         }
 
         if (!($mode & self::KEEP_MINECRAFT_SESSIONS)) {
-            /** @var \common\models\OauthSession|null $minecraftSession */
+            /** @var OauthSession|null $minecraftSession */
             $minecraftSession = $account->getOauthSessions()
                 ->andWhere(['client_id' => OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER])
                 ->one();

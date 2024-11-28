@@ -5,31 +5,39 @@ namespace api\components\Tokens;
 
 use Carbon\Carbon;
 use Exception;
-use Lcobucci\JWT\Builder;
-use Lcobucci\JWT\Parser;
+use InvalidArgumentException;
+use Lcobucci\JWT\Encoding\ChainedFormatter;
+use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Token;
+use Lcobucci\JWT\Token\Builder;
+use Lcobucci\JWT\Token\Parser;
+use Lcobucci\JWT\Token\RegisteredClaims;
+use Lcobucci\JWT\Validation\Constraint\SignedWith;
+use Lcobucci\JWT\Validation\Validator;
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use RangeException;
+use SodiumException;
 use Webmozart\Assert\Assert;
 use yii\base\Component as BaseComponent;
 
 class Component extends BaseComponent {
 
-    private const PREFERRED_ALGORITHM = 'ES256';
+    private const string PREFERRED_ALGORITHM = 'ES256';
 
     /**
      * @var string
      */
-    public $privateKeyPath;
+    public string $privateKeyPath;
 
     /**
      * @var string|null
      */
-    public $privateKeyPass;
+    public ?string $privateKeyPass;
 
     /**
      * @var string
      */
-    public $encryptionKey;
+    public string $encryptionKey;
 
     private ?AlgorithmsManager $algorithmManager = null;
 
@@ -41,13 +49,27 @@ class Component extends BaseComponent {
 
     public function create(array $payloads = [], array $headers = []): Token {
         $now = Carbon::now();
-        $builder = (new Builder())->issuedAt($now->getTimestamp());
+        $builder = (new Builder(new JoseEncoder(), ChainedFormatter::default()))->issuedAt($now->toDateTimeImmutable());
+        if (isset($payloads['sub'])) {
+            $builder->relatedTo($payloads['sub']);
+        }
+        if (isset($payloads['jti'])) {
+            $builder->identifiedBy($payloads['jti']);
+        }
+        if (isset($payloads['iat'])) {
+            $builder->issuedAt($payloads['iat']);
+        }
+        if (isset($payloads['nbf'])) {
+            $builder->canOnlyBeUsedAfter($payloads['nbf']);
+        }
         if (isset($payloads['exp'])) {
             $builder->expiresAt($payloads['exp']);
         }
 
         foreach ($payloads as $claim => $value) {
-            $builder->withClaim($claim, $this->prepareValue($value));
+            if (!in_array($claim, RegisteredClaims::ALL, true)) { // Registered claims are handled by the if-chain above
+                $builder->withClaim($claim, $this->prepareValue($value));
+            }
         }
 
         foreach ($headers as $claim => $value) {
@@ -64,17 +86,17 @@ class Component extends BaseComponent {
      * @param string $jwt
      *
      * @return Token
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function parse(string $jwt): Token {
-        return (new Parser())->parse($jwt);
+        return (new Parser(new JoseEncoder()))->parse($jwt);
     }
 
     public function verify(Token $token): bool {
         try {
-            $algorithm = $this->getAlgorithmManager()->get($token->getHeader('alg'));
-            return $token->verify($algorithm->getSigner(), $algorithm->getPublicKey());
-        } catch (Exception $e) {
+            $algorithm = $this->getAlgorithmManager()->get($token->headers()->get('alg'));
+            return (new Validator())->validate($token, new SignedWith($algorithm->getSigner(), $algorithm->getPublicKey()));
+        } catch (Exception) {
             return false;
         }
     }
@@ -92,8 +114,8 @@ class Component extends BaseComponent {
      * @param string $encryptedValue
      *
      * @return string
-     * @throws \SodiumException
-     * @throws \RangeException
+     * @throws SodiumException
+     * @throws RangeException
      */
     public function decryptValue(string $encryptedValue): string {
         $decoded = Base64UrlSafe::decode($encryptedValue);
@@ -109,20 +131,21 @@ class Component extends BaseComponent {
     }
 
     public function getPublicKey(): string {
-        return $this->getAlgorithmManager()->get(self::PREFERRED_ALGORITHM)->getPublicKey()->getContent();
+        return $this->getAlgorithmManager()->get(self::PREFERRED_ALGORITHM)->getPublicKey()->contents();
     }
 
     private function getAlgorithmManager(): AlgorithmsManager {
         if ($this->algorithmManager === null) {
             $this->algorithmManager = new AlgorithmsManager([
-                new Algorithms\ES256("file://{$this->privateKeyPath}", $this->privateKeyPass),
+                new Algorithms\ES256("file://$this->privateKeyPath", $this->privateKeyPass),
             ]);
         }
 
         return $this->algorithmManager;
     }
 
-    private function prepareValue($value) {
+    private function prepareValue($value): string
+    {
         if ($value instanceof EncryptedValue) {
             return $this->encryptValue($value->getValue());
         }
