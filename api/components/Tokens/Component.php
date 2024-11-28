@@ -51,29 +51,29 @@ class Component extends BaseComponent {
         $now = Carbon::now();
         $builder = (new Builder(new JoseEncoder(), ChainedFormatter::default()))->issuedAt($now->toDateTimeImmutable());
         if (isset($payloads['sub'])) {
-            $builder->relatedTo($payloads['sub']);
+            $builder = $builder->relatedTo($payloads['sub']);
         }
         if (isset($payloads['jti'])) {
-            $builder->identifiedBy($payloads['jti']);
+            $builder = $builder->identifiedBy($payloads['jti']);
         }
         if (isset($payloads['iat'])) {
-            $builder->issuedAt($payloads['iat']);
+            $builder = $builder->issuedAt($payloads['iat']);
         }
         if (isset($payloads['nbf'])) {
-            $builder->canOnlyBeUsedAfter($payloads['nbf']);
+            $builder = $builder->canOnlyBeUsedAfter($payloads['nbf']);
         }
         if (isset($payloads['exp'])) {
-            $builder->expiresAt($payloads['exp']);
+            $builder = $builder->expiresAt($payloads['exp']);
         }
 
         foreach ($payloads as $claim => $value) {
             if (!in_array($claim, RegisteredClaims::ALL, true)) { // Registered claims are handled by the if-chain above
-                $builder->withClaim($claim, $this->prepareValue($value));
+                $builder = $builder->withClaim($claim, $this->prepareValue($value));
             }
         }
 
         foreach ($headers as $claim => $value) {
-            $builder->withHeader($claim, $this->prepareValue($value));
+            $builder = $builder->withHeader($claim, $this->prepareValue($value));
         }
 
         /** @noinspection PhpUnhandledExceptionInspection */

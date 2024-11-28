@@ -20,7 +20,7 @@ use Yii;
 
 class OauthProcess {
 
-    private const INTERNAL_PERMISSIONS_TO_PUBLIC_SCOPES = [
+    private const array INTERNAL_PERMISSIONS_TO_PUBLIC_SCOPES = [
         P::OBTAIN_OWN_ACCOUNT_INFO => 'account_info',
         P::OBTAIN_ACCOUNT_EMAIL => 'account_email',
     ];
@@ -163,7 +163,7 @@ class OauthProcess {
             Yii::$app->statsd->inc("oauth.issueToken_{$grantType}.attempt");
 
             $shouldIssueRefreshToken = false;
-            $this->server->getEmitter()->addOneTimeListener(RequestedRefreshToken::class, function() use (&$shouldIssueRefreshToken) {
+            $this->server->getEmitter()->subscribeOnceTo(RequestedRefreshToken::class, function() use (&$shouldIssueRefreshToken) {
                 $shouldIssueRefreshToken = true;
             });
 
@@ -351,6 +351,7 @@ class OauthProcess {
         }, $request->getScopes()));
     }
 
+    /** @noinspection PhpIncompatibleReturnTypeInspection */
     private function findOauthSession(Account $account, OauthClient $client): ?OauthSession {
         return $account->getOauthSessions()->andWhere(['client_id' => $client->id])->one();
     }

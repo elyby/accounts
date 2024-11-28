@@ -55,7 +55,7 @@ class RegisterCest {
                 'case' => 'ensure that signup works',
                 'request' => [
                     'username' => 'some_username',
-                    'email' => 'some_email@example.com',
+                    'email' => 'some_email@gmail.com',
                     'password' => 'some_password',
                     'rePassword' => 'some_password',
                     'rulesAgreement' => true,

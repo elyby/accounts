@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace api\models\authentication;
 
+use DateInterval;
+use DateTime;
+use DateTimeImmutable;
 use Lcobucci\JWT\Token;
 
 class AuthenticationResult {
@@ -31,9 +34,11 @@ class AuthenticationResult {
     }
 
     public function formatAsOAuth2Response(): array {
+        /** @var DateTimeImmutable $expiresAt */
+        $expiresAt = $this->token->claims()->get('exp');
         $response = [
             'access_token' => $this->token->toString(),
-            'expires_in' => $this->token->claims()->get('exp') - time(),
+            'expires_in' => $expiresAt->getTimestamp() - (new DateTimeImmutable())->getTimestamp(),
         ];
 
         $refreshToken = $this->refreshToken;

@@ -81,7 +81,7 @@ class LoginForm extends ApiForm {
         }
 
         $validator = new TotpValidator(['account' => $account]);
-        $validator->window = 1;
+        $validator->leeway = 5;
         $validator->validateAttribute($this, $attribute);
     }
 
@@ -99,6 +99,7 @@ class LoginForm extends ApiForm {
         }
     }
 
+    /** @noinspection PhpIncompatibleReturnTypeInspection */
     public function getAccount(): ?Account {
         return Account::find()->andWhereLogin($this->login)->one();
     }

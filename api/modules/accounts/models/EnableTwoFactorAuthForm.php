@@ -18,7 +18,7 @@ class EnableTwoFactorAuthForm extends AccountActionForm {
         return [
             ['account', 'validateOtpDisabled'],
             ['totp', 'required', 'message' => E::TOTP_REQUIRED],
-            ['totp', TotpValidator::class, 'account' => $this->getAccount(), 'window' => 2],
+            ['totp', TotpValidator::class, 'account' => $this->getAccount(), 'leeway' => 10],
             ['password', PasswordRequiredValidator::class, 'account' => $this->getAccount()],
         ];
     }

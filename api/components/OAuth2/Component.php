@@ -13,7 +13,7 @@ class Component extends BaseComponent {
     /**
      * @var AuthorizationServer
      */
-    private $_authServer;
+    private ?AuthorizationServer $_authServer = null;
 
     public function getAuthServer(): AuthorizationServer {
         if ($this->_authServer === null) {
