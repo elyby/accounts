@@ -22,7 +22,7 @@ class NginxCacheTest extends TestCase {
     private function testAfterActionInternal($ruleConfig, $expected) {
         /** @var HeaderCollection|\PHPUnit\Framework\MockObject\MockObject $headers */
         $headers = $this->getMockBuilder(HeaderCollection::class)
-            ->setMethods(['set'])
+            ->onlyMethods(['set'])
             ->getMock();
 
         $headers->expects($this->once())
@@ -31,7 +31,7 @@ class NginxCacheTest extends TestCase {
 
         /** @var Request|\PHPUnit\Framework\MockObject\MockObject $request */
         $request = $this->getMockBuilder(Request::class)
-            ->setMethods(['getHeaders'])
+            ->onlyMethods(['getHeaders'])
             ->getMock();
 
         $request->expects($this->any())

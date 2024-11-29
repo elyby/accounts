@@ -16,7 +16,7 @@ class RateLimiterTest extends TestCase {
     public function testCheckRateLimiterWithOldAuthserver() {
         /** @var Connection|\PHPUnit\Framework\MockObject\MockObject $redis */
         $redis = $this->getMockBuilder(Connection::class)
-            ->setMethods(['executeCommand'])
+            ->onlyMethods(['executeCommand'])
             ->getMock();
 
         $redis->expects($this->never())
@@ -29,7 +29,7 @@ class RateLimiterTest extends TestCase {
             ->setConstructorArgs([[
                 'authserverDomain' => 'authserver.ely.by',
             ]])
-            ->setMethods(['getServer'])
+            ->onlyMethods(['getServer'])
             ->getMock();
 
         $filter->method('getServer')
@@ -41,7 +41,7 @@ class RateLimiterTest extends TestCase {
     public function testCheckRateLimiterWithValidServerId() {
         /** @var Connection|\PHPUnit\Framework\MockObject\MockObject $redis */
         $redis = $this->getMockBuilder(Connection::class)
-            ->setMethods(['executeCommand'])
+            ->onlyMethods(['executeCommand'])
             ->getMock();
 
         $redis->expects($this->never())
@@ -51,7 +51,7 @@ class RateLimiterTest extends TestCase {
 
         /** @var Request|\PHPUnit\Framework\MockObject\MockObject $request */
         $request = $this->getMockBuilder(Request::class)
-            ->setMethods(['getHostInfo'])
+            ->onlyMethods(['getHostInfo'])
             ->getMock();
 
         $request->method('getHostInfo')
@@ -68,7 +68,7 @@ class RateLimiterTest extends TestCase {
 
         /** @var Connection|\PHPUnit\Framework\MockObject\MockObject $redis */
         $redis = $this->getMockBuilder(Connection::class)
-            ->setMethods(['executeCommand'])
+            ->onlyMethods(['executeCommand'])
             ->getMock();
 
         $redis->expects($this->exactly(5))
@@ -79,7 +79,7 @@ class RateLimiterTest extends TestCase {
 
         /** @var Request|\PHPUnit\Framework\MockObject\MockObject $request */
         $request = $this->getMockBuilder(Request::class)
-            ->setMethods(['getUserIP'])
+            ->onlyMethods(['getUserIP'])
             ->getMock();
 
         $request->method('getUserIp')
@@ -91,7 +91,7 @@ class RateLimiterTest extends TestCase {
                 'limit' => 3,
                 'authserverDomain' => 'authserver.ely.by',
             ]])
-            ->setMethods(['getServer'])
+            ->onlyMethods(['getServer'])
             ->getMock();
 
         $filter->method('getServer')

@@ -133,7 +133,7 @@ class RegistrationFormTest extends TestCase {
 
     private function mockRequest($ip = '88.225.20.236') {
         $request = $this->getMockBuilder(Request::class)
-            ->setMethods(['getUserIP'])
+            ->onlyMethods(['getUserIP'])
             ->getMock();
 
         $request

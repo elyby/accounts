@@ -42,9 +42,9 @@ class ValidatorTest extends TestCase {
                 ],
             ])))
         );
+        $this->getFunctionMock(Validator::class, 'sleep')->expects($this->once());
 
-        $validator = $this->getMockBuilder(Validator::class)->setConstructorArgs([$mockClient])->onlyMethods(['sleep'])->getMock();
-        $validator->expects($this->once())->method('sleep');
+        $validator = new Validator($mockClient);
         $this->assertTrue($validator->validate('12341234', $error));
         $this->assertNull($error);
     }
@@ -52,10 +52,9 @@ class ValidatorTest extends TestCase {
     public function testValidateWithHugeNetworkTroubles() {
         $mockClient = $this->createMock(ClientInterface::class);
         $mockClient->expects($this->exactly(3))->method('request')->willThrowException($this->createMock(ConnectException::class));
+        $this->getFunctionMock(Validator::class, 'sleep')->expects($this->exactly(2));
 
-        $validator = $this->getMockBuilder(Validator::class)->setConstructorArgs([$mockClient])->onlyMethods(['sleep'])->getMock();
-        $validator->expects($this->exactly(2))->method('sleep');
-
+        $validator = new Validator($mockClient);
         $this->expectException(ConnectException::class);
         $validator->validate('12341234', $error);
     }

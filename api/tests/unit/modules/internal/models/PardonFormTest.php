@@ -25,7 +25,7 @@ class PardonFormTest extends TestCase {
     public function testPardon() {
         /** @var Account|\PHPUnit\Framework\MockObject\MockObject $account */
         $account = $this->getMockBuilder(Account::class)
-            ->setMethods(['save'])
+            ->onlyMethods(['save'])
             ->getMock();
 
         $account->expects($this->once())

@@ -21,7 +21,7 @@ class EmailActivationKeyValidatorTest extends TestCase {
 
         /** @var EmailActivationKeyValidator|\PHPUnit\Framework\MockObject\MockObject $validator */
         $validator = $this->getMockBuilder(EmailActivationKeyValidator::class)
-            ->setMethods(['findEmailActivationModel'])
+            ->onlyMethods(['findEmailActivationModel'])
             ->getMock();
 
         $expiredActivation = new ForgotPassword();
