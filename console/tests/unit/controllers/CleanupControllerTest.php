@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace console\tests\unit\controllers;
 
+use AllowDynamicProperties;
 use common\models\AccountSession;
 use common\models\EmailActivation;
 use common\models\OauthClient;
