@@ -27,7 +27,6 @@ class TotpValidatorTest extends TestCase {
         $result = $this->callProtected($validator, 'validateValue', $controlTotp->at(time() - 31));
         $this->assertSame([E::TOTP_INCORRECT, []], $result);
 
-        $validator->leeway = 10;
         $result = $this->callProtected($validator, 'validateValue', $controlTotp->at(time() - 31));
         $this->assertNull($result);
 

@@ -17,17 +17,11 @@ class TotpValidator extends Validator {
     public mixed $account = null;
 
     /**
-     * @var int|null Specifies the amount of time, in seconds, by which the entered TOTP code can be behind or ahead of
-     * the currently active TOTP code and still be considered valid.
-     */
-    public ?int $leeway; // TODO: this shit is so fucking insanely broken i have zero fucking idea how to deal with this PHP nonsense this fucking language is sSOMETHING ELSE ENTRIELY
-
-    /**
      * @var int|callable|null Allows you to set the exact time against which the validation will be performed.
      * It may be the unix time or a function returning a unix time.
      * If not specified, the current time will be used.
      */
-    public mixed $timestamp;
+    public mixed $timestamp = null;
 
     public $skipOnEmpty = false;
 
@@ -54,7 +48,7 @@ class TotpValidator extends Validator {
     {
         try {
             $totp = TOTP::create($this->account->otp_secret);
-            if (!$totp->verify((string)$value, $this->getTimestamp(), $this->leeway)) {
+            if (!$totp->verify((string)$value, $this->getTimestamp(), $totp->getPeriod() - 1)) {
                 return [E::TOTP_INCORRECT, []];
             }
         } catch (RangeException) {

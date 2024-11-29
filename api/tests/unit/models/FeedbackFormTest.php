@@ -22,7 +22,7 @@ class FeedbackFormTest extends TestCase {
     public function testSendMessageWithEmail() {
         /** @var FeedbackForm|MockObject $model */
         $model = $this->getMockBuilder(FeedbackForm::class)
-            ->setMethods(['getAccount'])
+            ->onlyMethods(['getAccount'])
             ->setConstructorArgs([[
                 'subject' => 'Тема обращения',
                 'email' => 'erickskrauch@ely.by',
@@ -42,7 +42,7 @@ class FeedbackFormTest extends TestCase {
         /** @var Message $message */
         $message = $this->tester->grabLastSentEmail();
         $this->assertInstanceOf(Message::class, $message);
-        $data = (string)$message;
+        $data = $message;
         $this->assertStringContainsString('find-this@email.net', $data);
     }
 

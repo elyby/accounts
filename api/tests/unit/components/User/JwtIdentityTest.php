@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace codeception\api\unit\components\User;
+namespace api\tests\unit\components\User;
 
 use api\components\User\JwtIdentity;
 use api\tests\unit\TestCase;
@@ -26,7 +26,7 @@ class JwtIdentityTest extends TestCase {
         /** @var JwtIdentity $identity */
         $identity = JwtIdentity::findIdentityByAccessToken($token);
         $this->assertSame($token, $identity->getId());
-        $this->assertSame($token, (string)$identity->getToken());
+        $this->assertSame($token, $identity->getToken()->toString());
         /** @var \common\models\Account $account */
         $account = $this->tester->grabFixture('accounts', 'admin');
         $this->assertSame($account->id, $identity->getAccount()->id);

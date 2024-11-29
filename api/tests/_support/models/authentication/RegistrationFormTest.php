@@ -56,6 +56,7 @@ class RegistrationFormTest extends TestCase {
     }
 
     public function testSignup() {
+        // TODO fix
         $this->getFunctionMock(EmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
         $this->getFunctionMock(EmailValidator::class, 'dns_get_record')->expects($this->any())->willReturn(['']);
         $model = new RegistrationForm([

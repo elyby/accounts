@@ -74,9 +74,9 @@ class RefreshTokenCest {
             'client_id' => 'ely',
             'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
         ]);
-        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
-            'error' => 'invalid_request',
+            'error' => 'invalid_grant',
             'message' => 'The refresh token is invalid.',
         ]);
     }

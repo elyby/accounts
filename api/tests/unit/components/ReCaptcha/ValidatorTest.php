@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace codeception\api\unit\components\ReCaptcha;
+namespace api\tests\unit\components\ReCaptcha;
 
 use api\components\ReCaptcha\Validator;
 use api\tests\unit\TestCase;
@@ -42,9 +42,9 @@ class ValidatorTest extends TestCase {
                 ],
             ])))
         );
-        $this->getFunctionMock(Validator::class, 'sleep')->expects($this->once());
 
-        $validator = new Validator($mockClient);
+        $validator = $this->getMockBuilder(Validator::class)->setConstructorArgs([$mockClient])->onlyMethods(['sleep'])->getMock();
+        $validator->expects($this->once())->method('sleep');
         $this->assertTrue($validator->validate('12341234', $error));
         $this->assertNull($error);
     }
@@ -52,9 +52,10 @@ class ValidatorTest extends TestCase {
     public function testValidateWithHugeNetworkTroubles() {
         $mockClient = $this->createMock(ClientInterface::class);
         $mockClient->expects($this->exactly(3))->method('request')->willThrowException($this->createMock(ConnectException::class));
-        $this->getFunctionMock(Validator::class, 'sleep')->expects($this->exactly(2));
 
-        $validator = new Validator($mockClient);
+        $validator = $this->getMockBuilder(Validator::class)->setConstructorArgs([$mockClient])->onlyMethods(['sleep'])->getMock();
+        $validator->expects($this->exactly(2))->method('sleep');
+
         $this->expectException(ConnectException::class);
         $validator->validate('12341234', $error);
     }

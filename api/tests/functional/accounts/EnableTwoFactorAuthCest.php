@@ -65,7 +65,7 @@ class EnableTwoFactorAuthCest {
     {
         $accountId = $I->amAuthenticated('AccountWithOtpSecret');
         $totp = TOTP::create('AAAA');
-        $this->route->enableTwoFactorAuth($accountId, $totp->at(time() - 35), 'password_0');
+        $this->route->enableTwoFactorAuth($accountId, $totp->at(time() - 5), 'password_0');
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([

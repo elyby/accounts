@@ -9,7 +9,9 @@ use api\components\OAuth2\Repositories\PublicScopeRepository;
 use DateInterval;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
+use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
+use League\OAuth2\Server\Exception\UniqueTokenIdentifierConstraintViolationException;
 use League\OAuth2\Server\Grant\AuthCodeGrant as BaseAuthCodeGrant;
 use League\OAuth2\Server\RequestEvent;
 use Psr\Http\Message\ServerRequestInterface;
@@ -22,22 +24,22 @@ class AuthCodeGrant extends BaseAuthCodeGrant {
      * @param DateInterval $accessTokenTTL
      * @param ClientEntityInterface $client
      * @param string|null $userIdentifier
-     * @param \League\OAuth2\Server\Entities\ScopeEntityInterface[] $scopes
+     * @param ScopeEntityInterface[] $scopes
      *
      * @return AccessTokenEntityInterface
-     * @throws \League\OAuth2\Server\Exception\OAuthServerException
-     * @throws \League\OAuth2\Server\Exception\UniqueTokenIdentifierConstraintViolationException
+     * @throws OAuthServerException
+     * @throws UniqueTokenIdentifierConstraintViolationException
      */
     protected function issueAccessToken(
-        DateInterval $accessTokenTTL,
+        DateInterval          $accessTokenTTL,
         ClientEntityInterface $client,
-        $userIdentifier,
-        array $scopes = []
+        ?string               $userIdentifier,
+        array                 $scopes = []
     ): AccessTokenEntityInterface {
         foreach ($scopes as $i => $scope) {
             if ($scope->getIdentifier() === PublicScopeRepository::OFFLINE_ACCESS) {
                 unset($scopes[$i]);
-                $this->getEmitter()->emit(new RequestedRefreshToken());
+                $this->getEmitter()->emit(new RequestedRefreshToken('refresh_token_requested'));
             }
         }
 

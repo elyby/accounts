@@ -16,22 +16,22 @@ class LoginForm extends ApiForm {
     /**
      * @var string
      */
-    public $login;
+    public string $login;
 
     /**
      * @var string
      */
-    public $password;
+    public string $password;
 
     /**
      * @var string|null
      */
-    public $totp;
+    public ?string $totp = null;
 
     /**
      * @var bool
      */
-    public $rememberMe = false;
+    public bool $rememberMe = false;
 
     public function rules(): array {
         return [
@@ -81,7 +81,6 @@ class LoginForm extends ApiForm {
         }
 
         $validator = new TotpValidator(['account' => $account]);
-        $validator->leeway = 5;
         $validator->validateAttribute($this, $attribute);
     }
 
@@ -131,7 +130,7 @@ class LoginForm extends ApiForm {
 
         $transaction->commit();
 
-        return new AuthenticationResult($token, $session ? $session->refresh_token : null);
+        return new AuthenticationResult($token, $session?->refresh_token);
     }
 
 }

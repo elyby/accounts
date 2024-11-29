@@ -32,7 +32,7 @@ class RefreshTokenFormTest extends TestCase {
         $token = $result->getToken();
         $this->assertSame('ely|1', $token->claims()->get('sub'));
         $this->assertSame('accounts_web_user', $token->claims()->get('scope'));
-        $this->assertEqualsWithDelta(time(), $token->claims()->get('iat'), 5);
+        $this->assertEqualsWithDelta(time(), $token->claims()->get('iat')->getTimestamp(), 5);
         $this->assertEqualsWithDelta(time() + 3600, $token->claims()->get('exp'), 5);
         $this->assertSame(1, $token->claims()->get('jti'));
 

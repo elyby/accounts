@@ -7,14 +7,17 @@ use api\components\OAuth2\CryptTrait;
 use api\components\Tokens\TokenReader;
 use Carbon\Carbon;
 use common\models\OauthSession;
+use DateTimeImmutable;
 use Exception;
 use InvalidArgumentException;
+use Lcobucci\JWT\JwtFacade;
 use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
 use Lcobucci\JWT\Validation\Validator;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use League\OAuth2\Server\Grant\RefreshTokenGrant as BaseRefreshTokenGrant;
+use Psr\Clock\ClockInterface as Clock;
 use Psr\Http\Message\ServerRequestInterface;
 use Yii;
 
@@ -106,7 +109,12 @@ class RefreshTokenGrant extends BaseRefreshTokenGrant {
             throw OAuthServerException::invalidRefreshToken('Cannot decrypt the refresh token');
         }
 
-        if (!(new Validator())->validate($token, new LooseValidAt(Carbon::now()->getClock()))) {
+        if (!(new Validator())->validate($token, new LooseValidAt(Carbon::now()->getClock() ?? new class implements Clock {
+            public function now(): DateTimeImmutable
+            {
+                return new DateTimeImmutable();
+            }
+        }))) {
             throw OAuthServerException::invalidRefreshToken('Token has expired');
         }
 

@@ -23,7 +23,7 @@ class ComponentTest extends TestCase {
         $token = $this->component->create();
         $this->assertSame('ES256', $token->headers()->get('alg'));
         $this->assertEmpty(array_diff(array_keys($token->claims()->all()), ['iat', 'exp']));
-        $this->assertEqualsWithDelta(time(), $token->claims()->get('iat'), 1);
+        $this->assertEqualsWithDelta(time(), $token->claims()->get('iat')->getTimestamp(), 1);
 
         // Pass exp claim
         $time = time() + 60;
@@ -89,7 +89,7 @@ class ComponentTest extends TestCase {
     private function assertValidParsedToken(Token $token, string $expectedAlg): void
     {
         $this->assertSame($expectedAlg, $token->headers()->get('alg'));
-        $this->assertSame(1564527476, $token->claims()->get('iat'));
+        $this->assertSame(1564527476, $token->claims()->get('iat')->getTimestamp());
         $this->assertSame(1564531076, $token->claims()->get('exp'));
         $this->assertSame('ely|1', $token->claims()->get('sub'));
         $this->assertSame(3069592, $token->claims()->get('jti'));

@@ -22,7 +22,7 @@ class AccessTokenEntityTest extends TestCase {
         $entity->addScope($this->createScopeEntity('first'));
         $entity->addScope($this->createScopeEntity('second'));
 
-        $token = (string)$entity;
+        $token = $entity->toString();
         $payloads = json_decode(base64_decode(explode('.', $token)[1]), true);
         $this->assertSame('first second', $payloads['scope']);
     }

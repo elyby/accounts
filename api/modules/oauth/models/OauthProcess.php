@@ -301,7 +301,7 @@ class OauthProcess {
         ];
 
         if ($e->hasRedirect()) {
-            $response['redirectUri'] = $e->getRedirectUri();
+            $response['redirectUri'] = $e->getRedirectUri() . http_build_query($e->getPayload());
         }
 
         if ($e->getHttpStatusCode() !== 200) {

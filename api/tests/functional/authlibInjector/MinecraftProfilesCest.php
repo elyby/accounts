@@ -5,6 +5,7 @@ namespace api\tests\functional\authlibInjector;
 
 use api\tests\FunctionalTester;
 use Codeception\Example;
+use IntlChar;
 
 final class MinecraftProfilesCest {
 
@@ -72,8 +73,20 @@ final class MinecraftProfilesCest {
      */
     public function passTooManyUsernames(FunctionalTester $I, Example $case): void {
         $usernames = [];
+        // generate random UTF-8 usernames
         for ($i = 0; $i < 150; $i++) {
-            $usernames[] = random_bytes(10);
+            $r = "";
+
+            for ($j = 0; $j < 10; $j++) {
+                $codePoint = mt_rand(0x80, 0xffff);
+                $char = IntlChar::chr($codePoint);
+                if ($char !== null && IntlChar::isprint($char)) {
+                    $r .= $char;
+                } else {
+                    $j--;
+                }
+            }
+            $usernames[$i] = $r;
         }
 
         $I->sendPOST($case[0], $usernames);

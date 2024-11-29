@@ -66,6 +66,7 @@ class JwtIdentity implements IdentityInterface {
         $tokenReader = new TokenReader($token);
         $accountId = $tokenReader->getAccountId();
         if ($accountId !== null) {
+            /** @var DateTimeImmutable $iat */
             $iat = $token->claims()->get('iat');
             if ($tokenReader->getMinecraftClientToken() !== null
              && self::isRevoked($accountId, OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER, $iat)
@@ -108,13 +109,16 @@ class JwtIdentity implements IdentityInterface {
         throw new NotSupportedException('This method used for cookie auth, except we using Bearer auth');
     }
 
+    /**
+     * @throws NotSupportedException
+     */
     public static function findIdentity($id) {
         throw new NotSupportedException('This method used for cookie auth, except we using Bearer auth');
     }
 
-    private static function isRevoked(int $accountId, string $clientId, int $iat): bool {
+    private static function isRevoked(int $accountId, string $clientId, DateTimeImmutable $iat): bool {
         $session = OauthSession::findOne(['account_id' => $accountId, 'client_id' => $clientId]);
-        return $session !== null && $session->revoked_at !== null && $session->revoked_at > $iat;
+        return $session !== null && $session->revoked_at !== null && $session->revoked_at > $iat->getTimestamp();
     }
 
     // @codeCoverageIgnoreEnd
