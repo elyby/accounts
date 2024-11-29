@@ -58,8 +58,9 @@ class Component extends YiiUserComponent {
             return null;
         }
 
-        $sessionId = $identity->getToken()->claims()->get('jti', false);
-        if ($sessionId === false) {
+        /** @var ?int $sessionId */
+        $sessionId = (int)$identity->getToken()->claims()->get('jti');
+        if ($sessionId == null) {
             return null;
         }
 

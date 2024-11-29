@@ -39,17 +39,15 @@ class RestoreAccountFormTest extends TestCase {
         $this->queue
             ->expects($this->once())
             ->method('push')
-            ->withConsecutive(
-                [$this->callback(function(CreateWebHooksDeliveries $task) use ($account): bool {
-                    /** @var AccountEditNotification $notification */
-                    $notification = ReflectionHelper::readPrivateProperty($task, 'notification');
-                    $this->assertInstanceOf(AccountEditNotification::class, $notification);
-                    $this->assertSame($account->id, $notification->getPayloads()['id']);
-                    $this->assertFalse($notification->getPayloads()['isDeleted']);
+            ->willReturnCallback(function(CreateWebHooksDeliveries $task) use ($account): bool {
+                /** @var AccountEditNotification $notification */
+                $notification = ReflectionHelper::readPrivateProperty($task, 'notification');
+                $this->assertInstanceOf(AccountEditNotification::class, $notification);
+                $this->assertSame($account->id, $notification->getPayloads()['id']);
+                $this->assertFalse($notification->getPayloads()['isDeleted']);
 
-                    return true;
-                })],
-            );
+                return true;
+            });
 
         $model = new RestoreAccountForm($account);
         $this->assertTrue($model->performAction());

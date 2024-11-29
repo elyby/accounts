@@ -7,15 +7,15 @@ use api\models\authentication\AuthenticationResult;
 use api\tests\unit\TestCase;
 use DateTimeImmutable;
 use Lcobucci\JWT\JwtFacade;
+use Lcobucci\JWT\Signer\Blake2b;
 use Lcobucci\JWT\Signer\Key;
-use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Token\Builder;
 use Yii;
 
 class AuthenticationResultTest extends TestCase {
 
     public function testGetters() {
-        $token = (new JwtFacade())->issue(new Sha256(), Key\InMemory::plainText(''), static fn (Builder $builder, DateTimeImmutable $issuedAt): Builder => $builder);
+        $token = (new JwtFacade())->issue(new Blake2b(), Key\InMemory::plainText('MpQd6dDPiqnzFSWmpUfLy4+Rdls90Ca4C8e0QD0IxqY='), static fn (Builder $builder, DateTimeImmutable $issuedAt): Builder => $builder);
         $model = new AuthenticationResult($token);
         $this->assertSame($token, $model->getToken());
         $this->assertNull($model->getRefreshToken());

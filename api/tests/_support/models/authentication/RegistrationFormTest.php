@@ -57,8 +57,8 @@ class RegistrationFormTest extends TestCase {
 
     public function testSignup() {
         // TODO fix
-        $this->getFunctionMock(EmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
-        $this->getFunctionMock(EmailValidator::class, 'dns_get_record')->expects($this->any())->willReturn(['']);
+        // TODO $this->getFunctionMock(EmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
+        // TODO $this->getFunctionMock(EmailValidator::class, 'dns_get_record')->expects($this->any())->willReturn(['']);
         $model = new RegistrationForm([
             'username' => 'some_username',
             'email' => 'some_email@example.com',
@@ -75,8 +75,8 @@ class RegistrationFormTest extends TestCase {
     }
 
     public function testSignupWithDefaultLanguage() {
-        $this->getFunctionMock(EmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
-        $this->getFunctionMock(EmailValidator::class, 'dns_get_record')->expects($this->any())->willReturn(['']);
+        // TODO $this->getFunctionMock(EmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
+        // TODO $this->getFunctionMock(EmailValidator::class, 'dns_get_record')->expects($this->any())->willReturn(['']);
         $model = new RegistrationForm([
             'username' => 'some_username',
             'email' => 'some_email@example.com',

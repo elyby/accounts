@@ -44,7 +44,7 @@ class SendNewEmailVerificationFormTest extends TestCase {
             'email' => 'my-new-email@ely.by',
         ]);
         // TODO fix
-        $this->getFunctionMock(EmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
+        // TODO $this->getFunctionMock(EmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
         $this->assertTrue($model->performAction());
         $this->assertNull(EmailActivation::findOne($key));
         /** @var EmailActivation $activation */

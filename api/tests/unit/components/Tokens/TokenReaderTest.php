@@ -5,8 +5,15 @@ namespace api\tests\unit\components\Tokens;
 
 use api\components\Tokens\TokenReader;
 use api\tests\unit\TestCase;
-use Lcobucci\JWT\Claim;
+use DateTimeImmutable;
+use Lcobucci\JWT\Encoding\ChainedFormatter;
+use Lcobucci\JWT\Encoding\JoseEncoder;
+use Lcobucci\JWT\JwtFacade;
+use Lcobucci\JWT\Signer\Blake2b;
+use Lcobucci\JWT\Signer\Key\InMemory;
+use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Token;
+use Lcobucci\JWT\Token\Builder;
 
 class TokenReaderTest extends TestCase {
 
@@ -62,15 +69,17 @@ class TokenReaderTest extends TestCase {
     }
 
     private function createReader(array $claims): TokenReader {
-        $claimsObjects = [];
+        $builder = (new Builder(new JoseEncoder(), ChainedFormatter::default()));
+
         foreach ($claims as $key => $value) {
-            $claim = $this->createMock(Claim::class);
-            $claim->method('getName')->willReturn($key);
-            $claim->method('getValue')->willReturn($value);
-            $claimsObjects[$key] = $claim;
+            if ($key == 'sub') {
+                $builder = $builder->relatedTo($value);
+            } else {
+                $builder = $builder->withClaim($key, $value);
+            }
         }
 
-        return new TokenReader(new Token([], $claimsObjects));
+        return new TokenReader($builder->getToken(new Blake2b(), InMemory::plainText('MpQd6dDPiqnzFSWmpUfLy4+Rdls90Ca4C8e0QD0IxqY=')));
     }
 
 }

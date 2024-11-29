@@ -57,7 +57,7 @@ class JwtIdentity implements IdentityInterface {
         if (!(new Validator())->validate($token, new LooseValidAt($now->getClock() ?? new class implements Clock {
             public function now(): DateTimeImmutable
             {
-                return new DateTimeImmutable();
+                return Carbon::now()->toDateTimeImmutable();
             }
         }))) {
             throw new UnauthorizedHttpException('Incorrect token');
