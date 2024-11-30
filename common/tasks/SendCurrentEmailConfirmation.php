@@ -12,11 +12,11 @@ use yii\queue\RetryableJobInterface;
 
 class SendCurrentEmailConfirmation implements RetryableJobInterface {
 
-    public string $email;
+    public mixed $email = null;
 
-    public string $username;
+    public mixed $username = null;
 
-    public string $code;
+    public mixed $code = null;
 
     public MailerInterface $mailer;
 

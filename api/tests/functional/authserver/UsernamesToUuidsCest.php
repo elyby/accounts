@@ -3,7 +3,6 @@ namespace api\tests\functional\authserver;
 
 use api\tests\FunctionalTester;
 use Codeception\Example;
-use IntlChar;
 
 class UsernamesToUuidsCest {
 
@@ -78,19 +77,7 @@ class UsernamesToUuidsCest {
         $usernames = [];
         // generate random UTF-8 usernames
         for ($i = 0; $i < 150; $i++) {
-            $r = '';
-
-            for ($j = 0; $j < 10; $j++) {
-                $codePoint = mt_rand(0x80, 0xFFFF);
-                $char = IntlChar::chr($codePoint);
-                if ($char !== null && IntlChar::isprint($char)) {
-                    $r .= $char;
-                } else {
-                    $j--;
-                }
-            }
-
-            $usernames[$i] = $r;
+            $usernames[] = base64_encode(random_bytes(10));
         }
 
         $I->sendPost($case[0], $usernames);

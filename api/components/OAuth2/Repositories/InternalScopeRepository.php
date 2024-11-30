@@ -44,12 +44,11 @@ class InternalScopeRepository implements ScopeRepositoryInterface {
         $userIdentifier = null,
         ?string $authCodeId = null,
     ): array {
-        /** @var ClientEntity $clientEntity */
-
         if (empty($scopes)) {
             return $scopes;
         }
 
+        /** @var ClientEntity $clientEntity */
         // Right now we have no available scopes for the client_credentials grant
         if (!$clientEntity->isTrusted()) {
             throw OAuthServerException::invalidScope($scopes[0]->getIdentifier());

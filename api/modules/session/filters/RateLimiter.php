@@ -66,15 +66,11 @@ class RateLimiter extends \yii\filters\RateLimiter {
         }
     }
 
-    /**
-     * @param Request $request
-     * @return OauthClient|null
-     */
-    protected function getServer(Request $request) {
+    protected function getServer(Request $request): ?OauthClient {
         $serverId = $request->get('server_id');
         if ($serverId === null) {
             $this->server = false;
-            return;
+            return null;
         }
 
         if ($this->server === null) {
@@ -87,7 +83,7 @@ class RateLimiter extends \yii\filters\RateLimiter {
         }
 
         if ($this->server === false) {
-            return;
+            return null;
         }
 
         return $this->server;

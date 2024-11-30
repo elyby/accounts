@@ -13,25 +13,13 @@ use Yii;
 
 class LoginForm extends ApiForm {
 
-    /**
-     * @var string
-     */
-    public string $login;
+    public mixed $login = null;
 
-    /**
-     * @var string
-     */
-    public string $password;
+    public mixed $password = null;
 
-    /**
-     * @var string|null
-     */
-    public ?string $totp = null;
+    public mixed $totp = null;
 
-    /**
-     * @var bool
-     */
-    public bool $rememberMe = false;
+    public mixed $rememberMe = false;
 
     public function rules(): array {
         return [

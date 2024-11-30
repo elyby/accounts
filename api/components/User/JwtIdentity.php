@@ -5,6 +5,7 @@ namespace api\components\User;
 
 use api\components\Tokens\TokenReader;
 use Carbon\Carbon;
+use Carbon\FactoryImmutable;
 use common\models\Account;
 use common\models\OauthClient;
 use common\models\OauthSession;
@@ -13,60 +14,45 @@ use Exception;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
 use Lcobucci\JWT\Validation\Validator;
-use Psr\Clock\ClockInterface as Clock;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\web\UnauthorizedHttpException;
 
 class JwtIdentity implements IdentityInterface {
 
-    /**
-     * @var Token
-     */
-    private Token $token;
-
-    /**
-     * @var TokenReader|null
-     */
     private ?TokenReader $reader = null;
 
-    private function __construct(Token $token) {
-        $this->token = $token;
+    private function __construct(
+        private readonly Token $token,
+    ) {
     }
 
-    /** @noinspection PhpParameterNameChangedDuringInheritanceInspection */
-    public static function findIdentityByAccessToken($rawToken, $type = null): IdentityInterface {
+    public static function findIdentityByAccessToken($token, $type = null): IdentityInterface {
         try {
-            $token = Yii::$app->tokens->parse($rawToken);
+            $parsedToken = Yii::$app->tokens->parse($token);
         } catch (Exception $e) {
             Yii::error($e);
             throw new UnauthorizedHttpException('Incorrect token');
         }
 
-        if (!Yii::$app->tokens->verify($token)) {
+        if (!Yii::$app->tokens->verify($parsedToken)) {
             throw new UnauthorizedHttpException('Incorrect token');
         }
 
         $now = Carbon::now();
-        if ($token->isExpired($now)) {
+        if ($parsedToken->isExpired($now)) {
             throw new UnauthorizedHttpException('Token expired');
         }
 
-        // very cool how Carbon doesn't even HAVE A REAL CLOCK (it's just null)
-        // PHP is fucking hell.
-        if (!(new Validator())->validate($token, new LooseValidAt($now->getClock() ?? new class implements Clock {
-            public function now(): DateTimeImmutable {
-                return Carbon::now()->toDateTimeImmutable();
-            }
-        }))) {
+        if (!(new Validator())->validate($parsedToken, new LooseValidAt(FactoryImmutable::getDefaultInstance()))) {
             throw new UnauthorizedHttpException('Incorrect token');
         }
 
-        $tokenReader = new TokenReader($token);
+        $tokenReader = new TokenReader($parsedToken);
         $accountId = $tokenReader->getAccountId();
         if ($accountId !== null) {
             /** @var DateTimeImmutable $iat */
-            $iat = $token->claims()->get('iat');
+            $iat = $parsedToken->claims()->get('iat');
             if ($tokenReader->getMinecraftClientToken() !== null
              && self::isRevoked($accountId, OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER, $iat)
             ) {
@@ -80,7 +66,7 @@ class JwtIdentity implements IdentityInterface {
             }
         }
 
-        return new self($token);
+        return new self($parsedToken);
     }
 
     public function getToken(): Token {
@@ -121,7 +107,6 @@ class JwtIdentity implements IdentityInterface {
     }
 
     /** @codeCoverageIgnoreEnd */
-
     private function getReader(): TokenReader {
         if ($this->reader === null) {
             $this->reader = new TokenReader($this->token);

@@ -47,6 +47,18 @@ class Component extends BaseComponent {
         Assert::notEmpty($this->encryptionKey, 'encryptionKey must be set');
     }
 
+    /**
+     * @param array{
+     *     sub?: string,
+     *     jti?: string,
+     *     iat?: \DateTimeImmutable,
+     *     nbf?: \DateTimeImmutable,
+     *     exp?: \DateTimeImmutable,
+     * } $payloads
+     * @param array $headers
+     *
+     * @throws \api\components\Tokens\AlgorithmIsNotDefinedException
+     */
     public function create(array $payloads = [], array $headers = []): Token {
         $now = Carbon::now();
         $builder = (new Builder(new JoseEncoder(), ChainedFormatter::default()))->issuedAt($now->toDateTimeImmutable());

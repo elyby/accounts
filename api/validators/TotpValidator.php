@@ -11,10 +11,7 @@ use yii\validators\Validator;
 
 class TotpValidator extends Validator {
 
-    /**
-     * @var Account
-     */
-    public mixed $account = null;
+    public ?Account $account = null;
 
     /**
      * @var int|callable|null Allows you to set the exact time against which the validation will be performed.

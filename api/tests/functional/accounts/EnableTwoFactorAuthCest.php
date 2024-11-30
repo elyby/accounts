@@ -7,9 +7,6 @@ use OTPHP\TOTP;
 
 class EnableTwoFactorAuthCest {
 
-    /**
-     * @var AccountsRoute
-     */
     private AccountsRoute $route;
 
     public function _before(FunctionalTester $I): void {

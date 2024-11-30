@@ -63,8 +63,6 @@ class TokensFactory extends Component {
 
     /**
      * @param ScopeEntityInterface[]|string[] $scopes
-     *
-     * @return string
      */
     private function prepareScopes(array $scopes): string {
         return implode(' ', array_map(function($scope): string {

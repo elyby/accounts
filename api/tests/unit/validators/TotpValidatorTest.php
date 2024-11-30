@@ -35,8 +35,7 @@ class TotpValidatorTest extends TestCase {
         $result = $this->callProtected($validator, 'validateValue', $controlTotp->at($at));
         $this->assertNull($result);
 
-        $at = function() {
-        };
+        $at = fn(): ?int => null;
         $validator->timestamp = $at;
         $result = $this->callProtected($validator, 'validateValue', $controlTotp->now());
         $this->assertNull($result);
