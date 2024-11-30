@@ -37,7 +37,7 @@ class HS256 implements AlgorithmInterface {
 
     private function loadKey(): Key {
         if ($this->loadedKey === null) {
-            $this->loadedKey = new Key($this->key);
+            $this->loadedKey = Key\InMemory::plainText($this->key);
         }
 
         return $this->loadedKey;
