@@ -39,7 +39,7 @@ class Component extends BaseComponent {
             new Repositories\EmptyScopeRepository(),
             new Keys\EmptyKey(),
             '', // Omit the key because we use our own encryption mechanism
-            new ResponseTypes\BearerTokenResponse()
+            new ResponseTypes\BearerTokenResponse(),
         );
         /** @noinspection PhpUnhandledExceptionInspection */
         $authCodeGrant = new Grants\AuthCodeGrant($authCodesRepo, $refreshTokensRepo, new DateInterval('PT10M'));

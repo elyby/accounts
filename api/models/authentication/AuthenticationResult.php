@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace api\models\authentication;
 
-use DateInterval;
-use DateTime;
 use DateTimeImmutable;
 use Lcobucci\JWT\Token;
 

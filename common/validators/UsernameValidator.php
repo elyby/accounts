@@ -44,11 +44,11 @@ class UsernameValidator extends Validator {
             };
         }
 
-        $this->executeValidation($filter, $model, $attribute) &&
-        $this->executeValidation($required, $model, $attribute) &&
-        $this->executeValidation($length, $model, $attribute) &&
-        $this->executeValidation($pattern, $model, $attribute) &&
-        $this->executeValidation($unique, $model, $attribute);
+        $this->executeValidation($filter, $model, $attribute)
+        && $this->executeValidation($required, $model, $attribute)
+        && $this->executeValidation($length, $model, $attribute)
+        && $this->executeValidation($pattern, $model, $attribute)
+        && $this->executeValidation($unique, $model, $attribute);
     }
 
     protected function executeValidation(Validator $validator, Model $model, string $attribute) {

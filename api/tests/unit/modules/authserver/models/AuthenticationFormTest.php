@@ -93,7 +93,7 @@ class AuthenticationFormTest extends TestCase {
         string $expectedExceptionMessage,
         string $login,
         string $password,
-        string $totp = null
+        string $totp = null,
     ) {
         $this->expectException(ForbiddenOperationException::class);
         $this->expectExceptionMessage($expectedExceptionMessage);

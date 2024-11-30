@@ -71,7 +71,7 @@ class LegacyOAuth2Identity implements IdentityInterface {
         return $this->accessToken;
     }
 
-    // @codeCoverageIgnoreStart
+    /** @codeCoverageIgnoreStart */
     public function getAuthKey() {
         throw new NotSupportedException('This method used for cookie auth, except we using Bearer auth');
     }
@@ -84,7 +84,7 @@ class LegacyOAuth2Identity implements IdentityInterface {
         throw new NotSupportedException('This method used for cookie auth, except we using Bearer auth');
     }
 
-    // @codeCoverageIgnoreEnd
+    /** @codeCoverageIgnoreEnd */
 
     private static function findRecordOnLegacyStorage(string $accessToken): ?array {
         $record = Yii::$app->redis->get("oauth:access:tokens:{$accessToken}");

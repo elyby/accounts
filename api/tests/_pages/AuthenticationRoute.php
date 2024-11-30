@@ -9,8 +9,7 @@ class AuthenticationRoute extends BasePage {
      * @param bool|string|null $rememberMeOrToken
      * @param bool $rememberMe
      */
-    public function login(string $login = '', string $password = '', bool|string|null $rememberMeOrToken = null, bool $rememberMe = false): void
-    {
+    public function login(string $login = '', string $password = '', bool|string|null $rememberMeOrToken = null, bool $rememberMe = false): void {
         $params = [
             'login' => $login,
             'password' => $password,
@@ -25,16 +24,14 @@ class AuthenticationRoute extends BasePage {
         $this->getActor()->sendPOST('/api/authentication/login', $params);
     }
 
-    public function forgotPassword($login = null, $token = null): void
-    {
+    public function forgotPassword($login = null, $token = null): void {
         $this->getActor()->sendPOST('/api/authentication/forgot-password', [
             'login' => $login,
             'totp' => $token,
         ]);
     }
 
-    public function recoverPassword($key = null, $newPassword = null, $newRePassword = null): void
-    {
+    public function recoverPassword($key = null, $newPassword = null, $newRePassword = null): void {
         $this->getActor()->sendPOST('/api/authentication/recover-password', [
             'key' => $key,
             'newPassword' => $newPassword,
@@ -42,8 +39,7 @@ class AuthenticationRoute extends BasePage {
         ]);
     }
 
-    public function refreshToken($refreshToken = null): void
-    {
+    public function refreshToken($refreshToken = null): void {
         $this->getActor()->sendPOST('/api/authentication/refresh-token', [
             'refresh_token' => $refreshToken,
         ]);

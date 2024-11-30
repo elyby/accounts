@@ -26,7 +26,7 @@ final class ClearOauthSessions implements RetryableJobInterface {
     }
 
     public function getTtr(): int {
-        return 60/*sec*/ * 5/*min*/;
+        return 60/* sec */ * 5/* min */;
     }
 
     public function canRetry($attempt, $error): bool {

@@ -60,7 +60,7 @@ class ChangeUsernameFormTest extends TestCase {
         $this->assertInstanceOf(
             UsernameHistory::class,
             UsernameHistory::findOne(['username' => $newUsername]),
-            'username should change, if we change case of some letters'
+            'username should change, if we change case of some letters',
         );
         /** @var PullMojangUsername $job */
         $job = $this->tester->grabLastQueuedJob();

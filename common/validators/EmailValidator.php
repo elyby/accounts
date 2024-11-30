@@ -81,15 +81,15 @@ final class EmailValidator extends Validator {
             };
         }
 
-        $this->executeValidation($trim, $model, $attribute) &&
-        $this->executeValidation($required, $model, $attribute) &&
-        $this->executeValidation($length, $model, $attribute) &&
-        $this->executeValidation($email, $model, $attribute) &&
-        $this->executeValidation($additionalEmail, $model, $attribute) &&
-        $this->executeValidation($tempmail, $model, $attribute) &&
-        $this->executeValidation($blacklist, $model, $attribute) &&
-        $this->executeValidation($idnaDomain, $model, $attribute) &&
-        $this->executeValidation($unique, $model, $attribute);
+        $this->executeValidation($trim, $model, $attribute)
+        && $this->executeValidation($required, $model, $attribute)
+        && $this->executeValidation($length, $model, $attribute)
+        && $this->executeValidation($email, $model, $attribute)
+        && $this->executeValidation($additionalEmail, $model, $attribute)
+        && $this->executeValidation($tempmail, $model, $attribute)
+        && $this->executeValidation($blacklist, $model, $attribute)
+        && $this->executeValidation($idnaDomain, $model, $attribute)
+        && $this->executeValidation($unique, $model, $attribute);
     }
 
     private function executeValidation(Validator $validator, Model $model, string $attribute): bool {

@@ -53,7 +53,7 @@ class Validator extends \yii\validators\Validator {
             $isSuccess = true;
             try {
                 $response = $this->performRequest($value);
-            } catch (ConnectException | ServerException $e) {
+            } catch (ConnectException|ServerException $e) {
                 if (++$repeats >= self::REPEAT_LIMIT) {
                     throw $e;
                 }
@@ -72,8 +72,6 @@ class Validator extends \yii\validators\Validator {
         if (!$data['success']) {
             return [$this->message, []];
         }
-
-        return null;
     }
 
     /**

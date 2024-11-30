@@ -46,8 +46,7 @@ final class AccessTokenCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.refresh_token');
     }
 
-    public function callEndpointWithByEmptyRequest(OauthSteps $I): void
-    {
+    public function callEndpointWithByEmptyRequest(OauthSteps $I): void {
         $I->wantTo('check behavior on on request without any params');
         $I->sendPOST('/api/oauth2/v1/token');
         $I->canSeeResponseCodeIs(400);
@@ -57,8 +56,7 @@ final class AccessTokenCest {
         ]);
     }
 
-    public function issueTokenByPassingInvalidAuthCode(OauthSteps $I): void
-    {
+    public function issueTokenByPassingInvalidAuthCode(OauthSteps $I): void {
         $I->wantTo('check behavior on passing invalid auth code');
         $I->sendPOST('/api/oauth2/v1/token', [
             'grant_type' => 'authorization_code',
@@ -76,8 +74,7 @@ final class AccessTokenCest {
         ]);
     }
 
-    public function issueTokenByPassingInvalidRedirectUri(OauthSteps $I): void
-    {
+    public function issueTokenByPassingInvalidRedirectUri(OauthSteps $I): void {
         $I->wantTo('check behavior on passing invalid redirect_uri');
         $authCode = $I->obtainAuthCode();
         $I->sendPOST('/api/oauth2/v1/token', [

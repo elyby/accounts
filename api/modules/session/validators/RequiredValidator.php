@@ -18,8 +18,6 @@ class RequiredValidator extends \yii\validators\RequiredValidator {
         if (parent::validateValue($value) !== null) {
             throw new IllegalArgumentException();
         }
-
-        return null;
     }
 
 }

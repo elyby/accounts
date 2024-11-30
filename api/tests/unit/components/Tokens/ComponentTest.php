@@ -28,7 +28,7 @@ class ComponentTest extends TestCase {
 
         // Pass exp claim
         $time = time() + 60;
-        $token = $this->component->create(['exp' => new DateTimeImmutable("@$time", null)]);
+        $token = $this->component->create(['exp' => new DateTimeImmutable("@{$time}", null)]);
         $this->assertSame($time, $token->claims()->get('exp')->getTimestamp());
 
         // Pass custom payloads
@@ -64,8 +64,7 @@ class ComponentTest extends TestCase {
         $this->assertSame($shouldBeValid, $this->component->verify($token));
     }
 
-    public static function getVerifyCases(): Generator
-    {
+    public static function getVerifyCases(): Generator {
         $parser = new Parser(new JoseEncoder());
         yield 'ES256' => [
             $parser->parse('eyJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ1Mjc0NzYsImV4cCI6MTU2NDUzMTA3Niwic3ViIjoiZWx5fDEiLCJqdGkiOjMwNjk1OTJ9.M8Kam9bv0BXui3k7Posq_vc0I95Kb_Tw7L2vPdEPlwsHqh1VJHoWtlQc32_SlsotttL7j6RYbffBkRFX2wDGFQ'),
@@ -81,14 +80,12 @@ class ComponentTest extends TestCase {
         ];*/
     }
 
-    protected function _setUp(): void
-    {
+    protected function _setUp(): void {
         parent::_setUp();
         $this->component = Yii::$app->tokens;
     }
 
-    private function assertValidParsedToken(Token $token, string $expectedAlg): void
-    {
+    private function assertValidParsedToken(Token $token, string $expectedAlg): void {
         $this->assertSame($expectedAlg, $token->headers()->get('alg'));
         $this->assertSame(1564527476, $token->claims()->get('iat')->getTimestamp());
         $this->assertSame(1564531076, $token->claims()->get('exp')->getTimestamp());

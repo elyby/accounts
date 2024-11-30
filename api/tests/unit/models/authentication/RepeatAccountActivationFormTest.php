@@ -20,7 +20,6 @@ class RepeatAccountActivationFormTest extends TestCase {
         parent::setUp();
         Yii::$container->set(ReCaptchaValidator::class, new class($this->createMock(ClientInterface::class)) extends ReCaptchaValidator {
             public function validateValue($value) {
-                return null;
             }
         });
     }

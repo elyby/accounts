@@ -75,10 +75,10 @@ final class MinecraftProfilesCest {
         $usernames = [];
         // generate random UTF-8 usernames
         for ($i = 0; $i < 150; $i++) {
-            $r = "";
+            $r = '';
 
             for ($j = 0; $j < 10; $j++) {
-                $codePoint = mt_rand(0x80, 0xffff);
+                $codePoint = mt_rand(0x80, 0xFFFF);
                 $char = IntlChar::chr($codePoint);
                 if ($char !== null && IntlChar::isprint($char)) {
                     $r .= $char;
@@ -86,6 +86,7 @@ final class MinecraftProfilesCest {
                     $j--;
                 }
             }
+
             $usernames[$i] = $r;
         }
 

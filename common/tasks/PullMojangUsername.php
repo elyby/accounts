@@ -39,7 +39,7 @@ class PullMojangUsername implements JobInterface {
         } catch (NoContentException $e) {
             $response = false;
             Yii::$app->statsd->inc('queue.pullMojangUsername.not_found');
-        } catch (GuzzleException | MojangApiException $e) {
+        } catch (GuzzleException|MojangApiException $e) {
             Yii::$app->statsd->inc('queue.pullMojangUsername.error');
             return;
         }

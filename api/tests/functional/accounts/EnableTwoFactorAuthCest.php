@@ -12,13 +12,11 @@ class EnableTwoFactorAuthCest {
      */
     private AccountsRoute $route;
 
-    public function _before(FunctionalTester $I): void
-    {
+    public function _before(FunctionalTester $I): void {
         $this->route = new AccountsRoute($I);
     }
 
-    public function testFails(FunctionalTester $I): void
-    {
+    public function testFails(FunctionalTester $I): void {
         $accountId = $I->amAuthenticated('AccountWithOtpSecret');
 
         $this->route->enableTwoFactorAuth($accountId);
@@ -49,8 +47,7 @@ class EnableTwoFactorAuthCest {
         ]);
     }
 
-    public function testSuccessEnable(FunctionalTester $I): void
-    {
+    public function testSuccessEnable(FunctionalTester $I): void {
         $accountId = $I->amAuthenticated('AccountWithOtpSecret');
         $totp = TOTP::create('AAAA');
         $this->route->enableTwoFactorAuth($accountId, $totp->now(), 'password_0');
@@ -61,8 +58,7 @@ class EnableTwoFactorAuthCest {
         ]);
     }
 
-    public function testSuccessEnableWithNotSoExpiredCode(FunctionalTester $I): void
-    {
+    public function testSuccessEnableWithNotSoExpiredCode(FunctionalTester $I): void {
         $accountId = $I->amAuthenticated('AccountWithOtpSecret');
         $totp = TOTP::create('AAAA');
         $this->route->enableTwoFactorAuth($accountId, $totp->at(time() - 5), 'password_0');

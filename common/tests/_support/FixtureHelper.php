@@ -16,7 +16,6 @@ use yii\test\InitDbFixture;
  * TODO: try to remove
  */
 class FixtureHelper extends Module {
-
     /**
      * Redeclare visibility because codeception includes all public methods that do not start with "_"
      * and are not excluded by module settings, in actor class.

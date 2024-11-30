@@ -9,7 +9,6 @@ use common\models\confirmations\CurrentEmailConfirmation;
 use common\tasks\SendCurrentEmailConfirmation;
 use common\tests\unit\TestCase;
 use Yii;
-use yii\mail\MailerInterface;
 use yii\queue\Queue;
 use yii\symfonymailer\Message;
 

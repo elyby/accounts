@@ -30,7 +30,7 @@ class TokensFactory extends Component {
             // so that the session doesn't end while working with the account
             $payloads['exp'] = Carbon::now()->addDays(7)->toDateTimeImmutable();
         } else {
-            $payloads['jti'] = (string) $session->id;
+            $payloads['jti'] = (string)$session->id;
         }
 
         return Yii::$app->tokens->create($payloads);

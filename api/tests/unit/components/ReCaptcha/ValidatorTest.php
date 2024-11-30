@@ -40,7 +40,7 @@ class ValidatorTest extends TestCase {
                 'error-codes' => [
                     'invalid-input-response', // The response parameter is invalid or malformed.
                 ],
-            ])))
+            ]))),
         );
         // TODO $this->getFunctionMock(Validator::class, 'sleep')->expects($this->once());
 

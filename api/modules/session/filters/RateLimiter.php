@@ -33,7 +33,7 @@ class RateLimiter extends \yii\filters\RateLimiter {
             null,
             $this->request ?: Yii::$app->getRequest(),
             $this->response ?: Yii::$app->getResponse(),
-            $action
+            $action,
         );
 
         return true;
@@ -74,7 +74,7 @@ class RateLimiter extends \yii\filters\RateLimiter {
         $serverId = $request->get('server_id');
         if ($serverId === null) {
             $this->server = false;
-            return null;
+            return;
         }
 
         if ($this->server === null) {
@@ -87,7 +87,7 @@ class RateLimiter extends \yii\filters\RateLimiter {
         }
 
         if ($this->server === false) {
-            return null;
+            return;
         }
 
         return $this->server;

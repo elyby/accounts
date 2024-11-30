@@ -10,7 +10,6 @@ use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use League\OAuth2\Server\Repositories\ScopeRepositoryInterface;
-use Webmozart\Assert\Assert;
 
 class InternalScopeRepository implements ScopeRepositoryInterface {
 
@@ -39,7 +38,12 @@ class InternalScopeRepository implements ScopeRepositoryInterface {
      * @throws OAuthServerException
      */
     public function finalizeScopes(
-        array $scopes, $grantType, ClientEntityInterface $clientEntity, $userIdentifier = null, ?string $authCodeId = null): array {
+        array $scopes,
+        $grantType,
+        ClientEntityInterface $clientEntity,
+        $userIdentifier = null,
+        ?string $authCodeId = null,
+    ): array {
         /** @var ClientEntity $clientEntity */
 
         if (empty($scopes)) {

@@ -10,8 +10,7 @@ class Sentry extends Component {
 
     public bool $enabled = true;
 
-    public function init(): void
-    {
+    public function init(): void {
         if (!$this->enabled) {
             return;
         }

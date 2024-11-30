@@ -54,8 +54,11 @@ class DeleteAccountFormTest extends TestCase {
                     $this->assertInstanceOf(AccountEditNotification::class, $notification);
                     $this->assertSame($account->id, $notification->getPayloads()['id']);
                     $this->assertTrue($notification->getPayloads()['isDeleted']);
+
                     return true;
-                } else if ($task instanceof DeleteAccount) {
+                }
+
+                if ($task instanceof DeleteAccount) {
                     $obj = new ReflectionObject($task);
                     $property = $obj->getProperty('accountId');
                     $this->assertSame($account->id, $property->getValue($task));

@@ -17,7 +17,7 @@ class SessionServerSteps extends FunctionalTester {
 
         if ($byLegacy) {
             $route->joinLegacy([
-                'sessionId' => 'token:' . $accessToken . ':' . 'df936908-b2e1-544d-96f8-2977ec213022',
+                'sessionId' => 'token:' . $accessToken . ':df936908-b2e1-544d-96f8-2977ec213022',
                 'user' => $username,
                 'serverId' => $serverId,
             ]);
@@ -41,7 +41,7 @@ class SessionServerSteps extends FunctionalTester {
     public function canSeeValidTexturesResponse(
         string $expectedUsername,
         string $expectedUuid,
-        bool $shouldBeSigned = false
+        bool $shouldBeSigned = false,
     ) {
         $this->seeResponseIsJson();
         $this->canSeeResponseContainsJson([

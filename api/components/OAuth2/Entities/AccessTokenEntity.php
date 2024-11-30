@@ -20,4 +20,5 @@ class AccessTokenEntity implements AccessTokenEntityInterface {
     public function setPrivateKey(CryptKeyInterface $privateKey): void {
         // We use a general-purpose component to build JWT tokens, so there is no need to keep the key
     }
+
 }

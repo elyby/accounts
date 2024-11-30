@@ -10,7 +10,6 @@ use common\models\OauthSession;
 use DateTimeImmutable;
 use Exception;
 use InvalidArgumentException;
-use Lcobucci\JWT\JwtFacade;
 use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
 use Lcobucci\JWT\Validation\Validator;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
@@ -63,7 +62,7 @@ class RefreshTokenGrant extends BaseRefreshTokenGrant {
      * @throws OAuthServerException
      */
     private function validateLegacyRefreshToken(string $refreshToken): array {
-        $result = Yii::$app->redis->get("oauth:refresh:tokens:$refreshToken");
+        $result = Yii::$app->redis->get("oauth:refresh:tokens:{$refreshToken}");
         if ($result === null) {
             throw OAuthServerException::invalidRefreshToken('Token has been revoked');
         }
@@ -110,8 +109,7 @@ class RefreshTokenGrant extends BaseRefreshTokenGrant {
         }
 
         if (!(new Validator())->validate($token, new LooseValidAt(Carbon::now()->getClock() ?? new class implements Clock {
-            public function now(): DateTimeImmutable
-            {
+            public function now(): DateTimeImmutable {
                 return new DateTimeImmutable();
             }
         }))) {

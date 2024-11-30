@@ -28,7 +28,7 @@ class ElyDecorator implements DecoratorInterface {
         $outputHeight,
         $leftPadding,
         $topPadding,
-        $multiple
+        $multiple,
     ) {
         if (!$renderer instanceof Svg) {
             throw new InvalidArgumentException('$renderer must by instance of ' . Svg::class);
@@ -104,7 +104,7 @@ class ElyDecorator implements DecoratorInterface {
         $outputHeight,
         $leftPadding,
         $topPadding,
-        $multiple
+        $multiple,
     ) {
     }
 

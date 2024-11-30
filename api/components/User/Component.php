@@ -25,7 +25,7 @@ class Component extends YiiUserComponent {
 
     public $enableSession = false;
 
-    public $loginUrl = null;
+    public $loginUrl;
 
     /**
      * We don't use the standard web authorization mechanism via cookies.
@@ -60,7 +60,7 @@ class Component extends YiiUserComponent {
 
         /** @var ?int $sessionId */
         $sessionId = (int)$identity->getToken()->claims()->get('jti');
-        if ($sessionId == null) {
+        if ($sessionId === null) {
             return null;
         }
 

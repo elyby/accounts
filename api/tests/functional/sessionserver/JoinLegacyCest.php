@@ -45,7 +45,7 @@ class JoinLegacyCest {
         $I->wantTo('join to server by legacy protocol with new launcher session format, using legacy authserver');
         [$accessToken] = $I->amAuthenticated();
         $this->route->joinLegacy([
-            'sessionId' => 'token:' . $accessToken . ':' . 'df936908-b2e1-544d-96f8-2977ec213022',
+            'sessionId' => 'token:' . $accessToken . ':df936908-b2e1-544d-96f8-2977ec213022',
             'user' => 'Admin',
             'serverId' => uuid(),
         ]);
@@ -56,7 +56,7 @@ class JoinLegacyCest {
         $I->wantTo('join to server using modern oAuth2 generated token with new launcher session format');
         $accessToken = $I->getAccessToken([P::MINECRAFT_SERVER_SESSION]);
         $this->route->joinLegacy([
-            'sessionId' => 'token:' . $accessToken . ':' . 'df936908-b2e1-544d-96f8-2977ec213022',
+            'sessionId' => 'token:' . $accessToken . ':df936908-b2e1-544d-96f8-2977ec213022',
             'user' => 'Admin',
             'serverId' => uuid(),
         ]);
@@ -87,7 +87,7 @@ class JoinLegacyCest {
         $I->wantTo('join to some server with wrong accessToken');
         $accessToken = $I->getAccessToken(['account_info']);
         $this->route->joinLegacy([
-            'sessionId' => 'token:' . $accessToken . ':' . 'df936908-b2e1-544d-96f8-2977ec213022',
+            'sessionId' => 'token:' . $accessToken . ':df936908-b2e1-544d-96f8-2977ec213022',
             'user' => 'Admin',
             'serverId' => uuid(),
         ]);

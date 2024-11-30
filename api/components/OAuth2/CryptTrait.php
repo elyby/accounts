@@ -25,7 +25,7 @@ trait CryptTrait {
     protected function decrypt($encryptedData): string {
         try {
             return Yii::$app->tokens->decryptValue($encryptedData);
-        } catch (SodiumException | RangeException $e) {
+        } catch (SodiumException|RangeException $e) {
             throw new LogicException($e->getMessage(), 0, $e);
         }
     }

@@ -53,15 +53,19 @@ class Component extends BaseComponent {
         if (isset($payloads['sub'])) {
             $builder = $builder->relatedTo($payloads['sub']);
         }
+
         if (isset($payloads['jti'])) {
             $builder = $builder->identifiedBy($payloads['jti']);
         }
+
         if (isset($payloads['iat'])) {
             $builder = $builder->issuedAt($payloads['iat']);
         }
+
         if (isset($payloads['nbf'])) {
             $builder = $builder->canOnlyBeUsedAfter($payloads['nbf']);
         }
+
         if (isset($payloads['exp'])) {
             $builder = $builder->expiresAt($payloads['exp']);
         }
@@ -137,15 +141,14 @@ class Component extends BaseComponent {
     private function getAlgorithmManager(): AlgorithmsManager {
         if ($this->algorithmManager === null) {
             $this->algorithmManager = new AlgorithmsManager([
-                new Algorithms\ES256("file://$this->privateKeyPath", $this->privateKeyPass),
+                new Algorithms\ES256("file://{$this->privateKeyPath}", $this->privateKeyPass),
             ]);
         }
 
         return $this->algorithmManager;
     }
 
-    private function prepareValue($value): string
-    {
+    private function prepareValue($value): string {
         if ($value instanceof EncryptedValue) {
             return $this->encryptValue($value->getValue());
         }

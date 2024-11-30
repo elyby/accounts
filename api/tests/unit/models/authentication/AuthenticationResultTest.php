@@ -15,7 +15,7 @@ use Yii;
 class AuthenticationResultTest extends TestCase {
 
     public function testGetters() {
-        $token = (new JwtFacade())->issue(new Blake2b(), Key\InMemory::plainText('MpQd6dDPiqnzFSWmpUfLy4+Rdls90Ca4C8e0QD0IxqY='), static fn (Builder $builder, DateTimeImmutable $issuedAt): Builder => $builder);
+        $token = (new JwtFacade())->issue(new Blake2b(), Key\InMemory::plainText('MpQd6dDPiqnzFSWmpUfLy4+Rdls90Ca4C8e0QD0IxqY='), static fn(Builder $builder, DateTimeImmutable $issuedAt): Builder => $builder);
         $model = new AuthenticationResult($token);
         $this->assertSame($token, $model->getToken());
         $this->assertNull($model->getRefreshToken());
@@ -26,7 +26,7 @@ class AuthenticationResultTest extends TestCase {
 
     public function testGetAsResponse() {
         $time = time() + 3600;
-        $token = Yii::$app->tokens->create(['exp' => new DateTimeImmutable("@$time", null)]);
+        $token = Yii::$app->tokens->create(['exp' => new DateTimeImmutable("@{$time}", null)]);
         $jwt = $token->toString();
 
         $model = new AuthenticationResult($token);

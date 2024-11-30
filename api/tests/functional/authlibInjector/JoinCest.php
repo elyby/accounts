@@ -12,8 +12,7 @@ use function Ramsey\Uuid\v4 as uuid;
 
 class JoinCest {
 
-    public function joinByLegacyAuthserver(AuthserverSteps $I): void
-    {
+    public function joinByLegacyAuthserver(AuthserverSteps $I): void {
         $I->wantTo('join to server, using legacy authserver access token');
         [$accessToken] = $I->amAuthenticated();
         $I->sendPOST('/api/authlib-injector/sessionserver/session/minecraft/join', [
@@ -24,8 +23,7 @@ class JoinCest {
         $this->expectSuccessResponse($I);
     }
 
-    public function joinByPassJsonInPost(AuthserverSteps $I): void
-    {
+    public function joinByPassJsonInPost(AuthserverSteps $I): void {
         $I->wantTo('join to server, passing data in body as encoded json');
         [$accessToken] = $I->amAuthenticated();
         $I->sendPOST('/api/authlib-injector/sessionserver/session/minecraft/join', [
@@ -40,8 +38,7 @@ class JoinCest {
      * @example ["df936908-b2e1-544d-96f8-2977ec213022"]
      * @example ["df936908b2e1544d96f82977ec213022"]
      */
-    public function joinByOauth2Token(OauthSteps $I, Example $case): void
-    {
+    public function joinByOauth2Token(OauthSteps $I, Example $case): void {
         $I->wantTo('join to server, using modern oAuth2 generated token');
         $accessToken = $I->getAccessToken([P::MINECRAFT_SERVER_SESSION]);
         $I->sendPOST('/api/authlib-injector/sessionserver/session/minecraft/join', [
@@ -52,8 +49,7 @@ class JoinCest {
         $this->expectSuccessResponse($I);
     }
 
-    public function joinByModernOauth2TokenWithoutPermission(OauthSteps $I): void
-    {
+    public function joinByModernOauth2TokenWithoutPermission(OauthSteps $I): void {
         $I->wantTo('join to server, using moder oAuth2 generated token, but without minecraft auth permission');
         $accessToken = $I->getAccessToken(['account_info', 'account_email']);
         $I->sendPOST('/api/authlib-injector/sessionserver/session/minecraft/join', [
@@ -69,8 +65,7 @@ class JoinCest {
         ]);
     }
 
-    public function joinWithExpiredToken(FunctionalTester $I): void
-    {
+    public function joinWithExpiredToken(FunctionalTester $I): void {
         $I->wantTo('join to some server with expired accessToken');
         $I->sendPOST('/api/authlib-injector/sessionserver/session/minecraft/join', [
             'accessToken' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpYXQiOjE1MTgzMzQ3NDMsImV4cCI6MTUxODMzNDc5MCwiY2xpZW50X2lkIjoiZWx5Iiwic2NvcGUiOiJtaW5lY3JhZnRfc2VydmVyX3Nlc3Npb24iLCJzdWIiOiJlbHl8MSJ9.0mBXezB2p0eGuusZDklthR8xQLGo-v1qoP0GPdEPpYvckJMoHmlSqiW-2WwLlxGK0_J4KmYlp5vM4ynE14armw',
@@ -85,8 +80,7 @@ class JoinCest {
         ]);
     }
 
-    public function wrongArguments(FunctionalTester $I): void
-    {
+    public function wrongArguments(FunctionalTester $I): void {
         $I->wantTo('get error on wrong amount of arguments');
         $I->sendPOST('/api/authlib-injector/sessionserver/session/minecraft/join', [
             'wrong' => 'argument',
@@ -99,8 +93,7 @@ class JoinCest {
         ]);
     }
 
-    public function joinWithWrongAccessToken(FunctionalTester $I): void
-    {
+    public function joinWithWrongAccessToken(FunctionalTester $I): void {
         $I->wantTo('join to some server with wrong accessToken');
         $I->sendPOST('/api/authlib-injector/sessionserver/session/minecraft/join', [
             'accessToken' => uuid(),
@@ -115,8 +108,7 @@ class JoinCest {
         ]);
     }
 
-    public function joinWithNilUuids(FunctionalTester $I): void
-    {
+    public function joinWithNilUuids(FunctionalTester $I): void {
         $I->wantTo('join to some server with nil accessToken and selectedProfile');
         $I->sendPOST('/api/authlib-injector/sessionserver/session/minecraft/join', [
             'accessToken' => '00000000-0000-0000-0000-000000000000',
@@ -131,8 +123,7 @@ class JoinCest {
         ]);
     }
 
-    public function joinByAccountMarkedForDeletion(FunctionalTester $I): void
-    {
+    public function joinByAccountMarkedForDeletion(FunctionalTester $I): void {
         $I->sendPOST('/api/authlib-injector/sessionserver/session/minecraft/join', [
             'accessToken' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpYXQiOjE1MTgzMzQ3NDMsImNsaWVudF9pZCI6ImVseSIsInNjb3BlIjoibWluZWNyYWZ0X3NlcnZlcl9zZXNzaW9uIiwic3ViIjoiZWx5fDE1In0.2qla7RzReBi2WtfgP3x8T6ZA0wn9HOrQo57xaZc2wMKPo1Zc49_o6w-5Ku1tbvzmESZfAxNQpfY4EwclEWjHYA',
             'selectedProfile' => '6383de63-8f85-4ed5-92b7-5401a1fa68cd',
@@ -145,8 +136,7 @@ class JoinCest {
         ]);
     }
 
-    private function expectSuccessResponse(FunctionalTester $I): void
-    {
+    private function expectSuccessResponse(FunctionalTester $I): void {
         $I->seeResponseCodeIs(204);
         $I->canSeeResponseEquals('');
     }

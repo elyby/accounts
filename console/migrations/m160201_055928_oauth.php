@@ -43,7 +43,7 @@ class m160201_055928_oauth extends Migration {
             'account_id',
             '{{%accounts}}',
             'id',
-            'CASCADE'
+            'CASCADE',
         );
 
         $this->addForeignKey(
@@ -53,7 +53,7 @@ class m160201_055928_oauth extends Migration {
             '{{%oauth_clients}}',
             'id',
             'CASCADE',
-            'CASCADE'
+            'CASCADE',
         );
 
         $this->addForeignKey(
@@ -63,7 +63,7 @@ class m160201_055928_oauth extends Migration {
             '{{%oauth_sessions}}',
             'id',
             'CASCADE',
-            'SET NULL'
+            'SET NULL',
         );
     }
 

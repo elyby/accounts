@@ -35,7 +35,7 @@ class CreateWebHooksDeliveriesTest extends TestCase {
 
         $queue = $this->createMock(Queue::class);
         $invocationCount = $this->exactly(2);
-        $queue->expects($invocationCount)->method('push')->willReturnCallback(function (DeliveryWebHook $task) use ($invocationCount) {
+        $queue->expects($invocationCount)->method('push')->willReturnCallback(function(DeliveryWebHook $task) use ($invocationCount) {
             if ($invocationCount->numberOfInvocations() === 1) {
                 $this->assertSame('account.edit', $task->type);
                 $this->assertSame(['key' => 'value'], $task->payloads);
@@ -60,4 +60,5 @@ class CreateWebHooksDeliveriesTest extends TestCase {
         $task = new CreateWebHooksDeliveries($notification);
         $task->execute($queue);
     }
+
 }

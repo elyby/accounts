@@ -25,7 +25,7 @@ class ChangePasswordFormTest extends TestCase {
         $this->assertSame(
             [E::NEW_RE_PASSWORD_DOES_NOT_MATCH],
             $model->getErrors('newRePassword'),
-            'error.rePassword_does_not_match expected if passwords not match'
+            'error.rePassword_does_not_match expected if passwords not match',
         );
 
         $account = new Account();
@@ -50,7 +50,7 @@ class ChangePasswordFormTest extends TestCase {
         $this->assertSame(
             [E::NEW_RE_PASSWORD_DOES_NOT_MATCH],
             $model->getErrors('newRePassword'),
-            'error.rePassword_does_not_match expected even if there are errors on other attributes'
+            'error.rePassword_does_not_match expected even if there are errors on other attributes',
         );
         $this->assertEmpty($model->getErrors('password'));
     }

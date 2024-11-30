@@ -55,8 +55,7 @@ class JwtIdentity implements IdentityInterface {
         // very cool how Carbon doesn't even HAVE A REAL CLOCK (it's just null)
         // PHP is fucking hell.
         if (!(new Validator())->validate($token, new LooseValidAt($now->getClock() ?? new class implements Clock {
-            public function now(): DateTimeImmutable
-            {
+            public function now(): DateTimeImmutable {
                 return Carbon::now()->toDateTimeImmutable();
             }
         }))) {
@@ -100,7 +99,7 @@ class JwtIdentity implements IdentityInterface {
         return $this->token->toString();
     }
 
-    // @codeCoverageIgnoreStart
+    /** @codeCoverageIgnoreStart */
     public function getAuthKey() {
         throw new NotSupportedException('This method used for cookie auth, except we using Bearer auth');
     }
@@ -121,7 +120,7 @@ class JwtIdentity implements IdentityInterface {
         return $session !== null && $session->revoked_at !== null && $session->revoked_at > $iat->getTimestamp();
     }
 
-    // @codeCoverageIgnoreEnd
+    /** @codeCoverageIgnoreEnd */
 
     private function getReader(): TokenReader {
         if ($this->reader === null) {

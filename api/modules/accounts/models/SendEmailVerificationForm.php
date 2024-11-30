@@ -84,7 +84,7 @@ class SendEmailVerificationForm extends AccountActionForm {
             ->getEmailActivations()
             ->withType(
                 EmailActivation::TYPE_CURRENT_EMAIL_CONFIRMATION,
-                EmailActivation::TYPE_NEW_EMAIL_CONFIRMATION
+                EmailActivation::TYPE_NEW_EMAIL_CONFIRMATION,
             )
             ->one();
     }

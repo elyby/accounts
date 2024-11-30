@@ -15,8 +15,8 @@ class EmptyKey implements CryptKeyInterface {
         return null;
     }
 
-    public function getKeyContents(): string
-    {
+    public function getKeyContents(): string {
         return '';
     }
+
 }

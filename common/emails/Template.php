@@ -25,8 +25,7 @@ abstract class Template {
      * @return array|string
      * @throws InvalidConfigException
      */
-    public function getFrom(): array|string
-    {
+    public function getFrom(): array|string {
         $fromEmail = Yii::$app->params['fromEmail'] ?? '';
         if (!$fromEmail) {
             throw new InvalidConfigException('Please specify fromEmail app in app params');

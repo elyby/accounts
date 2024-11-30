@@ -15,7 +15,7 @@ class MinecraftServerAddressValidator extends Validator {
         if (($cnt === 3 && isset($urlParts['host'], $urlParts['port']))
          || ($cnt === 2 && isset($urlParts['host']))
         ) {
-            return null;
+            return;
         }
 
         return [$this->message, []];

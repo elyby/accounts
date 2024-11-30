@@ -24,7 +24,7 @@ class m161222_222520_remove_oauth_access_tokens extends Migration {
             '{{%oauth_sessions}}',
             'id',
             'CASCADE',
-            'SET NULL'
+            'SET NULL',
         );
     }
 

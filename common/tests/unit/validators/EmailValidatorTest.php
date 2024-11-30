@@ -8,7 +8,6 @@ use common\tests\fixtures\AccountFixture;
 use common\tests\unit\TestCase;
 use common\validators\EmailValidator;
 use Generator;
-use PHPUnit\Framework\Attributes\CoversClass;
 use yii\base\Model;
 use yii\validators\EmailValidator as YiiEmailValidator;
 
@@ -19,8 +18,7 @@ final class EmailValidatorTest extends TestCase {
 
     private EmailValidator $validator;
 
-    public function _before(): void
-    {
+    public function _before(): void {
         parent::_before();
 
         self::defineFunctionMock(YiiEmailValidator::class, 'checkdnsrr');
@@ -35,7 +33,7 @@ final class EmailValidatorTest extends TestCase {
 
         $model = $this->createModel("testemail@ely.by\u{feff}"); // Zero width no-break space (U+FEFF)
         $this->validator->validateAttribute($model, 'field');
-        //$this->assertSame(['error.email_invalid'], $model->getErrors('field')); TODO: some behavior changed. while the new 'field' value is corrected, errors field is empty?!?!?
+        // $this->assertSame(['error.email_invalid'], $model->getErrors('field')); TODO: some behavior changed. while the new 'field' value is corrected, errors field is empty?!?!?
         $this->assertSame('testemail@ely.by', $model->field);
     }
 
@@ -53,10 +51,10 @@ final class EmailValidatorTest extends TestCase {
         // TODO $this->getFunctionMock(YiiEmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(false);
 
         $model = $this->createModel(
-            'emailemailemailemailemailemailemailemailemailemailemailemailemailemailemailemailemail' .
-            'emailemailemailemailemailemailemailemailemailemailemailemailemailemailemailemailemail' .
-            'emailemailemailemailemailemailemailemailemailemailemailemailemailemailemailemailemail' .
-            '@gmail.com' // = 256 symbols
+            'emailemailemailemailemailemailemailemailemailemailemailemailemailemailemailemailemail'
+            . 'emailemailemailemailemailemailemailemailemailemailemailemailemailemailemailemailemail'
+            . 'emailemailemailemailemailemailemailemailemailemailemailemailemailemailemailemailemail'
+            . '@gmail.com', // = 256 symbols
         );
         $this->validator->validateAttribute($model, 'field');
         $this->assertSame(['error.email_too_long'], $model->getErrors('field'));
@@ -72,7 +70,7 @@ final class EmailValidatorTest extends TestCase {
 
         $model = $this->createModel('non-email@this-domain-does-not-exists.de');
         $this->validator->validateAttribute($model, 'field');
-       // TODO $this->assertSame(['error.email_invalid'], $model->getErrors('field'));
+        // TODO $this->assertSame(['error.email_invalid'], $model->getErrors('field'));
     }
 
     public function testValidateAttributeEmailCaseExistsDomainButWithoutMXRecord() {
@@ -99,7 +97,7 @@ final class EmailValidatorTest extends TestCase {
 
         $model = $this->createModel('/slash@gmail.com');
         $this->validator->validateAttribute($model, 'field');
-       // TODO $this->assertSame(['error.email_invalid'], $model->getErrors('field'));
+        // TODO $this->assertSame(['error.email_invalid'], $model->getErrors('field'));
     }
 
     public function testValidateAttributeTempmail() {
@@ -132,8 +130,7 @@ final class EmailValidatorTest extends TestCase {
         }
     }
 
-    public static function getValidateAttributeBlacklistedHostTestCases(): Generator
-    {
+    public static function getValidateAttributeBlacklistedHostTestCases(): Generator {
         yield 'seznam.cz' => ['user@seznam.cz', false];
         yield 'valid' => ['valid@google.com', true];
     }
@@ -150,8 +147,7 @@ final class EmailValidatorTest extends TestCase {
         // TODO (the validator fails to sanitize the domain name) $this->assertSame($expectedOutput, $model->field);
     }
 
-    public static function getValidateAttributeIdnaTestCases(): Generator
-    {
+    public static function getValidateAttributeIdnaTestCases(): Generator {
         yield ['qdushyantasunassm@❕.gq', 'qdushyantasunassm@xn--bei.gq'];
         yield ['Rafaelaabraão@gmail.com', 'xn--rafaelaabrao-dcb@gmail.com'];
         yield ['valid-email@gmail.com', 'valid-email@gmail.com'];

@@ -31,10 +31,10 @@ class AuthCodeGrant extends BaseAuthCodeGrant {
      * @throws UniqueTokenIdentifierConstraintViolationException
      */
     protected function issueAccessToken(
-        DateInterval          $accessTokenTTL,
+        DateInterval $accessTokenTTL,
         ClientEntityInterface $client,
-        ?string               $userIdentifier,
-        array                 $scopes = []
+        ?string $userIdentifier,
+        array $scopes = [],
     ): AccessTokenEntityInterface {
         foreach ($scopes as $i => $scope) {
             if ($scope->getIdentifier() === PublicScopeRepository::OFFLINE_ACCESS) {
@@ -49,7 +49,7 @@ class AuthCodeGrant extends BaseAuthCodeGrant {
     protected function validateRedirectUri(
         string $redirectUri,
         ClientEntityInterface $client,
-        ServerRequestInterface $request
+        ServerRequestInterface $request,
     ): void {
         $allowedRedirectUris = (array)$client->getRedirectUri();
         foreach ($allowedRedirectUris as $allowedRedirectUri) {

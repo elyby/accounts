@@ -40,7 +40,12 @@ class PublicScopeRepository implements ScopeRepositoryInterface {
     }
 
     public function finalizeScopes(
-        array $scopes, $grantType, ClientEntityInterface $clientEntity, $userIdentifier = null, ?string $authCodeId = null): array {
+        array $scopes,
+        $grantType,
+        ClientEntityInterface $clientEntity,
+        $userIdentifier = null,
+        ?string $authCodeId = null,
+    ): array {
         return $scopes;
     }
 

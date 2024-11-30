@@ -19,7 +19,6 @@ return [
             api\components\ReCaptcha\Validator::class => function() {
                 return new class(new GuzzleHttp\Client()) extends api\components\ReCaptcha\Validator {
                     protected function validateValue($value) {
-                        return null;
                     }
                 };
             },

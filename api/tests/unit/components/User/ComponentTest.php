@@ -21,6 +21,7 @@ use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Token\Builder;
 
 class ComponentTest extends TestCase {
+
     public function _fixtures(): array {
         return [
             'accounts' => AccountFixture::class,
@@ -41,19 +42,19 @@ class ComponentTest extends TestCase {
 
         // Identity is correct, but have no jti claim
         $identity = $this->createMock(JwtIdentity::class);
-        $identity->method('getToken')->willReturn((new JwtFacade())->issue(new Blake2b(), Key\InMemory::plainText('MpQd6dDPiqnzFSWmpUfLy4+Rdls90Ca4C8e0QD0IxqY='), static fn (Builder $builder, DateTimeImmutable $issuedAt): Builder => $builder));
+        $identity->method('getToken')->willReturn((new JwtFacade())->issue(new Blake2b(), Key\InMemory::plainText('MpQd6dDPiqnzFSWmpUfLy4+Rdls90Ca4C8e0QD0IxqY='), static fn(Builder $builder, DateTimeImmutable $issuedAt): Builder => $builder));
         $component->setIdentity($identity);
         $this->assertNull($component->getActiveSession());
 
         // Identity is correct and has jti claim, but there is no associated session
         $identity = $this->createMock(JwtIdentity::class);
-        $identity->method('getToken')->willReturn((new JwtFacade())->issue(new Blake2b(), Key\InMemory::plainText('MpQd6dDPiqnzFSWmpUfLy4+Rdls90Ca4C8e0QD0IxqY='), static fn (Builder $builder, DateTimeImmutable $issuedAt): Builder => $builder->identifiedBy('999999')));
+        $identity->method('getToken')->willReturn((new JwtFacade())->issue(new Blake2b(), Key\InMemory::plainText('MpQd6dDPiqnzFSWmpUfLy4+Rdls90Ca4C8e0QD0IxqY='), static fn(Builder $builder, DateTimeImmutable $issuedAt): Builder => $builder->identifiedBy('999999')));
         $component->setIdentity($identity);
         $this->assertNull($component->getActiveSession());
 
         // Identity is correct, has jti claim and associated session exists
         $identity = $this->createMock(JwtIdentity::class);
-        $identity->method('getToken')->willReturn((new JwtFacade())->issue(new Blake2b(), Key\InMemory::plainText('MpQd6dDPiqnzFSWmpUfLy4+Rdls90Ca4C8e0QD0IxqY='), static fn (Builder $builder, DateTimeImmutable $issuedAt): Builder => $builder->identifiedBy('1')));
+        $identity->method('getToken')->willReturn((new JwtFacade())->issue(new Blake2b(), Key\InMemory::plainText('MpQd6dDPiqnzFSWmpUfLy4+Rdls90Ca4C8e0QD0IxqY='), static fn(Builder $builder, DateTimeImmutable $issuedAt): Builder => $builder->identifiedBy('1')));
         $component->setIdentity($identity);
         $session = $component->getActiveSession();
         $this->assertNotNull($session);

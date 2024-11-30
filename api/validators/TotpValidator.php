@@ -28,8 +28,7 @@ class TotpValidator extends Validator {
     /**
      * @throws InvalidConfigException
      */
-    public function init(): void
-    {
+    public function init(): void {
         parent::init();
         if ($this->account === null) {
             $this->account = Yii::$app->user->identity;
@@ -44,8 +43,7 @@ class TotpValidator extends Validator {
         }
     }
 
-    protected function validateValue($value): ?array
-    {
+    protected function validateValue($value): ?array {
         try {
             $totp = TOTP::create($this->account->otp_secret);
             if (!$totp->verify((string)$value, $this->getTimestamp(), $totp->getPeriod() - 1)) {

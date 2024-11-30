@@ -12,12 +12,11 @@ use Yii;
 class FunctionalTester extends Actor {
     use FunctionalTesterActions;
 
-    public function amAuthenticated(string $asUsername = 'admin'): mixed
-    {
+    public function amAuthenticated(string $asUsername = 'admin'): mixed {
         /** @var Account $account */
         $account = Account::findOne(['username' => $asUsername]);
         if ($account === null) {
-            throw new InvalidArgumentException("Cannot find account with username \"$asUsername\"");
+            throw new InvalidArgumentException("Cannot find account with username \"{$asUsername}\"");
         }
 
         $token = Yii::$app->tokensFactory->createForWebAccount($account);

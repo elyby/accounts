@@ -64,7 +64,7 @@ class RegistrationForm extends ApiForm {
 
     public function signup() {
         if (!$this->validate() && !$this->canContinue($this->getFirstErrors())) {
-            return null;
+            return;
         }
 
         $transaction = Yii::$app->db->beginTransaction();

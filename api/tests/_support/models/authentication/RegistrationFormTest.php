@@ -26,7 +26,6 @@ class RegistrationFormTest extends TestCase {
         $this->mockRequest();
         Yii::$container->set(ReCaptchaValidator::class, new class($this->createMock(ClientInterface::class)) extends ReCaptchaValidator {
             public function validateValue($value) {
-                return null;
             }
         });
     }
@@ -118,7 +117,7 @@ class RegistrationFormTest extends TestCase {
                 ->andWhere(['account_id' => $account->id])
                 ->andWhere(['>=', 'applied_in', $account->created_at])
                 ->exists(),
-            'username history record exists in database'
+            'username history record exists in database',
         );
 
         /** @var SendRegistrationEmail $job */
