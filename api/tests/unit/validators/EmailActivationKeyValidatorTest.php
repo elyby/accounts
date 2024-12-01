@@ -67,7 +67,7 @@ class EmailActivationKeyValidatorTest extends TestCase {
         $result = $this->callProtected($model, 'findEmailActivationModel', $key, 0);
         $this->assertInstanceOf(EmailActivation::class, $result, 'valid key with valid type must return model');
 
-        /** @var EmailActivation $result */
+        /** @var EmailActivation|null $result */
         $result = $this->callProtected($model, 'findEmailActivationModel', $key, 1);
         $this->assertNull($result, 'valid key, but invalid type must return null');
 

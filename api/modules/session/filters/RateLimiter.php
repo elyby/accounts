@@ -30,7 +30,7 @@ class RateLimiter extends \yii\filters\RateLimiter {
      */
     public function beforeAction($action) {
         $this->checkRateLimit(
-            null,
+            null, // @phpstan-ignore argument.type (at this moment we don't have any specific identity, so pass null (yea, it's hacky))
             $this->request ?: Yii::$app->getRequest(),
             $this->response ?: Yii::$app->getResponse(),
             $action,

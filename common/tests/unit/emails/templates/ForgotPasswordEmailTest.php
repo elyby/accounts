@@ -12,10 +12,7 @@ use yii\mail\MailerInterface;
 
 class ForgotPasswordEmailTest extends TestCase {
 
-    /**
-     * @var ForgotPasswordEmail|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $template;
+    private ForgotPasswordEmail $template;
 
     public function testParams() {
         $this->template->setParams(new ForgotPasswordParams('mock-username', 'mock-code', 'mock-link'));

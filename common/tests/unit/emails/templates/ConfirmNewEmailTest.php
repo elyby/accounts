@@ -5,16 +5,12 @@ namespace common\tests\unit\emails\templates;
 
 use common\emails\templates\ConfirmNewEmail;
 use common\tests\unit\TestCase;
-use PHPUnit\Framework\MockObject\MockObject;
 use yii\base\InvalidCallException;
 use yii\mail\MailerInterface;
 
 class ConfirmNewEmailTest extends TestCase {
 
-    /**
-     * @var ConfirmNewEmail|MockObject
-     */
-    private $template;
+    private ConfirmNewEmail $template;
 
     public function testParams() {
         $this->template->setUsername('mock-username');
@@ -42,7 +38,6 @@ class ConfirmNewEmailTest extends TestCase {
 
     protected function _before() {
         parent::_before();
-        /** @var MailerInterface|MockObject $mailer */
         $mailer = $this->createMock(MailerInterface::class);
         $this->template = new ConfirmNewEmail($mailer);
     }

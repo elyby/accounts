@@ -56,7 +56,7 @@ class TemplateWithRendererTest extends TestCase {
             return;
         }
 
-        $this->assertFalse(true, 'no exception was thrown');
+        $this->fail('no exception was thrown');
     }
 
     protected function _before() {
@@ -73,7 +73,10 @@ class TemplateWithRendererTest extends TestCase {
         Yii::$app->params['fromEmail'] = $this->initialFromEmail;
     }
 
-    private function runTestForSend($renderException = null) {
+    /**
+     * @throws \common\emails\exceptions\CannotRenderEmailException
+     */
+    private function runTestForSend($renderException = null): void {
         $renderMethodExpectation = $this->renderer->expects($this->once())->method('render')->with('mock-template', 'mock-locale', []);
         if ($renderException === null) {
             $renderMethodExpectation->willReturn('mock-template-contents');
@@ -86,7 +89,6 @@ class TemplateWithRendererTest extends TestCase {
         $this->template->expects($times())->method('getSubject')->willReturn('mock-subject');
         $this->template->expects($times())->method('getTemplateName')->willReturn('mock-template');
 
-        /** @var MailerInterface|\PHPUnit\Framework\MockObject\MockObject $message */
         $message = $this->createMock(MessageInterface::class);
         $message->expects($times())->method('setTo')->with(['to@ely.by' => 'To'])->willReturnSelf();
         $message->expects($times())->method('setHtmlBody')->with('mock-template-contents')->willReturnSelf();

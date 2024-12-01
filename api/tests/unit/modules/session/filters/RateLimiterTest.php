@@ -6,12 +6,22 @@ namespace api\tests\unit\modules\session\filters;
 use api\modules\session\filters\RateLimiter;
 use api\tests\unit\TestCase;
 use common\models\OauthClient;
+use PHPUnit\Framework\MockObject\MockObject;
 use Yii;
+use yii\base\Action;
+use yii\filters\RateLimitInterface;
 use yii\redis\Connection;
 use yii\web\Request;
+use yii\web\Response;
 use yii\web\TooManyRequestsHttpException;
 
 class RateLimiterTest extends TestCase {
+
+    private RateLimitInterface&MockObject $user;
+
+    private Response&MockObject $response;
+
+    private Action&MockObject $action;
 
     public function testCheckRateLimiterWithOldAuthserver() {
         /** @var Connection|\PHPUnit\Framework\MockObject\MockObject $redis */
@@ -35,7 +45,7 @@ class RateLimiterTest extends TestCase {
         $filter->method('getServer')
             ->willReturn(new OauthClient());
 
-        $filter->checkRateLimit(null, new Request(), null, null);
+        $filter->checkRateLimit($this->user, new Request(), $this->response, $this->action);
     }
 
     public function testCheckRateLimiterWithValidServerId() {
@@ -60,7 +70,7 @@ class RateLimiterTest extends TestCase {
         $filter = new RateLimiter([
             'authserverDomain' => 'authserver.ely.by',
         ]);
-        $filter->checkRateLimit(null, $request, null, null);
+        $filter->checkRateLimit($this->user, $request, $this->response, $this->action);
     }
 
     public function testCheckRateLimiter() {
@@ -98,8 +108,15 @@ class RateLimiterTest extends TestCase {
             ->willReturn(null);
 
         for ($i = 0; $i < 5; $i++) {
-            $filter->checkRateLimit(null, $request, null, null);
+            $filter->checkRateLimit($this->user, $request, $this->response, $this->action);
         }
+    }
+
+    protected function _setUp(): void {
+        parent::_setUp();
+        $this->user = $this->createMock(RateLimitInterface::class);
+        $this->response = $this->createMock(Response::class);
+        $this->action = $this->createMock(Action::class);
     }
 
 }

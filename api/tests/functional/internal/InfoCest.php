@@ -20,7 +20,7 @@ class InfoCest {
         $accessToken = $I->getAccessTokenByClientCredentialsGrant(['internal_account_info']);
         $I->amBearerAuthenticated($accessToken);
 
-        $this->route->info('id', 1);
+        $this->route->info('id', '1');
         $this->expectSuccessResponse($I);
     }
 

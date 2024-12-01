@@ -36,6 +36,7 @@ class UsernamesToUuidsCest {
      */
     public function getUuidsByUsernamesWithPostString(FunctionalTester $I, Example $case): void {
         $I->wantTo('get uuids by few usernames');
+        // @phpstan-ignore argument.type (it does accept string an we need it to ensure, that JSON passes)
         $I->sendPost($case[0], json_encode(['Admin', 'AccWithOldPassword', 'Notch']));
         $this->validateFewValidUsernames($I);
     }

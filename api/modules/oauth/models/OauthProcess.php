@@ -13,7 +13,7 @@ use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
-use League\OAuth2\Server\RequestTypes\AuthorizationRequest;
+use League\OAuth2\Server\RequestTypes\AuthorizationRequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Webmozart\Assert\Assert;
 use Yii;
@@ -202,14 +202,8 @@ class OauthProcess {
     /**
      * The method checks whether the current user can be automatically authorized for the specified client
      * without requesting access to the necessary list of scopes
-     *
-     * @param Account $account
-     * @param OauthClient $client
-     * @param AuthorizationRequest $request
-     *
-     * @return bool
      */
-    private function canBeAutoApproved(Account $account, OauthClient $client, AuthorizationRequest $request): bool {
+    private function canBeAutoApproved(Account $account, OauthClient $client, AuthorizationRequestInterface $request): bool {
         if ($client->is_trusted) {
             return true;
         }
@@ -226,7 +220,7 @@ class OauthProcess {
         return empty(array_diff($this->getScopesList($request), $session->getScopes()));
     }
 
-    private function storeOauthSession(Account $account, OauthClient $client, AuthorizationRequest $request): void {
+    private function storeOauthSession(Account $account, OauthClient $client, AuthorizationRequestInterface $request): void {
         $session = $this->findOauthSession($account, $client);
         if ($session === null) {
             $session = new OauthSession();
@@ -340,7 +334,7 @@ class OauthProcess {
         return new OAuthServerException('Client must accept authentication request.', 0, 'accept_required', 401);
     }
 
-    private function getScopesList(AuthorizationRequest $request): array {
+    private function getScopesList(AuthorizationRequestInterface $request): array {
         return array_values(array_map(function(ScopeEntityInterface $scope): string {
             return $scope->getIdentifier();
         }, $request->getScopes()));

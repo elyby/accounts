@@ -30,6 +30,7 @@ final class AccessTokenCest {
         $I->wantTo('complete oauth flow with offline_access scope and obtain access_token and refresh_token');
         $authCode = $I->obtainAuthCode(['offline_access']);
         $I->haveHttpHeader('Content-Type', 'application/json');
+        // @phpstan-ignore argument.type (it does accept string an we need it to ensure, that JSON passes)
         $I->sendPOST('/api/oauth2/v1/token', json_encode([
             'grant_type' => 'authorization_code',
             'code' => $authCode,

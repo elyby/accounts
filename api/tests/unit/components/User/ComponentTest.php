@@ -84,6 +84,7 @@ class ComponentTest extends TestCase {
             );
         $component->setIdentity($identity);
         $session = $component->getActiveSession();
+        // @phpstan-ignore method.impossibleType (it is possible since we're changing identity via setIdentity() method)
         $this->assertNotNull($session);
         $this->assertSame(1, $session->id);
     }

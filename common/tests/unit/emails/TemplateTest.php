@@ -58,7 +58,6 @@ class TemplateTest extends TestCase {
         $this->template->expects($this->once())->method('getSubject')->willReturn('mock-subject');
         $this->template->expects($this->once())->method('getView')->willReturn('mock-view');
 
-        /** @var MailerInterface|\PHPUnit\Framework\MockObject\MockObject $message */
         $message = $this->createMock(MessageInterface::class);
         $message->expects($this->once())->method('setTo')->with(['to@ely.by' => 'To'])->willReturnSelf();
         $message->expects($this->once())->method('setFrom')->with(['find-me' => 'Ely.by Accounts'])->willReturnSelf();

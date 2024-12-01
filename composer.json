@@ -21,6 +21,7 @@
     },
     "require": {
         "php": "^8.3",
+        "ext-imagick": "*",
         "ext-intl": "*",
         "ext-json": "*",
         "ext-libxml": "*",
@@ -55,12 +56,13 @@
     "require-dev": {
         "codeception/codeception": "^5.1.0",
         "codeception/module-asserts": "^3.0.0",
+        "codeception/module-redis": "^3.2.0",
         "codeception/module-rest": "^3.4.0",
         "codeception/module-yii2": "^1.1.0",
-        "codeception/module-redis": "^3.2.0",
         "cweagans/composer-patches": "^1.7",
         "ely/php-code-style": "^1.0.1",
         "php-mock/php-mock-phpunit": "^2.5",
+        "phpstan/phpstan-phpunit": "^1",
         "roave/security-advisories": "dev-master"
     },
     "repositories": [

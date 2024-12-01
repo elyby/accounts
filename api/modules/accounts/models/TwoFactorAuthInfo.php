@@ -17,6 +17,13 @@ use Webmozart\Assert\Assert;
 
 class TwoFactorAuthInfo extends BaseAccountForm {
 
+    /**
+     * @return array{
+     *     qr: string,
+     *     uri: string,
+     *     secret: string,
+     * }
+     */
     public function getCredentials(): array {
         if (empty($this->getAccount()->otp_secret)) {
             $this->setOtpSecret();

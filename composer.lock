@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1dcbdd840ca63001289529fe9a239fa5",
+    "content-hash": "1b49f881a8b10f52645cc0b04cf58bf3",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -6793,6 +6793,58 @@
             "time": "2024-02-11T07:24:16+00:00"
         },
         {
+            "name": "phpstan/phpstan-phpunit",
+            "version": "1.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpstan/phpstan-phpunit.git",
+                "reference": "11d4235fbc6313ecbf93708606edfd3222e44949"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/11d4235fbc6313ecbf93708606edfd3222e44949",
+                "reference": "11d4235fbc6313ecbf93708606edfd3222e44949",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2 || ^8.0",
+                "phpstan/phpstan": "^1.12"
+            },
+            "conflict": {
+                "phpunit/phpunit": "<7.0"
+            },
+            "require-dev": {
+                "nikic/php-parser": "^4.13.0",
+                "php-parallel-lint/php-parallel-lint": "^1.2",
+                "phpstan/phpstan-strict-rules": "^1.5.1",
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "phpstan-extension",
+            "extra": {
+                "phpstan": {
+                    "includes": [
+                        "extension.neon",
+                        "rules.neon"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PHPStan\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHPUnit extensions and rules for PHPStan",
+            "support": {
+                "issues": "https://github.com/phpstan/phpstan-phpunit/issues",
+                "source": "https://github.com/phpstan/phpstan-phpunit/tree/1.4.1"
+            },
+            "time": "2024-11-12T12:43:59+00:00"
+        },
+        {
             "name": "phpunit/php-code-coverage",
             "version": "11.0.7",
             "source": {
@@ -10821,6 +10873,7 @@
     "prefer-lowest": false,
     "platform": {
         "php": "^8.3",
+        "ext-imagick": "*",
         "ext-intl": "*",
         "ext-json": "*",
         "ext-libxml": "*",

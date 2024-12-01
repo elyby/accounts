@@ -36,7 +36,7 @@ final class MinecraftProfilesCest {
     public function getUuidsByUsernamesWithPostString(FunctionalTester $I, Example $case): void {
         $I->sendPOST(
             $case[0],
-            json_encode(['Admin', 'AccWithOldPassword', 'Notch']),
+            json_encode(['Admin', 'AccWithOldPassword', 'Notch']), // @phpstan-ignore argument.type (it does accept string an we need it to ensure, that JSON passes)
         );
         $this->validateFewValidUsernames($I);
     }

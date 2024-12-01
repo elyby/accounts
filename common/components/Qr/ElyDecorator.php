@@ -21,6 +21,11 @@ class ElyDecorator implements DecoratorInterface {
         ErrorCorrectionLevel::H => 30,
     ];
 
+    /**
+     * @throws \ImagickException
+     * @throws \ImagickPixelException
+     * @throws \ImagickPixelIteratorException
+     */
     public function preProcess(
         QrCode $qrCode,
         RendererInterface $renderer,
@@ -38,11 +43,11 @@ class ElyDecorator implements DecoratorInterface {
         $sizeMultiplier = $correctionLevel + floor($correctionLevel / 3);
         $count = $qrCode->getMatrix()->getWidth();
 
-        $countToRemoveX = floor($count * $sizeMultiplier / 100);
-        $countToRemoveY = floor($count * $sizeMultiplier / 100);
+        $countToRemoveX = (int)floor($count * $sizeMultiplier / 100);
+        $countToRemoveY = (int)floor($count * $sizeMultiplier / 100);
 
-        $startX = $leftPadding + round(($count - $countToRemoveX) / 2 * $multiple);
-        $startY = $topPadding + round(($count - $countToRemoveY) / 2 * $multiple);
+        $startX = (int)($leftPadding + round(($count - $countToRemoveX) / 2 * $multiple));
+        $startY = (int)($topPadding + round(($count - $countToRemoveY) / 2 * $multiple));
         $width = $countToRemoveX * $multiple;
         $height = $countToRemoveY * $multiple;
 
@@ -52,11 +57,12 @@ class ElyDecorator implements DecoratorInterface {
         /** @var \SimpleXMLElement $svg */
         $svg = $property->getValue($renderer);
 
+        /** @var \SimpleXMLElement $image */
         $image = $svg->addChild('image');
-        $image->addAttribute('x', $startX);
-        $image->addAttribute('y', $startY);
-        $image->addAttribute('width', $width);
-        $image->addAttribute('height', $height);
+        $image->addAttribute('x', (string)$startX);
+        $image->addAttribute('y', (string)$startY);
+        $image->addAttribute('width', (string)$width);
+        $image->addAttribute('height', (string)$height);
         $image->addAttribute('xlink:href', $this->encodeSvgToBase64(self::LOGO));
 
         $logo = new Imagick();
@@ -89,8 +95,8 @@ class ElyDecorator implements DecoratorInterface {
 
             for ($i = $x - $padding; $i <= $x + $padding; $i++) {
                 for ($j = $y - $padding; $j <= $y + $padding; $j++) {
-                    $matrixX = floor($i / $multiple);
-                    $matrixY = floor($j / $multiple);
+                    $matrixX = (int)floor($i / $multiple);
+                    $matrixY = (int)floor($j / $multiple);
                     $qrCode->getMatrix()->set($matrixX, $matrixY, 0);
                 }
             }

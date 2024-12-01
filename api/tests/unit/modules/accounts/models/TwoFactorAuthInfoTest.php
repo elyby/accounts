@@ -24,6 +24,7 @@ class TwoFactorAuthInfoTest extends TestCase {
         $this->assertArrayHasKey('uri', $result);
         $this->assertArrayHasKey('secret', $result);
         $this->assertSame($account->otp_secret, $result['secret']);
+        // @phpstan-ignore argument.type (I don't understand why it treats otp_secret as null at this point)
         $this->assertSame(strtoupper($account->otp_secret), $account->otp_secret);
         $this->assertStringStartsWith('data:image/svg+xml,<?xml', $result['qr']);
 
