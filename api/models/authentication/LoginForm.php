@@ -26,14 +26,10 @@ class LoginForm extends ApiForm {
             ['login', 'required', 'message' => E::LOGIN_REQUIRED],
             ['login', 'validateLogin'],
 
-            ['password', 'required', 'when' => function(self $model): bool {
-                return !$model->hasErrors();
-            }, 'message' => E::PASSWORD_REQUIRED],
+            ['password', 'required', 'when' => fn(self $model): bool => !$model->hasErrors(), 'message' => E::PASSWORD_REQUIRED],
             ['password', 'validatePassword'],
 
-            ['totp', 'required', 'when' => function(self $model): bool {
-                return !$model->hasErrors() && $model->getAccount()->is_otp_enabled;
-            }, 'message' => E::TOTP_REQUIRED],
+            ['totp', 'required', 'when' => fn(self $model): bool => !$model->hasErrors() && $model->getAccount()->is_otp_enabled, 'message' => E::TOTP_REQUIRED],
             ['totp', 'validateTotp'],
 
             ['login', 'validateActivity'],

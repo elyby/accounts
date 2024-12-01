@@ -12,7 +12,7 @@ class SkinsSystemApi {
 
     private ?ClientInterface $client = null;
 
-    public function __construct(private string $baseDomain) {
+    public function __construct(private readonly string $baseDomain) {
     }
 
     /**

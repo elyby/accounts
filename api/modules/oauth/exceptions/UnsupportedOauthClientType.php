@@ -7,7 +7,7 @@ use yii\base\Exception;
 class UnsupportedOauthClientType extends Exception implements OauthException {
 
     public function __construct(
-        private string $type,
+        private readonly string $type,
         int $code = 0,
         Throwable $previous = null,
     ) {

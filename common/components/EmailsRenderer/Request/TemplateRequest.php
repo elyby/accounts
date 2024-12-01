@@ -6,9 +6,9 @@ namespace common\components\EmailsRenderer\Request;
 class TemplateRequest {
 
     public function __construct(
-        private string $name,
-        private string $locale,
-        private array $params,
+        private readonly string $name,
+        private readonly string $locale,
+        private readonly array $params,
     ) {
     }
 

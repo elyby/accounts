@@ -22,7 +22,7 @@ final class AlgorithmsManager {
      * @param AlgorithmInterface[] $algorithms
      */
     public function __construct(array $algorithms = []) {
-        array_map([$this, 'add'], $algorithms);
+        array_map($this->add(...), $algorithms);
     }
 
     public function add(AlgorithmInterface $algorithm): self {

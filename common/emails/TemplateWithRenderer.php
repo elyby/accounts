@@ -16,7 +16,7 @@ abstract class TemplateWithRenderer extends Template {
 
     public function __construct(
         MailerInterface $mailer,
-        private RendererInterface $renderer,
+        private readonly RendererInterface $renderer,
     ) {
         parent::__construct($mailer);
     }

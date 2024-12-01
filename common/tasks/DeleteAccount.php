@@ -7,7 +7,7 @@ use common\models\Account;
 use Yii;
 use yii\queue\RetryableJobInterface;
 
-final class DeleteAccount implements RetryableJobInterface {
+final readonly class DeleteAccount implements RetryableJobInterface {
 
     public function __construct(private int $accountId) {
     }

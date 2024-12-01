@@ -23,7 +23,7 @@ final readonly class TokenReader {
             return null;
         }
 
-        return (int)mb_substr($sub, mb_strlen(TokensFactory::SUB_ACCOUNT_PREFIX));
+        return (int)mb_substr((string)$sub, mb_strlen(TokensFactory::SUB_ACCOUNT_PREFIX));
     }
 
     public function getClientId(): ?string {
@@ -33,7 +33,7 @@ final readonly class TokenReader {
     public function getScopes(): ?array {
         $scopes = $this->token->claims()->get('scope', false);
         if ($scopes !== false) {
-            return explode(' ', $scopes);
+            return explode(' ', (string)$scopes);
         }
 
         // Handle legacy tokens, which used "ely-scopes" claim and was delimited with comma
@@ -42,7 +42,7 @@ final readonly class TokenReader {
             return null;
         }
 
-        return explode(',', $scopes);
+        return explode(',', (string)$scopes);
     }
 
     public function getMinecraftClientToken(): ?string {

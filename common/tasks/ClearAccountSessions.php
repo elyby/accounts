@@ -7,7 +7,7 @@ use common\models\Account;
 use Yii;
 use yii\queue\RetryableJobInterface;
 
-final class ClearAccountSessions implements RetryableJobInterface {
+final readonly class ClearAccountSessions implements RetryableJobInterface {
 
     public function __construct(private int $accountId) {
     }

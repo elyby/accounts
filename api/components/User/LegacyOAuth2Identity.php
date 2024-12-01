@@ -75,8 +75,8 @@ readonly class LegacyOAuth2Identity implements IdentityInterface {
         }
 
         try {
-            $data = json_decode($record, true, 512, JSON_THROW_ON_ERROR);
-        } catch (Exception $e) {
+            $data = json_decode((string)$record, true, 512, JSON_THROW_ON_ERROR);
+        } catch (Exception) {
             return null;
         }
 

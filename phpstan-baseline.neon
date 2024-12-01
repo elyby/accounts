@@ -236,12 +236,12 @@ parameters:
 			path: api/components/User/LegacyOAuth2Identity.php
 
 		-
-			message: "#^Method class@anonymous/api/config/config\\-test\\.php\\:27\\:\\:profile\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method class@anonymous/api/config/config\\-test\\.php\\:24\\:\\:profile\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: api/config/config-test.php
 
 		-
-			message: "#^Method class@anonymous/api/config/config\\-test\\.php\\:27\\:\\:textures\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method class@anonymous/api/config/config\\-test\\.php\\:24\\:\\:textures\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: api/config/config-test.php
 
@@ -1926,16 +1926,6 @@ parameters:
 			path: common/tests/unit/TestCase.php
 
 		-
-			message: "#^Access to an undefined property yii\\\\db\\\\ActiveRecord\\:\\:\\$id\\.$#"
-			count: 2
-			path: common/tests/unit/behaviors/PrimaryKeyValueBehaviorTest.php
-
-		-
-			message: "#^Property class@anonymous/common/tests/unit/behaviors/PrimaryKeyValueBehaviorTest\\.php\\:37\\:\\:\\$id has no type specified\\.$#"
-			count: 1
-			path: common/tests/unit/behaviors/PrimaryKeyValueBehaviorTest.php
-
-		-
 			message: "#^Method common\\\\tests\\\\unit\\\\emails\\\\TemplateTest\\:\\:_before\\(\\) has no return type specified\\.$#"
 			count: 1
 			path: common/tests/unit/emails/TemplateTest.php
@@ -2059,11 +2049,6 @@ parameters:
 			message: "#^Method common\\\\tests\\\\unit\\\\validators\\\\MinecraftServerAddressValidatorTest\\:\\:domainNames\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: common/tests/unit/validators/MinecraftServerAddressValidatorTest.php
-
-		-
-			message: "#^Property class@anonymous/common/tests/unit/validators/UsernameValidatorTest\\.php\\:102\\:\\:\\$field has no type specified\\.$#"
-			count: 1
-			path: common/tests/unit/validators/UsernameValidatorTest.php
 
 		-
 			message: "#^Property class@anonymous/common/validators/EmailValidator\\.php\\:54\\:\\:\\$hosts has no type specified\\.$#"

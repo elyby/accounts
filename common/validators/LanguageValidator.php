@@ -27,7 +27,7 @@ class LanguageValidator extends Validator {
         $primary = Locale::getPrimaryLanguage($value);
         $region = Locale::getRegion($value);
         $locales = ResourceBundle::getLocales(''); // http://php.net/manual/ru/resourcebundle.locales.php#115965
-        if (($region !== '' && strtolower($primary) !== strtolower($region)) && !in_array($value, $locales)) {
+        if (($region !== '' && strtolower((string)$primary) !== strtolower((string)$region)) && !in_array($value, $locales)) {
             return [$this->message, []];
         }
 

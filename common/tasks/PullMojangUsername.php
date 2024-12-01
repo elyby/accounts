@@ -36,10 +36,10 @@ final class PullMojangUsername implements JobInterface {
         try {
             $response = $mojangApi->usernameToUUID($this->username);
             Yii::$app->statsd->inc('queue.pullMojangUsername.found');
-        } catch (NoContentException $e) {
+        } catch (NoContentException) {
             $response = false;
             Yii::$app->statsd->inc('queue.pullMojangUsername.not_found');
-        } catch (GuzzleException|MojangApiException $e) {
+        } catch (GuzzleException|MojangApiException) {
             Yii::$app->statsd->inc('queue.pullMojangUsername.error');
             return;
         }

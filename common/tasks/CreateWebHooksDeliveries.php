@@ -8,7 +8,7 @@ use common\notifications\NotificationInterface;
 use yii\db\Expression;
 use yii\queue\RetryableJobInterface;
 
-final class CreateWebHooksDeliveries implements RetryableJobInterface {
+final readonly class CreateWebHooksDeliveries implements RetryableJobInterface {
 
     public function __construct(private NotificationInterface $notification) {
     }

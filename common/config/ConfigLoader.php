@@ -5,7 +5,7 @@ namespace common\config;
 
 use yii\helpers\ArrayHelper;
 
-final class ConfigLoader {
+final readonly class ConfigLoader {
 
     private const string ROOT_PATH = __DIR__ . '/../..';
 

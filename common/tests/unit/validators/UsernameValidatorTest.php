@@ -82,9 +82,7 @@ class UsernameValidatorTest extends TestCase {
         $this->assertSame(['error.username_not_available'], $model->getErrors('field'));
 
         $model = $this->createModel($accountFixture->username);
-        $this->validator->accountCallback = function() use ($accountFixture) {
-            return $accountFixture->id;
-        };
+        $this->validator->accountCallback = fn() => $accountFixture->id;
         $this->validator->validateAttribute($model, 'field');
         $this->assertNotSame(['error.username_not_available'], $model->getErrors('field'));
         $this->validator->accountCallback = null;
@@ -96,11 +94,11 @@ class UsernameValidatorTest extends TestCase {
 
     /**
      * @param string $fieldValue
-     * @return Model&object{ field: mixed }
+     * @return Model&object{ field: string }
      */
     private function createModel(string $fieldValue): Model {
         $class = new class extends Model {
-            public $field;
+            public string $field;
         };
 
         $class->field = $fieldValue;

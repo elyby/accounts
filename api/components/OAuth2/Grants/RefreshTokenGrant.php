@@ -69,7 +69,7 @@ class RefreshTokenGrant extends BaseRefreshTokenGrant {
             [
                 'access_token_id' => $accessTokenId,
                 'session_id' => $sessionId,
-            ] = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
+            ] = json_decode((string)$result, true, 512, JSON_THROW_ON_ERROR);
         } catch (Throwable $e) {
             throw OAuthServerException::invalidRefreshToken('Cannot decrypt the refresh token', $e);
         }

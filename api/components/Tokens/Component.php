@@ -33,7 +33,7 @@ class Component extends BaseComponent {
     /**
      * @var string|null
      */
-    public ?string $privateKeyPass;
+    public ?string $privateKeyPass = null;
 
     /**
      * @var string

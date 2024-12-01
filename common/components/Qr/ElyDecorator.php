@@ -12,9 +12,9 @@ use ReflectionClass;
 
 class ElyDecorator implements DecoratorInterface {
 
-    private const LOGO = __DIR__ . '/resources/logo.svg';
+    private const string LOGO = __DIR__ . '/resources/logo.svg';
 
-    private const CORRECTION_MAP = [
+    private const array CORRECTION_MAP = [
         ErrorCorrectionLevel::L => 7,
         ErrorCorrectionLevel::M => 15,
         ErrorCorrectionLevel::Q => 25,

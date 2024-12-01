@@ -25,7 +25,7 @@ class OauthProcess {
         P::OBTAIN_ACCOUNT_EMAIL => 'account_email',
     ];
 
-    public function __construct(private AuthorizationServer $server) {
+    public function __construct(private readonly AuthorizationServer $server) {
     }
 
     /**
@@ -332,9 +332,7 @@ class OauthProcess {
     }
 
     private function getScopesList(AuthorizationRequestInterface $request): array {
-        return array_values(array_map(function(ScopeEntityInterface $scope): string {
-            return $scope->getIdentifier();
-        }, $request->getScopes()));
+        return array_values(array_map(fn(ScopeEntityInterface $scope): string => $scope->getIdentifier(), $request->getScopes()));
     }
 
     /** @noinspection PhpIncompatibleReturnTypeInspection */

@@ -14,11 +14,11 @@ final class ES256 implements AlgorithmInterface {
 
     private ?Key $publicKey = null;
 
-    private Sha256 $signer;
+    private readonly Sha256 $signer;
 
     public function __construct(
-        private string $privateKeyPath,
-        private ?string $privateKeyPass = null,
+        private readonly string $privateKeyPath,
+        private readonly ?string $privateKeyPass = null,
     ) {
         $this->signer = new Sha256();
     }

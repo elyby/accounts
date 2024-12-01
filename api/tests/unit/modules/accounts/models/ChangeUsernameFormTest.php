@@ -50,7 +50,7 @@ class ChangeUsernameFormTest extends TestCase {
     }
 
     public function testPerformActionWithChangeCase(): void {
-        $newUsername = mb_strtoupper($this->tester->grabFixture('accounts', 'admin')['username']);
+        $newUsername = mb_strtoupper((string)$this->tester->grabFixture('accounts', 'admin')['username']);
         $model = new ChangeUsernameForm($this->getAccount(), [
             'password' => 'password_0',
             'username' => $newUsername,

@@ -20,7 +20,7 @@ class DeliveryWebHook implements RetryableJobInterface {
 
     public string $url;
 
-    public ?string $secret;
+    public ?string $secret = null;
 
     public array $payloads;
 

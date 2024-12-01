@@ -5,7 +5,7 @@ namespace common\notifications;
 
 use common\models\Account;
 
-final class AccountEditNotification implements NotificationInterface {
+final readonly class AccountEditNotification implements NotificationInterface {
 
     public function __construct(
         private Account $account,

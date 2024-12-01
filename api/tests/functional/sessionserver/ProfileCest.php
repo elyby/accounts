@@ -43,7 +43,7 @@ class ProfileCest {
             'id' => '7ff4a9dcd1774ea0ab567f31218004f9',
         ]);
         $texturesValue = $I->grabDataFromResponseByJsonPath('$.properties[0].value')[0];
-        $texturesJson = base64_decode($texturesValue);
+        $texturesJson = base64_decode((string)$texturesValue);
         $I->assertStringContainsString('"textures":{}', $texturesJson);
     }
 

@@ -5,7 +5,7 @@ namespace api\modules\authserver\models;
 
 use common\models\Account;
 
-final class AuthenticateData {
+final readonly class AuthenticateData {
 
     public function __construct(
         private Account $account,

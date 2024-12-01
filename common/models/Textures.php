@@ -10,7 +10,7 @@ use Yii;
 
 class Textures {
 
-    private const MAX_RETRIES = 3;
+    private const int MAX_RETRIES = 3;
 
     public function __construct(protected Account $account) {
     }

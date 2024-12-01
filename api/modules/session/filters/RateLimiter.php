@@ -44,7 +44,7 @@ class RateLimiter extends \yii\filters\RateLimiter {
      * @throws TooManyRequestsHttpException
      */
     public function checkRateLimit($user, $request, $response, $action): void {
-        if (parse_url($request->getHostInfo(), PHP_URL_HOST) === $this->authserverDomain) {
+        if (parse_url((string)$request->getHostInfo(), PHP_URL_HOST) === $this->authserverDomain) {
             return;
         }
 

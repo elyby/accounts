@@ -23,7 +23,7 @@ final readonly class SessionModel {
             return null;
         }
 
-        $data = json_decode($result, true);
+        $data = json_decode((string)$result, true);
 
         return new self($data['username'], $data['serverId']);
     }

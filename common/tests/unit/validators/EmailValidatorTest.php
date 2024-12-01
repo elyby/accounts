@@ -169,9 +169,7 @@ final class EmailValidatorTest extends TestCase {
         $this->assertSame(['error.email_not_available'], $model->getErrors('field'));
 
         $model = $this->createModel($accountFixture->email);
-        $this->validator->accountCallback = function() use ($accountFixture) {
-            return $accountFixture->id;
-        };
+        $this->validator->accountCallback = fn() => $accountFixture->id;
         $this->validator->validateAttribute($model, 'field');
         $this->assertNotSame(['error.email_not_available'], $model->getErrors('field'));
         $this->validator->accountCallback = null;

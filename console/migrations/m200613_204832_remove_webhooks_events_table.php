@@ -33,7 +33,7 @@ class m200613_204832_remove_webhooks_events_table extends Migration {
                 continue;
             }
 
-            $events = json_decode($webhook['events'], true);
+            $events = json_decode((string)$webhook['events'], true);
             if (empty($events)) {
                 continue;
             }

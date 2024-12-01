@@ -13,8 +13,8 @@ use yii\validators\Validator;
 
 class AccessTokenValidator extends Validator {
 
-    private const INVALID_TOKEN = 'Invalid token.';
-    private const TOKEN_EXPIRED = 'Token expired.';
+    private const string INVALID_TOKEN = 'Invalid token.';
+    private const string TOKEN_EXPIRED = 'Token expired.';
 
     public bool $verifyExpiration = true;
 
@@ -27,7 +27,7 @@ class AccessTokenValidator extends Validator {
     protected function validateValue($value): ?array {
         try {
             $token = Yii::$app->tokens->parse($value);
-        } catch (Exception $e) {
+        } catch (Exception) {
             throw new ForbiddenOperationException(self::INVALID_TOKEN);
         }
 

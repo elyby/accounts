@@ -6,9 +6,9 @@ namespace common\emails\templates;
 class RegistrationEmailParams {
 
     public function __construct(
-        private string $username,
-        private string $code,
-        private string $link,
+        private readonly string $username,
+        private readonly string $code,
+        private readonly string $link,
     ) {
     }
 

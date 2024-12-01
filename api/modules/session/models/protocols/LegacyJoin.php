@@ -3,11 +3,11 @@ namespace api\modules\session\models\protocols;
 
 class LegacyJoin extends BaseJoin {
 
-    private string $user;
+    private readonly string $user;
 
     private string $sessionId;
 
-    private string $serverId;
+    private readonly string $serverId;
 
     private $accessToken;
 

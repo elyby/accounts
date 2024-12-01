@@ -31,7 +31,7 @@ class JoinForm extends Model {
     private ?Account $account = null;
 
     public function __construct(
-        private JoinInterface $protocol,
+        private readonly JoinInterface $protocol,
         array $config = [],
     ) {
         parent::__construct($config);
@@ -143,7 +143,7 @@ class JoinForm extends Model {
             throw new ForbiddenOperationException('Wrong selected_profile.');
         }
 
-        if (!$isUuid && mb_strtolower($account->username) !== mb_strtolower($selectedProfile)) {
+        if (!$isUuid && mb_strtolower($account->username) !== mb_strtolower((string)$selectedProfile)) {
             Session::error("User with access_token = '{$accessToken}' trying to join with identity = '{$selectedProfile}', but access_token issued to account with username = '{$account->username}'.");
             Yii::$app->statsd->inc('sessionserver.join.fail_username_mismatch');
 

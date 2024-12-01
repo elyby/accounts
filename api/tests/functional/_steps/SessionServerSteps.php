@@ -65,7 +65,7 @@ class SessionServerSteps extends FunctionalTester {
 
         $this->canSeeResponseJsonMatchesJsonPath('$.properties[0].value');
         $value = $this->grabDataFromResponseByJsonPath('$.properties[0].value')[0];
-        $decoded = json_decode(base64_decode($value), true);
+        $decoded = json_decode(base64_decode((string)$value), true);
         $this->assertArrayHasKey('timestamp', $decoded);
         $this->assertArrayHasKey('textures', $decoded);
         $this->assertSame($expectedUuid, $decoded['profileId']);

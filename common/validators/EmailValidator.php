@@ -23,7 +23,7 @@ final class EmailValidator extends Validator {
     public $skipOnEmpty = false;
 
     public function validateAttribute($model, $attribute): void {
-        $trim = new validators\FilterValidator(['filter' => [StringHelper::class, 'trim']]);
+        $trim = new validators\FilterValidator(['filter' => StringHelper::trim(...)]);
 
         $required = new validators\RequiredValidator();
         $required->message = E::EMAIL_REQUIRED;
@@ -40,7 +40,7 @@ final class EmailValidator extends Validator {
         $additionalEmail = new class extends Validator {
             protected function validateValue($value): ?array {
                 // Disallow emails starting with slash since Postfix (or someone before?) can't correctly handle it
-                if (str_starts_with($value, '/')) {
+                if (str_starts_with((string)$value, '/')) {
                     return [E::EMAIL_INVALID, []];
                 }
 
@@ -57,7 +57,7 @@ final class EmailValidator extends Validator {
             ];
 
             protected function validateValue($value): ?array {
-                $host = explode('@', $value)[1];
+                $host = explode('@', (string)$value)[1];
                 if (in_array($host, $this->hosts, true)) {
                     return [E::EMAIL_HOST_IS_NOT_ALLOWED, []];
                 }

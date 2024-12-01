@@ -64,7 +64,7 @@ class ApiController extends Controller {
     public function actionUsernamesByUuid(string $uuid) {
         try {
             $uuid = Uuid::fromString($uuid)->toString();
-        } catch (\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException) {
             return $this->illegalArgumentResponse('Invalid uuid format.');
         }
 

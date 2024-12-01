@@ -21,7 +21,7 @@ class UsernameValidator extends Validator {
     public $skipOnEmpty = false;
 
     public function validateAttribute($model, $attribute): ?array {
-        $filter = new validators\FilterValidator(['filter' => [StringHelper::class, 'trim']]);
+        $filter = new validators\FilterValidator(['filter' => StringHelper::trim(...)]);
 
         $required = new validators\RequiredValidator();
         $required->message = E::USERNAME_REQUIRED;

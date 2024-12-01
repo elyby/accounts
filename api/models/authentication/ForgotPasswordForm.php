@@ -16,9 +16,9 @@ use yii\base\ErrorException;
 
 class ForgotPasswordForm extends ApiForm {
 
-    public $captcha;
+    public mixed $captcha = null;
 
-    public $login;
+    public mixed $login = null;
 
     public function rules(): array {
         return [

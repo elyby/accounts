@@ -8,7 +8,7 @@ use common\models\Account;
 class BaseAccountForm extends ApiForm {
 
     public function __construct(
-        private Account $account,
+        private readonly Account $account,
         array $config = [],
     ) {
         parent::__construct($config);

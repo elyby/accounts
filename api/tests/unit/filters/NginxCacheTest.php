@@ -14,9 +14,7 @@ class NginxCacheTest extends TestCase {
     public function testAfterAction(): void {
         $this->testAfterActionInternal(3600, 3600);
         $this->testAfterActionInternal('@' . (time() + 30), '@' . (time() + 30));
-        $this->testAfterActionInternal(function(): int {
-            return 3000;
-        }, 3000);
+        $this->testAfterActionInternal(fn(): int => 3000, 3000);
     }
 
     private function testAfterActionInternal($ruleConfig, int|string $expected): void {

@@ -81,14 +81,11 @@ class Account extends ActiveRecord {
             $passwordHashStrategy = $this->password_hash_strategy;
         }
 
-        switch ($passwordHashStrategy) {
-            case self::PASS_HASH_STRATEGY_OLD_ELY:
-                return UserPass::make($this->email, $password) === $this->password_hash;
-            case self::PASS_HASH_STRATEGY_YII2:
-                return Yii::$app->security->validatePassword($password, $this->password_hash);
-            default:
-                throw new InvalidConfigException('You must set valid password_hash_strategy before you can validate password');
-        }
+        return match ($passwordHashStrategy) {
+            self::PASS_HASH_STRATEGY_OLD_ELY => UserPass::make($this->email, $password) === $this->password_hash,
+            self::PASS_HASH_STRATEGY_YII2 => Yii::$app->security->validatePassword($password, $this->password_hash),
+            default => throw new InvalidConfigException('You must set valid password_hash_strategy before you can validate password'),
+        };
     }
 
     public function setPassword(string $password): void {

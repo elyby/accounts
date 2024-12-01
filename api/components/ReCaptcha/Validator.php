@@ -26,7 +26,7 @@ class Validator extends \yii\validators\Validator {
     public Component|string $component = 'reCaptcha';
 
     public function __construct(
-        private ClientInterface $client,
+        private readonly ClientInterface $client,
         array $config = [],
     ) {
         parent::__construct($config);

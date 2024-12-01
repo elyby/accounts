@@ -9,7 +9,7 @@ use common\models\Account;
 
 class IdentityInfo extends BaseAccountForm {
 
-    private AccountInfo $model;
+    private readonly AccountInfo $model;
 
     public function __construct(Account $account, array $config = []) {
         parent::__construct($account, $config);

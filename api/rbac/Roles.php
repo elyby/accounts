@@ -5,6 +5,6 @@ namespace api\rbac;
 
 final class Roles {
 
-    public const ACCOUNTS_WEB_USER = 'accounts_web_user';
+    public const string ACCOUNTS_WEB_USER = 'accounts_web_user';
 
 }

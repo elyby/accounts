@@ -73,9 +73,7 @@ class EmailActivation extends ActiveRecord {
             ],
             [
                 'class' => PrimaryKeyValueBehavior::class,
-                'value' => function(): string {
-                    return UserFriendlyRandomKey::make();
-                },
+                'value' => fn(): string => UserFriendlyRandomKey::make(),
             ],
         ];
     }

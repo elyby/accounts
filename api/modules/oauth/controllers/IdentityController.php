@@ -27,7 +27,7 @@ class IdentityController extends Controller {
                             $account = $identity->getAccount();
                             if ($account === null) {
                                 Yii::$app->sentry->captureMessage('Unexpected lack of account', [
-                                    'identityType' => get_class($identity),
+                                    'identityType' => $identity::class,
                                     'userId' => $identity->getId(),
                                     'assignedPermissions' => $identity->getAssignedPermissions(),
                                 ], [

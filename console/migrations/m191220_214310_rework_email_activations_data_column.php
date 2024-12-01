@@ -32,7 +32,7 @@ class m191220_214310_rework_email_activations_data_column extends Migration {
           ')->queryAll();
         foreach ($rows as $row) {
             $this->update('email_activations', [
-                '_data' => serialize(json_decode($row['data'], true)),
+                '_data' => serialize(json_decode((string)$row['data'], true)),
             ], [
                 'key' => $row['key'],
             ]);

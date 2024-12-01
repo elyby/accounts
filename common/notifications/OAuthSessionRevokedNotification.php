@@ -6,7 +6,7 @@ namespace common\notifications;
 use common\models\OauthSession;
 use Webmozart\Assert\Assert;
 
-final class OAuthSessionRevokedNotification implements NotificationInterface {
+final readonly class OAuthSessionRevokedNotification implements NotificationInterface {
 
     private OauthSession $oauthSession;
 

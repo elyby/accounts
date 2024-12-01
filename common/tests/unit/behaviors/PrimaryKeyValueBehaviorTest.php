@@ -13,9 +13,7 @@ class PrimaryKeyValueBehaviorTest extends TestCase {
         $model = $this->createDummyModel();
         $behavior = $this->createPartialMock(PrimaryKeyValueBehavior::class, ['isValueExists']);
         $behavior->method('isValueExists')->willReturn(false);
-        $behavior->value = function(): string {
-            return 'mock';
-        };
+        $behavior->value = fn(): string => 'mock';
 
         $model->attachBehavior('primary-key-value-behavior', $behavior);
         $behavior->setPrimaryKeyValue();
@@ -33,11 +31,14 @@ class PrimaryKeyValueBehaviorTest extends TestCase {
         $this->assertSame('3', $model->id);
     }
 
-    private function createDummyModel(): \yii\db\ActiveRecord {
+    /**
+     * @return \yii\db\ActiveRecord&object{ id: string }
+     */
+    private function createDummyModel(): ActiveRecord {
         return new class extends ActiveRecord {
-            public $id;
+            public string $id;
 
-            public static function primaryKey() {
+            public static function primaryKey(): array {
                 return ['id'];
             }
         };
