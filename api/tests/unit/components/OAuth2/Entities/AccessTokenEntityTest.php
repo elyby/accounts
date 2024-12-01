@@ -11,7 +11,7 @@ use League\OAuth2\Server\Entities\ScopeEntityInterface;
 
 class AccessTokenEntityTest extends TestCase {
 
-    public function testToString() {
+    public function testToString(): void {
         /** @var ClientEntityInterface|\PHPUnit\Framework\MockObject\MockObject $client */
         $client = $this->createMock(ClientEntityInterface::class);
         $client->method('getIdentifier')->willReturn('mockClientId');

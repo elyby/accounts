@@ -8,16 +8,13 @@ use api\tests\FunctionalTester;
 
 class BanCest {
 
-    /**
-     * @var AccountsRoute
-     */
-    private $route;
+    private AccountsRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new AccountsRoute($I);
     }
 
-    public function testBanAccount(OauthSteps $I) {
+    public function testBanAccount(OauthSteps $I): void {
         $accessToken = $I->getAccessTokenByClientCredentialsGrant([P::BLOCK_ACCOUNT]);
         $I->amBearerAuthenticated($accessToken);
 
@@ -29,7 +26,7 @@ class BanCest {
         ]);
     }
 
-    public function testBanBannedAccount(OauthSteps $I) {
+    public function testBanBannedAccount(OauthSteps $I): void {
         $accessToken = $I->getAccessTokenByClientCredentialsGrant([P::BLOCK_ACCOUNT]);
         $I->amBearerAuthenticated($accessToken);
 

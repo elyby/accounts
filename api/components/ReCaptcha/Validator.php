@@ -12,30 +12,27 @@ use yii\di\Instance;
 
 class Validator extends \yii\validators\Validator {
 
-    private const SITE_VERIFY_URL = 'https://recaptcha.net/recaptcha/api/siteverify';
+    private const string SITE_VERIFY_URL = 'https://recaptcha.net/recaptcha/api/siteverify';
 
-    private const REPEAT_LIMIT = 3;
-    private const REPEAT_TIMEOUT = 1;
+    private const int REPEAT_LIMIT = 3;
+    private const int REPEAT_TIMEOUT = 1;
 
     public $skipOnEmpty = false;
 
     public $message = E::CAPTCHA_INVALID;
 
-    public $requiredMessage = E::CAPTCHA_REQUIRED;
+    public string $requiredMessage = E::CAPTCHA_REQUIRED;
 
-    /**
-     * @var Component|string
-     */
-    public $component = 'reCaptcha';
+    public Component|string $component = 'reCaptcha';
 
-    private $client;
-
-    public function __construct(ClientInterface $client, array $config = []) {
+    public function __construct(
+        private ClientInterface $client,
+        array $config = [],
+    ) {
         parent::__construct($config);
-        $this->client = $client;
     }
 
-    public function init() {
+    public function init(): void {
         parent::init();
         $this->component = Instance::ensure($this->component, Component::class);
     }
@@ -77,9 +74,7 @@ class Validator extends \yii\validators\Validator {
     }
 
     /**
-     * @param string $value
      * @throws \GuzzleHttp\Exception\GuzzleException
-     * @return ResponseInterface
      */
     protected function performRequest(string $value): ResponseInterface {
         return $this->client->request('POST', self::SITE_VERIFY_URL, [

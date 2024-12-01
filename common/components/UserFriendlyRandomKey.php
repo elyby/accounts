@@ -5,7 +5,7 @@ namespace common\components;
 
 class UserFriendlyRandomKey {
 
-    public static function make(int $length = 18) {
+    public static function make(int $length = 18): string {
         $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
         $numChars = strlen($chars);
         $key = '';

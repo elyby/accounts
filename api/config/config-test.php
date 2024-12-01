@@ -16,14 +16,14 @@ return [
     ],
     'container' => [
         'singletons' => [
-            api\components\ReCaptcha\Validator::class => function() {
+            api\components\ReCaptcha\Validator::class => function(): api\components\ReCaptcha\Validator {
                 return new class(new GuzzleHttp\Client()) extends api\components\ReCaptcha\Validator {
                     protected function validateValue($value): ?array {
                         return null;
                     }
                 };
             },
-            common\components\SkinsSystemApi::class => function() {
+            common\components\SkinsSystemApi::class => function(): common\components\SkinsSystemApi {
                 return new class('http://chrly.ely.by') extends common\components\SkinsSystemApi {
                     public function textures(string $username): ?array {
                         return [

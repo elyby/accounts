@@ -9,7 +9,7 @@ use common\models\Account;
 
 class TwoFactorAuthInfoTest extends TestCase {
 
-    public function testGetCredentials() {
+    public function testGetCredentials(): void {
         $account = $this->createPartialMock(Account::class, ['save']);
         $account->method('save')->willReturn(true);
 

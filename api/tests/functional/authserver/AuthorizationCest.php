@@ -28,7 +28,7 @@ class AuthorizationCest {
      * @example {"json": true, "login": "admin@ely.by", "password": "password_0"}
      * @example {"json": true, "login": "admin@ely.by", "password": "password_0", "requestUser": true}
      */
-    public function authenticate(FunctionalTester $I, Example $case) {
+    public function authenticate(FunctionalTester $I, Example $case): void {
         $params = [
             'username' => $case['login'],
             'password' => $case['password'],
@@ -77,7 +77,7 @@ class AuthorizationCest {
         }
     }
 
-    public function byEmailWithEnabledTwoFactorAuth(FunctionalTester $I) {
+    public function byEmailWithEnabledTwoFactorAuth(FunctionalTester $I): void {
         $I->wantTo('get valid error by authenticate account with enabled two factor auth');
         $I->sendPOST('/api/authserver/authentication/authenticate', [
             'username' => 'otp@gmail.com',
@@ -92,7 +92,7 @@ class AuthorizationCest {
         ]);
     }
 
-    public function byEmailWithEnabledTwoFactorAuthAndCorrectToken(FunctionalTester $I) {
+    public function byEmailWithEnabledTwoFactorAuthAndCorrectToken(FunctionalTester $I): void {
         $I->sendPOST('/api/authserver/authentication/authenticate', [
             'username' => 'otp@gmail.com',
             'password' => 'password_0:' . TOTP::create('BBBB')->now(),
@@ -117,7 +117,7 @@ class AuthorizationCest {
         $I->assertNotEmpty($clientToken);
     }
 
-    public function tooLongClientToken(FunctionalTester $I) {
+    public function tooLongClientToken(FunctionalTester $I): void {
         $I->wantTo('send non uuid clientToken with more then 255 characters length');
         $I->sendPOST('/api/authserver/authentication/authenticate', [
             'username' => 'admin@ely.by',
@@ -132,7 +132,7 @@ class AuthorizationCest {
         ]);
     }
 
-    public function wrongArguments(FunctionalTester $I) {
+    public function wrongArguments(FunctionalTester $I): void {
         $I->wantTo('get error on wrong amount of arguments');
         $I->sendPOST('/api/authserver/authentication/authenticate', [
             'key' => 'value',
@@ -145,7 +145,7 @@ class AuthorizationCest {
         ]);
     }
 
-    public function wrongNicknameAndPassword(FunctionalTester $I) {
+    public function wrongNicknameAndPassword(FunctionalTester $I): void {
         $I->wantTo('authenticate by username and password with wrong data');
         $I->sendPOST('/api/authserver/authentication/authenticate', [
             'username' => 'nonexistent_user',
@@ -160,7 +160,7 @@ class AuthorizationCest {
         ]);
     }
 
-    public function deletedAccount(FunctionalTester $I) {
+    public function deletedAccount(FunctionalTester $I): void {
         $I->wantTo('authenticate in account marked for deletion');
         $I->sendPOST('/api/authserver/authentication/authenticate', [
             'username' => 'DeletedAccount',
@@ -174,7 +174,7 @@ class AuthorizationCest {
         ]);
     }
 
-    public function bannedAccount(FunctionalTester $I) {
+    public function bannedAccount(FunctionalTester $I): void {
         $I->wantTo('authenticate in suspended account');
         $I->sendPOST('/api/authserver/authentication/authenticate', [
             'username' => 'Banned',

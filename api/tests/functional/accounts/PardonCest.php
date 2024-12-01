@@ -8,16 +8,13 @@ use api\tests\FunctionalTester;
 
 class PardonCest {
 
-    /**
-     * @var AccountsRoute
-     */
-    private $route;
+    private AccountsRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new AccountsRoute($I);
     }
 
-    public function testPardonAccount(OauthSteps $I) {
+    public function testPardonAccount(OauthSteps $I): void {
         $accessToken = $I->getAccessTokenByClientCredentialsGrant([P::BLOCK_ACCOUNT]);
         $I->amBearerAuthenticated($accessToken);
 
@@ -29,7 +26,7 @@ class PardonCest {
         ]);
     }
 
-    public function testPardonNotBannedAccount(OauthSteps $I) {
+    public function testPardonNotBannedAccount(OauthSteps $I): void {
         $accessToken = $I->getAccessTokenByClientCredentialsGrant([P::BLOCK_ACCOUNT]);
         $I->amBearerAuthenticated($accessToken);
 

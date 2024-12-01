@@ -36,7 +36,7 @@ class DeleteAccountFormTest extends TestCase {
         Yii::$app->set('queue', $this->queue);
     }
 
-    public function testPerformAction() {
+    public function testPerformAction(): void {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'admin');
         $this->queue
@@ -77,7 +77,7 @@ class DeleteAccountFormTest extends TestCase {
         $this->assertEqualsWithDelta(time(), $account->deleted_at, 5);
     }
 
-    public function testPerformActionWithInvalidPassword() {
+    public function testPerformActionWithInvalidPassword(): void {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'admin');
         $model = new DeleteAccountForm($account, [
@@ -87,7 +87,7 @@ class DeleteAccountFormTest extends TestCase {
         $this->assertSame(['password' => ['error.password_incorrect']], $model->getErrors());
     }
 
-    public function testPerformActionForAlreadyDeletedAccount() {
+    public function testPerformActionForAlreadyDeletedAccount(): void {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'deleted-account');
         $model = new DeleteAccountForm($account, [

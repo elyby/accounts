@@ -10,7 +10,7 @@ use OTPHP\TOTP;
 // TODO: very outdated tests. Need to rewrite
 class LoginCest {
 
-    public function testLoginEmailOrUsername(FunctionalTester $I) {
+    public function testLoginEmailOrUsername(FunctionalTester $I): void {
         $route = new AuthenticationRoute($I);
 
         $I->wantTo('see error.login_required expected if login is not set');
@@ -65,7 +65,7 @@ class LoginCest {
         $I->cantSeeResponseJsonMatchesJsonPath('$.errors.login');
     }
 
-    public function testLoginPassword(FunctionalTester $I) {
+    public function testLoginPassword(FunctionalTester $I): void {
         $route = new AuthenticationRoute($I);
 
         $I->wantTo('see password doesn\'t have errors if email or username not set');
@@ -108,7 +108,7 @@ class LoginCest {
         ]);
     }
 
-    public function testLoginToken(FunctionalTester $I) {
+    public function testLoginToken(FunctionalTester $I): void {
         $route = new AuthenticationRoute($I);
 
         $I->wantTo('see totp don\'t have errors if email, username or totp not set');
@@ -158,7 +158,7 @@ class LoginCest {
         ]);
     }
 
-    public function testLoginByUsernameCorrect(FunctionalTester $I) {
+    public function testLoginByUsernameCorrect(FunctionalTester $I): void {
         $route = new AuthenticationRoute($I);
 
         $I->wantTo('login into account using correct username and password');
@@ -170,7 +170,7 @@ class LoginCest {
         $I->canSeeAuthCredentials(false);
     }
 
-    public function testLoginByEmailCorrect(FunctionalTester $I) {
+    public function testLoginByEmailCorrect(FunctionalTester $I): void {
         $route = new AuthenticationRoute($I);
 
         $I->wantTo('login into account using correct email and password');
@@ -182,7 +182,7 @@ class LoginCest {
         $I->canSeeAuthCredentials(false);
     }
 
-    public function testLoginInAccWithPasswordMethod(FunctionalTester $I) {
+    public function testLoginInAccWithPasswordMethod(FunctionalTester $I): void {
         $route = new AuthenticationRoute($I);
 
         $I->wantTo('login into account with old password hash function using correct username and password');
@@ -194,7 +194,7 @@ class LoginCest {
         $I->canSeeAuthCredentials(false);
     }
 
-    public function testLoginByEmailWithRemember(FunctionalTester $I) {
+    public function testLoginByEmailWithRemember(FunctionalTester $I): void {
         $route = new AuthenticationRoute($I);
 
         $I->wantTo('login into account using correct data and get refresh_token');
@@ -206,7 +206,7 @@ class LoginCest {
         $I->canSeeAuthCredentials(true);
     }
 
-    public function testLoginByAccountWithOtp(FunctionalTester $I) {
+    public function testLoginByAccountWithOtp(FunctionalTester $I): void {
         $route = new AuthenticationRoute($I);
 
         $I->wantTo('login into account with enabled otp');
@@ -218,7 +218,7 @@ class LoginCest {
         $I->canSeeAuthCredentials(false);
     }
 
-    public function testLoginIntoDeletedAccount(FunctionalTester $I) {
+    public function testLoginIntoDeletedAccount(FunctionalTester $I): void {
         $route = new AuthenticationRoute($I);
 
         $I->wantTo('login into account that marked for deleting');
@@ -228,7 +228,7 @@ class LoginCest {
         ]);
     }
 
-    public function testLoginIntoBannedAccount(FunctionalTester $I) {
+    public function testLoginIntoBannedAccount(FunctionalTester $I): void {
         $route = new AuthenticationRoute($I);
 
         $I->wantTo('login into banned account');

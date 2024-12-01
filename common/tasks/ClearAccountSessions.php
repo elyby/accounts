@@ -9,10 +9,7 @@ use yii\queue\RetryableJobInterface;
 
 final class ClearAccountSessions implements RetryableJobInterface {
 
-    private int $accountId;
-
-    public function __construct(int $accountId) {
-        $this->accountId = $accountId;
+    public function __construct(private int $accountId) {
     }
 
     /**

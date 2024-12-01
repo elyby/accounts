@@ -20,14 +20,14 @@ use yii\queue\Queue;
  */
 class DeliveryWebHookTest extends TestCase {
 
-    private $historyContainer = [];
+    private array $historyContainer = [];
 
     /**
      * @var Response|\GuzzleHttp\Exception\GuzzleException
      */
     private $response;
 
-    public function testCanRetry() {
+    public function testCanRetry(): void {
         $task = new DeliveryWebHook();
         $this->assertFalse($task->canRetry(1, new \Exception()));
         $request = $this->createMock(RequestInterface::class);
@@ -38,7 +38,7 @@ class DeliveryWebHookTest extends TestCase {
         $this->assertFalse($task->canRetry(5, new ServerException('', $request, $response)));
     }
 
-    public function testExecuteSuccessDelivery() {
+    public function testExecuteSuccessDelivery(): void {
         $this->response = new Response();
         $task = $this->createMockedTask();
         $task->type = 'account.edit';
@@ -58,7 +58,7 @@ class DeliveryWebHookTest extends TestCase {
         $this->assertSame('key=value&another=value', (string)$request->getBody());
     }
 
-    public function testExecuteSuccessDeliveryWithSignature() {
+    public function testExecuteSuccessDeliveryWithSignature(): void {
         $this->response = new Response();
         $task = $this->createMockedTask();
         $task->type = 'account.edit';
@@ -79,7 +79,7 @@ class DeliveryWebHookTest extends TestCase {
         $this->assertSame('key=value&another=value', (string)$request->getBody());
     }
 
-    public function testExecuteHandleClientException() {
+    public function testExecuteHandleClientException(): void {
         $this->response = new Response(403);
         $task = $this->createMockedTask();
         $task->type = 'account.edit';
@@ -92,7 +92,7 @@ class DeliveryWebHookTest extends TestCase {
         $task->execute($this->createMock(Queue::class));
     }
 
-    public function testExecuteUnhandledException() {
+    public function testExecuteUnhandledException(): void {
         $this->expectException(ServerException::class);
 
         $this->response = new Response(502);
@@ -114,11 +114,11 @@ class DeliveryWebHookTest extends TestCase {
         return new class($container, $response) extends DeliveryWebHook {
             private $historyContainer;
 
-            private $response;
-
-            public function __construct(array &$historyContainer, $response) {
+            public function __construct(
+                array & $historyContainer,
+                private $response,
+            ) {
                 $this->historyContainer = &$historyContainer;
-                $this->response = $response;
             }
 
             protected function createStack(): HandlerStack {

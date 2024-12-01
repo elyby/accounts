@@ -22,7 +22,7 @@ class OauthClientOwnerTest extends TestCase {
         ];
     }
 
-    public function testExecute() {
+    public function testExecute(): void {
         $rule = new OauthClientOwner();
         $item = new Item();
 
@@ -58,7 +58,7 @@ class OauthClientOwnerTest extends TestCase {
         $this->assertFalse($rule->execute('token', $item, ['accountId' => 1]));
     }
 
-    public function testExecuteWithoutClientId() {
+    public function testExecuteWithoutClientId(): void {
         $this->expectException(InvalidArgumentException::class);
 
         $rule = new OauthClientOwner();

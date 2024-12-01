@@ -9,17 +9,15 @@ use common\models\AccountQuery;
 use common\models\confirmations\RegistrationConfirmation;
 use common\tasks\SendRegistrationEmail;
 use common\tests\unit\TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 use Yii;
 use yii\queue\Queue;
 
 class SendRegistrationEmailTest extends TestCase {
 
-    /**
-     * @var RendererInterface|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $renderer;
+    private RendererInterface&MockObject $renderer;
 
-    public function testCreateFromConfirmation() {
+    public function testCreateFromConfirmation(): void {
         $account = new Account();
         $account->username = 'mock-username';
         $account->email = 'mock@ely.by';
@@ -40,7 +38,7 @@ class SendRegistrationEmailTest extends TestCase {
         $this->assertSame('ru', $result->locale);
     }
 
-    public function testExecute() {
+    public function testExecute(): void {
         $task = new SendRegistrationEmail();
         $task->username = 'mock-username';
         $task->email = 'mock@ely.by';

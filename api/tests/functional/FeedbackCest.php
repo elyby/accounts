@@ -5,7 +5,7 @@ use api\tests\FunctionalTester;
 
 class FeedbackCest {
 
-    public function testFeedbackWithoutAuth(FunctionalTester $I) {
+    public function testFeedbackWithoutAuth(FunctionalTester $I): void {
         $I->sendPOST('/api/feedback', [
             'subject' => 'Test',
             'email' => 'email@ely.by',
@@ -19,7 +19,7 @@ class FeedbackCest {
         ]);
     }
 
-    public function testFeedbackWithAuth(FunctionalTester $I) {
+    public function testFeedbackWithAuth(FunctionalTester $I): void {
         $I->amAuthenticated();
         $I->sendPOST('/api/feedback', [
             'subject' => 'Test',

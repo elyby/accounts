@@ -11,7 +11,7 @@ use Yii;
 
 class LogoutFormTest extends TestCase {
 
-    public function testNoActionWhenThereIsNoActiveSession() {
+    public function testNoActionWhenThereIsNoActiveSession(): void {
         $userComp = $this->createPartialMock(Component::class, ['getActiveSession']);
         $userComp->method('getActiveSession')->willReturn(null);
 
@@ -21,7 +21,7 @@ class LogoutFormTest extends TestCase {
         $this->assertTrue($model->logout());
     }
 
-    public function testActiveSessionShouldBeDeleted() {
+    public function testActiveSessionShouldBeDeleted(): void {
         $session = $this->createPartialMock(AccountSession::class, ['delete']);
         $session->expects($this->once())->method('delete')->willReturn(true);
 

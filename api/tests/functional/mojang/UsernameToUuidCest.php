@@ -1,21 +1,18 @@
 <?php
-namespace api\tests\functional\authserver;
+namespace api\tests\functional\mojang;
 
 use api\tests\_pages\MojangApiRoute;
 use api\tests\FunctionalTester;
 
 class UsernameToUuidCest {
 
-    /**
-     * @var MojangApiRoute
-     */
-    private $route;
+    private MojangApiRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new MojangApiRoute($I);
     }
 
-    public function getUuidByUsername(FunctionalTester $I) {
+    public function getUuidByUsername(FunctionalTester $I): void {
         $I->wantTo('get user uuid by his username');
         $this->route->usernameToUuid('Admin');
         $I->canSeeResponseCodeIs(200);
@@ -26,7 +23,7 @@ class UsernameToUuidCest {
         ]);
     }
 
-    public function getUuidByUsernameAtMoment(FunctionalTester $I) {
+    public function getUuidByUsernameAtMoment(FunctionalTester $I): void {
         $I->wantTo('get user uuid by his username at fixed moment');
         $this->route->usernameToUuid('klik201', 1474404142);
         $I->canSeeResponseCodeIs(200);
@@ -37,35 +34,35 @@ class UsernameToUuidCest {
         ]);
     }
 
-    public function getUuidByUsernameAtWrongMoment(FunctionalTester $I) {
+    public function getUuidByUsernameAtWrongMoment(FunctionalTester $I): void {
         $I->wantTo('get 204 if passed once used, but changed username at moment, when it was changed');
         $this->route->usernameToUuid('klik201', 1474404144);
         $I->canSeeResponseCodeIs(204);
         $I->canSeeResponseEquals('');
     }
 
-    public function getUuidByUsernameWithoutMoment(FunctionalTester $I) {
+    public function getUuidByUsernameWithoutMoment(FunctionalTester $I): void {
         $I->wantTo('get 204 if username not busy and not passed valid time mark, when it was busy');
         $this->route->usernameToUuid('klik201');
         $I->canSeeResponseCodeIs(204);
         $I->canSeeResponseEquals('');
     }
 
-    public function getUuidByWrongUsername(FunctionalTester $I) {
+    public function getUuidByWrongUsername(FunctionalTester $I): void {
         $I->wantTo('get user uuid by some wrong username');
         $this->route->usernameToUuid('not-exists-user');
         $I->canSeeResponseCodeIs(204);
         $I->canSeeResponseEquals('');
     }
 
-    public function getUuidForDeletedAccount(FunctionalTester $I) {
+    public function getUuidForDeletedAccount(FunctionalTester $I): void {
         $I->wantTo('get uuid for account that marked for deleting');
         $this->route->usernameToUuid('DeletedAccount');
         $I->canSeeResponseCodeIs(204);
         $I->canSeeResponseEquals('');
     }
 
-    public function nonPassedUsername(FunctionalTester $I) {
+    public function nonPassedUsername(FunctionalTester $I): void {
         $I->wantTo('get 404 on not passed username');
         $this->route->usernameToUuid('');
         $I->canSeeResponseCodeIs(404);

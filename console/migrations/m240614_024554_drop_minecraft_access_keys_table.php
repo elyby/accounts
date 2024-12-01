@@ -5,11 +5,11 @@ use console\db\Migration;
 
 class m240614_024554_drop_minecraft_access_keys_table extends Migration {
 
-    public function safeUp() {
+    public function safeUp(): void {
         $this->dropTable('minecraft_access_keys');
     }
 
-    public function safeDown() {
+    public function safeDown(): void {
         $this->createTable('minecraft_access_keys', [
             'access_token' => $this->string(36)->notNull(),
             'client_token' => $this->string()->notNull(),

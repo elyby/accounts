@@ -17,7 +17,7 @@ class RecoverPasswordFormTest extends TestCase {
         ];
     }
 
-    public function testRecoverPassword() {
+    public function testRecoverPassword(): void {
         $fixture = $this->tester->grabFixture('emailActivations', 'freshPasswordRecovery');
         $model = new RecoverPasswordForm([
             'key' => $fixture['key'],

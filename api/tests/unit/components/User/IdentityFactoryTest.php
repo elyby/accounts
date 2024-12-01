@@ -20,7 +20,7 @@ class IdentityFactoryTest extends TestCase {
         ];
     }
 
-    public function testFindIdentityByAccessToken() {
+    public function testFindIdentityByAccessToken(): void {
         // Find identity by the JWT
         $identity = IdentityFactory::findIdentityByAccessToken('eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ2MTA1NDIsImV4cCI6MTU2NDYxNDE0Miwic3ViIjoiZWx5fDEifQ.4Oidvuo4spvUf9hkpHR72eeqZUh2Zbxh_L8Od3vcgTj--0iOrcOEp6zwmEW6vF7BTHtjz2b3mXce61bqsCjXjQ');
         $this->assertInstanceOf(JwtIdentity::class, $identity);
@@ -30,7 +30,7 @@ class IdentityFactoryTest extends TestCase {
         $this->assertInstanceOf(LegacyOAuth2Identity::class, $identity);
     }
 
-    public function testFindIdentityByAccessTokenWithEmptyValue() {
+    public function testFindIdentityByAccessTokenWithEmptyValue(): void {
         $this->expectException(UnauthorizedHttpException::class);
         $this->expectExceptionMessage('Incorrect token');
         IdentityFactory::findIdentityByAccessToken('');

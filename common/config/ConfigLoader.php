@@ -9,10 +9,7 @@ final class ConfigLoader {
 
     private const string ROOT_PATH = __DIR__ . '/../..';
 
-    private string $application;
-
-    public function __construct(string $application) {
-        $this->application = $application;
+    public function __construct(private string $application) {
     }
 
     public function getEnvironment(): string {

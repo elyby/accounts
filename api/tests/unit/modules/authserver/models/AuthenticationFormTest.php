@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace codeception\api\unit\modules\authserver\models;
+namespace api\tests\unit\modules\authserver\models;
 
 use api\modules\authserver\exceptions\ForbiddenOperationException;
 use api\modules\authserver\models\AuthenticationForm;
@@ -23,7 +23,7 @@ class AuthenticationFormTest extends TestCase {
         ];
     }
 
-    public function testAuthenticateByValidCredentials() {
+    public function testAuthenticateByValidCredentials(): void {
         $authForm = new AuthenticationForm();
         $authForm->username = 'admin';
         $authForm->password = 'password_0';
@@ -53,7 +53,7 @@ class AuthenticationFormTest extends TestCase {
         ], $result['user']);
     }
 
-    public function testAuthenticateByValidCredentialsWith2FA() {
+    public function testAuthenticateByValidCredentialsWith2FA(): void {
         $authForm = new AuthenticationForm();
         $authForm->username = 'otp@gmail.com';
         $authForm->password = 'password_0:' . TOTP::create('BBBB')->now();
@@ -69,7 +69,7 @@ class AuthenticationFormTest extends TestCase {
      * This is a special case which ensures that if the user has a password that looks like
      * a two-factor code passed in the password field, than he can still log in into his account
      */
-    public function testAuthenticateEdgyCaseFor2FA() {
+    public function testAuthenticateEdgyCaseFor2FA(): void {
         /** @var Account $account */
         $account = Account::findOne(['email' => 'admin@ely.by']);
         $account->setPassword('password_0:123456');
@@ -94,7 +94,7 @@ class AuthenticationFormTest extends TestCase {
         string $login,
         string $password,
         string $totp = null,
-    ) {
+    ): void {
         $this->expectException(ForbiddenOperationException::class);
         $this->expectExceptionMessage($expectedExceptionMessage);
 
@@ -105,7 +105,7 @@ class AuthenticationFormTest extends TestCase {
         $authForm->authenticate();
     }
 
-    public function getInvalidCredentialsCases() {
+    public function getInvalidCredentialsCases(): iterable {
         yield ['Invalid credentials. Invalid nickname or password.', 'wrong-username', 'wrong-password'];
         yield ['Invalid credentials. Invalid email or password.', 'wrong-email@ely.by', 'wrong-password'];
         yield ['This account has been suspended.', 'Banned', 'password_0'];

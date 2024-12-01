@@ -12,7 +12,7 @@ class SignoutCest {
      * @example {"login": "admin", "password": "password_0"}
      * @example {"login": "admin@ely.by", "password": "password_0"}
      */
-    public function signout(AuthserverSteps $I, Example $example) {
+    public function signout(AuthserverSteps $I, Example $example): void {
         $I->wantTo('signout by nickname and password');
         $I->sendPOST('/api/authserver/authentication/signout', [
             'username' => $example['login'],
@@ -22,7 +22,7 @@ class SignoutCest {
         $I->canSeeResponseEquals('');
     }
 
-    public function wrongArguments(AuthserverSteps $I) {
+    public function wrongArguments(AuthserverSteps $I): void {
         $I->wantTo('get error on wrong amount of arguments');
         $I->sendPOST('/api/authserver/authentication/signout', [
             'key' => 'value',
@@ -35,7 +35,7 @@ class SignoutCest {
         ]);
     }
 
-    public function wrongNicknameAndPassword(AuthserverSteps $I) {
+    public function wrongNicknameAndPassword(AuthserverSteps $I): void {
         $I->wantTo('signout by nickname and password with wrong data');
         $I->sendPOST('/api/authserver/authentication/signout', [
             'username' => 'nonexistent_user',
@@ -49,7 +49,7 @@ class SignoutCest {
         ]);
     }
 
-    public function bannedAccount(AuthserverSteps $I) {
+    public function bannedAccount(AuthserverSteps $I): void {
         $I->wantTo('signout from banned account');
         $I->sendPOST('/api/authserver/authentication/signout', [
             'username' => 'Banned',

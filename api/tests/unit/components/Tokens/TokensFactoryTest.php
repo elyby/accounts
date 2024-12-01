@@ -14,7 +14,7 @@ use League\OAuth2\Server\Entities\ScopeEntityInterface;
 
 class TokensFactoryTest extends TestCase {
 
-    public function testCreateForAccount() {
+    public function testCreateForAccount(): void {
         $factory = new TokensFactory();
 
         $account = new Account();
@@ -42,7 +42,7 @@ class TokensFactoryTest extends TestCase {
         $this->assertSame(2, (int)$token->claims()->get('jti'));
     }
 
-    public function testCreateForOauthClient() {
+    public function testCreateForOauthClient(): void {
         $factory = new TokensFactory();
 
         $client = $this->createMock(ClientEntityInterface::class);
@@ -83,7 +83,7 @@ class TokensFactoryTest extends TestCase {
         $this->assertSame('no value', $token->claims()->get('sub', 'no value'));
     }
 
-    public function testCreateForMinecraftAccount() {
+    public function testCreateForMinecraftAccount(): void {
         $factory = new TokensFactory();
 
         $account = new Account();

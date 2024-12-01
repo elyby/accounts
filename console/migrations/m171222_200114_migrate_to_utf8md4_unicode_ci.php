@@ -4,7 +4,7 @@ use console\db\Migration;
 
 class m171222_200114_migrate_to_utf8md4_unicode_ci extends Migration {
 
-    public function safeUp() {
+    public function safeUp(): void {
         $this->execute('SET FOREIGN_KEY_CHECKS=0');
 
         $dbName = $this->db->createCommand('SELECT DATABASE()')->queryScalar();
@@ -19,7 +19,7 @@ class m171222_200114_migrate_to_utf8md4_unicode_ci extends Migration {
         $this->execute('SET FOREIGN_KEY_CHECKS=1');
     }
 
-    public function safeDown() {
+    public function safeDown(): void {
         $this->execute('SET FOREIGN_KEY_CHECKS=0');
 
         $dbName = $this->db->createCommand('SELECT DATABASE()')->queryScalar();

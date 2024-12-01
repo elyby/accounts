@@ -10,13 +10,9 @@ use yii\mail\MessageInterface;
 
 abstract class Template {
 
-    /**
-     * @var MailerInterface
-     */
-    private $mailer;
-
-    public function __construct(MailerInterface $mailer) {
-        $this->mailer = $mailer;
+    public function __construct(
+        private readonly MailerInterface $mailer,
+    ) {
     }
 
     abstract public function getSubject(): string;
@@ -34,6 +30,9 @@ abstract class Template {
         return [$fromEmail => 'Ely.by Accounts'];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getParams(): array {
         return [];
     }
@@ -50,9 +49,12 @@ abstract class Template {
     }
 
     /**
-     * @return string|array
+     * @return string|array{
+     *     html?: string,
+     *     text?: string,
+     * }
      */
-    abstract protected function getView();
+    abstract protected function getView(): string|array;
 
     final protected function getMailer(): MailerInterface {
         return $this->mailer;

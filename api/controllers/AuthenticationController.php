@@ -48,7 +48,7 @@ class AuthenticationController extends Controller {
         ];
     }
 
-    public function actionLogin() {
+    public function actionLogin(): array {
         $model = new LoginForm();
         $model->load(Yii::$app->request->post());
         if (($result = $model->login()) === null) {
@@ -69,7 +69,7 @@ class AuthenticationController extends Controller {
         ], $result->formatAsOAuth2Response());
     }
 
-    public function actionLogout() {
+    public function actionLogout(): array {
         $form = new LogoutForm();
         $form->logout();
 
@@ -78,7 +78,7 @@ class AuthenticationController extends Controller {
         ];
     }
 
-    public function actionForgotPassword() {
+    public function actionForgotPassword(): array {
         $model = new ForgotPasswordForm();
         $model->load(Yii::$app->request->post());
         if ($model->forgotPassword() === false) {
@@ -113,7 +113,7 @@ class AuthenticationController extends Controller {
         return $response;
     }
 
-    public function actionRecoverPassword() {
+    public function actionRecoverPassword(): array {
         $model = new RecoverPasswordForm();
         $model->load(Yii::$app->request->post());
         if (($result = $model->recoverPassword()) === null) {
@@ -128,7 +128,7 @@ class AuthenticationController extends Controller {
         ], $result->formatAsOAuth2Response());
     }
 
-    public function actionRefreshToken() {
+    public function actionRefreshToken(): array {
         $model = new RefreshTokenForm();
         $model->load(Yii::$app->request->post());
         if (($result = $model->renew()) === null) {

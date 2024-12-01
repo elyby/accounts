@@ -6,7 +6,7 @@ use api\tests\FunctionalTester;
 
 class RepeatAccountActivationCest {
 
-    public function testInvalidEmailOrAccountState(FunctionalTester $I) {
+    public function testInvalidEmailOrAccountState(FunctionalTester $I): void {
         $route = new SignupRoute($I);
 
         $I->wantTo('error.email_required on empty for submitting');
@@ -55,7 +55,7 @@ class RepeatAccountActivationCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.data.canRepeatIn');
     }
 
-    public function testSuccess(FunctionalTester $I) {
+    public function testSuccess(FunctionalTester $I): void {
         $route = new SignupRoute($I);
 
         $I->wantTo('successfully resend account activation message');

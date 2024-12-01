@@ -6,16 +6,13 @@ use api\tests\FunctionalTester;
 
 class ChangeLangCest {
 
-    /**
-     * @var AccountsRoute
-     */
-    private $route;
+    private AccountsRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new AccountsRoute($I);
     }
 
-    public function testSubmitNewEmail(FunctionalTester $I) {
+    public function testSubmitNewEmail(FunctionalTester $I): void {
         $I->wantTo('change my account language');
         $id = $I->amAuthenticated();
 

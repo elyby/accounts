@@ -38,7 +38,7 @@ class SendNewEmailConfirmation implements RetryableJobInterface {
      * @param \yii\queue\Queue $queue
      * @throws \common\emails\exceptions\CannotSendEmailException
      */
-    public function execute($queue) {
+    public function execute($queue): void {
         Yii::$app->statsd->inc('queue.sendNewEmailConfirmation.attempt');
         $template = new ConfirmNewEmail(Yii::$app->mailer);
         $template->setKey($this->code);

@@ -12,12 +12,9 @@ use yii\mail\MailerInterface;
 
 class RegistrationEmailTest extends TestCase {
 
-    /**
-     * @var RegistrationEmail()|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $template;
+    private RegistrationEmail $template;
 
-    public function testParams() {
+    public function testParams(): void {
         $this->template->setParams(new RegistrationEmailParams('mock-username', 'mock-code', 'mock-link'));
         $params = $this->template->getParams();
         $this->assertSame('mock-username', $params['username']);
@@ -25,16 +22,14 @@ class RegistrationEmailTest extends TestCase {
         $this->assertSame('mock-link', $params['link']);
     }
 
-    public function testInvalidCallOfParams() {
+    public function testInvalidCallOfParams(): void {
         $this->expectException(InvalidCallException::class);
         $this->template->getParams();
     }
 
-    protected function _before() {
+    protected function _before(): void {
         parent::_before();
-        /** @var MailerInterface|\PHPUnit\Framework\MockObject\MockObject $mailer */
         $mailer = $this->createMock(MailerInterface::class);
-        /** @var RendererInterface|\PHPUnit\Framework\MockObject\MockObject $renderer */
         $renderer = $this->createMock(RendererInterface::class);
         $this->template = new RegistrationEmail($mailer, $renderer);
     }

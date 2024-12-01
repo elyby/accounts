@@ -18,7 +18,7 @@ class Migration extends YiiMigration {
         return $tableOptions;
     }
 
-    public function createTable($table, $columns, $options = null) {
+    public function createTable($table, $columns, $options = null): void {
         if ($options === null) {
             $options = $this->getTableOptions();
         }

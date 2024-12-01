@@ -10,18 +10,15 @@ use yii\mail\MessageInterface;
 abstract class TemplateWithRenderer extends Template {
 
     /**
-     * @var RendererInterface
-     */
-    private $renderer;
-
-    /**
      * @var string
      */
-    private $locale = 'en';
+    private string $locale = 'en';
 
-    public function __construct(MailerInterface $mailer, RendererInterface $renderer) {
+    public function __construct(
+        MailerInterface $mailer,
+        private RendererInterface $renderer,
+    ) {
         parent::__construct($mailer);
-        $this->renderer = $renderer;
     }
 
     public function setLocale(string $locale): void {
@@ -44,7 +41,7 @@ abstract class TemplateWithRenderer extends Template {
         return $this->renderer;
     }
 
-    final protected function getView() {
+    final protected function getView(): string {
         return $this->getTemplateName();
     }
 

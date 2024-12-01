@@ -25,10 +25,7 @@ class OauthProcess {
         P::OBTAIN_ACCOUNT_EMAIL => 'account_email',
     ];
 
-    private AuthorizationServer $server;
-
-    public function __construct(AuthorizationServer $server) {
-        $this->server = $server;
+    public function __construct(private AuthorizationServer $server) {
     }
 
     /**
@@ -158,7 +155,7 @@ class OauthProcess {
             Yii::$app->statsd->inc("oauth.issueToken_{$grantType}.attempt");
 
             $shouldIssueRefreshToken = false;
-            $this->server->getEmitter()->subscribeOnceTo(RequestedRefreshToken::class, function() use (&$shouldIssueRefreshToken) {
+            $this->server->getEmitter()->subscribeOnceTo(RequestedRefreshToken::class, function() use (&$shouldIssueRefreshToken): void {
                 $shouldIssueRefreshToken = true;
             });
 

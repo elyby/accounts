@@ -14,15 +14,9 @@ use GuzzleHttp\Psr7\Response;
 
 class ApiTest extends TestCase {
 
-    /**
-     * @var Api
-     */
-    private $api;
+    private Api $api;
 
-    /**
-     * @var MockHandler
-     */
-    private $mockHandler;
+    private MockHandler $mockHandler;
 
     /**
      * @var array<array{
@@ -49,7 +43,7 @@ class ApiTest extends TestCase {
         $this->api->setClient($client);
     }
 
-    public function testGetTemplate() {
+    public function testGetTemplate(): void {
         $this->mockHandler->append(new Response(200, [], 'mock-response'));
 
         $request = new TemplateRequest('mock-name', 'mock-locale', ['find-me' => 'please']);

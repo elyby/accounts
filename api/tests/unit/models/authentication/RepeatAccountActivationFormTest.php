@@ -32,7 +32,7 @@ class RepeatAccountActivationFormTest extends TestCase {
         ];
     }
 
-    public function testValidateEmailForAccount() {
+    public function testValidateEmailForAccount(): void {
         $model = $this->createWithAccount(null);
         $model->validateEmailForAccount('email');
         $this->assertSame(['error.email_not_found'], $model->getErrors('email'));
@@ -50,7 +50,7 @@ class RepeatAccountActivationFormTest extends TestCase {
         $this->assertEmpty($model->getErrors('email'));
     }
 
-    public function testValidateExistsActivation() {
+    public function testValidateExistsActivation(): void {
         $activation = new RegistrationConfirmation();
         $activation->created_at = time() - 10;
         $model = $this->createWithActivation($activation);
@@ -64,7 +64,7 @@ class RepeatAccountActivationFormTest extends TestCase {
         $this->assertEmpty($model->getErrors('email'));
     }
 
-    public function testSendRepeatMessage() {
+    public function testSendRepeatMessage(): void {
         $model = new RepeatAccountActivationForm();
         $this->assertFalse($model->sendRepeatMessage(), 'no magic if we don\'t pass validation');
         $this->assertEmpty($this->tester->grabQueueJobs());

@@ -27,11 +27,9 @@ class AuthorizationController extends Controller {
                         'allow' => true,
                         'actions' => ['complete'],
                         'roles' => [P::COMPLETE_OAUTH_FLOW],
-                        'roleParams' => function() {
-                            return [
-                                'accountId' => Yii::$app->user->identity->getAccount()->id,
-                            ];
-                        },
+                        'roleParams' => fn(): array => [
+                            'accountId' => Yii::$app->user->identity->getAccount()->id,
+                        ],
                     ],
                 ],
             ],

@@ -14,7 +14,7 @@ use yii\symfonymailer\Message;
 
 class SendCurrentEmailConfirmationTest extends TestCase {
 
-    public function testCreateFromConfirmation() {
+    public function testCreateFromConfirmation(): void {
         $account = new Account();
         $account->username = 'mock-username';
         $account->email = 'mock@ely.by';
@@ -33,7 +33,7 @@ class SendCurrentEmailConfirmationTest extends TestCase {
         $this->assertSame('ABCDEFG', $result->code);
     }
 
-    public function testExecute() {
+    public function testExecute(): void {
         $task = new SendCurrentEmailConfirmation(Yii::$app->mailer);
         $task->username = 'mock-username';
         $task->email = 'mock@ely.by';

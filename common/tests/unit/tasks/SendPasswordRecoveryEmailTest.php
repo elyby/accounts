@@ -9,17 +9,15 @@ use common\models\AccountQuery;
 use common\models\confirmations\ForgotPassword;
 use common\tasks\SendPasswordRecoveryEmail;
 use common\tests\unit\TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 use Yii;
 use yii\queue\Queue;
 
 class SendPasswordRecoveryEmailTest extends TestCase {
 
-    /**
-     * @var RendererInterface|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $renderer;
+    private RendererInterface&MockObject $renderer;
 
-    public function testCreateFromConfirmation() {
+    public function testCreateFromConfirmation(): void {
         $account = new Account();
         $account->username = 'mock-username';
         $account->email = 'mock@ely.by';
@@ -40,7 +38,7 @@ class SendPasswordRecoveryEmailTest extends TestCase {
         $this->assertSame('id', $result->locale);
     }
 
-    public function testExecute() {
+    public function testExecute(): void {
         $task = new SendPasswordRecoveryEmail();
         $task->username = 'mock-username';
         $task->email = 'mock@ely.by';
@@ -64,7 +62,7 @@ class SendPasswordRecoveryEmailTest extends TestCase {
         $this->assertSame('mock-template', $email->getSymfonyEmail()->getHtmlBody());
     }
 
-    protected function _before() {
+    protected function _before(): void {
         parent::_before();
 
         $this->renderer = $this->createMock(RendererInterface::class);

@@ -4,7 +4,7 @@ use console\db\Migration;
 
 class m130524_201442_init extends Migration {
 
-    public function up() {
+    public function up(): void {
         $this->createTable('{{%accounts}}', [
             'id' => $this->primaryKey(),
             'uuid' => $this->string(36)->notNull(),
@@ -19,7 +19,7 @@ class m130524_201442_init extends Migration {
         ], $this->tableOptions);
     }
 
-    public function down() {
+    public function down(): void {
         $this->dropTable('{{%accounts}}');
     }
 

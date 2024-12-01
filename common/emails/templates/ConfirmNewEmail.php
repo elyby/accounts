@@ -8,15 +8,9 @@ use yii\base\InvalidCallException;
 
 class ConfirmNewEmail extends Template {
 
-    /**
-     * @var string|null
-     */
-    private $username;
+    private ?string $username = null;
 
-    /**
-     * @var string|null
-     */
-    private $key;
+    private ?string $key = null;
 
     public function setUsername(string $username): void {
         $this->username = $username;
@@ -41,7 +35,7 @@ class ConfirmNewEmail extends Template {
         ];
     }
 
-    protected function getView() {
+    protected function getView(): array {
         return [
             'html' => '@common/emails/views/new-email-confirmation-html',
             'text' => '@common/emails/views/new-email-confirmation-text',

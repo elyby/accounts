@@ -33,7 +33,7 @@ class ForgotPasswordFormTest extends TestCase {
         ];
     }
 
-    public function testValidateLogin() {
+    public function testValidateLogin(): void {
         $model = new ForgotPasswordForm(['login' => 'unexist']);
         $model->validateLogin('login');
         $this->assertSame(['error.login_not_exist'], $model->getErrors('login'), 'error.login_not_exist if login is invalid');
@@ -43,7 +43,7 @@ class ForgotPasswordFormTest extends TestCase {
         $this->assertEmpty($model->getErrors('login'), 'empty errors if login is exists');
     }
 
-    public function testValidateActivity() {
+    public function testValidateActivity(): void {
         $model = new ForgotPasswordForm([
             'login' => $this->tester->grabFixture('accounts', 'not-activated-account')['username'],
         ]);
@@ -78,7 +78,7 @@ class ForgotPasswordFormTest extends TestCase {
         $this->assertEmpty($model->getErrors('login'), 'empty errors if previous confirmation model not founded');
     }
 
-    public function testForgotPassword() {
+    public function testForgotPassword(): void {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'admin');
         $model = new ForgotPasswordForm(['login' => $account->username]);
@@ -89,7 +89,7 @@ class ForgotPasswordFormTest extends TestCase {
         $this->assertTaskCreated($this->tester->grabLastQueuedJob(), $account, $activation);
     }
 
-    public function testForgotPasswordResend() {
+    public function testForgotPasswordResend(): void {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'account-with-expired-forgot-password-message');
         $model = new ForgotPasswordForm(['login' => $account->username]);
@@ -107,7 +107,7 @@ class ForgotPasswordFormTest extends TestCase {
      * @param Account $account
      * @param EmailActivation $activation
      */
-    private function assertTaskCreated($job, Account $account, EmailActivation $activation) {
+    private function assertTaskCreated($job, Account $account, EmailActivation $activation): void {
         $this->assertInstanceOf(SendPasswordRecoveryEmail::class, $job);
         /** @var SendPasswordRecoveryEmail $job */
         $this->assertSame($account->username, $job->username);

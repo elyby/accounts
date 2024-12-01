@@ -6,7 +6,7 @@ use common\tests\unit\TestCase;
 
 class StringHelperTest extends TestCase {
 
-    public function testGetEmailMask() {
+    public function testGetEmailMask(): void {
         $this->assertSame('**@ely.by', StringHelper::getEmailMask('e@ely.by'));
         $this->assertSame('e**@ely.by', StringHelper::getEmailMask('es@ely.by'));
         $this->assertSame('e**i@ely.by', StringHelper::getEmailMask('eri@ely.by'));
@@ -14,7 +14,7 @@ class StringHelperTest extends TestCase {
         $this->assertSame('эр**уч@елу.бел', StringHelper::getEmailMask('эрикскрауч@елу.бел'));
     }
 
-    public function testIsUuid() {
+    public function testIsUuid(): void {
         $this->assertTrue(StringHelper::isUuid('a80b4487-a5c6-45a5-9829-373b4a494135'));
         $this->assertTrue(StringHelper::isUuid('a80b4487a5c645a59829373b4a494135'));
         $this->assertFalse(StringHelper::isUuid('12345678'));
@@ -23,7 +23,7 @@ class StringHelperTest extends TestCase {
     /**
      * @dataProvider trimProvider
      */
-    public function testTrim($expected, $string) {
+    public function testTrim(string $expected, string $string): void {
         $result = StringHelper::trim($string);
         $this->assertSame($expected, $result);
     }

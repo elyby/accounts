@@ -9,7 +9,7 @@ use yii\symfonymailer\Message;
 
 class FeedbackFormTest extends TestCase {
 
-    public function testSendMessage() {
+    public function testSendMessage(): void {
         $model = new FeedbackForm([
             'subject' => 'Тема обращения',
             'email' => 'erickskrauch@ely.by',
@@ -19,7 +19,7 @@ class FeedbackFormTest extends TestCase {
         $this->tester->seeEmailIsSent(1, 'message file exists');
     }
 
-    public function testSendMessageWithEmail() {
+    public function testSendMessageWithEmail(): void {
         /** @var FeedbackForm|MockObject $model */
         $model = $this->getMockBuilder(FeedbackForm::class)
             ->onlyMethods(['getAccount'])

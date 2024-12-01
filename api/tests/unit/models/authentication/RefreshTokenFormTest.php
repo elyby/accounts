@@ -18,7 +18,7 @@ class RefreshTokenFormTest extends TestCase {
         ];
     }
 
-    public function testRenew() {
+    public function testRenew(): void {
         $request = $this->createPartialMock(Request::class, ['getUserIP']);
         $request->method('getUserIP')->willReturn('10.1.2.3');
         Yii::$app->set('request', $request);
@@ -42,7 +42,7 @@ class RefreshTokenFormTest extends TestCase {
         $this->assertSame('10.1.2.3', $session->getReadableIp());
     }
 
-    public function testRenewWithInvalidRefreshToken() {
+    public function testRenewWithInvalidRefreshToken(): void {
         $model = new RefreshTokenForm();
         $model->refresh_token = 'unknown refresh token';
         $this->assertNull($model->renew());

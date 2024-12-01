@@ -7,7 +7,7 @@ use api\tests\FunctionalTester;
 
 class RestoreCest {
 
-    public function restoreMyDeletedAccount(FunctionalTester $I) {
+    public function restoreMyDeletedAccount(FunctionalTester $I): void {
         $id = $I->amAuthenticated('DeletedAccount');
         $I->sendPOST("/api/v1/accounts/{$id}/restore");
         $I->canSeeResponseCodeIs(200);
@@ -22,7 +22,7 @@ class RestoreCest {
         ]);
     }
 
-    public function restoreNotDeletedAccount(FunctionalTester $I) {
+    public function restoreNotDeletedAccount(FunctionalTester $I): void {
         $id = $I->amAuthenticated();
         $I->sendPOST("/api/v1/accounts/{$id}/restore");
         $I->canSeeResponseCodeIs(200);
@@ -34,7 +34,7 @@ class RestoreCest {
         ]);
     }
 
-    public function restoreNotMyAccount(FunctionalTester $I) {
+    public function restoreNotMyAccount(FunctionalTester $I): void {
         $I->amAuthenticated('DeletedAccount');
 
         $I->sendPOST('/api/v1/accounts/1/restore');

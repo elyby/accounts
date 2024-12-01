@@ -105,7 +105,7 @@ return [
         'statsd' => [
             'class' => common\components\StatsD::class,
             'host' => getenv('STATSD_HOST'),
-            'port' => getenv('STATSD_PORT') ?: 8125,
+            'port' => (int)getenv('STATSD_PORT') ?: 8125,
             'namespace' => getenv('STATSD_NAMESPACE') ?: 'ely.accounts.' . gethostname() . '.app',
         ],
         'queue' => [

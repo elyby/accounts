@@ -161,9 +161,9 @@ class Component extends BaseComponent {
         return $this->algorithmManager;
     }
 
-    private function prepareValue($value): string {
+    private function prepareValue(EncryptedValue|string $value): string {
         if ($value instanceof EncryptedValue) {
-            return $this->encryptValue($value->getValue());
+            return $this->encryptValue($value->value);
         }
 
         return $value;

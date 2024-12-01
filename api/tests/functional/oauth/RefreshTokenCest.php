@@ -8,7 +8,7 @@ use api\tests\FunctionalTester;
 
 class RefreshTokenCest {
 
-    public function refreshToken(OauthSteps $I) {
+    public function refreshToken(OauthSteps $I): void {
         $I->wantTo('refresh token without passing the desired scopes');
         $refreshToken = $I->getRefreshToken();
         $I->sendPOST('/api/oauth2/v1/token', [
@@ -20,7 +20,7 @@ class RefreshTokenCest {
         $this->canSeeRefreshTokenSuccess($I);
     }
 
-    public function refreshTokenWithSameScopes(OauthSteps $I) {
+    public function refreshTokenWithSameScopes(OauthSteps $I): void {
         $refreshToken = $I->getRefreshToken(['minecraft_server_session']);
         $I->sendPOST('/api/oauth2/v1/token', [
             'grant_type' => 'refresh_token',
@@ -32,7 +32,7 @@ class RefreshTokenCest {
         $this->canSeeRefreshTokenSuccess($I);
     }
 
-    public function refreshTokenTwice(OauthSteps $I) {
+    public function refreshTokenTwice(OauthSteps $I): void {
         $I->wantTo('refresh token two times in a row and ensure, that token isn\'t rotating');
         $refreshToken = $I->getRefreshToken(['minecraft_server_session']);
         $I->sendPOST('/api/oauth2/v1/token', [
@@ -54,7 +54,7 @@ class RefreshTokenCest {
         $this->canSeeRefreshTokenSuccess($I);
     }
 
-    public function refreshTokenUsingLegacyToken(FunctionalTester $I) {
+    public function refreshTokenUsingLegacyToken(FunctionalTester $I): void {
         $I->wantTo('refresh token using the legacy token');
         $I->sendPOST('/api/oauth2/v1/token', [
             'grant_type' => 'refresh_token',
@@ -66,7 +66,7 @@ class RefreshTokenCest {
         $this->canSeeRefreshTokenSuccess($I);
     }
 
-    public function passInvalidRefreshToken(OauthSteps $I) {
+    public function passInvalidRefreshToken(OauthSteps $I): void {
         $I->wantToTest('behaviour of the server when invalid refresh token passed');
         $I->sendPOST('/api/oauth2/v1/token', [
             'grant_type' => 'refresh_token',
@@ -81,7 +81,7 @@ class RefreshTokenCest {
         ]);
     }
 
-    public function requireNewScopes(OauthSteps $I) {
+    public function requireNewScopes(OauthSteps $I): void {
         $I->wantToTest('behavior when required the new scope that was not issued with original token');
         $refreshToken = $I->getRefreshToken(['minecraft_server_session']);
         $I->sendPOST('/api/oauth2/v1/token', [
@@ -98,7 +98,7 @@ class RefreshTokenCest {
         ]);
     }
 
-    private function canSeeRefreshTokenSuccess(FunctionalTester $I) {
+    private function canSeeRefreshTokenSuccess(FunctionalTester $I): void {
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseContainsJson([
             'token_type' => 'Bearer',

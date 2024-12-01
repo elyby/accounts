@@ -17,7 +17,7 @@ class ConfirmEmailFormTest extends TestCase {
         ];
     }
 
-    public function testConfirm() {
+    public function testConfirm(): void {
         $fixture = $this->tester->grabFixture('emailActivations', 'freshRegistrationConfirmation');
         $model = $this->createModel($fixture['key']);
         $result = $model->confirm();
@@ -30,7 +30,7 @@ class ConfirmEmailFormTest extends TestCase {
         $this->assertSame(Account::STATUS_ACTIVE, $account->status, 'user status changed to active');
     }
 
-    private function createModel($key) {
+    private function createModel($key): ConfirmEmailForm {
         return new ConfirmEmailForm([
             'key' => $key,
         ]);

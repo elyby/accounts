@@ -4,7 +4,7 @@ use console\db\Migration;
 
 class m180706_230451_webhooks extends Migration {
 
-    public function safeUp() {
+    public function safeUp(): void {
         $this->createTable('{{%webhooks}}', [
             'id' => $this->primaryKey(11)->unsigned(),
             'url' => $this->string()->notNull(),
@@ -20,7 +20,7 @@ class m180706_230451_webhooks extends Migration {
         $this->addForeignKey('FK_webhook_event_to_webhook', '{{%webhooks_events}}', 'webhook_id', 'webhooks', 'id', 'CASCADE', 'CASCADE');
     }
 
-    public function safeDown() {
+    public function safeDown(): void {
         $this->dropTable('{{%webhooks_events}}');
         $this->dropTable('{{%webhooks}}');
     }

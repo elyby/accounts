@@ -7,18 +7,13 @@ use common\components\EmailsRenderer\Api;
 use common\components\EmailsRenderer\Component;
 use common\components\EmailsRenderer\Request\TemplateRequest;
 use common\tests\unit\TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class ComponentTest extends TestCase {
 
-    /**
-     * @var Api|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $api;
+    private Api&MockObject $api;
 
-    /**
-     * @var Component
-     */
-    private $component;
+    private Component $component;
 
     protected function setUp(): void {
         parent::setUp();
@@ -30,7 +25,7 @@ class ComponentTest extends TestCase {
             'basePath' => '/images/emails-templates',
         ];
         $this->component = new class($componentParams) extends Component {
-            public $api;
+            public Api $api;
 
             protected function getApi(): Api {
                 return $this->api;
@@ -38,7 +33,7 @@ class ComponentTest extends TestCase {
         };
     }
 
-    public function testRender() {
+    public function testRender(): void {
         $expectedRequest = new TemplateRequest('mock-name', 'mock-locale', [
             'find-me' => 'please',
             'assetsHost' => 'http://localhost/images/emails-templates',

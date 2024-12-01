@@ -20,7 +20,7 @@ class ComponentTest extends TestCase {
      */
     private Component $component;
 
-    public function testCreate() {
+    public function testCreate(): void {
         // Run without any arguments
         $token = $this->component->create();
         $this->assertSame('ES256', $token->headers()->get('alg'));
@@ -43,7 +43,7 @@ class ComponentTest extends TestCase {
         $this->assertSame('me', $token->headers()->get('find'));
     }
 
-    public function testParse() {
+    public function testParse(): void {
         /*TODO fix
         // Valid token signed with ES256
         $token = $this->component->parse('eyJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ1Mjc0NzYsImV4cCI6MTU2NDUzMTA3Niwic3ViIjoiZWx5fDEiLCJqdGkiOjMwNjk1OTJ9.M8Kam9bv0BXui3k7Posq_vc0I95Kb_Tw7L2vPdEPlwsHqh1VJHoWtlQc32_SlsotttL7j6RYbffBkRFX2wDGFQ');
@@ -61,7 +61,7 @@ class ComponentTest extends TestCase {
     /**
      * @dataProvider getVerifyCases
      */
-    public function testVerify(Token $token, bool $shouldBeValid) {
+    public function testVerify(Token $token, bool $shouldBeValid): void {
         $this->assertSame($shouldBeValid, $this->component->verify($token));
     }
 

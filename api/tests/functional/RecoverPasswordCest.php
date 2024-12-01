@@ -7,7 +7,7 @@ use api\tests\FunctionalTester;
 
 class RecoverPasswordCest {
 
-    public function testDataForFrequencyError(FunctionalTester $I) {
+    public function testDataForFrequencyError(FunctionalTester $I): void {
         $authRoute = new AuthenticationRoute($I);
 
         $I->wantTo('change my account password, using key from email');

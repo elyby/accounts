@@ -17,7 +17,7 @@ class RateLimiter extends \yii\filters\RateLimiter {
 
     private $server;
 
-    public function init() {
+    public function init(): void {
         parent::init();
         if ($this->authserverDomain === null) {
             throw new InvalidConfigException('authserverDomain param is required');
@@ -43,7 +43,7 @@ class RateLimiter extends \yii\filters\RateLimiter {
      * @inheritdoc
      * @throws TooManyRequestsHttpException
      */
-    public function checkRateLimit($user, $request, $response, $action) {
+    public function checkRateLimit($user, $request, $response, $action): void {
         if (parse_url($request->getHostInfo(), PHP_URL_HOST) === $this->authserverDomain) {
             return;
         }
@@ -88,7 +88,7 @@ class RateLimiter extends \yii\filters\RateLimiter {
         return $this->server;
     }
 
-    protected function buildKey($ip): string {
+    protected function buildKey(string $ip): string {
         return 'sessionserver:ratelimit:' . $ip;
     }
 

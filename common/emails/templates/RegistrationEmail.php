@@ -8,10 +8,7 @@ use yii\base\InvalidCallException;
 
 class RegistrationEmail extends TemplateWithRenderer {
 
-    /**
-     * @var RegistrationEmailParams|null
-     */
-    private $params;
+    private ?RegistrationEmailParams $params = null;
 
     public function getSubject(): string {
         return 'Ely.by Account registration';

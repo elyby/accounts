@@ -16,11 +16,11 @@ class TokenReaderTest extends TestCase {
     /**
      * @dataProvider getAccountIdTestCases
      */
-    public function testGetAccountId(array $claims, $expectedResult) {
+    public function testGetAccountId(array $claims, ?int $expectedResult): void {
         $this->assertSame($expectedResult, $this->createReader($claims)->getAccountId());
     }
 
-    public function getAccountIdTestCases() {
+    public function getAccountIdTestCases(): iterable {
         yield [['sub' => 'ely|1'], 1];
         yield [['sub' => '1'], null];
         yield [['sub' => 'ely-login|1'], null];
@@ -30,11 +30,11 @@ class TokenReaderTest extends TestCase {
     /**
      * @dataProvider getClientIdTestCases
      */
-    public function testGetClientId(array $claims, $expectedResult) {
+    public function testGetClientId(array $claims, ?string $expectedResult): void {
         $this->assertSame($expectedResult, $this->createReader($claims)->getClientId());
     }
 
-    public function getClientIdTestCases() {
+    public function getClientIdTestCases(): iterable {
         yield [['client_id' => 'find-me'], 'find-me'];
         yield [[], null];
     }
@@ -42,11 +42,11 @@ class TokenReaderTest extends TestCase {
     /**
      * @dataProvider getScopesTestCases
      */
-    public function testGetScopes(array $claims, $expectedResult) {
+    public function testGetScopes(array $claims, ?array $expectedResult): void {
         $this->assertSame($expectedResult, $this->createReader($claims)->getScopes());
     }
 
-    public function getScopesTestCases() {
+    public function getScopesTestCases(): iterable {
         yield [['scope' => 'scope1 scope2'], ['scope1', 'scope2']];
         yield [['ely-scopes' => 'scope1,scope2'], ['scope1', 'scope2']];
         yield [[], null];
@@ -55,15 +55,18 @@ class TokenReaderTest extends TestCase {
     /**
      * @dataProvider getMinecraftClientTokenTestCases
      */
-    public function testGetMinecraftClientToken(array $claims, $expectedResult) {
+    public function testGetMinecraftClientToken(array $claims, ?string $expectedResult): void {
         $this->assertSame($expectedResult, $this->createReader($claims)->getMinecraftClientToken());
     }
 
-    public function getMinecraftClientTokenTestCases() {
+    public function getMinecraftClientTokenTestCases(): iterable {
         yield [['ely-client-token' => 'GPZiBFlJld30KfGTe-E2yITKbfJYmWFA6Ky5CsllnIsVdmswMu_PXNdYnQGexF_CkXiuOQd1smrO3S4'], 'aaaaa-aaa-aaa-aaaaa'];
         yield [[], null];
     }
 
+    /**
+     * @param array<string, non-empty-string> $claims
+     */
     private function createReader(array $claims): TokenReader {
         $builder = (new Builder(new JoseEncoder(), ChainedFormatter::default()));
 

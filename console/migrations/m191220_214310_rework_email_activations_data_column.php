@@ -5,7 +5,7 @@ use yii\db\Expression;
 
 class m191220_214310_rework_email_activations_data_column extends Migration {
 
-    public function safeUp() {
+    public function safeUp(): void {
         $this->addColumn('email_activations', 'data', $this->json()->toString('data') . ' AFTER `_data`');
         $rows = $this->db->createCommand('
             SELECT `key`, `_data`
@@ -23,7 +23,7 @@ class m191220_214310_rework_email_activations_data_column extends Migration {
         $this->dropColumn('email_activations', '_data');
     }
 
-    public function safeDown() {
+    public function safeDown(): void {
         $this->addColumn('email_activations', '_data', $this->text()->after('type'));
         $rows = $this->db->createCommand('
             SELECT `key`, `data`

@@ -8,16 +8,13 @@ use api\tests\FunctionalTester;
 
 class GetClientsCest {
 
-    /**
-     * @var OauthRoute
-     */
-    private $route;
+    private OauthRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new OauthRoute($I);
     }
 
-    public function testGet(FunctionalTester $I) {
+    public function testGet(FunctionalTester $I): void {
         $I->amAuthenticated('admin');
         $this->route->getClient('admin-oauth-client');
         $I->canSeeResponseCodeIs(200);
@@ -34,7 +31,7 @@ class GetClientsCest {
         ]);
     }
 
-    public function testGetNotOwn(FunctionalTester $I) {
+    public function testGetNotOwn(FunctionalTester $I): void {
         $I->amAuthenticated('admin');
         $this->route->getClient('another-test-oauth-client');
         $I->canSeeResponseCodeIs(403);
@@ -46,7 +43,7 @@ class GetClientsCest {
         ]);
     }
 
-    public function testGetAllPerAccountList(FunctionalTester $I) {
+    public function testGetAllPerAccountList(FunctionalTester $I): void {
         $I->amAuthenticated('TwoOauthClients');
         $this->route->getPerAccount(14);
         $I->canSeeResponseCodeIs(200);
@@ -75,7 +72,7 @@ class GetClientsCest {
         ]);
     }
 
-    public function testGetAllPerNotOwnAccount(FunctionalTester $I) {
+    public function testGetAllPerNotOwnAccount(FunctionalTester $I): void {
         $I->amAuthenticated('TwoOauthClients');
         $this->route->getPerAccount(1);
         $I->canSeeResponseCodeIs(403);

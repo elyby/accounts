@@ -10,11 +10,11 @@ final class CreateClientCest {
 
     private OauthRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new OauthRoute($I);
     }
 
-    public function testCreateApplication(FunctionalTester $I) {
+    public function testCreateApplication(FunctionalTester $I): void {
         $I->amAuthenticated('admin');
         $this->route->createClient('application', [
             'name' => 'My admin application',
@@ -39,7 +39,7 @@ final class CreateClientCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.data.createdAt');
     }
 
-    public function testCreateMinecraftServer(FunctionalTester $I) {
+    public function testCreateMinecraftServer(FunctionalTester $I): void {
         $I->amAuthenticated('admin');
         $this->route->createClient('minecraft-server', [
             'name' => 'My amazing server',
@@ -61,7 +61,7 @@ final class CreateClientCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.data.createdAt');
     }
 
-    public function testCreateApplicationWithTheSameNameAsDeletedApp(FunctionalTester $I) {
+    public function testCreateApplicationWithTheSameNameAsDeletedApp(FunctionalTester $I): void {
         $I->wantTo('create application with the same name as the recently deleted application');
         $I->amAuthenticated('admin');
         $this->route->createClient('application', [

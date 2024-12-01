@@ -29,9 +29,10 @@ class ChangePasswordForm extends AccountActionForm {
             ['newPassword', PasswordValidator::class],
             ['newRePassword', 'validatePasswordAndRePasswordMatch'],
             ['logoutAll', 'boolean'],
-            ['password', PasswordRequiredValidator::class, 'account' => $this->getAccount(), 'when' => function() {
-                return !$this->hasErrors();
-            }],
+            ['password', PasswordRequiredValidator::class,
+                'account' => $this->getAccount(),
+                'when' => fn(): bool => !$this->hasErrors(),
+            ],
         ]);
     }
 

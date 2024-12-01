@@ -13,7 +13,7 @@ use yii\base\Model;
 class EmailActivationKeyValidatorTest extends TestCase {
     use ProtectedCaller;
 
-    public function testValidateAttribute() {
+    public function testValidateAttribute(): void {
         $model = new class extends Model {
             public $key;
         };
@@ -53,7 +53,7 @@ class EmailActivationKeyValidatorTest extends TestCase {
         $this->assertSame($validActivation, $model->key);
     }
 
-    public function testFindEmailActivationModel() {
+    public function testFindEmailActivationModel(): void {
         $this->tester->haveFixtures(['emailActivations' => EmailActivationFixture::class]);
 
         $key = $this->tester->grabFixture('emailActivations', 'freshRegistrationConfirmation')['key'];

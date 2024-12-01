@@ -6,16 +6,13 @@ use api\tests\FunctionalTester;
 
 class AcceptRulesCest {
 
-    /**
-     * @var AccountsRoute
-     */
-    private $route;
+    private AccountsRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new AccountsRoute($I);
     }
 
-    public function testCurrent(FunctionalTester $I) {
+    public function testCurrent(FunctionalTester $I): void {
         $I->amAuthenticated('Veleyaba');
         $this->route->acceptRules(9);
         $I->canSeeResponseCodeIs(200);

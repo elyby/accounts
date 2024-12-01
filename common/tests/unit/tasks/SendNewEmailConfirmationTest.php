@@ -12,7 +12,7 @@ use yii\queue\Queue;
 
 class SendNewEmailConfirmationTest extends TestCase {
 
-    public function testCreateFromConfirmation() {
+    public function testCreateFromConfirmation(): void {
         $account = new Account();
         $account->username = 'mock-username';
         $account->lang = 'id';
@@ -31,7 +31,7 @@ class SendNewEmailConfirmationTest extends TestCase {
         $this->assertSame('ABCDEFG', $result->code);
     }
 
-    public function testExecute() {
+    public function testExecute(): void {
         $task = new SendNewEmailConfirmation();
         $task->username = 'mock-username';
         $task->email = 'mock@ely.by';

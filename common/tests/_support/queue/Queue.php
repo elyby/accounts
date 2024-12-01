@@ -6,7 +6,7 @@ use yii\queue\Queue as BaseQueue;
 
 class Queue extends BaseQueue {
 
-    private $messages = [];
+    private array $messages = [];
 
     public function __set($name, $value) {
         // Yii2 components may contains some configuration

@@ -40,7 +40,7 @@ class UsernameValidator extends Validator {
         $unique->targetClass = Account::class;
         $unique->targetAttribute = 'username';
         if ($this->accountCallback !== null) {
-            $unique->filter = function(QueryInterface $query) {
+            $unique->filter = function(QueryInterface $query): void {
                 $query->andWhere(['NOT', ['id' => ($this->accountCallback)()]]);
             };
         }

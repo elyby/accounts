@@ -7,7 +7,7 @@ use api\tests\FunctionalTester;
 
 class GetAuthorizedClientsCest {
 
-    public function testGet(FunctionalTester $I) {
+    public function testGet(FunctionalTester $I): void {
         $id = $I->amAuthenticated('admin');
         $I->sendGET("/api/v1/accounts/{$id}/oauth2/authorized");
         $I->canSeeResponseCodeIs(200);
@@ -25,7 +25,7 @@ class GetAuthorizedClientsCest {
         $I->cantSeeResponseJsonMatchesJsonPath('$.[?(@.id="tlauncher")]');
     }
 
-    public function testGetForNotOwnIdentity(FunctionalTester $I) {
+    public function testGetForNotOwnIdentity(FunctionalTester $I): void {
         $I->amAuthenticated('admin');
         $I->sendGET('/api/v1/accounts/2/oauth2/authorized');
         $I->canSeeResponseCodeIs(403);

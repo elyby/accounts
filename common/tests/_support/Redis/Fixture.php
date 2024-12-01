@@ -29,7 +29,7 @@ class Fixture extends BaseFixture {
         $this->redis = Instance::ensure($this->redis, Connection::class);
     }
 
-    public function load() {
+    public function load(): void {
         $this->data = [];
         foreach ($this->getData() as $key => $data) {
             $key = $this->buildKey($key);
@@ -44,7 +44,7 @@ class Fixture extends BaseFixture {
         }
     }
 
-    public function unload() {
+    public function unload(): void {
         $this->redis->flushdb();
     }
 
@@ -72,7 +72,7 @@ class Fixture extends BaseFixture {
         throw new InvalidArgumentException('Unsupported input type');
     }
 
-    protected function buildKey($key): string {
+    protected function buildKey(string|int $key): string {
         return $this->keysPrefix . $key . $this->keysPostfix;
     }
 

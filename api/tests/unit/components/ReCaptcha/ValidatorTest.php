@@ -11,13 +11,13 @@ use GuzzleHttp\Psr7\Response;
 
 class ValidatorTest extends TestCase {
 
-    public function testValidateEmptyValue() {
+    public function testValidateEmptyValue(): void {
         $validator = new Validator($this->createMock(ClientInterface::class));
         $this->assertFalse($validator->validate('', $error));
         $this->assertSame('error.captcha_required', $error, 'Get error.captcha_required, if passed empty value');
     }
 
-    public function testValidateInvalidValue() {
+    public function testValidateInvalidValue(): void {
         $mockClient = $this->createMock(ClientInterface::class);
         $mockClient->method('request')->willReturn(new Response(200, [], json_encode([
             'success' => false,
@@ -31,7 +31,7 @@ class ValidatorTest extends TestCase {
         $this->assertSame('error.captcha_invalid', $error, 'Get error.captcha_invalid, if passed wrong value');
     }
 
-    public function testValidateWithNetworkTroubles() {
+    public function testValidateWithNetworkTroubles(): void {
         $mockClient = $this->createMock(ClientInterface::class);
         $mockClient->expects($this->exactly(2))->method('request')->willReturnOnConsecutiveCalls(
             $this->throwException($this->createMock(ConnectException::class)),
@@ -49,7 +49,7 @@ class ValidatorTest extends TestCase {
         $this->assertNull($error);
     }
 
-    public function testValidateWithHugeNetworkTroubles() {
+    public function testValidateWithHugeNetworkTroubles(): void {
         $mockClient = $this->createMock(ClientInterface::class);
         $mockClient->expects($this->exactly(3))->method('request')->willThrowException($this->createMock(ConnectException::class));
         $this->getFunctionMock(Validator::class, 'sleep')->expects($this->exactly(2));
@@ -59,7 +59,7 @@ class ValidatorTest extends TestCase {
         $validator->validate('12341234', $error);
     }
 
-    public function testValidateValidValue() {
+    public function testValidateValidValue(): void {
         $mockClient = $this->createMock(ClientInterface::class);
         $mockClient->method('request')->willReturn(new Response(200, [], json_encode([
             'success' => true,

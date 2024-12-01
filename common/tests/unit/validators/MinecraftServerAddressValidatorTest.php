@@ -9,7 +9,7 @@ class MinecraftServerAddressValidatorTest extends TestCase {
     /**
      * @dataProvider domainNames
      */
-    public function testValidate($address, $shouldBeValid) {
+    public function testValidate(string $address, bool $shouldBeValid): void {
         $validator = new MinecraftServerAddressValidator();
         $validator->message = 'mock message';
         $validator->validate($address, $errors);
@@ -20,7 +20,7 @@ class MinecraftServerAddressValidatorTest extends TestCase {
         }
     }
 
-    public function domainNames() {
+    public function domainNames(): array {
         return [
             ['localhost',            true],
             ['localhost:25565',      true],

@@ -21,7 +21,7 @@ class FeedbackController extends Controller {
         ];
     }
 
-    public function actionIndex() {
+    public function actionIndex(): array {
         $model = new FeedbackForm();
         $model->load(Yii::$app->request->post());
         if (!$model->sendMessage()) {

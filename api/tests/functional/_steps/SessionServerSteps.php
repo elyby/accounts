@@ -8,7 +8,7 @@ use function Ramsey\Uuid\v4 as uuid;
 
 class SessionServerSteps extends FunctionalTester {
 
-    public function amJoined($byLegacy = false) {
+    public function amJoined($byLegacy = false): array {
         $oauthSteps = new OauthSteps($this->scenario);
         $accessToken = $oauthSteps->getAccessToken([P::MINECRAFT_SERVER_SESSION]);
         $route = new SessionServerRoute($this);
@@ -42,7 +42,7 @@ class SessionServerSteps extends FunctionalTester {
         string $expectedUsername,
         string $expectedUuid,
         bool $shouldBeSigned = false,
-    ) {
+    ): void {
         $this->seeResponseIsJson();
         $this->canSeeResponseContainsJson([
             'name' => $expectedUsername,

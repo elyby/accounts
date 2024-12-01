@@ -10,19 +10,16 @@ use Lcobucci\JWT\Signer\Key\InMemory;
 
 final class ES256 implements AlgorithmInterface {
 
-    private string $privateKeyPath;
-
-    private ?string $privateKeyPass;
-
     private ?Key $privateKey = null;
 
     private ?Key $publicKey = null;
 
     private Sha256 $signer;
 
-    public function __construct(string $privateKeyPath, ?string $privateKeyPass = null) {
-        $this->privateKeyPath = $privateKeyPath;
-        $this->privateKeyPass = $privateKeyPass;
+    public function __construct(
+        private string $privateKeyPath,
+        private ?string $privateKeyPass = null,
+    ) {
         $this->signer = new Sha256();
     }
 

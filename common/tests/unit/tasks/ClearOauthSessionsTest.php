@@ -19,7 +19,7 @@ class ClearOauthSessionsTest extends TestCase {
         ];
     }
 
-    public function testCreateFromClient() {
+    public function testCreateFromClient(): void {
         $client = new OauthClient();
         $client->id = 'mocked-id';
 
@@ -34,7 +34,7 @@ class ClearOauthSessionsTest extends TestCase {
         $this->assertEqualsWithDelta(time(), $result->notSince, 1);
     }
 
-    public function testExecute() {
+    public function testExecute(): void {
         $task = new ClearOauthSessions('deleted-oauth-client-with-sessions', 1519510065);
         $task->execute($this->createMock(Queue::class));
 

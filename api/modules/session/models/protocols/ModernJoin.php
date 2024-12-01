@@ -3,11 +3,11 @@ namespace api\modules\session\models\protocols;
 
 class ModernJoin extends BaseJoin {
 
-    private $accessToken;
+    private string $accessToken;
 
-    private $selectedProfile;
+    private string $selectedProfile;
 
-    private $serverId;
+    private string $serverId;
 
     public function __construct(string $accessToken, string $selectedProfile, string $serverId) {
         $this->accessToken = trim($accessToken);

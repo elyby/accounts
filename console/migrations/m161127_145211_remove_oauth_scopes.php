@@ -4,11 +4,11 @@ use console\db\Migration;
 
 class m161127_145211_remove_oauth_scopes extends Migration {
 
-    public function safeUp() {
+    public function safeUp(): void {
         $this->dropTable('{{%oauth_scopes}}');
     }
 
-    public function safeDown() {
+    public function safeDown(): void {
         $this->createTable('{{%oauth_scopes}}', [
             'id' => $this->string(64),
             $this->primary('id'),

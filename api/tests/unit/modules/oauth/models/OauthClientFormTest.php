@@ -11,7 +11,7 @@ use common\tasks\ClearOauthSessions;
 
 class OauthClientFormTest extends TestCase {
 
-    public function testSave() {
+    public function testSave(): void {
         $client = $this->createPartialMock(OauthClient::class, ['save']);
         $client->method('save')->willReturn(true);
         $client->account_id = 1;
@@ -32,7 +32,7 @@ class OauthClientFormTest extends TestCase {
         $this->assertSame(64, mb_strlen($client->secret));
     }
 
-    public function testSaveUpdateExistsModel() {
+    public function testSaveUpdateExistsModel(): void {
         $client = $this->createPartialMock(OauthClient::class, ['save']);
         $client->method('save')->willReturn(true);
         $client->setIsNewRecord(false);
@@ -77,7 +77,7 @@ class OauthClientFormTest extends TestCase {
         $this->assertSame('http://example.com', $client->website_url);
     }
 
-    public function testDelete() {
+    public function testDelete(): void {
         $client = $this->createPartialMock(OauthClient::class, ['save']);
         $client->method('save')->willReturn(true);
         $client->id = 'mocked-id';
@@ -93,7 +93,7 @@ class OauthClientFormTest extends TestCase {
         $this->assertNull($job->notSince);
     }
 
-    public function testReset() {
+    public function testReset(): void {
         $client = $this->createPartialMock(OauthClient::class, ['save']);
         $client->method('save')->willReturn(true);
         $client->id = 'mocked-id';
@@ -110,7 +110,7 @@ class OauthClientFormTest extends TestCase {
         $this->assertEqualsWithDelta(time(), $job->notSince, 2);
     }
 
-    public function testResetWithSecret() {
+    public function testResetWithSecret(): void {
         $client = $this->createPartialMock(OauthClient::class, ['save']);
         $client->method('save')->willReturn(true);
         $client->id = 'mocked-id';

@@ -27,7 +27,7 @@ final class EmailValidatorTest extends TestCase {
         $this->validator = new EmailValidator();
     }
 
-    public function testValidateTrimming() {
+    public function testValidateTrimming(): void {
         // Prevent it to access to db
         $this->getFunctionMock(YiiEmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(false);
 
@@ -37,7 +37,7 @@ final class EmailValidatorTest extends TestCase {
         $this->assertSame('testemail@ely.by', $model->field);
     }
 
-    public function testValidateAttributeRequired() {
+    public function testValidateAttributeRequired(): void {
         $model = $this->createModel('');
         $this->validator->validateAttribute($model, 'field');
         $this->assertSame(['error.email_required'], $model->getErrors('field'));
@@ -47,7 +47,7 @@ final class EmailValidatorTest extends TestCase {
         $this->assertNotSame(['error.email_required'], $model->getErrors('field'));
     }
 
-    public function testValidateAttributeLength() {
+    public function testValidateAttributeLength(): void {
         $this->getFunctionMock(YiiEmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(false);
 
         $model = $this->createModel(
@@ -64,7 +64,7 @@ final class EmailValidatorTest extends TestCase {
         $this->assertNotSame(['error.email_too_long'], $model->getErrors('field'));
     }
 
-    public function testValidateAttributeEmailCaseNotExistsDomain() {
+    public function testValidateAttributeEmailCaseNotExistsDomain(): void {
         $this->getFunctionMock(YiiEmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(false);
         $this->getFunctionMock(YiiEmailValidator::class, 'dns_get_record')->expects($this->never());
 
@@ -73,7 +73,7 @@ final class EmailValidatorTest extends TestCase {
         $this->assertSame(['error.email_invalid'], $model->getErrors('field'));
     }
 
-    public function testValidateAttributeEmailCaseExistsDomainButWithoutMXRecord() {
+    public function testValidateAttributeEmailCaseExistsDomainButWithoutMXRecord(): void {
         $this->getFunctionMock(YiiEmailValidator::class, 'checkdnsrr')->expects($this->exactly(2))->willReturnOnConsecutiveCalls(false, true);
         $this->getFunctionMock(YiiEmailValidator::class, 'dns_get_record')->expects($this->any())->willReturn(['127.0.0.1']);
 
@@ -82,7 +82,7 @@ final class EmailValidatorTest extends TestCase {
         $this->assertNotSame(['error.email_invalid'], $model->getErrors('field'));
     }
 
-    public function testValidateAttributeEmailCaseExistsDomainWithMXRecord() {
+    public function testValidateAttributeEmailCaseExistsDomainWithMXRecord(): void {
         $this->getFunctionMock(YiiEmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
         $this->getFunctionMock(YiiEmailValidator::class, 'dns_get_record')->expects($this->any())->willReturn(['mx.google.com']);
 
@@ -100,7 +100,7 @@ final class EmailValidatorTest extends TestCase {
         $this->assertSame(['error.email_invalid'], $model->getErrors('field'));
     }
 
-    public function testValidateAttributeTempmail() {
+    public function testValidateAttributeTempmail(): void {
         $this->getFunctionMock(YiiEmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
         $this->getFunctionMock(YiiEmailValidator::class, 'dns_get_record')->expects($this->any())->willReturn(['127.0.0.1']);
 
@@ -116,7 +116,7 @@ final class EmailValidatorTest extends TestCase {
     /**
      * @dataProvider getValidateAttributeBlacklistedHostTestCases
      */
-    public function testValidateAttributeBlacklistedHost(string $email, bool $expectValid) {
+    public function testValidateAttributeBlacklistedHost(string $email, bool $expectValid): void {
         $this->getFunctionMock(YiiEmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
         $this->getFunctionMock(YiiEmailValidator::class, 'dns_get_record')->expects($this->any())->willReturn(['127.0.0.1']);
 
@@ -138,7 +138,7 @@ final class EmailValidatorTest extends TestCase {
     /**
      * @dataProvider getValidateAttributeIdnaTestCases
      */
-    public function testValidateAttributeIdna(string $input, string $expectedOutput) {
+    public function testValidateAttributeIdna(string $input, string $expectedOutput): void {
         $this->getFunctionMock(YiiEmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
         $this->getFunctionMock(YiiEmailValidator::class, 'dns_get_record')->expects($this->any())->willReturn(['127.0.0.1']);
 
@@ -153,7 +153,7 @@ final class EmailValidatorTest extends TestCase {
         yield ['valid-email@gmail.com', 'valid-email@gmail.com'];
     }
 
-    public function testValidateAttributeUnique() {
+    public function testValidateAttributeUnique(): void {
         $this->getFunctionMock(YiiEmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
         $this->getFunctionMock(YiiEmailValidator::class, 'dns_get_record')->expects($this->any())->willReturn(['127.0.0.1']);
 

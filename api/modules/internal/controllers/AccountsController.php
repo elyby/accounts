@@ -20,11 +20,9 @@ class AccountsController extends Controller {
                         'actions' => ['info'],
                         'allow' => true,
                         'roles' => [P::OBTAIN_EXTENDED_ACCOUNT_INFO],
-                        'roleParams' => function() {
-                            return [
-                                'accountId' => 0,
-                            ];
-                        },
+                        'roleParams' => fn(): array => [
+                            'accountId' => 0,
+                        ],
                     ],
                 ],
             ],
@@ -37,7 +35,7 @@ class AccountsController extends Controller {
         ];
     }
 
-    public function actionInfo(int $id = null, string $username = null, string $uuid = null) {
+    public function actionInfo(int $id = null, string $username = null, string $uuid = null): array {
         if ($id !== null) {
             $account = Account::findOne($id);
         } elseif ($username !== null) {

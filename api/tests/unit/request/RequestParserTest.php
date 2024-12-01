@@ -6,7 +6,7 @@ use api\tests\unit\TestCase;
 
 class RequestParserTest extends TestCase {
 
-    public function testParse() {
+    public function testParse(): void {
         $parser = new RequestParser();
         $_POST = ['from' => 'post'];
         $this->assertSame(['from' => 'post'], $parser->parse('from=post', ''));

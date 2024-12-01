@@ -8,7 +8,7 @@ namespace common\components;
  */
 class UserPass {
 
-    public static function make($email, $pass) {
+    public static function make($email, string $pass): string {
         return md5($pass . md5(strtolower($email)));
     }
 

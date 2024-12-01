@@ -9,11 +9,11 @@ use yii\db\ActiveRecord;
 
 class PrimaryKeyValueBehaviorTest extends TestCase {
 
-    public function testGenerateValueForThePrimaryKey() {
+    public function testGenerateValueForThePrimaryKey(): void {
         $model = $this->createDummyModel();
         $behavior = $this->createPartialMock(PrimaryKeyValueBehavior::class, ['isValueExists']);
         $behavior->method('isValueExists')->willReturn(false);
-        $behavior->value = function() {
+        $behavior->value = function(): string {
             return 'mock';
         };
 
@@ -22,7 +22,7 @@ class PrimaryKeyValueBehaviorTest extends TestCase {
         $this->assertSame('mock', $model->id);
     }
 
-    public function testShouldRegenerateValueWhenGeneratedAlreadyExists() {
+    public function testShouldRegenerateValueWhenGeneratedAlreadyExists(): void {
         $model = $this->createDummyModel();
         $behavior = $this->createPartialMock(PrimaryKeyValueBehavior::class, ['isValueExists', 'generateValue']);
         $behavior->expects($this->exactly(3))->method('generateValue')->willReturnOnConsecutiveCalls('1', '2', '3');
@@ -33,7 +33,7 @@ class PrimaryKeyValueBehaviorTest extends TestCase {
         $this->assertSame('3', $model->id);
     }
 
-    private function createDummyModel() {
+    private function createDummyModel(): \yii\db\ActiveRecord {
         return new class extends ActiveRecord {
             public $id;
 

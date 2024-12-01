@@ -4,7 +4,7 @@ use console\db\Migration;
 
 class m160919_170008_improve_username_history extends Migration {
 
-    public function safeUp() {
+    public function safeUp(): void {
         $this->execute('
             INSERT INTO {{%usernames_history}} (account_id, username, applied_in)
             SELECT id as account_id, username, created_at as applied_at
@@ -14,7 +14,7 @@ class m160919_170008_improve_username_history extends Migration {
         $this->createIndex('username', '{{%usernames_history}}', 'username');
     }
 
-    public function safeDown() {
+    public function safeDown(): void {
         $this->dropIndex('applied_in', '{{%usernames_history}}');
         $this->dropIndex('username', '{{%usernames_history}}');
         $this->execute('

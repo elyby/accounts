@@ -38,7 +38,7 @@ class ClientsController extends Controller {
                         'actions' => ['update', 'delete', 'reset'],
                         'allow' => true,
                         'permissions' => [P::MANAGE_OAUTH_CLIENTS],
-                        'roleParams' => fn() => [
+                        'roleParams' => fn(): array => [
                             'clientId' => Yii::$app->request->get('clientId'),
                         ],
                     ],
@@ -46,7 +46,7 @@ class ClientsController extends Controller {
                         'actions' => ['get'],
                         'allow' => true,
                         'permissions' => [P::VIEW_OAUTH_CLIENTS],
-                        'roleParams' => fn() => [
+                        'roleParams' => fn(): array => [
                             'clientId' => Yii::$app->request->get('clientId'),
                         ],
                     ],
@@ -54,7 +54,7 @@ class ClientsController extends Controller {
                         'actions' => ['get-per-account'],
                         'allow' => true,
                         'permissions' => [P::VIEW_OAUTH_CLIENTS],
-                        'roleParams' => fn() => [
+                        'roleParams' => fn(): array => [
                             'accountId' => Yii::$app->request->get('accountId'),
                         ],
                     ],
@@ -62,7 +62,7 @@ class ClientsController extends Controller {
                         'actions' => ['get-authorized-clients', 'revoke-client'],
                         'allow' => true,
                         'permissions' => [P::MANAGE_OAUTH_SESSIONS],
-                        'roleParams' => fn() => [
+                        'roleParams' => fn(): array => [
                             'accountId' => Yii::$app->request->get('accountId'),
                         ],
                     ],

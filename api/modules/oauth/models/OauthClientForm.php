@@ -12,10 +12,7 @@ use yii\helpers\Inflector;
 
 class OauthClientForm {
 
-    /**
-     * @var OauthClient
-     */
-    private $client;
+    private OauthClient $client;
 
     public function __construct(OauthClient $client) {
         if ($client->type === null) {

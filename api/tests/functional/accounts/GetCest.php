@@ -10,11 +10,11 @@ class GetCest {
 
     private AccountsRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new AccountsRoute($I);
     }
 
-    public function testGetInfo(FunctionalTester $I) {
+    public function testGetInfo(FunctionalTester $I): void {
         $accountId = $I->amAuthenticated();
 
         $this->route->get($accountId);
@@ -36,7 +36,7 @@ class GetCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.passwordChangedAt');
     }
 
-    public function testGetInfoAboutCurrentUser(FunctionalTester $I) {
+    public function testGetInfoAboutCurrentUser(FunctionalTester $I): void {
         $I->wantTo('get info about user with 0 id, e.g. current');
         $I->amAuthenticated();
 
@@ -59,7 +59,7 @@ class GetCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.passwordChangedAt');
     }
 
-    public function testGetWithNotAcceptedLatestRules(FunctionalTester $I) {
+    public function testGetWithNotAcceptedLatestRules(FunctionalTester $I): void {
         $accountId = $I->amAuthenticated('Veleyaba');
 
         $this->route->get($accountId);
@@ -81,7 +81,7 @@ class GetCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.passwordChangedAt');
     }
 
-    public function testGetInfoFromAccountMarkedForDeleting(FunctionalTester $I) {
+    public function testGetInfoFromAccountMarkedForDeleting(FunctionalTester $I): void {
         // We're setting up a known expired token
         $id = $I->amAuthenticated('DeletedAccount');
 
@@ -94,7 +94,7 @@ class GetCest {
         ]);
     }
 
-    public function testGetInfoWithExpiredToken(FunctionalTester $I) {
+    public function testGetInfoWithExpiredToken(FunctionalTester $I): void {
         // We're setting up a known expired token
         $I->amBearerAuthenticated(
             'eyJhbGciOiJFUzI1NiJ9.eyJpYXQiOjE0NjQ2Mjc1NDUsImV4cCI6MTQ2NDYzMTE0NSwic3ViIjoiZWx5fDEiLCJlbHktc2NvcGVzIjoi'
@@ -113,7 +113,7 @@ class GetCest {
         ]);
     }
 
-    public function testGetInfoWithTokenWithOutdatedAlg(FunctionalTester $I) {
+    public function testGetInfoWithTokenWithOutdatedAlg(FunctionalTester $I): void {
         // We're setting up a known expired token
         $I->amBearerAuthenticated(
             'eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0NjQ2Mjc1NDUsImV4cCI6MTQ2NDYzMTE0NSwic3ViIjoiZWx5fDEiLCJlbHktc'
@@ -131,7 +131,7 @@ class GetCest {
         ]);
     }
 
-    public function testGetInfoNotCurrentAccount(FunctionalTester $I) {
+    public function testGetInfoNotCurrentAccount(FunctionalTester $I): void {
         $I->amAuthenticated();
 
         $this->route->get(10);

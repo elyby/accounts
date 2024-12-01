@@ -13,19 +13,19 @@ class OauthClientQueryTest extends TestCase {
         ];
     }
 
-    public function testDefaultHideDeletedEntries() {
+    public function testDefaultHideDeletedEntries(): void {
         /** @var OauthClient[] $clients */
         $clients = OauthClient::find()->all();
-        $this->assertEmpty(array_filter($clients, function(OauthClient $client) {
+        $this->assertEmpty(array_filter($clients, function(OauthClient $client): bool {
             return (bool)$client->is_deleted === true;
         }));
         $this->assertNull(OauthClient::findOne('deleted-oauth-client'));
     }
 
-    public function testAllowFindDeletedEntries() {
+    public function testAllowFindDeletedEntries(): void {
         /** @var OauthClient[] $clients */
         $clients = OauthClient::find()->includeDeleted()->all();
-        $this->assertNotEmpty(array_filter($clients, function(OauthClient $client) {
+        $this->assertNotEmpty(array_filter($clients, function(OauthClient $client): bool {
             return (bool)$client->is_deleted === true;
         }));
         $client = OauthClient::find()
@@ -34,7 +34,7 @@ class OauthClientQueryTest extends TestCase {
             ->one();
         $this->assertInstanceOf(OauthClient::class, $client);
         $deletedClients = OauthClient::find()->onlyDeleted()->all();
-        $this->assertEmpty(array_filter($deletedClients, function(OauthClient $client) {
+        $this->assertEmpty(array_filter($deletedClients, function(OauthClient $client): bool {
             return (bool)$client->is_deleted === false;
         }));
     }

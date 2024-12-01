@@ -24,7 +24,7 @@ class PasswordRequiredValidator extends Validator {
      */
     public $user = 'user';
 
-    public function init() {
+    public function init(): void {
         parent::init();
         $this->user = Instance::ensure($this->user, User::class);
     }

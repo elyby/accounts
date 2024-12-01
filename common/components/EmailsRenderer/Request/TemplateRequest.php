@@ -5,25 +5,11 @@ namespace common\components\EmailsRenderer\Request;
 
 class TemplateRequest {
 
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var string
-     */
-    private $locale;
-
-    /**
-     * @var array
-     */
-    private $params;
-
-    public function __construct(string $name, string $locale, array $params) {
-        $this->name = $name;
-        $this->locale = $locale;
-        $this->params = $params;
+    public function __construct(
+        private string $name,
+        private string $locale,
+        private array $params,
+    ) {
     }
 
     public function getName(): string {

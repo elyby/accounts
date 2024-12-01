@@ -17,19 +17,19 @@ class LegacyOAuth2IdentityTest extends TestCase {
         ];
     }
 
-    public function testFindIdentityByAccessToken() {
+    public function testFindIdentityByAccessToken(): void {
         $identity = LegacyOAuth2Identity::findIdentityByAccessToken('ZZQP8sS9urzriy8N9h6FwFNMOH3PkZ5T5PLqS6SX');
         $this->assertSame('ZZQP8sS9urzriy8N9h6FwFNMOH3PkZ5T5PLqS6SX', $identity->getId());
     }
 
-    public function testFindIdentityByAccessTokenWithNonExistsToken() {
+    public function testFindIdentityByAccessTokenWithNonExistsToken(): void {
         $this->expectException(UnauthorizedHttpException::class);
         $this->expectExceptionMessage('Incorrect token');
 
         LegacyOAuth2Identity::findIdentityByAccessToken('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
     }
 
-    public function testFindIdentityByAccessTokenWithExpiredToken() {
+    public function testFindIdentityByAccessTokenWithExpiredToken(): void {
         $this->expectException(UnauthorizedHttpException::class);
         $this->expectExceptionMessage('Token expired');
 

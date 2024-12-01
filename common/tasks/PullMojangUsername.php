@@ -29,7 +29,7 @@ final class PullMojangUsername implements JobInterface {
      *
      * @throws \Exception
      */
-    public function execute($queue) {
+    public function execute($queue): void {
         Yii::$app->statsd->inc('queue.pullMojangUsername.attempt');
         /** @var MojangApi $mojangApi */
         $mojangApi = Yii::$container->get(MojangApi::class);

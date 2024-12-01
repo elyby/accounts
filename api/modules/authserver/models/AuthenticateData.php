@@ -7,19 +7,12 @@ use common\models\Account;
 
 final class AuthenticateData {
 
-    private Account $account;
-
-    private string $accessToken;
-
-    private string $clientToken;
-
-    private bool $requestUser;
-
-    public function __construct(Account $account, string $accessToken, string $clientToken, bool $requestUser) {
-        $this->account = $account;
-        $this->accessToken = $accessToken;
-        $this->clientToken = $clientToken;
-        $this->requestUser = $requestUser;
+    public function __construct(
+        private Account $account,
+        private string $accessToken,
+        private string $clientToken,
+        private bool $requestUser,
+    ) {
     }
 
     public function getResponseData(bool $includeAvailableProfiles = false): array {

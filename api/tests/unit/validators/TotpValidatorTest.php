@@ -11,7 +11,7 @@ use OTPHP\TOTP;
 class TotpValidatorTest extends TestCase {
     use ProtectedCaller;
 
-    public function testValidateValue() {
+    public function testValidateValue(): void {
         $account = new Account();
         $account->otp_secret = 'AAAA';
         $controlTotp = TOTP::create($account->otp_secret);
@@ -40,7 +40,7 @@ class TotpValidatorTest extends TestCase {
         $result = $this->callProtected($validator, 'validateValue', $controlTotp->now());
         $this->assertNull($result);
 
-        $at = function() {
+        $at = function(): int {
             return time() - 700;
         };
         $validator->timestamp = $at;

@@ -9,7 +9,7 @@ class Component extends \yii\base\Component {
 
     public $secret;
 
-    public function init() {
+    public function init(): void {
         if ($this->public === null) {
             throw new InvalidConfigException('Public is required');
         }

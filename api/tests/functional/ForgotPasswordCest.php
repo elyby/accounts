@@ -6,16 +6,13 @@ use api\tests\FunctionalTester;
 
 class ForgotPasswordCest {
 
-    /**
-     * @var AuthenticationRoute
-     */
-    private $route;
+    private AuthenticationRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new AuthenticationRoute($I);
     }
 
-    public function testWrongInput(FunctionalTester $I) {
+    public function testWrongInput(FunctionalTester $I): void {
         $I->wantTo('see reaction on invalid input');
 
         $this->route->forgotPassword();
@@ -35,19 +32,19 @@ class ForgotPasswordCest {
         ]);
     }
 
-    public function testForgotPasswordByEmail(FunctionalTester $I) {
+    public function testForgotPasswordByEmail(FunctionalTester $I): void {
         $I->wantTo('create new password recover request by passing email');
         $this->route->forgotPassword('admin@ely.by');
         $this->assertSuccessResponse($I, false);
     }
 
-    public function testForgotPasswordByUsername(FunctionalTester $I) {
+    public function testForgotPasswordByUsername(FunctionalTester $I): void {
         $I->wantTo('create new password recover request by passing username');
         $this->route->forgotPassword('Admin');
         $this->assertSuccessResponse($I, true);
     }
 
-    public function testDataForFrequencyError(FunctionalTester $I) {
+    public function testDataForFrequencyError(FunctionalTester $I): void {
         $I->wantTo('get info about time to repeat recover password request');
         $this->route->forgotPassword('Notch');
         $I->canSeeResponseContainsJson([

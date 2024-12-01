@@ -25,7 +25,7 @@ class DeleteAccountTest extends TestCase {
         ];
     }
 
-    public function testExecute() {
+    public function testExecute(): void {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'admin');
         $account->status = Account::STATUS_DELETED;
@@ -46,7 +46,7 @@ class DeleteAccountTest extends TestCase {
      * When a user restores his account back, the task doesn't removed
      * @throws \Throwable
      */
-    public function testExecuteOnNotDeletedAccount() {
+    public function testExecuteOnNotDeletedAccount(): void {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'admin');
         // By default, this account is active
@@ -66,7 +66,7 @@ class DeleteAccountTest extends TestCase {
      * For each deletion the job will be created, so assert, that job for restored deleting will not work
      * @throws \Throwable
      */
-    public function testExecuteOnDeletedAccountWhichWasRestoredAndThenDeletedAgain() {
+    public function testExecuteOnDeletedAccountWhichWasRestoredAndThenDeletedAgain(): void {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'admin');
         $account->status = Account::STATUS_DELETED;

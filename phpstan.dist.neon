@@ -22,3 +22,9 @@ parameters:
   level: 7
   yii2:
     config_path: ./common/config/config-phpstan.php
+  ignoreErrors:
+    # Controllers shouldn't specify the return type so strictly
+    - message: '#Method .+Controller::action.+\(\) return type has no value type specified in iterable type array\.$#'
+
+    # Individual actions shouldn't specify the return type so strictly
+    - message: '#Method .+Action::run\(\) return type has no value type specified in iterable type array\.$#'

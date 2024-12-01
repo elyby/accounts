@@ -14,12 +14,12 @@ use Yii;
 
 class AuthenticationResultTest extends TestCase {
 
-    public function testGetters() {
+    public function testGetters(): void {
         $token = (new JwtFacade())
             ->issue(
                 new Blake2b(),
                 Key\InMemory::plainText('MpQd6dDPiqnzFSWmpUfLy4+Rdls90Ca4C8e0QD0IxqY='),
-                static fn(BuilderInterface $builder, DateTimeImmutable $issuedAt) => $builder,
+                static fn(BuilderInterface $builder, DateTimeImmutable $issuedAt): BuilderInterface => $builder,
             );
         $model = new AuthenticationResult($token);
         $this->assertSame($token, $model->getToken());
@@ -29,7 +29,7 @@ class AuthenticationResultTest extends TestCase {
         $this->assertSame('refresh_token', $model->getRefreshToken());
     }
 
-    public function testGetAsResponse() {
+    public function testGetAsResponse(): void {
         $time = time() + 3600;
         $token = Yii::$app->tokens->create(['exp' => new DateTimeImmutable("@{$time}", null)]);
         $jwt = $token->toString();

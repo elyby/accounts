@@ -8,24 +8,21 @@ use yii\base\Model;
 
 class UsernameValidatorTest extends TestCase {
 
-    /**
-     * @var UsernameValidator
-     */
-    private $validator;
+    private UsernameValidator $validator;
 
-    public function _before() {
+    public function _before(): void {
         parent::_before();
         $this->validator = new UsernameValidator();
     }
 
-    public function testValidateTrimming() {
+    public function testValidateTrimming(): void {
         $model = $this->createModel("HereIsJohnny#\u{feff}"); // Zero width no-break space (U+FEFF)
         $this->validator->validateAttribute($model, 'field');
         $this->assertSame(['error.username_invalid'], $model->getErrors('field'));
         $this->assertSame('HereIsJohnny#', $model->field);
     }
 
-    public function testValidateAttributeRequired() {
+    public function testValidateAttributeRequired(): void {
         $model = $this->createModel('');
         $this->validator->validateAttribute($model, 'field');
         $this->assertSame(['error.username_required'], $model->getErrors('field'));
@@ -35,7 +32,7 @@ class UsernameValidatorTest extends TestCase {
         $this->assertNotSame(['error.username_required'], $model->getErrors('field'));
     }
 
-    public function testValidateAttributeLength() {
+    public function testValidateAttributeLength(): void {
         $model = $this->createModel('at');
         $this->validator->validateAttribute($model, 'field');
         $this->assertSame(['error.username_too_short'], $model->getErrors('field'));
@@ -51,7 +48,7 @@ class UsernameValidatorTest extends TestCase {
     }
 
     // TODO: rewrite this test with @provider usage
-    public function testValidateAttributePattern() {
+    public function testValidateAttributePattern(): void {
         $shouldBeValid = [
             'русский_ник', 'русский_ник_на_грани!', 'numbers1132', '*__*-Stars-*__*', '1-_.!$%^&*()[]',
             '[ESP]Эрик', 'Свят_помидор;', 'зроблена_ў_беларусі:)',
@@ -72,7 +69,7 @@ class UsernameValidatorTest extends TestCase {
         }
     }
 
-    public function testValidateAttributeUnique() {
+    public function testValidateAttributeUnique(): void {
         $this->tester->haveFixtures([
             'accounts' => AccountFixture::class,
         ]);

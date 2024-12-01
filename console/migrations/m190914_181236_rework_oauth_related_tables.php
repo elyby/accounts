@@ -5,7 +5,7 @@ use console\db\Migration;
 
 class m190914_181236_rework_oauth_related_tables extends Migration {
 
-    public function safeUp() {
+    public function safeUp(): void {
         $this->delete('oauth_sessions', ['NOT', ['owner_type' => 'user']]);
         $this->dropColumn('oauth_sessions', 'owner_type');
         $this->dropColumn('oauth_sessions', 'client_redirect_uri');
@@ -45,7 +45,7 @@ class m190914_181236_rework_oauth_related_tables extends Migration {
         ]);
     }
 
-    public function safeDown() {
+    public function safeDown(): void {
         $this->delete('oauth_clients', ['id' => 'unauthorized_minecraft_game_launcher']);
 
         $this->dropColumn('oauth_sessions', 'revoked_at');

@@ -6,21 +6,18 @@ namespace api\components\Tokens\Algorithms;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key;
+use Lcobucci\JWT\Signer\Key\InMemory;
 
-class HS256 implements AlgorithmInterface {
+final class HS256 implements AlgorithmInterface {
 
-    /**
-     * @var string
-     */
-    private $key;
+    private ?InMemory $loadedKey = null;
 
     /**
-     * @var Key|null
+     * @param non-empty-string $key
      */
-    private $loadedKey;
-
-    public function __construct(string $key) {
-        $this->key = $key;
+    public function __construct(
+        private readonly string $key,
+    ) {
     }
 
     public function getSigner(): Signer {
@@ -37,7 +34,7 @@ class HS256 implements AlgorithmInterface {
 
     private function loadKey(): Key {
         if ($this->loadedKey === null) {
-            $this->loadedKey = Key\InMemory::plainText($this->key);
+            $this->loadedKey = InMemory::plainText($this->key);
         }
 
         return $this->loadedKey;

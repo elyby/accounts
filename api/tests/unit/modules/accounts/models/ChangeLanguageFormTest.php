@@ -9,7 +9,7 @@ use common\models\Account;
 
 class ChangeLanguageFormTest extends TestCase {
 
-    public function testApplyLanguage() {
+    public function testApplyLanguage(): void {
         $account = $this->createPartialMock(Account::class, ['save']);
         $account->method('save')->willReturn(true);
 

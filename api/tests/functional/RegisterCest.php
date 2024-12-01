@@ -7,19 +7,16 @@ use Codeception\Example;
 
 class RegisterCest {
 
-    /**
-     * @var SignupRoute
-     */
-    private $route;
+    private SignupRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new SignupRoute($I);
     }
 
     /**
      * @dataProvider getSuccessInputExamples
      */
-    public function testUserCorrectRegistration(FunctionalTester $I, Example $example) {
+    public function testUserCorrectRegistration(FunctionalTester $I, Example $example): void {
         $I->wantTo($example->offsetGet('case'));
         $this->route->register($example->offsetGet('request'));
         $I->canSeeResponseCodeIs(200);
@@ -31,7 +28,7 @@ class RegisterCest {
     /**
      * @dataProvider getInvalidInputExamples
      */
-    public function testIncorrectRegistration(FunctionalTester $I, Example $example) {
+    public function testIncorrectRegistration(FunctionalTester $I, Example $example): void {
         $I->wantTo($example->offsetGet('case'));
         $this->route->register($example->offsetGet('request'));
         if ($example->offsetExists('canSee')) {

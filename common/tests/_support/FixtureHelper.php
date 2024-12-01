@@ -29,21 +29,21 @@ class FixtureHelper extends Module {
         getFixture as protected;
     }
 
-    public function _before(TestInterface $test) {
+    public function _before(TestInterface $test): void {
         $this->loadFixtures();
     }
 
-    public function _after(TestInterface $test) {
+    public function _after(TestInterface $test): void {
         $this->unloadFixtures();
     }
 
-    public function globalFixtures() {
+    public function globalFixtures(): array {
         return [
             InitDbFixture::class,
         ];
     }
 
-    public function fixtures() {
+    public function fixtures(): array {
         return [
             'accounts' => fixtures\AccountFixture::class,
             'accountSessions' => fixtures\AccountSessionFixture::class,

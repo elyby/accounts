@@ -8,15 +8,11 @@ use GuzzleHttp\ClientInterface;
 
 class Api {
 
-    private $baseUrl;
+    private ?\GuzzleHttp\ClientInterface $client = null;
 
-    /**
-     * @var ClientInterface
-     */
-    private $client;
-
-    public function __construct(string $baseUrl) {
-        $this->baseUrl = $baseUrl;
+    public function __construct(
+        private readonly string $baseUrl,
+    ) {
     }
 
     public function setClient(ClientInterface $client): void {

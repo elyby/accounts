@@ -18,7 +18,7 @@ class ErrorHandler extends \yii\web\ErrorHandler {
         return parent::convertExceptionToArray($exception);
     }
 
-    public function logException($exception) {
+    public function logException($exception): void {
         if ($exception instanceof AuthserverException) {
             Yii::error($exception, AuthserverException::class . ':' . $exception->getName());
         } elseif ($exception instanceof SessionServerException) {

@@ -12,7 +12,7 @@ class ConfirmNewEmailTest extends TestCase {
 
     private ConfirmNewEmail $template;
 
-    public function testParams() {
+    public function testParams(): void {
         $this->template->setUsername('mock-username');
         $this->template->setKey('mock-key');
         $params = $this->template->getParams();
@@ -23,20 +23,20 @@ class ConfirmNewEmailTest extends TestCase {
     /**
      * @dataProvider getInvalidCallsCases
      */
-    public function testInvalidCallOfParams(?string $username, ?string $key) {
+    public function testInvalidCallOfParams(?string $username, ?string $key): void {
         $this->expectException(InvalidCallException::class);
         $username !== null && $this->template->setUsername($username);
         $key !== null && $this->template->setKey($key);
         $this->template->getParams();
     }
 
-    public function getInvalidCallsCases() {
+    public function getInvalidCallsCases(): iterable {
         yield [null, null];
         yield ['value', null];
         yield [null, 'value'];
     }
 
-    protected function _before() {
+    protected function _before(): void {
         parent::_before();
         $mailer = $this->createMock(MailerInterface::class);
         $this->template = new ConfirmNewEmail($mailer);

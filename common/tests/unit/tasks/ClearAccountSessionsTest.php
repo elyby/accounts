@@ -21,7 +21,7 @@ class ClearAccountSessionsTest extends TestCase {
         ];
     }
 
-    public function testExecute() {
+    public function testExecute(): void {
         /** @var \common\models\Account $bannedAccount */
         $bannedAccount = $this->tester->grabFixture('accounts', 'banned-account');
         $task = new ClearAccountSessions($bannedAccount->id);

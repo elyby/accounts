@@ -10,10 +10,7 @@ use yii\queue\RetryableJobInterface;
 
 final class CreateWebHooksDeliveries implements RetryableJobInterface {
 
-    private NotificationInterface $notification;
-
-    public function __construct(NotificationInterface $notification) {
-        $this->notification = $notification;
+    public function __construct(private NotificationInterface $notification) {
     }
 
     public function getTtr(): int {

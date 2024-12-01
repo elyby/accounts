@@ -22,7 +22,7 @@ class CreateWebHooksDeliveriesTest extends TestCase {
         ];
     }
 
-    public function testExecute() {
+    public function testExecute(): void {
         $notification = new class implements NotificationInterface {
             public static function getType(): string {
                 return 'account.edit';
@@ -35,7 +35,7 @@ class CreateWebHooksDeliveriesTest extends TestCase {
 
         $queue = $this->createMock(Queue::class);
         $invocationCount = $this->exactly(2);
-        $queue->expects($invocationCount)->method('push')->willReturnCallback(function(DeliveryWebHook $task) use ($invocationCount) {
+        $queue->expects($invocationCount)->method('push')->willReturnCallback(function(DeliveryWebHook $task) use ($invocationCount): bool {
             if ($invocationCount->numberOfInvocations() === 1) {
                 $this->assertSame('account.edit', $task->type);
                 $this->assertSame(['key' => 'value'], $task->payloads);

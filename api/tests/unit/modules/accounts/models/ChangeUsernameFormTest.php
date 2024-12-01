@@ -18,7 +18,7 @@ class ChangeUsernameFormTest extends TestCase {
         ];
     }
 
-    public function testPerformAction() {
+    public function testPerformAction(): void {
         $model = new ChangeUsernameForm($this->getAccount(), [
             'password' => 'password_0',
             'username' => 'my_new_nickname',
@@ -32,7 +32,7 @@ class ChangeUsernameFormTest extends TestCase {
         $this->assertSame($job->username, 'my_new_nickname');
     }
 
-    public function testPerformActionWithTheSameUsername() {
+    public function testPerformActionWithTheSameUsername(): void {
         $account = $this->getAccount();
         $username = $account->username;
         $model = new ChangeUsernameForm($account, [
@@ -49,7 +49,7 @@ class ChangeUsernameFormTest extends TestCase {
         $this->assertNull($this->tester->grabLastQueuedJob());
     }
 
-    public function testPerformActionWithChangeCase() {
+    public function testPerformActionWithChangeCase(): void {
         $newUsername = mb_strtoupper($this->tester->grabFixture('accounts', 'admin')['username']);
         $model = new ChangeUsernameForm($this->getAccount(), [
             'password' => 'password_0',

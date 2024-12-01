@@ -27,7 +27,7 @@ class OptionsController extends Controller {
         ];
     }
 
-    public function actionIndex() {
+    public function actionIndex(): array {
         return [
             'reCaptchaPublicKey' => Yii::$app->reCaptcha->public,
         ];

@@ -22,7 +22,7 @@ class SendNewEmailVerificationFormTest extends TestCase {
         ];
     }
 
-    public function testCreateCode() {
+    public function testCreateCode(): void {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'admin');
         $model = new SendNewEmailVerificationForm($account);
@@ -34,7 +34,7 @@ class SendNewEmailVerificationFormTest extends TestCase {
         $this->assertNotNull(EmailActivation::findOne($activationModel->key));
     }
 
-    public function testSendNewEmailConfirmation() {
+    public function testSendNewEmailConfirmation(): void {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'account-with-change-email-init-state');
         /** @var string $key */

@@ -10,7 +10,7 @@ class Module extends \yii\base\Module implements BootstrapInterface {
     /**
      * @param \yii\base\Application $app the application currently running
      */
-    public function bootstrap($app) {
+    public function bootstrap($app): void {
         $app->getUrlManager()->addRules([
             '/internal/<controller>/<accountId>/<action>' => "{$this->id}/<controller>/<action>",
         ], false);

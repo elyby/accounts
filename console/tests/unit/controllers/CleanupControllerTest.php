@@ -23,7 +23,7 @@ class CleanupControllerTest extends TestCase {
         ];
     }
 
-    public function testActionEmailKeys() {
+    public function testActionEmailKeys(): void {
         /** @var EmailActivation $expiredConfirmation */
         $expiredConfirmation = $this->tester->grabFixture('emailActivations', 'deeplyExpiredConfirmation');
 
@@ -33,7 +33,7 @@ class CleanupControllerTest extends TestCase {
         $this->tester->cantSeeRecord(EmailActivation::class, ['key' => $expiredConfirmation->key]);
     }
 
-    public function testActionWebSessions() {
+    public function testActionWebSessions(): void {
         /** @var AccountSession $expiredSession */
         $expiredSession = $this->tester->grabFixture('accountsSessions', 'very-expired-session');
         /** @var AccountSession $notRefreshedSession */

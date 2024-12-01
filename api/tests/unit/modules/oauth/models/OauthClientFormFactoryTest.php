@@ -12,7 +12,7 @@ use common\models\OauthClient;
 
 class OauthClientFormFactoryTest extends TestCase {
 
-    public function testCreate() {
+    public function testCreate(): void {
         $client = new OauthClient();
         $client->type = OauthClient::TYPE_APPLICATION;
         $client->name = 'Application name';
@@ -40,7 +40,7 @@ class OauthClientFormFactoryTest extends TestCase {
         $this->assertSame('localhost:12345', $requestForm->minecraftServerIp);
     }
 
-    public function testCreateUnknownType() {
+    public function testCreateUnknownType(): void {
         $this->expectException(UnsupportedOauthClientType::class);
 
         $client = new OauthClient();

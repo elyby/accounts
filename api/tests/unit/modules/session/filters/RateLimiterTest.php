@@ -23,7 +23,7 @@ class RateLimiterTest extends TestCase {
 
     private Action&MockObject $action;
 
-    public function testCheckRateLimiterWithOldAuthserver() {
+    public function testCheckRateLimiterWithOldAuthserver(): void {
         /** @var Connection|\PHPUnit\Framework\MockObject\MockObject $redis */
         $redis = $this->getMockBuilder(Connection::class)
             ->onlyMethods(['executeCommand'])
@@ -48,7 +48,7 @@ class RateLimiterTest extends TestCase {
         $filter->checkRateLimit($this->user, new Request(), $this->response, $this->action);
     }
 
-    public function testCheckRateLimiterWithValidServerId() {
+    public function testCheckRateLimiterWithValidServerId(): void {
         /** @var Connection|\PHPUnit\Framework\MockObject\MockObject $redis */
         $redis = $this->getMockBuilder(Connection::class)
             ->onlyMethods(['executeCommand'])
@@ -73,7 +73,7 @@ class RateLimiterTest extends TestCase {
         $filter->checkRateLimit($this->user, $request, $this->response, $this->action);
     }
 
-    public function testCheckRateLimiter() {
+    public function testCheckRateLimiter(): void {
         $this->expectException(TooManyRequestsHttpException::class);
 
         /** @var Connection|\PHPUnit\Framework\MockObject\MockObject $redis */

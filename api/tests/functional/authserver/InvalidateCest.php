@@ -8,7 +8,7 @@ use Ramsey\Uuid\Uuid;
 
 class InvalidateCest {
 
-    public function invalidate(AuthserverSteps $I) {
+    public function invalidate(AuthserverSteps $I): void {
         $I->wantTo('invalidate my token');
         [$accessToken, $clientToken] = $I->amAuthenticated();
         $I->sendPOST('/api/authserver/authentication/invalidate', [
@@ -19,7 +19,7 @@ class InvalidateCest {
         $I->canSeeResponseEquals('');
     }
 
-    public function wrongArguments(AuthserverSteps $I) {
+    public function wrongArguments(AuthserverSteps $I): void {
         $I->wantTo('get error on wrong amount of arguments');
         $I->sendPOST('/api/authserver/authentication/invalidate', [
             'key' => 'value',
@@ -32,7 +32,7 @@ class InvalidateCest {
         ]);
     }
 
-    public function wrongAccessTokenOrClientToken(AuthserverSteps $I) {
+    public function wrongAccessTokenOrClientToken(AuthserverSteps $I): void {
         $I->wantTo('invalidate by wrong client and access token');
         $I->sendPOST('/api/authserver/authentication/invalidate', [
             'accessToken' => Uuid::uuid4()->toString(),

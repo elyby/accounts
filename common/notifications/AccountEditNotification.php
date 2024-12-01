@@ -7,13 +7,10 @@ use common\models\Account;
 
 final class AccountEditNotification implements NotificationInterface {
 
-    private Account $account;
-
-    private array $changedAttributes;
-
-    public function __construct(Account $account, array $changedAttributes) {
-        $this->account = $account;
-        $this->changedAttributes = $changedAttributes;
+    public function __construct(
+        private Account $account,
+        private array $changedAttributes,
+    ) {
     }
 
     public static function getType(): string {

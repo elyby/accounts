@@ -31,7 +31,7 @@ class RestoreAccountFormTest extends TestCase {
         Yii::$app->set('queue', $this->queue);
     }
 
-    public function testPerformAction() {
+    public function testPerformAction(): void {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'deleted-account');
         $this->queue
@@ -53,7 +53,7 @@ class RestoreAccountFormTest extends TestCase {
         $this->assertNull($account->deleted_at);
     }
 
-    public function testPerformActionForNotDeletedAccount() {
+    public function testPerformActionForNotDeletedAccount(): void {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'admin');
         $model = new RestoreAccountForm($account);

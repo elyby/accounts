@@ -34,7 +34,7 @@ class ElyDecorator implements DecoratorInterface {
         $leftPadding,
         $topPadding,
         $multiple,
-    ) {
+    ): void {
         if (!$renderer instanceof Svg) {
             throw new InvalidArgumentException('$renderer must by instance of ' . Svg::class);
         }
