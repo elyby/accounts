@@ -7,12 +7,12 @@ use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\authentication\ForgotPasswordForm;
 use api\tests\unit\TestCase;
 use common\models\Account;
-use common\models\confirmations\ForgotPassword;
 use common\models\EmailActivation;
 use common\tasks\SendPasswordRecoveryEmail;
 use common\tests\fixtures\AccountFixture;
 use common\tests\fixtures\EmailActivationFixture;
 use GuzzleHttp\ClientInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use Yii;
 
 class ForgotPasswordFormTest extends TestCase {
@@ -57,25 +57,23 @@ class ForgotPasswordFormTest extends TestCase {
         $this->assertEmpty($model->getErrors('login'), 'empty errors if login is exists');
     }
 
-    public function testValidateFrequency() {
-        $model = $this->createModel([
-            'login' => $this->tester->grabFixture('accounts', 'admin')['username'],
-            'key' => $this->tester->grabFixture('emailActivations', 'freshPasswordRecovery')['key'],
-        ]);
+    public function testValidateFrequency(): void {
+        $model = $this->createModel();
+        $model->login = $this->tester->grabFixture('accounts', 'admin')['username'];
+        $model->method('getEmailActivation')->willReturn($this->tester->grabFixture('emailActivations', 'freshPasswordRecovery'));
+
         $model->validateFrequency('login');
         $this->assertSame(['error.recently_sent_message'], $model->getErrors('login'), 'error.account_not_activated if recently was message');
 
-        $model = $this->createModel([
-            'login' => $this->tester->grabFixture('accounts', 'admin')['username'],
-            'key' => $this->tester->grabFixture('emailActivations', 'oldPasswordRecovery')['key'],
-        ]);
+        $model = $this->createModel();
+        $model->login = $this->tester->grabFixture('accounts', 'admin')['username'];
+        $model->method('getEmailActivation')->willReturn($this->tester->grabFixture('emailActivations', 'oldPasswordRecovery'));
         $model->validateFrequency('login');
         $this->assertEmpty($model->getErrors('login'), 'empty errors if email was sent a long time ago');
 
-        $model = $this->createModel([
-            'login' => $this->tester->grabFixture('accounts', 'admin')['username'],
-            'key' => 'invalid-key',
-        ]);
+        $model = $this->createModel();
+        $model->login = $this->tester->grabFixture('accounts', 'admin')['username'];
+        $model->method('getEmailActivation')->willReturn(null);
         $model->validateFrequency('login');
         $this->assertEmpty($model->getErrors('login'), 'empty errors if previous confirmation model not founded');
     }
@@ -119,18 +117,8 @@ class ForgotPasswordFormTest extends TestCase {
         $this->assertSame('http://localhost/recover-password/' . $activation->key, $job->link);
     }
 
-    /**
-     * @param array $params
-     * @return ForgotPasswordForm
-     */
-    private function createModel(array $params = []) {
-        return new class($params) extends ForgotPasswordForm {
-            public $key;
-
-            public function getEmailActivation(): ?ForgotPassword {
-                return EmailActivation::findOne(['key' => $this->key]);
-            }
-        };
+    private function createModel(): ForgotPasswordForm&MockObject {
+        return $this->createPartialMock(ForgotPasswordForm::class, ['getEmailActivation']);
     }
 
 }

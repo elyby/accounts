@@ -37,6 +37,9 @@ class EmailActivation extends ActiveRecord {
         return 'email_activations';
     }
 
+    /**
+     * @return array<self::TYPE_*, class-string<\common\models\EmailActivation>>
+     */
     public static function getClassMap(): array {
         return [
             self::TYPE_REGISTRATION_EMAIL_CONFIRMATION => confirmations\RegistrationConfirmation::class,
@@ -46,18 +49,16 @@ class EmailActivation extends ActiveRecord {
         ];
     }
 
-    public static function instantiate($row) {
+    public static function instantiate($row): static {
         $type = ArrayHelper::getValue($row, 'type');
         if ($type === null) {
             return parent::instantiate($row);
         }
 
-        $classMap = self::getClassMap();
-        if (!isset($classMap[$type])) {
-            throw new InvalidConfigException('Unexpected type');
-        }
+        $className = self::getClassMap()[$type] ?? throw new InvalidConfigException('Unexpected type');
 
-        return new $classMap[$type]();
+        // @phpstan-ignore return.type (the type is correct, but it seems like it must be fixed within Yii2-extension)
+        return new $className();
     }
 
     public static function find(): EmailActivationQuery {

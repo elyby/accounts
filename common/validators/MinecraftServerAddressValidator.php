@@ -7,7 +7,7 @@ use yii\validators\Validator;
 
 class MinecraftServerAddressValidator extends Validator {
 
-    protected function validateValue($value) {
+    protected function validateValue($value): ?array {
         // we will add minecraft protocol to help parse_url understand all another parts
         $urlParts = parse_url('minecraft://' . $value);
         $cnt = count($urlParts);
@@ -15,7 +15,7 @@ class MinecraftServerAddressValidator extends Validator {
         if (($cnt === 3 && isset($urlParts['host'], $urlParts['port']))
          || ($cnt === 2 && isset($urlParts['host']))
         ) {
-            return;
+            return null;
         }
 
         return [$this->message, []];

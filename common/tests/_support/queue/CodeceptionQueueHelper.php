@@ -4,19 +4,18 @@ namespace common\tests\_support\queue;
 use Codeception\Exception\ModuleException;
 use Codeception\Module;
 use Codeception\Module\Yii2;
+use yii\queue\JobInterface;
 
 class CodeceptionQueueHelper extends Module {
 
     /**
      * Returns last sent message
-     *
-     * @return \yii\queue\JobInterface|null
      */
-    public function grabLastQueuedJob() {
+    public function grabLastQueuedJob(): ?JobInterface {
         $messages = $this->grabQueueJobs();
         $last = end($messages);
         if ($last === false) {
-            return;
+            return null;
         }
 
         return $last;

@@ -77,9 +77,10 @@ class SendEmailVerificationForm extends AccountActionForm {
      * Including checking for the confirmation of the new E-mail type, because when you go to this step,
      * the activation of the previous step is removed.
      *
-     * @return CurrentEmailConfirmation|\common\models\confirmations\NewEmailConfirmation
+     * @return \common\models\confirmations\CurrentEmailConfirmation|\common\models\confirmations\NewEmailConfirmation
      */
     public function getEmailActivation(): ?EmailActivation {
+        // @phpstan-ignore return.type
         return $this->getAccount()
             ->getEmailActivations()
             ->withType(

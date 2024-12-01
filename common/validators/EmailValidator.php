@@ -15,10 +15,10 @@ use yii\validators\Validator;
 final class EmailValidator extends Validator {
 
     /**
-     * @var callable(): int the function must return the account id for which the current validation is being performed.
+     * @phpstan-var \Closure(): int the function must return the account id for which the current validation is being performed.
      * Allows you to skip the email uniqueness check for the current account.
      */
-    public $accountCallback;
+    public ?\Closure $accountCallback = null;
 
     public $skipOnEmpty = false;
 

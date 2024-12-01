@@ -30,14 +30,12 @@ class AccountTest extends TestCase {
         $model = new Account();
         $model->email = 'erick@skrauch.net';
         $model->password_hash = '2cfdb29eb354af970865a923335d17d9'; // 12345678
-        $model->password_hash_strategy = null; // To be sure it's not set
         $this->assertTrue($model->validatePassword('12345678', Account::PASS_HASH_STRATEGY_OLD_ELY), 'valid password should pass');
         $this->assertFalse($model->validatePassword('87654321', Account::PASS_HASH_STRATEGY_OLD_ELY), 'invalid password should fail');
 
         // Modern hash algorithm should also work
         $model = new Account();
         $model->password_hash = '$2y$04$N0q8DaHzlYILCnLYrpZfEeWKEqkPZzbawiS07GbSr/.xbRNweSLU6'; // 12345678
-        $model->password_hash_strategy = null; // To be sure it's not set
         $this->assertTrue($model->validatePassword('12345678', Account::PASS_HASH_STRATEGY_YII2), 'valid password should pass');
         $this->assertFalse($model->validatePassword('87654321', Account::PASS_HASH_STRATEGY_YII2), 'invalid password should fail');
 
@@ -71,7 +69,7 @@ class AccountTest extends TestCase {
 
     public function testGetProfileLink() {
         $model = new Account();
-        $model->id = '123';
+        $model->id = 123;
         $this->assertSame('http://ely.by/u123', $model->getProfileLink());
     }
 

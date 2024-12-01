@@ -14,6 +14,7 @@ trait ExtendedPHPMock {
     }
 
     public function getFunctionMock($namespace, $name): MockObjectProxy {
+        // @phpstan-ignore return.type
         return $this->getOriginalFunctionMock(self::getClassNamespace($namespace), $name);
     }
 

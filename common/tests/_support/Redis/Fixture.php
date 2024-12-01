@@ -16,10 +16,7 @@ class Fixture extends BaseFixture {
     use ArrayAccessTrait;
     use FileFixtureTrait;
 
-    /**
-     * @var Connection
-     */
-    public $redis = 'redis';
+    public string|Connection $redis = 'redis';
 
     public $keysPrefix = '';
 
@@ -27,7 +24,7 @@ class Fixture extends BaseFixture {
 
     public $data = [];
 
-    public function init() {
+    public function init(): void {
         parent::init();
         $this->redis = Instance::ensure($this->redis, Connection::class);
     }

@@ -90,6 +90,7 @@ class RepeatAccountActivationForm extends ApiForm {
     }
 
     public function getActivation(): ?RegistrationConfirmation {
+        // @phpstan-ignore return.type
         return $this->getAccount()
             ->getEmailActivations()
             ->withType(EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION)

@@ -90,6 +90,7 @@ class ForgotPasswordForm extends ApiForm {
             return null;
         }
 
+        // @phpstan-ignore return.type
         return $account->getEmailActivations()->withType(EmailActivation::TYPE_FORGOT_PASSWORD_KEY)->one();
     }
 

@@ -10,27 +10,16 @@ use Yii;
 use yii\base\NotSupportedException;
 use yii\web\UnauthorizedHttpException;
 
-final class LegacyOAuth2Identity implements IdentityInterface {
+readonly class LegacyOAuth2Identity implements IdentityInterface {
 
     /**
-     * @var string
+     * @param string[] $scopes
      */
-    private $accessToken;
-
-    /**
-     * @var string
-     */
-    private $sessionId;
-
-    /**
-     * @var string[]
-     */
-    private $scopes;
-
-    private function __construct(string $accessToken, int $sessionId, array $scopes) {
-        $this->accessToken = $accessToken;
-        $this->sessionId = $sessionId;
-        $this->scopes = $scopes;
+    private function __construct(
+        private string $accessToken,
+        private int $sessionId,
+        private array $scopes,
+    ) {
     }
 
     /**

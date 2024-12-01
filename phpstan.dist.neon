@@ -16,6 +16,6 @@ parameters:
       - api/tests/_data
       - common/tests/_data
       - console/tests/_data
-  level: 2
+  level: 3
   yii2:
     config_path: ./common/config/config-phpstan.php

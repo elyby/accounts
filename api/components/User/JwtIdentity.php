@@ -18,7 +18,7 @@ use Yii;
 use yii\base\NotSupportedException;
 use yii\web\UnauthorizedHttpException;
 
-final class JwtIdentity implements IdentityInterface {
+class JwtIdentity implements IdentityInterface {
 
     private ?TokenReader $reader = null;
 

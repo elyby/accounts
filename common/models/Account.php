@@ -30,7 +30,7 @@ use const common\LATEST_RULES_VERSION;
  * @property int|null    $rules_agreement_version
  * @property string|null $registration_ip
  * @property string|null $otp_secret
- * @property int         $is_otp_enabled
+ * @property bool        $is_otp_enabled
  * @property int         $created_at
  * @property int         $updated_at
  * @property int         $password_changed_at

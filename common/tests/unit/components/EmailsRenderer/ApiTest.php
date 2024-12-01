@@ -25,9 +25,14 @@ class ApiTest extends TestCase {
     private $mockHandler;
 
     /**
-     * @var \Psr\Http\Message\RequestInterface[]
+     * @var array<array{
+     *     request: \Psr\Http\Message\RequestInterface,
+     *     response: \Psr\Http\Message\ResponseInterface,
+     *     error: string|null,
+     *     options: array<mixed>,
+     * }>
      */
-    private $history;
+    private array $history = [];
 
     protected function setUp(): void {
         parent::setUp();
