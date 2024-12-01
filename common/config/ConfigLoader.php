@@ -5,11 +5,11 @@ namespace common\config;
 
 use yii\helpers\ArrayHelper;
 
-class ConfigLoader {
+final class ConfigLoader {
 
-    private const ROOT_PATH = __DIR__ . '/../..';
+    private const string ROOT_PATH = __DIR__ . '/../..';
 
-    private $application;
+    private string $application;
 
     public function __construct(string $application) {
         $this->application = $application;
@@ -54,11 +54,15 @@ class ConfigLoader {
             $toMerge[] = require $path;
         }
 
+        // @phpstan-ignore arguments.count (Should be covered by Yii2 extension)
         return ArrayHelper::merge(...$toMerge);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public static function load(string $application): array {
-        return (new static($application))->getConfig();
+        return (new self($application))->getConfig();
     }
 
 }

@@ -13,12 +13,12 @@ use Webmozart\Assert\Assert;
 use Yii;
 use yii\queue\JobInterface;
 
-class PullMojangUsername implements JobInterface {
+final class PullMojangUsername implements JobInterface {
 
     public $username;
 
     public static function createFromAccount(Account $account): self {
-        $result = new static();
+        $result = new self();
         $result->username = $account->username;
 
         return $result;

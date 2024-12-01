@@ -10,7 +10,7 @@ use Yii;
 use yii\base\NotSupportedException;
 use yii\web\UnauthorizedHttpException;
 
-class LegacyOAuth2Identity implements IdentityInterface {
+final class LegacyOAuth2Identity implements IdentityInterface {
 
     /**
      * @var string
@@ -36,7 +36,6 @@ class LegacyOAuth2Identity implements IdentityInterface {
     /**
      * @inheritdoc
      * @throws UnauthorizedHttpException
-     * @return IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null): IdentityInterface {
         $tokenParams = self::findRecordOnLegacyStorage($token);
@@ -48,16 +47,11 @@ class LegacyOAuth2Identity implements IdentityInterface {
             throw new UnauthorizedHttpException('Token expired');
         }
 
-        return new static($token, $tokenParams['session_id'], $tokenParams['scopes']);
+        return new self($token, $tokenParams['session_id'], $tokenParams['scopes']);
     }
 
     public function getAccount(): ?Account {
-        $session = $this->getSession();
-        if ($session === null) {
-            return null;
-        }
-
-        return $session->account;
+        return $this->getSession()?->account;
     }
 
     /**

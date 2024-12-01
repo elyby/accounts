@@ -17,6 +17,9 @@ composer.phar
 .php-cs-fixer.php
 .php-cs-fixer.cache
 
+# PHPStan
+phpstan.neon
+
 # Codeception
 codeception.yml
 */codeception.yml

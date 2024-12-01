@@ -1,0 +1,21 @@
+# https://github.com/phpstan/phpstan#configuration
+parameters:
+  scanFiles:
+    - vendor/yiisoft/yii2/Yii.php
+    # - vendor/yiisoft/yii2-dev/framework/Yii.php
+  paths:
+    - api
+    - common
+    - console
+  excludePaths:
+    analyse:
+      - api/tests/_support/_generated
+      - common/tests/_support/_generated
+      - console/tests/_support/_generated
+    analyseAndScan:
+      - api/tests/_data
+      - common/tests/_data
+      - console/tests/_data
+  level: 1
+  yii2:
+    config_path: ./common/config/config.php

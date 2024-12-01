@@ -25,8 +25,8 @@ class Queue extends BaseQueue {
         return $this->messages;
     }
 
-    protected function pushMessage($message, $ttr, $delay, $priority) {
-        // This function is abstract, but will be not called
+    protected function pushMessage($message, $ttr, $delay, $priority): string {
+        return '';
     }
 
 }
