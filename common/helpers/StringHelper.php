@@ -26,8 +26,9 @@ class StringHelper {
 
     public static function isUuid(string $uuid): bool {
         try {
-            Uuid::fromString($uuid);
-        } catch (\InvalidArgumentException $e) {
+            /** @throws \InvalidArgumentException */
+            Uuid::fromString($uuid); // @phpstan-ignore staticMethod.resultUnused (we don't care about the result, we need only an exception)
+        } catch (\InvalidArgumentException) {
             return false;
         }
 

@@ -41,7 +41,7 @@ final class ES256 implements AlgorithmInterface {
     public function getPublicKey(): Key {
         if ($this->publicKey === null) {
             $privateKey = $this->getPrivateKey();
-            $privateKeyOpenSSL = openssl_pkey_get_private($privateKey->contents(), $privateKey->passphrase() ?? '');
+            $privateKeyOpenSSL = openssl_pkey_get_private($privateKey->contents(), $privateKey->passphrase());
             $publicPem = openssl_pkey_get_details($privateKeyOpenSSL)['key'];
             $this->publicKey = InMemory::plainText($publicPem);
         }

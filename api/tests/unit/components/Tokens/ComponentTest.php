@@ -86,6 +86,9 @@ class ComponentTest extends TestCase {
         $this->component = Yii::$app->tokens;
     }
 
+    /**
+     * @phpstan-ignore method.unused (will become used once tests be fixed)
+     */
     private function assertValidParsedToken(UnencryptedToken $token, string $expectedAlg): void {
         $this->assertSame($expectedAlg, $token->headers()->get('alg'));
         $this->assertSame(1564527476, $token->claims()->get('iat')->getTimestamp());

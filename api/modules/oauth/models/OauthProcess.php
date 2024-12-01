@@ -96,17 +96,12 @@ class OauthProcess {
             $canBeAutoApproved = $this->canBeAutoApproved($account, $client, $authRequest);
             $acceptParam = ((array)$request->getParsedBody())['accept'] ?? null;
             if ($acceptParam === null && !$canBeAutoApproved) {
+                Yii::$app->statsd->inc('oauth.complete.approve_required');
                 throw $this->createAcceptRequiredException();
             }
 
-            Yii::$app->statsd->inc('oauth.complete.approve_required');
-
-            if ($acceptParam === null && $canBeAutoApproved) {
-                $approved = true;
-            } else {
-                $approved = in_array($acceptParam, [1, '1', true, 'true'], true);
-            }
-
+            // At this point if the $acceptParam is an empty, then the application can be auto approved
+            $approved = $acceptParam === null || in_array($acceptParam, [1, '1', true, 'true'], true);
             if ($approved) {
                 $this->storeOauthSession($account, $client, $authRequest);
             }

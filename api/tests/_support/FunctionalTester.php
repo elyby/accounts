@@ -13,7 +13,7 @@ class FunctionalTester extends Actor {
     use FunctionalTesterActions;
 
     public function amAuthenticated(string $asUsername = 'admin'): mixed {
-        /** @var Account $account */
+        /** @var Account|null $account */
         $account = Account::findOne(['username' => $asUsername]);
         if ($account === null) {
             throw new InvalidArgumentException("Cannot find account with username \"{$asUsername}\"");

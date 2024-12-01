@@ -117,6 +117,13 @@ class UsernamesToUuidsCest {
         ]);
     }
 
+    public function bulkProfilesEndpoints(): array {
+        return [
+            ['/api/mojang/profiles'],
+            ['/api/mojang/services/minecraft/profile/lookup/bulk/byname'],
+        ];
+    }
+
     private function validateFewValidUsernames(FunctionalTester $I): void {
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
@@ -134,13 +141,6 @@ class UsernamesToUuidsCest {
                 'name' => 'Notch',
             ],
         ]);
-    }
-
-    private function bulkProfilesEndpoints(): array {
-        return [
-            ['/api/mojang/profiles'],
-            ['/api/mojang/services/minecraft/profile/lookup/bulk/byname'],
-        ];
     }
 
 }

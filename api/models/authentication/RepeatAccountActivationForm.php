@@ -16,11 +16,9 @@ use Yii;
 
 class RepeatAccountActivationForm extends ApiForm {
 
-    public $captcha;
+    public mixed $captcha = null;
 
-    public $email;
-
-    private $emailActivation;
+    public mixed $email = null;
 
     public function rules(): array {
         return [
@@ -73,8 +71,6 @@ class RepeatAccountActivationForm extends ApiForm {
         $activation->account_id = $account->id;
         $activation->key = UserFriendlyRandomKey::make();
         Assert::true($activation->save(), 'Unable save email-activation model.');
-
-        $this->emailActivation = $activation;
 
         Yii::$app->queue->push(SendRegistrationEmail::createFromConfirmation($activation));
 

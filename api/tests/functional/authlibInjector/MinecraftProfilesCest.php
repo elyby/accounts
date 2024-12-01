@@ -109,6 +109,13 @@ final class MinecraftProfilesCest {
         ]);
     }
 
+    public function bulkProfilesEndpoints(): array {
+        return [
+            ['/api/authlib-injector/api/profiles/minecraft'],
+            ['/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname'],
+        ];
+    }
+
     private function validateFewValidUsernames(FunctionalTester $I): void {
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
@@ -126,13 +133,6 @@ final class MinecraftProfilesCest {
                 'name' => 'Notch',
             ],
         ]);
-    }
-
-    private function bulkProfilesEndpoints(): array {
-        return [
-            ['/api/authlib-injector/api/profiles/minecraft'],
-            ['/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname'],
-        ];
     }
 
 }
