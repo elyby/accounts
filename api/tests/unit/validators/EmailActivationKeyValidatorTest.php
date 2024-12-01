@@ -14,7 +14,6 @@ class EmailActivationKeyValidatorTest extends TestCase {
     use ProtectedCaller;
 
     public function testValidateAttribute() {
-        /** @var Model $model */
         $model = new class extends Model {
             public $key;
         };

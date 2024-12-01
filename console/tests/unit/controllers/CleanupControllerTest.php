@@ -48,9 +48,8 @@ class CleanupControllerTest extends TestCase {
         $this->assertSame($totalSessionsCount - 2, (int)AccountSession::find()->count());
     }
 
-    public function testActionOauthClients() {
-        /** @var OauthClient $deletedClient */
-        $totalClientsCount = OauthClient::find()->includeDeleted()->count();
+    public function testActionOauthClients(): void {
+        $totalClientsCount = (int)OauthClient::find()->includeDeleted()->count();
 
         $controller = new CleanupController('cleanup', Yii::$app);
         $this->assertSame(0, $controller->actionOauthClients());

@@ -9,7 +9,7 @@ use League\OAuth2\Server\Entities\Traits\EntityTrait;
 use League\OAuth2\Server\Entities\Traits\TokenEntityTrait;
 use Yii;
 
-class AccessTokenEntity implements AccessTokenEntityInterface {
+final class AccessTokenEntity implements AccessTokenEntityInterface {
     use EntityTrait;
     use TokenEntityTrait;
 

@@ -3,15 +3,14 @@ declare(strict_types=1);
 
 namespace api\components\Tokens;
 
-use Lcobucci\JWT\Token;
+use Lcobucci\JWT\UnencryptedToken;
 use Yii;
 
-final class TokenReader {
+final readonly class TokenReader {
 
-    private Token $token;
-
-    public function __construct(Token $token) {
-        $this->token = $token;
+    public function __construct(
+        private UnencryptedToken $token,
+    ) {
     }
 
     public function getAccountId(): ?int {

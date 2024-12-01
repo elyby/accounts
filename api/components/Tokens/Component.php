@@ -12,6 +12,7 @@ use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Token\Builder;
 use Lcobucci\JWT\Token\Parser;
 use Lcobucci\JWT\Token\RegisteredClaims;
+use Lcobucci\JWT\UnencryptedToken;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use Lcobucci\JWT\Validation\Validator;
 use ParagonIE\ConstantTime\Base64UrlSafe;
@@ -59,7 +60,7 @@ class Component extends BaseComponent {
      *
      * @throws \api\components\Tokens\AlgorithmIsNotDefinedException
      */
-    public function create(array $payloads = [], array $headers = []): Token {
+    public function create(array $payloads = [], array $headers = []): UnencryptedToken {
         $now = Carbon::now();
         $builder = (new Builder(new JoseEncoder(), ChainedFormatter::default()))->issuedAt($now->toDateTimeImmutable());
         if (isset($payloads['sub'])) {

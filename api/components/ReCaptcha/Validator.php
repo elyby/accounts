@@ -43,7 +43,7 @@ class Validator extends \yii\validators\Validator {
     /**
      * @inheritdoc
      */
-    protected function validateValue($value) {
+    protected function validateValue($value): ?array {
         if (empty($value)) {
             return [$this->requiredMessage, []];
         }
@@ -72,6 +72,8 @@ class Validator extends \yii\validators\Validator {
         if (!$data['success']) {
             return [$this->message, []];
         }
+
+        return null;
     }
 
     /**

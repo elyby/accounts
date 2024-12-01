@@ -5,7 +5,6 @@ namespace common\tests\helpers;
 
 use phpmock\phpunit\MockObjectProxy;
 use phpmock\phpunit\PHPMock;
-use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionClass;
 
 trait ExtendedPHPMock {
@@ -14,12 +13,12 @@ trait ExtendedPHPMock {
         defineFunctionMock as private defineOriginalFunctionMock;
     }
 
-    public function getFunctionMock($namespace, $name): MockObjectProxy|MockObject {
-        return $this->getOriginalFunctionMock(static::getClassNamespace($namespace), $name);
+    public function getFunctionMock($namespace, $name): MockObjectProxy {
+        return $this->getOriginalFunctionMock(self::getClassNamespace($namespace), $name);
     }
 
     public static function defineFunctionMock($namespace, $name): void {
-        static::defineOriginalFunctionMock(static::getClassNamespace($namespace), $name);
+        self::defineOriginalFunctionMock(self::getClassNamespace($namespace), $name);
     }
 
     private static function getClassNamespace(string $className): string {

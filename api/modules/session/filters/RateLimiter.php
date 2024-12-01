@@ -74,7 +74,6 @@ class RateLimiter extends \yii\filters\RateLimiter {
         }
 
         if ($this->server === null) {
-            /** @var OauthClient|null $server */
             $this->server = OauthClient::findOne($serverId);
             // TODO: убедится, что это сервер
             if ($this->server === null) {

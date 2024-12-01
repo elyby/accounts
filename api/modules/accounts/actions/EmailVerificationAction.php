@@ -8,8 +8,11 @@ use common\helpers\Error as E;
 class EmailVerificationAction extends BaseAccountAction {
 
     /**
-     * @param SendEmailVerificationForm|AccountActionForm $model
-     * @return array
+     * @param SendEmailVerificationForm $model
+     *
+     * @return array{
+     *     canRepeatIn?: int,
+     * }
      */
     public function getFailedResultData(AccountActionForm $model): array {
         $emailError = $model->getFirstError('email');

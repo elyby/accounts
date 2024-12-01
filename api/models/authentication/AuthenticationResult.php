@@ -4,26 +4,17 @@ declare(strict_types=1);
 namespace api\models\authentication;
 
 use DateTimeImmutable;
-use Lcobucci\JWT\Token;
+use Lcobucci\JWT\UnencryptedToken;
 
-class AuthenticationResult {
+final readonly class AuthenticationResult {
 
-    /**
-     * @var Token
-     */
-    private Token $token;
-
-    /**
-     * @var string|null
-     */
-    private ?string $refreshToken;
-
-    public function __construct(Token $token, string $refreshToken = null) {
-        $this->token = $token;
-        $this->refreshToken = $refreshToken;
+    public function __construct(
+        private UnencryptedToken $token,
+        private ?string $refreshToken = null,
+    ) {
     }
 
-    public function getToken(): Token {
+    public function getToken(): UnencryptedToken {
         return $this->token;
     }
 

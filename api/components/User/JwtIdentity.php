@@ -11,19 +11,19 @@ use common\models\OauthClient;
 use common\models\OauthSession;
 use DateTimeImmutable;
 use Exception;
-use Lcobucci\JWT\Token;
+use Lcobucci\JWT\UnencryptedToken;
 use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
 use Lcobucci\JWT\Validation\Validator;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\web\UnauthorizedHttpException;
 
-class JwtIdentity implements IdentityInterface {
+final class JwtIdentity implements IdentityInterface {
 
     private ?TokenReader $reader = null;
 
     private function __construct(
-        private readonly Token $token,
+        private readonly UnencryptedToken $token,
     ) {
     }
 
@@ -69,7 +69,7 @@ class JwtIdentity implements IdentityInterface {
         return new self($parsedToken);
     }
 
-    public function getToken(): Token {
+    public function getToken(): UnencryptedToken {
         return $this->token;
     }
 

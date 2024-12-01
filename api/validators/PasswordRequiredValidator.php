@@ -29,9 +29,9 @@ class PasswordRequiredValidator extends Validator {
         $this->user = Instance::ensure($this->user, User::class);
     }
 
-    protected function validateValue($value) {
+    protected function validateValue($value): ?array {
         if ($this->user->can(P::ESCAPE_IDENTITY_VERIFICATION)) {
-            return;
+            return null;
         }
 
         if (empty($value)) {
@@ -41,6 +41,8 @@ class PasswordRequiredValidator extends Validator {
         if ($this->account->validatePassword($value) === false) {
             return [E::PASSWORD_INCORRECT, []];
         }
+
+        return null;
     }
 
 }

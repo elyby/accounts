@@ -182,8 +182,7 @@ final class EmailValidatorTest extends TestCase {
     }
 
     /**
-     * @param string $fieldValue
-     * @return Model
+     * @return Model&object{ field: mixed }
      */
     private function createModel(string $fieldValue): Model {
         $class = new class extends Model {

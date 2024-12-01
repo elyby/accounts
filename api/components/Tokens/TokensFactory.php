@@ -10,6 +10,7 @@ use common\models\Account;
 use common\models\AccountSession;
 use DateTime;
 use Lcobucci\JWT\Token;
+use Lcobucci\JWT\UnencryptedToken;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use Yii;
@@ -19,7 +20,7 @@ class TokensFactory extends Component {
 
     public const string SUB_ACCOUNT_PREFIX = 'ely|';
 
-    public function createForWebAccount(Account $account, AccountSession $session = null): Token {
+    public function createForWebAccount(Account $account, AccountSession $session = null): UnencryptedToken {
         $payloads = [
             'sub' => $this->buildSub($account->id),
             'exp' => Carbon::now()->addHour()->toDateTimeImmutable(),
@@ -36,7 +37,7 @@ class TokensFactory extends Component {
         return Yii::$app->tokens->create($payloads);
     }
 
-    public function createForOAuthClient(AccessTokenEntityInterface $accessToken): Token {
+    public function createForOAuthClient(AccessTokenEntityInterface $accessToken): UnencryptedToken {
         $payloads = [
             'client_id' => $accessToken->getClient()->getIdentifier(),
             'scope' => $this->prepareScopes($accessToken->getScopes()),
@@ -52,7 +53,7 @@ class TokensFactory extends Component {
         return Yii::$app->tokens->create($payloads);
     }
 
-    public function createForMinecraftAccount(Account $account, string $clientToken): Token {
+    public function createForMinecraftAccount(Account $account, string $clientToken): UnencryptedToken {
         return Yii::$app->tokens->create([
             'scope' => $this->prepareScopes([P::OBTAIN_OWN_ACCOUNT_INFO, P::MINECRAFT_SERVER_SESSION]),
             'ely-client-token' => new EncryptedValue($clientToken),

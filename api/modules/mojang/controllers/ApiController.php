@@ -47,7 +47,7 @@ class ApiController extends Controller {
                 }
             }
         } else {
-            /** @var Account|null $record */
+            /** @var Account|null $account */
             $account = Account::findOne(['username' => $username]);
         }
 

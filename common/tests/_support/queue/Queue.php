@@ -13,8 +13,8 @@ class Queue extends BaseQueue {
         // But we just ignore it for this mock component
     }
 
-    public function push($job) {
-        $this->messages[] = $job;
+    public function push($job): ?string {
+        return (string)array_push($this->messages, $job);
     }
 
     public function status($id) {

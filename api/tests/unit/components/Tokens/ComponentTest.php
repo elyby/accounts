@@ -10,6 +10,7 @@ use Generator;
 use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Token\Parser;
+use Lcobucci\JWT\UnencryptedToken;
 use Yii;
 
 class ComponentTest extends TestCase {
@@ -85,7 +86,7 @@ class ComponentTest extends TestCase {
         $this->component = Yii::$app->tokens;
     }
 
-    private function assertValidParsedToken(Token $token, string $expectedAlg): void {
+    private function assertValidParsedToken(UnencryptedToken $token, string $expectedAlg): void {
         $this->assertSame($expectedAlg, $token->headers()->get('alg'));
         $this->assertSame(1564527476, $token->claims()->get('iat')->getTimestamp());
         $this->assertSame(1564531076, $token->claims()->get('exp')->getTimestamp());

@@ -28,6 +28,7 @@ final class MockDataResponse implements BootstrapInterface {
             return;
         }
 
+        /** @var \yii\web\Response $response */
         $response = $event->action->controller->response;
         $response->format = Response::FORMAT_JSON;
         $response->data = $result;
@@ -38,6 +39,7 @@ final class MockDataResponse implements BootstrapInterface {
 
     private function getResponse(ActionEvent $event): ?array {
         $action = $event->action;
+        /** @var \yii\web\Controller $controller */
         $controller = $action->controller;
         $request = $controller->request;
         if ($controller instanceof SignupController && $action->id === 'index') {

@@ -12,15 +12,8 @@ use yii\console\ExitCode;
 class CleanupController extends Controller {
 
     public function actionEmailKeys(): int {
-        $query = EmailActivation::find();
-        foreach ($this->getEmailActivationsDurationsMap() as $typeId => $expiration) {
-            $query->orWhere([
-                'AND',
-                ['type' => $typeId],
-                ['<', 'created_at', time() - $expiration],
-            ]);
-        }
-
+        $query = EmailActivation::find()
+            ->andWhere(['<', 'created_at', time() - 60 * 60 * 24 * 14]); // 14d
         foreach ($query->each(100, Yii::$app->unbufferedDb) as $email) {
             /** @var EmailActivation $email */
             $email->delete();
@@ -66,23 +59,6 @@ class CleanupController extends Controller {
         }
 
         return ExitCode::OK;
-    }
-
-    private function getEmailActivationsDurationsMap(): array {
-        $durationsMap = [];
-        foreach (EmailActivation::getClassMap() as $typeId => $className) {
-            /** @var EmailActivation $object */
-            $object = new $className();
-            /** @var \common\behaviors\EmailActivationExpirationBehavior $behavior */
-            $behavior = $object->getBehavior('expirationBehavior');
-            /** @noinspection NullPointerExceptionInspection */
-            $expiration = $behavior->expirationTimeout ?? 1123200; // 13d by default
-            // We increment 1 day so that users can still receive notifications about the expiry of the activation code
-            /** @noinspection SummerTimeUnsafeTimeManipulationInspection */
-            $durationsMap[$typeId] = $expiration + 86400;
-        }
-
-        return $durationsMap;
     }
 
 }

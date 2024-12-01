@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace common\db\mysql;
 
 use SamIT\Yii2\MariaDb\QueryBuilder as MariaDbQueryBuilder;
-use yii\db\ExpressionInterface;
+use yii\db\Expression;
 
 class QueryBuilder extends MariaDbQueryBuilder {
 
@@ -15,7 +15,7 @@ class QueryBuilder extends MariaDbQueryBuilder {
 
         $orders = [];
         foreach ($columns as $name => $direction) {
-            if ($direction instanceof ExpressionInterface) {
+            if ($direction instanceof Expression) {
                 $orders[] = $direction->expression;
             } elseif (is_array($direction)) {
                 // This condition branch is our custom solution

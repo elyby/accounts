@@ -27,11 +27,10 @@ class CodeceptionQueueHelper extends Module {
      * Each message is `\PhpAmqpLib\Message\AMQPMessage` instance.
      * Useful to perform additional checks using `Asserts` module.
      *
-     * @param string|null $exchange
      * @return \yii\queue\JobInterface[]
      * @throws ModuleException
      */
-    public function grabQueueJobs() {
+    public function grabQueueJobs(): array {
         $amqp = $this->grabComponent('queue');
         if (!$amqp instanceof Queue) {
             throw new ModuleException($this, 'AMQP module is not mocked, can\'t test messages');

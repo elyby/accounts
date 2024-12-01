@@ -20,7 +20,8 @@ class ForgotPasswordFormTest extends TestCase {
     protected function setUp(): void {
         parent::setUp();
         Yii::$container->set(ReCaptchaValidator::class, new class($this->createMock(ClientInterface::class)) extends ReCaptchaValidator {
-            public function validateValue($value) {
+            public function validateValue($value): ?array {
+                return null;
             }
         });
     }

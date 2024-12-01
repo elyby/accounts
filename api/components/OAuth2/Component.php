@@ -8,11 +8,8 @@ use DateInterval;
 use League\OAuth2\Server\AuthorizationServer;
 use yii\base\Component as BaseComponent;
 
-class Component extends BaseComponent {
+final class Component extends BaseComponent {
 
-    /**
-     * @var AuthorizationServer
-     */
     private ?AuthorizationServer $_authServer = null;
 
     public function getAuthServer(): AuthorizationServer {

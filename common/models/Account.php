@@ -101,6 +101,9 @@ class Account extends ActiveRecord {
         return $this->hasMany(EmailActivation::class, ['account_id' => 'id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery<\common\models\OauthSession>
+     */
     public function getOauthSessions(): ActiveQuery {
         return $this->hasMany(OauthSession::class, ['account_id' => 'id']);
     }
@@ -114,6 +117,9 @@ class Account extends ActiveRecord {
         return $this->hasMany(UsernameHistory::class, ['account_id' => 'id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery<\common\models\AccountSession>
+     */
     public function getSessions(): ActiveQuery {
         return $this->hasMany(AccountSession::class, ['account_id' => 'id']);
     }

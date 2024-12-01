@@ -33,7 +33,7 @@ class FeedbackFormTest extends TestCase {
         $model
             ->method('getAccount')
             ->willReturn(new Account([
-                'id' => '123',
+                'id' => 123,
                 'username' => 'Erick',
                 'email' => 'find-this@email.net',
                 'created_at' => time() - 86400,

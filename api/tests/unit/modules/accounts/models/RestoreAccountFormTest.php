@@ -10,15 +10,13 @@ use common\models\Account;
 use common\notifications\AccountEditNotification;
 use common\tasks\CreateWebHooksDeliveries;
 use common\tests\fixtures\AccountFixture;
+use PHPUnit\Framework\MockObject\MockObject;
 use Yii;
 use yii\queue\Queue;
 
 class RestoreAccountFormTest extends TestCase {
 
-    /**
-     * @var Queue|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private Queue $queue;
+    private Queue&MockObject $queue;
 
     public function _fixtures(): array {
         return [

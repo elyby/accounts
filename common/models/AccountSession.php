@@ -8,12 +8,12 @@ use yii\db\ActiveRecord;
 
 /**
  * Fields:
- * @property integer $id
- * @property integer $account_id
+ * @property int     $id
+ * @property int     $account_id
  * @property string  $refresh_token
- * @property integer $last_used_ip
- * @property integer $created_at
- * @property integer $last_refreshed_at
+ * @property int     $last_used_ip
+ * @property int     $created_at
+ * @property int     $last_refreshed_at
  *
  * Relations:
  * @property Account $account

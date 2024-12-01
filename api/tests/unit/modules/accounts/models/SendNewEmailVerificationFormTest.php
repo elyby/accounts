@@ -37,7 +37,7 @@ class SendNewEmailVerificationFormTest extends TestCase {
     public function testSendNewEmailConfirmation() {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'account-with-change-email-init-state');
-        /** @var SendNewEmailVerificationForm $model */
+        /** @var string $key */
         $key = $this->tester->grabFixture('emailActivations', 'currentChangeEmailConfirmation')['key'];
         $model = new SendNewEmailVerificationForm($account, [
             'key' => $key,
