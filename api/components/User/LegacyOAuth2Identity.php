@@ -85,7 +85,6 @@ class LegacyOAuth2Identity implements IdentityInterface {
     }
 
     /** @codeCoverageIgnoreEnd */
-
     private static function findRecordOnLegacyStorage(string $accessToken): ?array {
         $record = Yii::$app->redis->get("oauth:access:tokens:{$accessToken}");
         if ($record === null) {

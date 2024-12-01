@@ -6,7 +6,7 @@ declare(strict_types=1);
  * Copy it as .php-cs-fixer.php (without .dist part) and then adjust.
  */
 
-$finder = \PhpCsFixer\Finder::create()
+$finder = PhpCsFixer\Finder::create()
     ->in(__DIR__)
     ->exclude('data')
     ->exclude('docker')
@@ -21,6 +21,8 @@ $finder = \PhpCsFixer\Finder::create()
     // on Linux environment
     ->name('yii');
 
-return \Ely\CS\Config::create([
+return Ely\CS\Config::create([
     'self_accessor' => false,
-])->setFinder($finder);
+])
+    ->setParallelConfig(PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect())
+    ->setFinder($finder);
