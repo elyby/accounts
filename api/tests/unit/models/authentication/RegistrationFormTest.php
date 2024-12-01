@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace api\tests\_support\models\authentication;
+namespace api\tests\unit\models\authentication;
 
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\authentication\RegistrationForm;
@@ -39,7 +39,7 @@ class RegistrationFormTest extends TestCase {
         ];
     }
 
-    public function testValidatePasswordAndRePasswordMatch() {
+    public function testValidatePasswordAndRePasswordMatch(): void {
         $model = new RegistrationForm([
             'password' => 'enough-length',
             'rePassword' => 'but-mismatch',
@@ -55,10 +55,9 @@ class RegistrationFormTest extends TestCase {
         $this->assertEmpty($model->getErrors('rePassword'));
     }
 
-    public function testSignup() {
-        // TODO fix
-        // TODO $this->getFunctionMock(EmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
-        // TODO $this->getFunctionMock(EmailValidator::class, 'dns_get_record')->expects($this->any())->willReturn(['']);
+    public function testSignup(): void {
+        $this->getFunctionMock(EmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
+        $this->getFunctionMock(EmailValidator::class, 'dns_get_record')->expects($this->any())->willReturn(['']);
         $model = new RegistrationForm([
             'username' => 'some_username',
             'email' => 'some_email@example.com',
@@ -74,9 +73,9 @@ class RegistrationFormTest extends TestCase {
         $this->assertSame('ru', $account->lang, 'lang is set');
     }
 
-    public function testSignupWithDefaultLanguage() {
-        // TODO $this->getFunctionMock(EmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
-        // TODO $this->getFunctionMock(EmailValidator::class, 'dns_get_record')->expects($this->any())->willReturn(['']);
+    public function testSignupWithDefaultLanguage(): void {
+        $this->getFunctionMock(EmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
+        $this->getFunctionMock(EmailValidator::class, 'dns_get_record')->expects($this->any())->willReturn(['']);
         $model = new RegistrationForm([
             'username' => 'some_username',
             'email' => 'some_email@example.com',
@@ -91,10 +90,7 @@ class RegistrationFormTest extends TestCase {
         $this->assertSame('en', $account->lang, 'lang is set');
     }
 
-    /**
-     * @param Account|null $account
-     */
-    private function expectSuccessRegistration($account) {
+    private function expectSuccessRegistration(?Account $account): void {
         $this->assertInstanceOf(Account::class, $account, 'user should be valid');
         $this->assertTrue($account->validatePassword('some_password'), 'password should be correct');
         $this->assertNotEmpty($account->uuid, 'uuid is set');
@@ -131,7 +127,7 @@ class RegistrationFormTest extends TestCase {
         $this->assertSame('http://localhost/activation/' . $activation->key, $job->link);
     }
 
-    private function mockRequest($ip = '88.225.20.236') {
+    private function mockRequest(string $ip = '88.225.20.236'): Request {
         $request = $this->getMockBuilder(Request::class)
             ->onlyMethods(['getUserIP'])
             ->getMock();

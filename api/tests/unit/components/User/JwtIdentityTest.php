@@ -93,12 +93,12 @@ class JwtIdentityTest extends TestCase {
         $this->assertSame([], $identity->getAssignedPermissions());
     }
 
-    protected function _before() {
+    protected function _before(): void {
         parent::_before();
         Carbon::setTestNow(Carbon::create(2019, 8, 1, 1, 2, 22, 'Europe/Minsk'));
     }
 
-    protected function _after() {
+    protected function _after(): void {
         parent::_after();
         Carbon::setTestNow();
     }

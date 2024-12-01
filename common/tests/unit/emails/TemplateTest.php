@@ -49,7 +49,7 @@ class TemplateTest extends TestCase {
         Yii::$app->params['fromEmail'] = 'find-me';
     }
 
-    protected function _after() {
+    protected function _after(): void {
         parent::_after();
         Yii::$app->params['fromEmail'] = $this->initialFromEmail;
     }

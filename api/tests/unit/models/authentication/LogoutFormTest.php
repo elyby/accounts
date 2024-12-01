@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace api\tests\_support\models\authentication;
+namespace api\tests\unit\models\authentication;
 
 use api\components\User\Component;
 use api\models\authentication\LogoutForm;
