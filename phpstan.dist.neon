@@ -1,4 +1,7 @@
 # https://github.com/phpstan/phpstan#configuration
+includes:
+  - phpstan-baseline.neon
+
 parameters:
   scanFiles:
     - vendor/yiisoft/yii2/Yii.php
@@ -16,6 +19,6 @@ parameters:
       - api/tests/_data
       - common/tests/_data
       - console/tests/_data
-  level: 5
+  level: 7
   yii2:
     config_path: ./common/config/config-phpstan.php
