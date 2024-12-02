@@ -25,7 +25,7 @@ class Controller extends \yii\rest\Controller {
         // XML and rate limiter is not necessary
         unset(
             $parentBehaviors['contentNegotiator']['formats']['application/xml'],
-            $parentBehaviors['rateLimiter']
+            $parentBehaviors['rateLimiter'],
         );
 
         return $parentBehaviors;

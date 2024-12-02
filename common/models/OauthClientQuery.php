@@ -11,7 +11,7 @@ use yii\db\Command;
  */
 class OauthClientQuery extends ActiveQuery {
 
-    private $showDeleted = false;
+    private bool $showDeleted = false;
 
     public function includeDeleted(): self {
         $this->showDeleted = true;

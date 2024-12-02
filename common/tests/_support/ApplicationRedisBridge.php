@@ -9,7 +9,7 @@ use Yii;
 
 class ApplicationRedisBridge extends Module {
 
-    protected $config = [
+    protected array $config = [
         'module' => 'Redis',
     ];
 

@@ -15,15 +15,15 @@ use yii\validators\Validator;
 final class EmailValidator extends Validator {
 
     /**
-     * @var callable(): int the function must return the account id for which the current validation is being performed.
+     * @phpstan-var \Closure(): int the function must return the account id for which the current validation is being performed.
      * Allows you to skip the email uniqueness check for the current account.
      */
-    public $accountCallback;
+    public ?\Closure $accountCallback = null;
 
     public $skipOnEmpty = false;
 
     public function validateAttribute($model, $attribute): void {
-        $trim = new validators\FilterValidator(['filter' => [StringHelper::class, 'trim']]);
+        $trim = new validators\FilterValidator(['filter' => StringHelper::trim(...)]);
 
         $required = new validators\RequiredValidator();
         $required->message = E::EMAIL_REQUIRED;
@@ -40,7 +40,7 @@ final class EmailValidator extends Validator {
         $additionalEmail = new class extends Validator {
             protected function validateValue($value): ?array {
                 // Disallow emails starting with slash since Postfix (or someone before?) can't correctly handle it
-                if (str_starts_with($value, '/')) {
+                if (str_starts_with((string)$value, '/')) {
                     return [E::EMAIL_INVALID, []];
                 }
 
@@ -57,7 +57,7 @@ final class EmailValidator extends Validator {
             ];
 
             protected function validateValue($value): ?array {
-                $host = explode('@', $value)[1];
+                $host = explode('@', (string)$value)[1];
                 if (in_array($host, $this->hosts, true)) {
                     return [E::EMAIL_HOST_IS_NOT_ALLOWED, []];
                 }
@@ -81,15 +81,15 @@ final class EmailValidator extends Validator {
             };
         }
 
-        $this->executeValidation($trim, $model, $attribute) &&
-        $this->executeValidation($required, $model, $attribute) &&
-        $this->executeValidation($length, $model, $attribute) &&
-        $this->executeValidation($email, $model, $attribute) &&
-        $this->executeValidation($additionalEmail, $model, $attribute) &&
-        $this->executeValidation($tempmail, $model, $attribute) &&
-        $this->executeValidation($blacklist, $model, $attribute) &&
-        $this->executeValidation($idnaDomain, $model, $attribute) &&
-        $this->executeValidation($unique, $model, $attribute);
+        $this->executeValidation($trim, $model, $attribute)
+        && $this->executeValidation($required, $model, $attribute)
+        && $this->executeValidation($length, $model, $attribute)
+        && $this->executeValidation($email, $model, $attribute)
+        && $this->executeValidation($additionalEmail, $model, $attribute)
+        && $this->executeValidation($tempmail, $model, $attribute)
+        && $this->executeValidation($blacklist, $model, $attribute)
+        && $this->executeValidation($idnaDomain, $model, $attribute)
+        && $this->executeValidation($unique, $model, $attribute);
     }
 
     private function executeValidation(Validator $validator, Model $model, string $attribute): bool {

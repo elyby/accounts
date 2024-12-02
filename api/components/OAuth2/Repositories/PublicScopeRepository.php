@@ -11,18 +11,18 @@ use League\OAuth2\Server\Repositories\ScopeRepositoryInterface;
 
 class PublicScopeRepository implements ScopeRepositoryInterface {
 
-    public const OFFLINE_ACCESS = 'offline_access';
-    public const CHANGE_SKIN = 'change_skin';
+    public const string OFFLINE_ACCESS = 'offline_access';
+    public const string CHANGE_SKIN = 'change_skin';
 
-    private const ACCOUNT_INFO = 'account_info';
-    private const ACCOUNT_EMAIL = 'account_email';
+    private const string ACCOUNT_INFO = 'account_info';
+    private const string ACCOUNT_EMAIL = 'account_email';
 
-    private const PUBLIC_SCOPES_TO_INTERNAL_PERMISSIONS = [
+    private const array PUBLIC_SCOPES_TO_INTERNAL_PERMISSIONS = [
         self::ACCOUNT_INFO => P::OBTAIN_OWN_ACCOUNT_INFO,
         self::ACCOUNT_EMAIL => P::OBTAIN_ACCOUNT_EMAIL,
     ];
 
-    private const ALLOWED_SCOPES = [
+    private const array ALLOWED_SCOPES = [
         P::OBTAIN_OWN_ACCOUNT_INFO,
         P::OBTAIN_ACCOUNT_EMAIL,
         P::MINECRAFT_SERVER_SESSION,
@@ -43,7 +43,8 @@ class PublicScopeRepository implements ScopeRepositoryInterface {
         array $scopes,
         $grantType,
         ClientEntityInterface $clientEntity,
-        $userIdentifier = null
+        $userIdentifier = null,
+        ?string $authCodeId = null,
     ): array {
         return $scopes;
     }

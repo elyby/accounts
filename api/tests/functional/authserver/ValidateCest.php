@@ -8,7 +8,7 @@ use Ramsey\Uuid\Uuid;
 
 class ValidateCest {
 
-    public function validate(AuthserverSteps $I) {
+    public function validate(AuthserverSteps $I): void {
         $I->wantTo('validate my accessToken');
         [$accessToken] = $I->amAuthenticated();
         $I->sendPOST('/api/authserver/authentication/validate', [
@@ -18,7 +18,7 @@ class ValidateCest {
         $I->canSeeResponseEquals('');
     }
 
-    public function wrongArguments(AuthserverSteps $I) {
+    public function wrongArguments(AuthserverSteps $I): void {
         $I->wantTo('get error on wrong amount of arguments');
         $I->sendPOST('/api/authserver/authentication/validate', [
             'key' => 'value',
@@ -31,7 +31,7 @@ class ValidateCest {
         ]);
     }
 
-    public function wrongAccessToken(AuthserverSteps $I) {
+    public function wrongAccessToken(AuthserverSteps $I): void {
         $I->wantTo('get error on wrong accessToken');
         $I->sendPOST('/api/authserver/authentication/validate', [
             'accessToken' => Uuid::uuid4()->toString(),
@@ -44,7 +44,7 @@ class ValidateCest {
         ]);
     }
 
-    public function expiredAccessToken(AuthserverSteps $I) {
+    public function expiredAccessToken(AuthserverSteps $I): void {
         $I->wantTo('get error on expired accessToken');
         $I->sendPOST('/api/authserver/authentication/validate', [
             'accessToken' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpYXQiOjE1NzU0Nzk1NTMsImV4cCI6MTU3NTQ3OTU1MywiZWx5LXNjb3BlcyI6Im1pbmVjcmFmdF9zZXJ2ZXJfc2Vzc2lvbiIsImVseS1jbGllbnQtdG9rZW4iOiJyZW1vdmVkIiwic3ViIjoiZWx5fDEifQ.xDMs5B48nH6p3a1k3WoZKtW4zoNHGGaLD1OGTFte-sUJb2fNMR65LuuBW8DzqO2odgco2xX660zqbhB-tp2OsA',
@@ -57,7 +57,7 @@ class ValidateCest {
         ]);
     }
 
-    public function credentialsFromBannedAccount(AuthserverSteps $I) {
+    public function credentialsFromBannedAccount(AuthserverSteps $I): void {
         $I->wantTo('get error on expired legacy accessToken');
         $I->sendPOST('/api/authserver/authentication/validate', [
             'accessToken' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpYXQiOjE1MTgzMzQ3NDMsImNsaWVudF9pZCI6ImVseSIsInNjb3BlIjoibWluZWNyYWZ0X3NlcnZlcl9zZXNzaW9uIiwic3ViIjoiZWx5fDE1In0.2qla7RzReBi2WtfgP3x8T6ZA0wn9HOrQo57xaZc2wMKPo1Zc49_o6w-5Ku1tbvzmESZfAxNQpfY4EwclEWjHYA',

@@ -10,12 +10,9 @@ use Yii;
 // TODO: convert to complete Chrly client library
 class SkinsSystemApi {
 
-    private string $baseDomain;
-
     private ?ClientInterface $client = null;
 
-    public function __construct(string $baseDomain) {
-        $this->baseDomain = $baseDomain;
+    public function __construct(private readonly string $baseDomain) {
     }
 
     /**

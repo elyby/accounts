@@ -4,7 +4,7 @@ use console\db\Migration;
 
 class m160819_211139_minecraft_access_tokens extends Migration {
 
-    public function safeUp() {
+    public function safeUp(): void {
         $this->createTable('{{%minecraft_access_keys}}', [
             'access_token' => $this->string(36)->notNull(),
             'client_token' => $this->string(36)->notNull(),
@@ -18,7 +18,7 @@ class m160819_211139_minecraft_access_tokens extends Migration {
         $this->createIndex('client_token', '{{%minecraft_access_keys}}', 'client_token', true);
     }
 
-    public function safeDown() {
+    public function safeDown(): void {
         $this->dropTable('{{%minecraft_access_keys}}');
     }
 

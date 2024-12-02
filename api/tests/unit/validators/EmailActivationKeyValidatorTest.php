@@ -13,15 +13,14 @@ use yii\base\Model;
 class EmailActivationKeyValidatorTest extends TestCase {
     use ProtectedCaller;
 
-    public function testValidateAttribute() {
-        /** @var Model $model */
+    public function testValidateAttribute(): void {
         $model = new class extends Model {
             public $key;
         };
 
         /** @var EmailActivationKeyValidator|\PHPUnit\Framework\MockObject\MockObject $validator */
         $validator = $this->getMockBuilder(EmailActivationKeyValidator::class)
-            ->setMethods(['findEmailActivationModel'])
+            ->onlyMethods(['findEmailActivationModel'])
             ->getMock();
 
         $expiredActivation = new ForgotPassword();
@@ -54,7 +53,7 @@ class EmailActivationKeyValidatorTest extends TestCase {
         $this->assertSame($validActivation, $model->key);
     }
 
-    public function testFindEmailActivationModel() {
+    public function testFindEmailActivationModel(): void {
         $this->tester->haveFixtures(['emailActivations' => EmailActivationFixture::class]);
 
         $key = $this->tester->grabFixture('emailActivations', 'freshRegistrationConfirmation')['key'];
@@ -68,7 +67,7 @@ class EmailActivationKeyValidatorTest extends TestCase {
         $result = $this->callProtected($model, 'findEmailActivationModel', $key, 0);
         $this->assertInstanceOf(EmailActivation::class, $result, 'valid key with valid type must return model');
 
-        /** @var EmailActivation $result */
+        /** @var EmailActivation|null $result */
         $result = $this->callProtected($model, 'findEmailActivationModel', $key, 1);
         $this->assertNull($result, 'valid key, but invalid type must return null');
 

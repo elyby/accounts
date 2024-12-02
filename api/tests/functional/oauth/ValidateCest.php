@@ -7,7 +7,7 @@ use api\tests\FunctionalTester;
 
 class ValidateCest {
 
-    public function completelyValidateValidRequest(FunctionalTester $I) {
+    public function completelyValidateValidRequest(FunctionalTester $I): void {
         $I->wantTo('validate and obtain information about new oauth request');
         $I->sendGET('/api/oauth2/v1/validate', [
             'client_id' => 'ely',
@@ -41,7 +41,7 @@ class ValidateCest {
         ]);
     }
 
-    public function completelyValidateValidRequestWithOverriddenDescription(FunctionalTester $I) {
+    public function completelyValidateValidRequestWithOverriddenDescription(FunctionalTester $I): void {
         $I->wantTo('validate and get information with description replacement');
         $I->sendGET('/api/oauth2/v1/validate', [
             'client_id' => 'ely',
@@ -57,7 +57,7 @@ class ValidateCest {
         ]);
     }
 
-    public function unknownClientId(FunctionalTester $I) {
+    public function unknownClientId(FunctionalTester $I): void {
         $I->wantTo('check behavior on invalid client id');
         $I->sendGET('/api/oauth2/v1/validate', [
             'client_id' => 'non-exists-client',
@@ -72,7 +72,7 @@ class ValidateCest {
         ]);
     }
 
-    public function invalidScopes(FunctionalTester $I) {
+    public function invalidScopes(FunctionalTester $I): void {
         $I->wantTo('check behavior on some invalid scopes');
         $I->sendGET('/api/oauth2/v1/validate', [
             'client_id' => 'ely',
@@ -91,7 +91,7 @@ class ValidateCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
     }
 
-    public function requestInternalScope(FunctionalTester $I) {
+    public function requestInternalScope(FunctionalTester $I): void {
         $I->wantTo('check behavior on request internal scope');
         $I->sendGET('/api/oauth2/v1/validate', [
             'client_id' => 'ely',

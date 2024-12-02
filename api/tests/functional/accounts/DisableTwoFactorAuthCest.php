@@ -7,16 +7,13 @@ use OTPHP\TOTP;
 
 class DisableTwoFactorAuthCest {
 
-    /**
-     * @var AccountsRoute
-     */
-    private $route;
+    private AccountsRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new AccountsRoute($I);
     }
 
-    public function testFails(FunctionalTester $I) {
+    public function testFails(FunctionalTester $I): void {
         $accountId = $I->amAuthenticated('AccountWithEnabledOtp');
 
         $this->route->disableTwoFactorAuth($accountId);
@@ -47,7 +44,7 @@ class DisableTwoFactorAuthCest {
         ]);
     }
 
-    public function testSuccessEnable(FunctionalTester $I) {
+    public function testSuccessEnable(FunctionalTester $I): void {
         $accountId = $I->amAuthenticated('AccountWithEnabledOtp');
         $totp = TOTP::create('BBBB');
         $this->route->disableTwoFactorAuth($accountId, $totp->now(), 'password_0');

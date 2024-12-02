@@ -13,7 +13,7 @@ use Yii;
 
 class ChangePasswordFormTest extends TestCase {
 
-    public function testValidatePasswordAndRePasswordMatch() {
+    public function testValidatePasswordAndRePasswordMatch(): void {
         $account = new Account();
         $account->setPassword('12345678');
         $model = new ChangePasswordForm($account, [
@@ -25,7 +25,7 @@ class ChangePasswordFormTest extends TestCase {
         $this->assertSame(
             [E::NEW_RE_PASSWORD_DOES_NOT_MATCH],
             $model->getErrors('newRePassword'),
-            'error.rePassword_does_not_match expected if passwords not match'
+            'error.rePassword_does_not_match expected if passwords not match',
         );
 
         $account = new Account();
@@ -50,12 +50,12 @@ class ChangePasswordFormTest extends TestCase {
         $this->assertSame(
             [E::NEW_RE_PASSWORD_DOES_NOT_MATCH],
             $model->getErrors('newRePassword'),
-            'error.rePassword_does_not_match expected even if there are errors on other attributes'
+            'error.rePassword_does_not_match expected even if there are errors on other attributes',
         );
         $this->assertEmpty($model->getErrors('password'));
     }
 
-    public function testPerformAction() {
+    public function testPerformAction(): void {
         $component = $this->createPartialMock(Component::class, ['terminateSessions']);
         $component->expects($this->never())->method('terminateSessions');
 
@@ -95,7 +95,7 @@ class ChangePasswordFormTest extends TestCase {
         $this->assertSame(Account::PASS_HASH_STRATEGY_YII2, $account->password_hash_strategy);
     }
 
-    public function testPerformActionWithLogout() {
+    public function testPerformActionWithLogout(): void {
         $account = $this->createPartialMock(Account::class, ['save']);
         $account->method('save')->willReturn(true);
         $account->setPassword('password_0');

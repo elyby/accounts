@@ -7,24 +7,21 @@ use api\tests\FunctionalTester;
 
 class InfoCest {
 
-    /**
-     * @var InternalRoute
-     */
-    private $route;
+    private InternalRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new InternalRoute($I);
     }
 
-    public function testGetInfoById(OauthSteps $I) {
+    public function testGetInfoById(OauthSteps $I): void {
         $accessToken = $I->getAccessTokenByClientCredentialsGrant(['internal_account_info']);
         $I->amBearerAuthenticated($accessToken);
 
-        $this->route->info('id', 1);
+        $this->route->info('id', '1');
         $this->expectSuccessResponse($I);
     }
 
-    public function testGetInfoByUuid(OauthSteps $I) {
+    public function testGetInfoByUuid(OauthSteps $I): void {
         $accessToken = $I->getAccessTokenByClientCredentialsGrant(['internal_account_info']);
         $I->amBearerAuthenticated($accessToken);
 
@@ -32,7 +29,7 @@ class InfoCest {
         $this->expectSuccessResponse($I);
     }
 
-    public function testGetInfoByUsername(OauthSteps $I) {
+    public function testGetInfoByUsername(OauthSteps $I): void {
         $accessToken = $I->getAccessTokenByClientCredentialsGrant(['internal_account_info']);
         $I->amBearerAuthenticated($accessToken);
 
@@ -40,7 +37,7 @@ class InfoCest {
         $this->expectSuccessResponse($I);
     }
 
-    public function testInvalidParams(OauthSteps $I) {
+    public function testInvalidParams(OauthSteps $I): void {
         $accessToken = $I->getAccessTokenByClientCredentialsGrant(['internal_account_info']);
         $I->amBearerAuthenticated($accessToken);
 
@@ -48,7 +45,7 @@ class InfoCest {
         $I->canSeeResponseCodeIs(400);
     }
 
-    public function testAccountNotFound(OauthSteps $I) {
+    public function testAccountNotFound(OauthSteps $I): void {
         $accessToken = $I->getAccessTokenByClientCredentialsGrant(['internal_account_info']);
         $I->amBearerAuthenticated($accessToken);
 

@@ -4,7 +4,7 @@ use console\db\Migration;
 
 class m160201_055928_oauth extends Migration {
 
-    public function safeUp() {
+    public function safeUp(): void {
         $this->createTable('{{%oauth_clients}}', [
             'id' => $this->string(64),
             'secret' => $this->string()->notNull(),
@@ -43,7 +43,7 @@ class m160201_055928_oauth extends Migration {
             'account_id',
             '{{%accounts}}',
             'id',
-            'CASCADE'
+            'CASCADE',
         );
 
         $this->addForeignKey(
@@ -53,7 +53,7 @@ class m160201_055928_oauth extends Migration {
             '{{%oauth_clients}}',
             'id',
             'CASCADE',
-            'CASCADE'
+            'CASCADE',
         );
 
         $this->addForeignKey(
@@ -63,11 +63,11 @@ class m160201_055928_oauth extends Migration {
             '{{%oauth_sessions}}',
             'id',
             'CASCADE',
-            'SET NULL'
+            'SET NULL',
         );
     }
 
-    public function safeDown() {
+    public function safeDown(): void {
         $this->dropTable('{{%oauth_access_tokens}}');
         $this->dropTable('{{%oauth_sessions}}');
         $this->dropTable('{{%oauth_scopes}}');

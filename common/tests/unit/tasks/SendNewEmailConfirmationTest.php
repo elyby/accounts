@@ -12,7 +12,7 @@ use yii\queue\Queue;
 
 class SendNewEmailConfirmationTest extends TestCase {
 
-    public function testCreateFromConfirmation() {
+    public function testCreateFromConfirmation(): void {
         $account = new Account();
         $account->username = 'mock-username';
         $account->lang = 'id';
@@ -31,7 +31,7 @@ class SendNewEmailConfirmationTest extends TestCase {
         $this->assertSame('ABCDEFG', $result->code);
     }
 
-    public function testExecute() {
+    public function testExecute(): void {
         $task = new SendNewEmailConfirmation();
         $task->username = 'mock-username';
         $task->email = 'mock@ely.by';
@@ -40,12 +40,11 @@ class SendNewEmailConfirmationTest extends TestCase {
         $task->execute($this->createMock(Queue::class));
 
         $this->tester->canSeeEmailIsSent(1);
-        /** @var \yii\swiftmailer\Message $email */
+        /** @var \yii\symfonymailer\Message $email */
         $email = $this->tester->grabSentEmails()[0];
         $this->assertSame(['mock@ely.by' => 'mock-username'], $email->getTo());
         $this->assertSame('Ely.by Account new E-mail confirmation', $email->getSubject());
-        $children = $email->getSwiftMessage()->getChildren()[0];
-        $this->assertStringContainsString('GFEDCBA', $children->getBody());
+        $this->assertStringContainsString('GFEDCBA', $email->getSymfonyEmail()->getTextBody());
     }
 
 }

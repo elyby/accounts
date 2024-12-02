@@ -14,11 +14,14 @@
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            "cweagans/composer-patches": true
+            "cweagans/composer-patches": true,
+            "phpstan/extension-installer": true,
+            "yiisoft/yii2-composer": true
         }
     },
     "require": {
-        "php": "^7.4",
+        "php": "^8.3",
+        "ext-imagick": "*",
         "ext-intl": "*",
         "ext-json": "*",
         "ext-libxml": "*",
@@ -30,66 +33,42 @@
         "bacon/bacon-qr-code": "^1.0",
         "domnikl/statsd": "^3.0.0",
         "ely/mojang-api": "^0.2.0",
-        "ely/yii2-tempmail-validator": "^2.0",
+        "ely/yii2-tempmail-validator": "dev-master",
+        "erickskrauch/phpstan-yii2": "dev-master",
         "guzzlehttp/guzzle": "^6|^7",
-        "lcobucci/jwt": "^3.3",
-        "league/oauth2-server": "dev-adaptation",
-        "mito/yii2-sentry": "^1.0",
-        "nesbot/carbon": "^2.22",
-        "paragonie/constant_time_encoding": "^2.0",
+        "lcobucci/jwt": "^5.4",
+        "league/oauth2-server": "^9.1.0",
+        "nesbot/carbon": "^3",
+        "nohnaimer/yii2-sentry": "^2.0",
+        "paragonie/constant_time_encoding": "^3",
+        "phpstan/extension-installer": "^1",
+        "phpstan/phpstan": "^1",
+        "phpstan/phpstan-webmozart-assert": "^1",
         "ramsey/uuid": "^4.0.0",
         "sam-it/yii2-mariadb": "^3",
-        "spomky-labs/otphp": "^10.0.0",
+        "spomky-labs/otphp": "^11",
         "webmozart/assert": "^1.2.0",
         "yiisoft/yii2": "~2.0.38",
         "yiisoft/yii2-queue": "^2.2.0",
         "yiisoft/yii2-redis": "~2.0.0",
-        "yiisoft/yii2-swiftmailer": "~2.1.0"
+        "yiisoft/yii2-symfonymailer": "~4.0.0"
     },
     "require-dev": {
-        "codeception/codeception": "^4.0.0",
-        "codeception/module-asserts": "^1.1.0",
-        "codeception/module-rest": "^1.0.0",
-        "codeception/module-yii2": "^1.0.0",
+        "codeception/codeception": "^5.1.0",
+        "codeception/module-asserts": "^3.0.0",
+        "codeception/module-redis": "^3.2.0",
+        "codeception/module-rest": "^3.4.0",
+        "codeception/module-yii2": "^1.1.0",
         "cweagans/composer-patches": "^1.7",
-        "ely/php-code-style": "^0.3.0",
+        "ely/php-code-style": "^1.0.1",
         "php-mock/php-mock-phpunit": "^2.5",
+        "phpstan/phpstan-phpunit": "^1",
         "roave/security-advisories": "dev-master"
-    },
-    "replace": {
-        "bower-asset/inputmask": "*",
-        "bower-asset/jquery": "*",
-        "bower-asset/punycode": "*",
-        "bower-asset/raven-js": "*",
-        "bower-asset/yii2-pjax": "*",
-        "paragonie/random_compat": "2.99.99",
-        "symfony/polyfill-ctype": "*",
-        "symfony/polyfill-iconv": "*",
-        "symfony/polyfill-intl-grapheme": "*",
-        "symfony/polyfill-intl-idn": "*",
-        "symfony/polyfill-intl-normalizer": "*",
-        "symfony/polyfill-mbstring": "*",
-        "symfony/polyfill-php70": "*",
-        "symfony/polyfill-php72": "*",
-        "symfony/polyfill-php73": "*",
-        "yiisoft/yii2-composer": "*"
-    },
-    "extra": {
-        "composer-exit-on-patch-failure": true,
-        "patches": {
-            "codeception/codeception": {
-                "Fix Codeception compatibility with PHPUnit8": "patches/codeception-phpunit-8-fix.patch"
-            }
-        }
     },
     "repositories": [
         {
             "type": "composer",
             "url": "https://asset-packagist.org"
-        },
-        {
-            "type": "github",
-            "url": "https://github.com/elyby/oauth2-server.git"
         }
     ],
     "autoload": {

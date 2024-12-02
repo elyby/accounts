@@ -16,16 +16,14 @@ class Manager extends PhpManager {
      * In Yii2, the mechanism of recursive permissions checking requires that the array
      * with permissions must be indexed by the keys of these permissions.
      *
-     * @param string $accessToken
-     * @return string[]
+     * @return array<string, \yii\rbac\Assignment>
      */
-    public function getAssignments($accessToken): array {
+    public function getAssignments($userId): array {
         $identity = Yii::$app->user->getIdentity();
         if ($identity === null) {
             return [];
         }
 
-        /** @noinspection NullPointerExceptionInspection */
         $rawPermissions = $identity->getAssignedPermissions();
         $result = [];
         foreach ($rawPermissions as $name) {

@@ -12,21 +12,21 @@ use Yii;
 class FunctionalTester extends Actor {
     use FunctionalTesterActions;
 
-    public function amAuthenticated(string $asUsername = 'admin') { // Do not declare type
-        /** @var Account $account */
+    public function amAuthenticated(string $asUsername = 'admin'): mixed {
+        /** @var Account|null $account */
         $account = Account::findOne(['username' => $asUsername]);
         if ($account === null) {
             throw new InvalidArgumentException("Cannot find account with username \"{$asUsername}\"");
         }
 
         $token = Yii::$app->tokensFactory->createForWebAccount($account);
-        $this->amBearerAuthenticated((string)$token);
+        $this->amBearerAuthenticated($token->toString());
 
         return $account->id;
     }
 
     public function notLoggedIn(): void {
-        $this->haveHttpHeader('Authorization', null);
+        $this->haveHttpHeader('Authorization', '');
         Yii::$app->user->logout();
     }
 

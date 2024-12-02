@@ -8,16 +8,13 @@ use api\tests\FunctionalTester;
 
 class ResetClientCest {
 
-    /**
-     * @var OauthRoute
-     */
-    private $route;
+    private OauthRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new OauthRoute($I);
     }
 
-    public function testReset(FunctionalTester $I) {
+    public function testReset(FunctionalTester $I): void {
         $I->amAuthenticated('TwoOauthClients');
         $this->route->resetClient('first-test-oauth-client');
         $I->canSeeResponseCodeIs(200);
@@ -37,7 +34,7 @@ class ResetClientCest {
         ]);
     }
 
-    public function testResetWithSecretChanging(FunctionalTester $I) {
+    public function testResetWithSecretChanging(FunctionalTester $I): void {
         $I->amAuthenticated('TwoOauthClients');
         $this->route->resetClient('first-test-oauth-client', true);
         $I->canSeeResponseCodeIs(200);

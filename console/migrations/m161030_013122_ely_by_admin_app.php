@@ -4,7 +4,7 @@ use console\db\Migration;
 
 class m161030_013122_ely_by_admin_app extends Migration {
 
-    public function safeUp() {
+    public function safeUp(): void {
         $exists = $this->db->createCommand('
             SELECT COUNT(*)
               FROM {{%oauth_clients}}
@@ -27,7 +27,7 @@ class m161030_013122_ely_by_admin_app extends Migration {
         }
     }
 
-    public function safeDown() {
+    public function safeDown(): void {
         $this->delete('{{%oauth_clients}}', ['id' => 'ely_admin']);
     }
 

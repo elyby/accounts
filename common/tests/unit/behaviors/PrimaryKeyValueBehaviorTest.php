@@ -9,20 +9,18 @@ use yii\db\ActiveRecord;
 
 class PrimaryKeyValueBehaviorTest extends TestCase {
 
-    public function testGenerateValueForThePrimaryKey() {
+    public function testGenerateValueForThePrimaryKey(): void {
         $model = $this->createDummyModel();
         $behavior = $this->createPartialMock(PrimaryKeyValueBehavior::class, ['isValueExists']);
         $behavior->method('isValueExists')->willReturn(false);
-        $behavior->value = function() {
-            return 'mock';
-        };
+        $behavior->value = fn(): string => 'mock';
 
         $model->attachBehavior('primary-key-value-behavior', $behavior);
         $behavior->setPrimaryKeyValue();
         $this->assertSame('mock', $model->id);
     }
 
-    public function testShouldRegenerateValueWhenGeneratedAlreadyExists() {
+    public function testShouldRegenerateValueWhenGeneratedAlreadyExists(): void {
         $model = $this->createDummyModel();
         $behavior = $this->createPartialMock(PrimaryKeyValueBehavior::class, ['isValueExists', 'generateValue']);
         $behavior->expects($this->exactly(3))->method('generateValue')->willReturnOnConsecutiveCalls('1', '2', '3');
@@ -33,11 +31,14 @@ class PrimaryKeyValueBehaviorTest extends TestCase {
         $this->assertSame('3', $model->id);
     }
 
-    private function createDummyModel() {
+    /**
+     * @return \yii\db\ActiveRecord&object{ id: string }
+     */
+    private function createDummyModel(): ActiveRecord {
         return new class extends ActiveRecord {
-            public $id;
+            public string $id;
 
-            public static function primaryKey() {
+            public static function primaryKey(): array {
                 return ['id'];
             }
         };

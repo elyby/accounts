@@ -12,7 +12,7 @@ use Yii;
 
 class EnableTwoFactorAuthFormTest extends TestCase {
 
-    public function testPerformAction() {
+    public function testPerformAction(): void {
         $account = $this->createPartialMock(Account::class, ['save']);
         $account->method('save')->willReturn(true);
         $account->is_otp_enabled = false;
@@ -30,7 +30,7 @@ class EnableTwoFactorAuthFormTest extends TestCase {
         $this->assertTrue($account->is_otp_enabled);
     }
 
-    public function testValidateOtpDisabled() {
+    public function testValidateOtpDisabled(): void {
         $account = new Account();
         $account->is_otp_enabled = true;
         $model = new EnableTwoFactorAuthForm($account);

@@ -8,12 +8,9 @@ use DateInterval;
 use League\OAuth2\Server\AuthorizationServer;
 use yii\base\Component as BaseComponent;
 
-class Component extends BaseComponent {
+final class Component extends BaseComponent {
 
-    /**
-     * @var AuthorizationServer
-     */
-    private $_authServer;
+    private ?AuthorizationServer $_authServer = null;
 
     public function getAuthServer(): AuthorizationServer {
         if ($this->_authServer === null) {
@@ -39,7 +36,7 @@ class Component extends BaseComponent {
             new Repositories\EmptyScopeRepository(),
             new Keys\EmptyKey(),
             '', // Omit the key because we use our own encryption mechanism
-            new ResponseTypes\BearerTokenResponse()
+            new ResponseTypes\BearerTokenResponse(),
         );
         /** @noinspection PhpUnhandledExceptionInspection */
         $authCodeGrant = new Grants\AuthCodeGrant($authCodesRepo, $refreshTokensRepo, new DateInterval('PT10M'));

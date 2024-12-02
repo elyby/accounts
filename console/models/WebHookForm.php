@@ -10,20 +10,23 @@ use yii\base\Model;
 
 class WebHookForm extends Model {
 
-    public $url;
+    public string $url;
 
-    public $secret;
+    public string $secret;
 
-    public $events = [];
+    /**
+     * @var string[]
+     */
+    public array $events = [];
 
-    private $webHook;
-
-    public function __construct(WebHook $webHook, array $config = []) {
+    public function __construct(
+        private WebHook $webHook,
+        array $config = [],
+    ) {
         parent::__construct($config);
-        $this->webHook = $webHook;
-        $this->url = $webHook->url;
-        $this->secret = $webHook->secret;
-        $this->events = (array)$webHook->events;
+        $this->url = $this->webHook->url;
+        $this->secret = $this->webHook->secret;
+        $this->events = $this->webHook->events;
     }
 
     public function rules(): array {

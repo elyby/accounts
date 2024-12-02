@@ -8,7 +8,7 @@ use common\models\Account;
 
 class PardonFormTest extends TestCase {
 
-    public function testValidateAccountBanned() {
+    public function testValidateAccountBanned(): void {
         $account = new Account();
         $account->status = Account::STATUS_BANNED;
         $form = new PardonAccountForm($account);
@@ -22,10 +22,10 @@ class PardonFormTest extends TestCase {
         $this->assertSame([E::ACCOUNT_NOT_BANNED], $form->getErrors('account'));
     }
 
-    public function testPardon() {
+    public function testPardon(): void {
         /** @var Account|\PHPUnit\Framework\MockObject\MockObject $account */
         $account = $this->getMockBuilder(Account::class)
-            ->setMethods(['save'])
+            ->onlyMethods(['save'])
             ->getMock();
 
         $account->expects($this->once())

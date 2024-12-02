@@ -4,7 +4,7 @@ use console\db\Migration;
 
 class m160414_231110_account_nicknames_history extends Migration {
 
-    public function safeUp() {
+    public function safeUp(): void {
         $this->createTable('{{%usernames_history}}', [
             'id' => $this->primaryKey(),
             'username' => $this->string()->notNull(),
@@ -30,7 +30,7 @@ class m160414_231110_account_nicknames_history extends Migration {
         }
     }
 
-    public function safeDown() {
+    public function safeDown(): void {
         $this->dropTable('{{%usernames_history}}');
     }
 

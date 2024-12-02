@@ -26,10 +26,7 @@ class Component extends \yii\base\Component implements RendererInterface {
      */
     public $basePath = '';
 
-    /**
-     * @var Api
-     */
-    private $api;
+    private ?Api $api = null;
 
     public function init(): void {
         parent::init();
@@ -47,11 +44,8 @@ class Component extends \yii\base\Component implements RendererInterface {
     }
 
     /**
-     * @param string $templateName
-     * @param string $locale
-     * @param array $params
+     * @param array<string, mixed> $params
      *
-     * @return string
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function render(string $templateName, string $locale, array $params = []): string {

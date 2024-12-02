@@ -9,23 +9,20 @@ use common\models\Account;
 
 class ChangePasswordCest {
 
-    /**
-     * @var AccountsRoute
-     */
-    private $route;
+    private AccountsRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new AccountsRoute($I);
     }
 
-    public function _after() {
+    public function _after(): void {
         /** @var Account $account */
         $account = Account::findOne(1);
         $account->setPassword('password_0');
         $account->save();
     }
 
-    public function testChangePassword(FunctionalTester $I) {
+    public function testChangePassword(FunctionalTester $I): void {
         $I->wantTo('change my password');
         $id = $I->amAuthenticated();
 
@@ -42,7 +39,7 @@ class ChangePasswordCest {
         ]);
     }
 
-    public function testChangePasswordInternal(OauthSteps $I) {
+    public function testChangePasswordInternal(OauthSteps $I): void {
         $accessToken = $I->getAccessTokenByClientCredentialsGrant(['change_account_password', 'escape_identity_verification']);
         $I->amBearerAuthenticated($accessToken);
 

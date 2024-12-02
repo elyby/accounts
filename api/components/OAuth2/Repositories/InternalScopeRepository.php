@@ -10,11 +10,10 @@ use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use League\OAuth2\Server\Repositories\ScopeRepositoryInterface;
-use Webmozart\Assert\Assert;
 
 class InternalScopeRepository implements ScopeRepositoryInterface {
 
-    private const ALLOWED_SCOPES = [
+    private const array ALLOWED_SCOPES = [
         P::CHANGE_ACCOUNT_USERNAME,
         P::CHANGE_ACCOUNT_PASSWORD,
         P::BLOCK_ACCOUNT,
@@ -22,7 +21,7 @@ class InternalScopeRepository implements ScopeRepositoryInterface {
         P::ESCAPE_IDENTITY_VERIFICATION,
     ];
 
-    private const PUBLIC_SCOPES_TO_INTERNAL_PERMISSIONS = [
+    private const array PUBLIC_SCOPES_TO_INTERNAL_PERMISSIONS = [
         'internal_account_info' => P::OBTAIN_EXTENDED_ACCOUNT_INFO,
     ];
 
@@ -35,21 +34,23 @@ class InternalScopeRepository implements ScopeRepositoryInterface {
         return new ScopeEntity($identifier);
     }
 
+    /**
+     * @throws OAuthServerException
+     */
     public function finalizeScopes(
         array $scopes,
         $grantType,
-        ClientEntityInterface $client,
-        $userIdentifier = null
+        ClientEntityInterface $clientEntity,
+        $userIdentifier = null,
+        ?string $authCodeId = null,
     ): array {
-        /** @var ClientEntity $client */
-        Assert::isInstanceOf($client, ClientEntity::class);
-
         if (empty($scopes)) {
             return $scopes;
         }
 
+        /** @var ClientEntity $clientEntity */
         // Right now we have no available scopes for the client_credentials grant
-        if (!$client->isTrusted()) {
+        if (!$clientEntity->isTrusted()) {
             throw OAuthServerException::invalidScope($scopes[0]->getIdentifier());
         }
 

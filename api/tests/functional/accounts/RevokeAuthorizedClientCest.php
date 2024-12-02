@@ -7,7 +7,7 @@ use api\tests\FunctionalTester;
 
 class RevokeAuthorizedClientCest {
 
-    public function testRevokeAuthorizedClient(FunctionalTester $I) {
+    public function testRevokeAuthorizedClient(FunctionalTester $I): void {
         $id = $I->amAuthenticated('admin');
         $I->sendDELETE("/api/v1/accounts/{$id}/oauth2/authorized/test1");
         $I->canSeeResponseCodeIs(200);
@@ -20,7 +20,7 @@ class RevokeAuthorizedClientCest {
         $I->cantSeeResponseJsonMatchesJsonPath('$.[?(@.id="test1")]');
     }
 
-    public function testRevokeAlreadyRevokedClient(FunctionalTester $I) {
+    public function testRevokeAlreadyRevokedClient(FunctionalTester $I): void {
         $id = $I->amAuthenticated('admin');
         $I->sendDELETE("/api/v1/accounts/{$id}/oauth2/authorized/tlauncher");
         $I->canSeeResponseCodeIs(200);
@@ -30,7 +30,7 @@ class RevokeAuthorizedClientCest {
         ]);
     }
 
-    public function testRevokeForNotOwnIdentity(FunctionalTester $I) {
+    public function testRevokeForNotOwnIdentity(FunctionalTester $I): void {
         $I->amAuthenticated('admin');
         $I->sendDELETE('/api/v1/accounts/2/oauth2/authorized/test1');
         $I->canSeeResponseCodeIs(403);

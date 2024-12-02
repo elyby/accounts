@@ -8,16 +8,13 @@ use api\tests\FunctionalTester;
 
 class UpdateClientCest {
 
-    /**
-     * @var OauthRoute
-     */
-    private $route;
+    private OauthRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new OauthRoute($I);
     }
 
-    public function testUpdateApplication(FunctionalTester $I) {
+    public function testUpdateApplication(FunctionalTester $I): void {
         $I->amAuthenticated('TwoOauthClients');
         $this->route->updateClient('first-test-oauth-client', [
             'name' => 'Updated name',
@@ -42,7 +39,7 @@ class UpdateClientCest {
         ]);
     }
 
-    public function testUpdateMinecraftServer(FunctionalTester $I) {
+    public function testUpdateMinecraftServer(FunctionalTester $I): void {
         $I->amAuthenticated('TwoOauthClients');
         $this->route->updateClient('another-test-oauth-client', [
             'name' => 'Updated server name',

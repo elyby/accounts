@@ -36,19 +36,6 @@ class RequestParser implements RequestParserInterface {
         $parser = Yii::createObject(JsonParser::class);
         $parser->throwException = false;
         $result = $parser->parse($rawBody, $contentType);
-        if (is_string($result)) {
-            Yii::$app->sentry->captureMessage('Received an empty $result from the parser', [
-                'inputText' => $rawBody,
-                'inputTextLength' => mb_strlen($rawBody),
-                'outputText' => $result,
-                'contentType' => $contentType,
-            ], [
-                'level' => 'warning',
-            ]);
-
-            return [];
-        }
-
         if (!empty($result)) {
             return $result;
         }

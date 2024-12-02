@@ -13,39 +13,23 @@ use Yii;
 
 class LoginForm extends ApiForm {
 
-    /**
-     * @var string
-     */
-    public $login;
+    public mixed $login = null;
 
-    /**
-     * @var string
-     */
-    public $password;
+    public mixed $password = null;
 
-    /**
-     * @var string|null
-     */
-    public $totp;
+    public mixed $totp = null;
 
-    /**
-     * @var bool
-     */
-    public $rememberMe = false;
+    public mixed $rememberMe = false;
 
     public function rules(): array {
         return [
             ['login', 'required', 'message' => E::LOGIN_REQUIRED],
             ['login', 'validateLogin'],
 
-            ['password', 'required', 'when' => function(self $model): bool {
-                return !$model->hasErrors();
-            }, 'message' => E::PASSWORD_REQUIRED],
+            ['password', 'required', 'when' => fn(self $model): bool => !$model->hasErrors(), 'message' => E::PASSWORD_REQUIRED],
             ['password', 'validatePassword'],
 
-            ['totp', 'required', 'when' => function(self $model): bool {
-                return !$model->hasErrors() && $model->getAccount()->is_otp_enabled;
-            }, 'message' => E::TOTP_REQUIRED],
+            ['totp', 'required', 'when' => fn(self $model): bool => !$model->hasErrors() && $model->getAccount()->is_otp_enabled, 'message' => E::TOTP_REQUIRED],
             ['totp', 'validateTotp'],
 
             ['login', 'validateActivity'],
@@ -81,7 +65,6 @@ class LoginForm extends ApiForm {
         }
 
         $validator = new TotpValidator(['account' => $account]);
-        $validator->window = 1;
         $validator->validateAttribute($this, $attribute);
     }
 
@@ -99,6 +82,7 @@ class LoginForm extends ApiForm {
         }
     }
 
+    /** @noinspection PhpIncompatibleReturnTypeInspection */
     public function getAccount(): ?Account {
         return Account::find()->andWhereLogin($this->login)->one();
     }
@@ -130,7 +114,7 @@ class LoginForm extends ApiForm {
 
         $transaction->commit();
 
-        return new AuthenticationResult($token, $session ? $session->refresh_token : null);
+        return new AuthenticationResult($token, $session?->refresh_token);
     }
 
 }

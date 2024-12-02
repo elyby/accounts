@@ -11,7 +11,7 @@ class LogoutCest {
     /**
      * @dataProvider getLogoutCases
      */
-    public function logout(FunctionalTester $I, Example $example) {
+    public function logout(FunctionalTester $I, Example $example): void {
         $I->amAuthenticated($example[0]);
         $I->sendPOST('/api/authentication/logout');
         $I->canSeeResponseContainsJson([
@@ -19,7 +19,7 @@ class LogoutCest {
         ]);
     }
 
-    protected function getLogoutCases() {
+    protected function getLogoutCases(): iterable {
         yield 'active account' => ['admin'];
         yield 'account that not accepted the rules' => ['Veleyaba'];
         yield 'account marked for deleting' => ['DeletedAccount'];

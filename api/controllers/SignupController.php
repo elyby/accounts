@@ -37,7 +37,7 @@ class SignupController extends Controller {
         ];
     }
 
-    public function actionIndex() {
+    public function actionIndex(): array {
         $model = new RegistrationForm();
         $model->load(Yii::$app->request->post());
         if (!$model->signup()) {
@@ -52,7 +52,7 @@ class SignupController extends Controller {
         ];
     }
 
-    public function actionRepeatMessage() {
+    public function actionRepeatMessage(): array {
         $model = new RepeatAccountActivationForm();
         $model->load(Yii::$app->request->post());
         if (!$model->sendRepeatMessage()) {
@@ -77,7 +77,7 @@ class SignupController extends Controller {
         ];
     }
 
-    public function actionConfirm() {
+    public function actionConfirm(): array {
         $model = new ConfirmEmailForm();
         $model->load(Yii::$app->request->post());
         if (!($result = $model->confirm())) {

@@ -9,16 +9,13 @@ use api\tests\FunctionalTester;
 
 class IdentityInfoCest {
 
-    /**
-     * @var IdentityInfoRoute
-     */
-    private $route;
+    private IdentityInfoRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new IdentityInfoRoute($I);
     }
 
-    public function testGetErrorIfNoAccessToken(OauthSteps $I) {
+    public function testGetErrorIfNoAccessToken(OauthSteps $I): void {
         $I->wantToTest('behavior when this endpoint called without Authorization header');
         $this->route->info();
         $I->canSeeResponseCodeIs(401);
@@ -30,7 +27,7 @@ class IdentityInfoCest {
         ]);
     }
 
-    public function testGetErrorIfNotEnoughPerms(OauthSteps $I) {
+    public function testGetErrorIfNotEnoughPerms(OauthSteps $I): void {
         $I->wantToTest('behavior when this endpoint called with token, that have not enough scopes');
         $accessToken = $I->getAccessToken();
         $I->amBearerAuthenticated($accessToken);
@@ -44,7 +41,7 @@ class IdentityInfoCest {
         ]);
     }
 
-    public function testGetInfo(OauthSteps $I) {
+    public function testGetInfo(OauthSteps $I): void {
         $accessToken = $I->getAccessToken(['account_info']);
         $I->amBearerAuthenticated($accessToken);
         $this->route->info();
@@ -61,7 +58,7 @@ class IdentityInfoCest {
         $I->cantSeeResponseJsonMatchesJsonPath('$.email');
     }
 
-    public function testGetInfoWithEmail(OauthSteps $I) {
+    public function testGetInfoWithEmail(OauthSteps $I): void {
         $accessToken = $I->getAccessToken(['account_info', 'account_email']);
         $I->amBearerAuthenticated($accessToken);
         $this->route->info();

@@ -4,7 +4,7 @@ use console\db\Migration;
 
 class m160311_211107_password_change_time extends Migration {
 
-    public function safeUp() {
+    public function safeUp(): void {
         $this->addColumn('{{%accounts}}', 'password_changed_at', $this->integer()->notNull());
         $this->getDb()->createCommand('
             UPDATE {{%accounts}}
@@ -13,7 +13,7 @@ class m160311_211107_password_change_time extends Migration {
         $this->dropColumn('{{%accounts}}', 'auth_key');
     }
 
-    public function safeDown() {
+    public function safeDown(): void {
         $this->dropColumn('{{%accounts}}', 'password_changed_at');
         $this->addColumn('{{%accounts}}', 'auth_key', $this->string(32)->notNull() . ' AFTER `status`');
     }

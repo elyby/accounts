@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace api\tests\_support\models\authentication;
+namespace api\tests\unit\models\authentication;
 
 use api\models\authentication\LoginForm;
 use api\tests\unit\TestCase;
@@ -17,7 +17,7 @@ class LoginFormTest extends TestCase {
         ];
     }
 
-    public function testValidateLogin() {
+    public function testValidateLogin(): void {
         $model = $this->createWithAccount(null);
         $model->login = 'mock-login';
         $model->validateLogin('login');
@@ -29,7 +29,7 @@ class LoginFormTest extends TestCase {
         $this->assertEmpty($model->getErrors('login'));
     }
 
-    public function testValidatePassword() {
+    public function testValidatePassword(): void {
         $account = new Account();
         $account->password_hash = '$2y$04$N0q8DaHzlYILCnLYrpZfEeWKEqkPZzbawiS07GbSr/.xbRNweSLU6'; // 12345678
         $account->password_hash_strategy = Account::PASS_HASH_STRATEGY_YII2;
@@ -45,7 +45,7 @@ class LoginFormTest extends TestCase {
         $this->assertEmpty($model->getErrors('password'));
     }
 
-    public function testValidateTotp() {
+    public function testValidateTotp(): void {
         $account = new Account(['password' => '12345678']);
         $account->password = '12345678';
         $account->is_otp_enabled = true;
@@ -65,7 +65,7 @@ class LoginFormTest extends TestCase {
         $this->assertEmpty($model->getErrors('totp'));
     }
 
-    public function testValidateActivity() {
+    public function testValidateActivity(): void {
         $account = new Account();
         $account->status = Account::STATUS_REGISTERED;
         $model = $this->createWithAccount($account);
@@ -85,7 +85,7 @@ class LoginFormTest extends TestCase {
         $this->assertEmpty($model->getErrors('login'));
     }
 
-    public function testLogin() {
+    public function testLogin(): void {
         $account = new Account();
         $account->id = 1;
         $account->username = 'erickskrauch';
@@ -100,7 +100,7 @@ class LoginFormTest extends TestCase {
         $this->assertNotNull($model->login(), 'model should login user');
     }
 
-    public function testLoginWithRehashing() {
+    public function testLoginWithRehashing(): void {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'user-with-old-password-type');
         $model = $this->createWithAccount($account);

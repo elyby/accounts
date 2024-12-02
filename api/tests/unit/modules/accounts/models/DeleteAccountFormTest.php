@@ -11,6 +11,7 @@ use common\notifications\AccountEditNotification;
 use common\tasks\CreateWebHooksDeliveries;
 use common\tasks\DeleteAccount;
 use common\tests\fixtures\AccountFixture;
+use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionObject;
 use Yii;
 use yii\queue\Queue;
@@ -18,9 +19,9 @@ use yii\queue\Queue;
 class DeleteAccountFormTest extends TestCase {
 
     /**
-     * @var Queue|\PHPUnit\Framework\MockObject\MockObject
+     * @var Queue|MockObject
      */
-    private Queue $queue;
+    private Queue|MockObject $queue;
 
     public function _fixtures(): array {
         return [
@@ -35,7 +36,7 @@ class DeleteAccountFormTest extends TestCase {
         Yii::$app->set('queue', $this->queue);
     }
 
-    public function testPerformAction() {
+    public function testPerformAction(): void {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'admin');
         $this->queue
@@ -46,8 +47,8 @@ class DeleteAccountFormTest extends TestCase {
         $this->queue
             ->expects($this->exactly(2))
             ->method('push')
-            ->withConsecutive(
-                [$this->callback(function(CreateWebHooksDeliveries $task) use ($account): bool {
+            ->willReturnCallback(function($task) use ($account): bool {
+                if ($task instanceof CreateWebHooksDeliveries) {
                     /** @var AccountEditNotification $notification */
                     $notification = ReflectionHelper::readPrivateProperty($task, 'notification');
                     $this->assertInstanceOf(AccountEditNotification::class, $notification);
@@ -55,16 +56,18 @@ class DeleteAccountFormTest extends TestCase {
                     $this->assertTrue($notification->getPayloads()['isDeleted']);
 
                     return true;
-                })],
-                [$this->callback(function(DeleteAccount $task) use ($account): bool {
+                }
+
+                if ($task instanceof DeleteAccount) {
                     $obj = new ReflectionObject($task);
                     $property = $obj->getProperty('accountId');
-                    $property->setAccessible(true);
                     $this->assertSame($account->id, $property->getValue($task));
 
                     return true;
-                })],
-            );
+                }
+
+                return false;
+            });
 
         $model = new DeleteAccountForm($account, [
             'password' => 'password_0',
@@ -74,7 +77,7 @@ class DeleteAccountFormTest extends TestCase {
         $this->assertEqualsWithDelta(time(), $account->deleted_at, 5);
     }
 
-    public function testPerformActionWithInvalidPassword() {
+    public function testPerformActionWithInvalidPassword(): void {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'admin');
         $model = new DeleteAccountForm($account, [
@@ -84,7 +87,7 @@ class DeleteAccountFormTest extends TestCase {
         $this->assertSame(['password' => ['error.password_incorrect']], $model->getErrors());
     }
 
-    public function testPerformActionForAlreadyDeletedAccount() {
+    public function testPerformActionForAlreadyDeletedAccount(): void {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'deleted-account');
         $model = new DeleteAccountForm($account, [

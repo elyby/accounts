@@ -3,26 +3,18 @@ declare(strict_types=1);
 
 namespace api\models\authentication;
 
-use Lcobucci\JWT\Token;
+use DateTimeImmutable;
+use Lcobucci\JWT\UnencryptedToken;
 
-class AuthenticationResult {
+final readonly class AuthenticationResult {
 
-    /**
-     * @var Token
-     */
-    private $token;
-
-    /**
-     * @var string|null
-     */
-    private $refreshToken;
-
-    public function __construct(Token $token, string $refreshToken = null) {
-        $this->token = $token;
-        $this->refreshToken = $refreshToken;
+    public function __construct(
+        private UnencryptedToken $token,
+        private ?string $refreshToken = null,
+    ) {
     }
 
-    public function getToken(): Token {
+    public function getToken(): UnencryptedToken {
         return $this->token;
     }
 
@@ -31,9 +23,11 @@ class AuthenticationResult {
     }
 
     public function formatAsOAuth2Response(): array {
+        /** @var DateTimeImmutable $expiresAt */
+        $expiresAt = $this->token->claims()->get('exp');
         $response = [
-            'access_token' => (string)$this->token,
-            'expires_in' => $this->token->getClaim('exp') - time(),
+            'access_token' => $this->token->toString(),
+            'expires_in' => $expiresAt->getTimestamp() - (new DateTimeImmutable())->getTimestamp(),
         ];
 
         $refreshToken = $this->refreshToken;

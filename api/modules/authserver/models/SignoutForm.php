@@ -47,7 +47,7 @@ class SignoutForm extends ApiForm {
 
             // The previous authorization server implementation used the nickname field instead of username,
             // so we keep such behavior
-            $attribute = strpos($this->username, '@') === false ? 'nickname' : 'email';
+            $attribute = !str_contains($this->username, '@') ? 'nickname' : 'email';
 
             throw new ForbiddenOperationException("Invalid credentials. Invalid {$attribute} or password.");
         }

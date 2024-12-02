@@ -15,23 +15,20 @@ class OauthClientFormFactory {
      * @throws UnsupportedOauthClientType
      */
     public static function create(OauthClient $client): OauthClientTypeForm {
-        switch ($client->type) {
-            case OauthClient::TYPE_APPLICATION:
-                return new ApplicationType([
-                    'name' => $client->name,
-                    'websiteUrl' => $client->website_url,
-                    'description' => $client->description,
-                    'redirectUri' => $client->redirect_uri,
-                ]);
-            case OauthClient::TYPE_MINECRAFT_SERVER:
-                return new MinecraftServerType([
-                    'name' => $client->name,
-                    'websiteUrl' => $client->website_url,
-                    'minecraftServerIp' => $client->minecraft_server_ip,
-                ]);
-        }
-
-        throw new UnsupportedOauthClientType($client->type);
+        return match ($client->type) {
+            OauthClient::TYPE_APPLICATION => new ApplicationType([
+                'name' => $client->name,
+                'websiteUrl' => $client->website_url,
+                'description' => $client->description,
+                'redirectUri' => $client->redirect_uri,
+            ]),
+            OauthClient::TYPE_MINECRAFT_SERVER => new MinecraftServerType([
+                'name' => $client->name,
+                'websiteUrl' => $client->website_url,
+                'minecraftServerIp' => $client->minecraft_server_ip,
+            ]),
+            default => throw new UnsupportedOauthClientType($client->type),
+        };
     }
 
 }

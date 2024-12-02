@@ -18,7 +18,7 @@ class ChangeUsernameFormTest extends TestCase {
         ];
     }
 
-    public function testPerformAction() {
+    public function testPerformAction(): void {
         $model = new ChangeUsernameForm($this->getAccount(), [
             'password' => 'password_0',
             'username' => 'my_new_nickname',
@@ -32,7 +32,7 @@ class ChangeUsernameFormTest extends TestCase {
         $this->assertSame($job->username, 'my_new_nickname');
     }
 
-    public function testPerformActionWithTheSameUsername() {
+    public function testPerformActionWithTheSameUsername(): void {
         $account = $this->getAccount();
         $username = $account->username;
         $model = new ChangeUsernameForm($account, [
@@ -49,8 +49,8 @@ class ChangeUsernameFormTest extends TestCase {
         $this->assertNull($this->tester->grabLastQueuedJob());
     }
 
-    public function testPerformActionWithChangeCase() {
-        $newUsername = mb_strtoupper($this->tester->grabFixture('accounts', 'admin')['username']);
+    public function testPerformActionWithChangeCase(): void {
+        $newUsername = mb_strtoupper((string)$this->tester->grabFixture('accounts', 'admin')['username']);
         $model = new ChangeUsernameForm($this->getAccount(), [
             'password' => 'password_0',
             'username' => $newUsername,
@@ -60,7 +60,7 @@ class ChangeUsernameFormTest extends TestCase {
         $this->assertInstanceOf(
             UsernameHistory::class,
             UsernameHistory::findOne(['username' => $newUsername]),
-            'username should change, if we change case of some letters'
+            'username should change, if we change case of some letters',
         );
         /** @var PullMojangUsername $job */
         $job = $this->tester->grabLastQueuedJob();

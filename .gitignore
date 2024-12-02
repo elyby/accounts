@@ -2,25 +2,23 @@
 .idea
 
 # Composer
+composer.phar
 /vendor
 
 # Mac DS_Store Files
 .DS_Store
-
-# npm debug
-npm-debug*
 
 # Docker and related files
 /docker-compose.yml
 /docker-compose.override.yml
 /.env
 
-# id_rsa
-/id_rsa
-
 # PHP-CS-Fixer
-.php_cs
-.php_cs.cache
+.php-cs-fixer.php
+.php-cs-fixer.cache
+
+# PHPStan
+phpstan.neon
 
 # Codeception
 codeception.yml

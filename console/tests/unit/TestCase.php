@@ -3,12 +3,15 @@ declare(strict_types=1);
 
 namespace console\tests\unit;
 
+use AllowDynamicProperties;
 use Codeception\Test\Unit;
 use common\tests\helpers\ExtendedPHPMock;
+use console\tests\UnitTester;
 
 /**
- * @property \console\tests\UnitTester $tester
+ * @property UnitTester $tester
  */
+#[AllowDynamicProperties]
 class TestCase extends Unit {
     use ExtendedPHPMock;
 

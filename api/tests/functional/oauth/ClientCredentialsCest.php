@@ -7,7 +7,7 @@ use api\tests\FunctionalTester;
 
 class ClientCredentialsCest {
 
-    public function issueTokenWithPublicScopes(FunctionalTester $I) {
+    public function issueTokenWithPublicScopes(FunctionalTester $I): void {
         $I->wantTo('issue token as not trusted client and require only public scopes');
         // We don't have any public scopes yet for this grant, so the test runs with an empty set
         $I->sendPOST('/api/oauth2/v1/token', [
@@ -19,7 +19,7 @@ class ClientCredentialsCest {
         $this->assertSuccessResponse($I);
     }
 
-    public function issueTokenWithInternalScopesAsNotTrustedClient(FunctionalTester $I) {
+    public function issueTokenWithInternalScopesAsNotTrustedClient(FunctionalTester $I): void {
         $I->wantTo('issue token as not trusted client and require some internal scope');
         $I->sendPOST('/api/oauth2/v1/token', [
             'grant_type' => 'client_credentials',
@@ -34,7 +34,7 @@ class ClientCredentialsCest {
         ]);
     }
 
-    public function issueTokenWithInternalScopesAsTrustedClient(FunctionalTester $I) {
+    public function issueTokenWithInternalScopesAsTrustedClient(FunctionalTester $I): void {
         $I->wantTo('issue token as trusted client and require some internal scope');
         $I->sendPOST('/api/oauth2/v1/token', [
             'grant_type' => 'client_credentials',
@@ -45,7 +45,7 @@ class ClientCredentialsCest {
         $this->assertSuccessResponse($I);
     }
 
-    public function issueTokenByPassingInvalidClientId(FunctionalTester $I) {
+    public function issueTokenByPassingInvalidClientId(FunctionalTester $I): void {
         $I->wantToTest('behavior on passing invalid client_id');
         $I->sendPOST('/api/oauth2/v1/token', [
             'grant_type' => 'client_credentials',
@@ -59,7 +59,7 @@ class ClientCredentialsCest {
         ]);
     }
 
-    public function issueTokenByPassingInvalidClientSecret(FunctionalTester $I) {
+    public function issueTokenByPassingInvalidClientSecret(FunctionalTester $I): void {
         $I->wantTo('check behavior on passing invalid client_secret');
         $I->sendPOST('/api/oauth2/v1/token', [
             'grant_type' => 'client_credentials',

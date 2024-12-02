@@ -14,7 +14,7 @@ use const common\LATEST_RULES_VERSION;
 
 class AccountOwnerTest extends TestCase {
 
-    public function testExecute() {
+    public function testExecute(): void {
         $rule = new AccountOwner();
         $item = new Item();
 
@@ -63,7 +63,7 @@ class AccountOwnerTest extends TestCase {
         $this->assertFalse($rule->execute('token', $item, ['accountId' => 1, 'optionalRules' => true]));
     }
 
-    public function testExecuteWithoutAccountId() {
+    public function testExecuteWithoutAccountId(): void {
         $this->expectException(InvalidArgumentException::class);
 
         $rule = new AccountOwner();

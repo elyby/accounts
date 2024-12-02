@@ -95,7 +95,7 @@ class SessionController extends Controller {
         $hasJoinedForm = new HasJoinedForm($protocol);
         try {
             $hasJoinedForm->hasJoined();
-        } catch (ForbiddenOperationException $e) {
+        } catch (ForbiddenOperationException) {
             return 'NO';
         } catch (SessionServerException $e) {
             Yii::$app->response->statusCode = $e->statusCode;
@@ -116,7 +116,7 @@ class SessionController extends Controller {
     public function actionProfile(string $uuid, string $unsigned = null): ?array {
         try {
             $uuid = Uuid::fromString($uuid)->toString();
-        } catch (\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException) {
             throw new IllegalArgumentException('Invalid uuid format.');
         }
 

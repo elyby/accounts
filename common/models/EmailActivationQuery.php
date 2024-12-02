@@ -6,9 +6,10 @@ namespace common\models;
 use yii\db\ActiveQuery;
 
 /**
+ * @extends \yii\db\ActiveQuery<\common\models\EmailActivation>
  * @see EmailActivation
  */
-class EmailActivationQuery extends ActiveQuery {
+final class EmailActivationQuery extends ActiveQuery {
 
     public function withType(int ...$typeId): self {
         return $this->andWhere(['type' => $typeId]);

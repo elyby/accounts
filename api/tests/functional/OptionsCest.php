@@ -6,16 +6,13 @@ use api\tests\FunctionalTester;
 
 class OptionsCest {
 
-    /**
-     * @var OptionsRoute
-     */
-    private $route;
+    private OptionsRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new OptionsRoute($I);
     }
 
-    public function testRecaptchaPublicKey(FunctionalTester $I) {
+    public function testRecaptchaPublicKey(FunctionalTester $I): void {
         $I->wantTo('Get recaptcha public key');
 
         $this->route->get();

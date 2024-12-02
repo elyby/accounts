@@ -1,4 +1,5 @@
 <?php
+
 return [
     'version' => '{{PLACE_VERSION_HERE}}', // This will be replaced by build tool
     'vendorPath' => dirname(__DIR__, 2) . '/vendor',
@@ -55,10 +56,10 @@ return [
             ],
         ],
         'mailer' => [
-            'class' => yii\swiftmailer\Mailer::class,
+            'class' => yii\symfonymailer\Mailer::class,
             'viewPath' => '@common/mail',
             'transport' => [
-                'class' => Swift_SmtpTransport::class,
+                'class' => Symfony\Component\Mailer\Transport\Smtp\SmtpTransport::class,
                 'host' => getenv('SMTP_HOST'),
                 'username' => getenv('SMTP_USER'),
                 'password' => getenv('SMTP_PASS'),
@@ -104,7 +105,7 @@ return [
         'statsd' => [
             'class' => common\components\StatsD::class,
             'host' => getenv('STATSD_HOST'),
-            'port' => getenv('STATSD_PORT') ?: 8125,
+            'port' => (int)getenv('STATSD_PORT') ?: 8125,
             'namespace' => getenv('STATSD_NAMESPACE') ?: 'ely.accounts.' . gethostname() . '.app',
         ],
         'queue' => [

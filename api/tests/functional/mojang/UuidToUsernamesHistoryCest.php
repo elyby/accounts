@@ -1,5 +1,5 @@
 <?php
-namespace api\tests\functional\authserver;
+namespace api\tests\functional\mojang;
 
 use api\tests\_pages\MojangApiRoute;
 use api\tests\FunctionalTester;
@@ -7,16 +7,13 @@ use function Ramsey\Uuid\v4 as uuid;
 
 class UuidToUsernamesHistoryCest {
 
-    /**
-     * @var MojangApiRoute
-     */
-    private $route;
+    private MojangApiRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new MojangApiRoute($I);
     }
 
-    public function getUsernameByUuid(FunctionalTester $I) {
+    public function getUsernameByUuid(FunctionalTester $I): void {
         $I->wantTo('get usernames history by uuid for user, without history');
         $this->route->usernamesByUuid('df936908b2e1544d96f82977ec213022');
         $I->canSeeResponseCodeIs(200);
@@ -28,7 +25,7 @@ class UuidToUsernamesHistoryCest {
         ]);
     }
 
-    public function getUsernameByUuidWithHistory(FunctionalTester $I) {
+    public function getUsernameByUuidWithHistory(FunctionalTester $I): void {
         $I->wantTo('get usernames history by dashed uuid and expect history with time marks');
         $this->route->usernamesByUuid('d6b3e935-6466-4cb8-86db-b5df91ae6541');
         $I->canSeeResponseCodeIs(200);
@@ -48,21 +45,21 @@ class UuidToUsernamesHistoryCest {
         ]);
     }
 
-    public function passWrongUuid(FunctionalTester $I) {
+    public function passWrongUuid(FunctionalTester $I): void {
         $I->wantTo('get user username by some wrong uuid');
         $this->route->usernamesByUuid(uuid());
         $I->canSeeResponseCodeIs(204);
         $I->canSeeResponseEquals('');
     }
 
-    public function passUuidOfDeletedAccount(FunctionalTester $I) {
+    public function passUuidOfDeletedAccount(FunctionalTester $I): void {
         $I->wantTo('get username by passing uuid of the account marked for deleting');
         $this->route->usernamesByUuid('6383de63-8f85-4ed5-92b7-5401a1fa68cd');
         $I->canSeeResponseCodeIs(204);
         $I->canSeeResponseEquals('');
     }
 
-    public function passWrongUuidFormat(FunctionalTester $I) {
+    public function passWrongUuidFormat(FunctionalTester $I): void {
         $I->wantTo('call profile route with invalid uuid string');
         $this->route->usernamesByUuid('bla-bla-bla');
         $I->canSeeResponseCodeIs(400);

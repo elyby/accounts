@@ -3,15 +3,15 @@ namespace api\modules\session\models\protocols;
 
 class LegacyJoin extends BaseJoin {
 
-    private $user;
+    private readonly string $user;
 
-    private $sessionId;
+    private string $sessionId;
 
-    private $serverId;
+    private readonly string $serverId;
 
     private $accessToken;
 
-    private $uuid;
+    private ?string $uuid = null;
 
     public function __construct(string $user, string $sessionId, string $serverId) {
         $this->user = trim($user);
@@ -46,7 +46,7 @@ class LegacyJoin extends BaseJoin {
      * Split by ':' to take into account authorization in modern launchers and login to an legacy version of the game.
      * The sessionId is passed on as "token:{accessToken}:{uuid}", so it needs to be processed
      */
-    private function parseSessionId(string $sessionId) {
+    private function parseSessionId(string $sessionId): void {
         $parts = explode(':', $sessionId);
         if (count($parts) === 3) {
             $this->accessToken = $parts[1];

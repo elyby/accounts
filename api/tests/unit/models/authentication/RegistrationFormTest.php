@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace api\tests\_support\models\authentication;
+namespace api\tests\unit\models\authentication;
 
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\authentication\RegistrationForm;
@@ -25,7 +25,7 @@ class RegistrationFormTest extends TestCase {
         parent::setUp();
         $this->mockRequest();
         Yii::$container->set(ReCaptchaValidator::class, new class($this->createMock(ClientInterface::class)) extends ReCaptchaValidator {
-            public function validateValue($value) {
+            public function validateValue($value): ?array {
                 return null;
             }
         });
@@ -39,7 +39,7 @@ class RegistrationFormTest extends TestCase {
         ];
     }
 
-    public function testValidatePasswordAndRePasswordMatch() {
+    public function testValidatePasswordAndRePasswordMatch(): void {
         $model = new RegistrationForm([
             'password' => 'enough-length',
             'rePassword' => 'but-mismatch',
@@ -55,7 +55,7 @@ class RegistrationFormTest extends TestCase {
         $this->assertEmpty($model->getErrors('rePassword'));
     }
 
-    public function testSignup() {
+    public function testSignup(): void {
         $this->getFunctionMock(EmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
         $this->getFunctionMock(EmailValidator::class, 'dns_get_record')->expects($this->any())->willReturn(['']);
         $model = new RegistrationForm([
@@ -73,7 +73,7 @@ class RegistrationFormTest extends TestCase {
         $this->assertSame('ru', $account->lang, 'lang is set');
     }
 
-    public function testSignupWithDefaultLanguage() {
+    public function testSignupWithDefaultLanguage(): void {
         $this->getFunctionMock(EmailValidator::class, 'checkdnsrr')->expects($this->any())->willReturn(true);
         $this->getFunctionMock(EmailValidator::class, 'dns_get_record')->expects($this->any())->willReturn(['']);
         $model = new RegistrationForm([
@@ -90,10 +90,7 @@ class RegistrationFormTest extends TestCase {
         $this->assertSame('en', $account->lang, 'lang is set');
     }
 
-    /**
-     * @param Account|null $account
-     */
-    private function expectSuccessRegistration($account) {
+    private function expectSuccessRegistration(?Account $account): void {
         $this->assertInstanceOf(Account::class, $account, 'user should be valid');
         $this->assertTrue($account->validatePassword('some_password'), 'password should be correct');
         $this->assertNotEmpty($account->uuid, 'uuid is set');
@@ -117,7 +114,7 @@ class RegistrationFormTest extends TestCase {
                 ->andWhere(['account_id' => $account->id])
                 ->andWhere(['>=', 'applied_in', $account->created_at])
                 ->exists(),
-            'username history record exists in database'
+            'username history record exists in database',
         );
 
         /** @var SendRegistrationEmail $job */
@@ -130,9 +127,9 @@ class RegistrationFormTest extends TestCase {
         $this->assertSame('http://localhost/activation/' . $activation->key, $job->link);
     }
 
-    private function mockRequest($ip = '88.225.20.236') {
+    private function mockRequest(string $ip = '88.225.20.236'): Request {
         $request = $this->getMockBuilder(Request::class)
-            ->setMethods(['getUserIP'])
+            ->onlyMethods(['getUserIP'])
             ->getMock();
 
         $request

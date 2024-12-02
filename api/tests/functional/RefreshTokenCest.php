@@ -6,7 +6,7 @@ use api\tests\FunctionalTester;
 
 class RefreshTokenCest {
 
-    public function testRefreshInvalidToken(FunctionalTester $I) {
+    public function testRefreshInvalidToken(FunctionalTester $I): void {
         $route = new AuthenticationRoute($I);
 
         $I->wantTo('get error.refresh_token_not_exist if passed token is invalid');
@@ -20,7 +20,7 @@ class RefreshTokenCest {
         ]);
     }
 
-    public function testRefreshToken(FunctionalTester $I) {
+    public function testRefreshToken(FunctionalTester $I): void {
         $route = new AuthenticationRoute($I);
 
         $I->wantTo('get new access_token by my refresh_token');

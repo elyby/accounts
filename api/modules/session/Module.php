@@ -9,11 +9,11 @@ class Module extends \yii\base\Module {
 
     public $defaultRoute = 'session';
 
-    public static function info($message) {
+    public static function info($message): void {
         Yii::info($message, 'session');
     }
 
-    public static function error($message) {
+    public static function error($message): void {
         Yii::info($message, 'session');
     }
 

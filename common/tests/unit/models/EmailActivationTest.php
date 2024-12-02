@@ -21,18 +21,18 @@ class EmailActivationTest extends TestCase {
     /**
      * @dataProvider getInstantiateTestCases
      */
-    public function testInstantiate(int $type, string $expectedClassType) {
+    public function testInstantiate(int $type, string $expectedClassType): void {
         $this->assertInstanceOf($expectedClassType, EmailActivation::findOne(['type' => $type]));
     }
 
-    public function getInstantiateTestCases() {
+    public function getInstantiateTestCases(): iterable {
         yield [EmailActivation::TYPE_REGISTRATION_EMAIL_CONFIRMATION, confirmations\RegistrationConfirmation::class];
         yield [EmailActivation::TYPE_FORGOT_PASSWORD_KEY, confirmations\ForgotPassword::class];
         yield [EmailActivation::TYPE_CURRENT_EMAIL_CONFIRMATION, confirmations\CurrentEmailConfirmation::class];
         yield [EmailActivation::TYPE_NEW_EMAIL_CONFIRMATION, confirmations\NewEmailConfirmation::class];
     }
 
-    public function testCanResend() {
+    public function testCanResend(): void {
         $model = $this->createPartialMock(EmailActivation::class, ['getResendTimeout']);
         $model->method('getResendTimeout')->willReturn(new DateInterval('PT10M'));
 
@@ -45,7 +45,7 @@ class EmailActivationTest extends TestCase {
         $this->assertEqualsWithDelta(Carbon::now()->subSecond(), $model->canResendAt(), 3);
     }
 
-    public function testCanResendWithNullTimeout() {
+    public function testCanResendWithNullTimeout(): void {
         $model = $this->createPartialMock(EmailActivation::class, ['getResendTimeout']);
         $model->method('getResendTimeout')->willReturn(null);
 
@@ -54,7 +54,7 @@ class EmailActivationTest extends TestCase {
         $this->assertEqualsWithDelta(Carbon::now(), $model->canResendAt(), 3);
     }
 
-    public function testIsStale() {
+    public function testIsStale(): void {
         $model = $this->createPartialMock(EmailActivation::class, ['getExpireDuration']);
         $model->method('getExpireDuration')->willReturn(new DateInterval('PT10M'));
 
@@ -65,7 +65,7 @@ class EmailActivationTest extends TestCase {
         $this->assertTrue($model->isStale());
     }
 
-    public function testIsStaleWithNullDuration() {
+    public function testIsStaleWithNullDuration(): void {
         $model = $this->createPartialMock(EmailActivation::class, ['getExpireDuration']);
         $model->method('getExpireDuration')->willReturn(null);
 

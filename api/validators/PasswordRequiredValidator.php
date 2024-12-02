@@ -24,12 +24,12 @@ class PasswordRequiredValidator extends Validator {
      */
     public $user = 'user';
 
-    public function init() {
+    public function init(): void {
         parent::init();
         $this->user = Instance::ensure($this->user, User::class);
     }
 
-    protected function validateValue($value) {
+    protected function validateValue($value): ?array {
         if ($this->user->can(P::ESCAPE_IDENTITY_VERIFICATION)) {
             return null;
         }

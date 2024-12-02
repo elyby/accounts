@@ -10,33 +10,21 @@ use Yii;
 use yii\base\NotSupportedException;
 use yii\web\UnauthorizedHttpException;
 
-class LegacyOAuth2Identity implements IdentityInterface {
+readonly class LegacyOAuth2Identity implements IdentityInterface {
 
     /**
-     * @var string
+     * @param string[] $scopes
      */
-    private $accessToken;
-
-    /**
-     * @var string
-     */
-    private $sessionId;
-
-    /**
-     * @var string[]
-     */
-    private $scopes;
-
-    private function __construct(string $accessToken, int $sessionId, array $scopes) {
-        $this->accessToken = $accessToken;
-        $this->sessionId = $sessionId;
-        $this->scopes = $scopes;
+    private function __construct(
+        private string $accessToken,
+        private int $sessionId,
+        private array $scopes,
+    ) {
     }
 
     /**
      * @inheritdoc
      * @throws UnauthorizedHttpException
-     * @return IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null): IdentityInterface {
         $tokenParams = self::findRecordOnLegacyStorage($token);
@@ -48,16 +36,11 @@ class LegacyOAuth2Identity implements IdentityInterface {
             throw new UnauthorizedHttpException('Token expired');
         }
 
-        return new static($token, $tokenParams['session_id'], $tokenParams['scopes']);
+        return new self($token, $tokenParams['session_id'], $tokenParams['scopes']);
     }
 
     public function getAccount(): ?Account {
-        $session = $this->getSession();
-        if ($session === null) {
-            return null;
-        }
-
-        return $session->account;
+        return $this->getSession()?->account;
     }
 
     /**
@@ -71,7 +54,7 @@ class LegacyOAuth2Identity implements IdentityInterface {
         return $this->accessToken;
     }
 
-    // @codeCoverageIgnoreStart
+    /** @codeCoverageIgnoreStart */
     public function getAuthKey() {
         throw new NotSupportedException('This method used for cookie auth, except we using Bearer auth');
     }
@@ -84,8 +67,7 @@ class LegacyOAuth2Identity implements IdentityInterface {
         throw new NotSupportedException('This method used for cookie auth, except we using Bearer auth');
     }
 
-    // @codeCoverageIgnoreEnd
-
+    /** @codeCoverageIgnoreEnd */
     private static function findRecordOnLegacyStorage(string $accessToken): ?array {
         $record = Yii::$app->redis->get("oauth:access:tokens:{$accessToken}");
         if ($record === null) {
@@ -93,8 +75,8 @@ class LegacyOAuth2Identity implements IdentityInterface {
         }
 
         try {
-            $data = json_decode($record, true, 512, JSON_THROW_ON_ERROR);
-        } catch (Exception $e) {
+            $data = json_decode((string)$record, true, 512, JSON_THROW_ON_ERROR);
+        } catch (Exception) {
             return null;
         }
 

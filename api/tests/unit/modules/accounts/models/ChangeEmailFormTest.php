@@ -19,7 +19,7 @@ class ChangeEmailFormTest extends TestCase {
         ];
     }
 
-    public function testChangeEmail() {
+    public function testChangeEmail(): void {
         /** @var Account $account */
         $account = Account::findOne($this->getAccountId());
         /** @var EmailActivation $newEmailConfirmationFixture */

@@ -16,7 +16,6 @@ use yii\test\InitDbFixture;
  * TODO: try to remove
  */
 class FixtureHelper extends Module {
-
     /**
      * Redeclare visibility because codeception includes all public methods that do not start with "_"
      * and are not excluded by module settings, in actor class.
@@ -30,21 +29,21 @@ class FixtureHelper extends Module {
         getFixture as protected;
     }
 
-    public function _before(TestInterface $test) {
+    public function _before(TestInterface $test): void {
         $this->loadFixtures();
     }
 
-    public function _after(TestInterface $test) {
+    public function _after(TestInterface $test): void {
         $this->unloadFixtures();
     }
 
-    public function globalFixtures() {
+    public function globalFixtures(): array {
         return [
             InitDbFixture::class,
         ];
     }
 
-    public function fixtures() {
+    public function fixtures(): array {
         return [
             'accounts' => fixtures\AccountFixture::class,
             'accountSessions' => fixtures\AccountSessionFixture::class,

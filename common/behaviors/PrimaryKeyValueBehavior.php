@@ -54,7 +54,7 @@ class PrimaryKeyValueBehavior extends Behavior {
         $owner = $this->owner;
         $primaryKeys = $owner::primaryKey();
         if (!isset($primaryKeys[0])) {
-            throw new InvalidConfigException('"' . get_class($owner) . '" must have a primary key.');
+            throw new InvalidConfigException('"' . $owner::class . '" must have a primary key.');
         }
 
         if (count($primaryKeys) > 1) {

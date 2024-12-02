@@ -7,7 +7,7 @@ use api\tests\FunctionalTester;
 
 class DeleteCest {
 
-    public function deleteMyAccountWithValidPassword(FunctionalTester $I) {
+    public function deleteMyAccountWithValidPassword(FunctionalTester $I): void {
         $id = $I->amAuthenticated();
         $I->sendDELETE("/api/v1/accounts/{$id}", [
             'password' => 'password_0',
@@ -24,7 +24,7 @@ class DeleteCest {
         ]);
     }
 
-    public function deleteMyAccountWithNotAcceptedRules(FunctionalTester $I) {
+    public function deleteMyAccountWithNotAcceptedRules(FunctionalTester $I): void {
         $id = $I->amAuthenticated('Veleyaba');
         $I->sendDELETE("/api/v1/accounts/{$id}", [
             'password' => 'password_0',
@@ -42,7 +42,7 @@ class DeleteCest {
         ]);
     }
 
-    public function deleteMyAccountWithInvalidPassword(FunctionalTester $I) {
+    public function deleteMyAccountWithInvalidPassword(FunctionalTester $I): void {
         $id = $I->amAuthenticated();
         $I->sendDELETE("/api/v1/accounts/{$id}", [
             'password' => 'invalid_password',
@@ -56,7 +56,7 @@ class DeleteCest {
         ]);
     }
 
-    public function deleteAlreadyDeletedAccount(FunctionalTester $I) {
+    public function deleteAlreadyDeletedAccount(FunctionalTester $I): void {
         $id = $I->amAuthenticated('DeletedAccount');
         $I->sendDELETE("/api/v1/accounts/{$id}", [
             'password' => 'password_0',
@@ -70,7 +70,7 @@ class DeleteCest {
         ]);
     }
 
-    public function deleteNotMyAccount(FunctionalTester $I) {
+    public function deleteNotMyAccount(FunctionalTester $I): void {
         $I->amAuthenticated();
 
         $I->sendDELETE('/api/v1/accounts/2', [

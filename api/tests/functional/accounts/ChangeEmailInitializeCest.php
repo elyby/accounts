@@ -6,16 +6,13 @@ use api\tests\FunctionalTester;
 
 class ChangeEmailInitializeCest {
 
-    /**
-     * @var AccountsRoute
-     */
-    private $route;
+    private AccountsRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new AccountsRoute($I);
     }
 
-    public function testChangeEmailInitialize(FunctionalTester $I) {
+    public function testChangeEmailInitialize(FunctionalTester $I): void {
         $I->wantTo('send current email confirmation');
         $id = $I->amAuthenticated();
 
@@ -27,7 +24,7 @@ class ChangeEmailInitializeCest {
         ]);
     }
 
-    public function testChangeEmailInitializeFrequencyError(FunctionalTester $I) {
+    public function testChangeEmailInitializeFrequencyError(FunctionalTester $I): void {
         $I->wantTo('see change email request frequency error');
         $id = $I->amAuthenticated('ILLIMUNATI');
 

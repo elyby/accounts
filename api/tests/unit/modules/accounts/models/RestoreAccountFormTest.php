@@ -10,15 +10,13 @@ use common\models\Account;
 use common\notifications\AccountEditNotification;
 use common\tasks\CreateWebHooksDeliveries;
 use common\tests\fixtures\AccountFixture;
+use PHPUnit\Framework\MockObject\MockObject;
 use Yii;
 use yii\queue\Queue;
 
 class RestoreAccountFormTest extends TestCase {
 
-    /**
-     * @var Queue|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private Queue $queue;
+    private Queue&MockObject $queue;
 
     public function _fixtures(): array {
         return [
@@ -33,23 +31,21 @@ class RestoreAccountFormTest extends TestCase {
         Yii::$app->set('queue', $this->queue);
     }
 
-    public function testPerformAction() {
+    public function testPerformAction(): void {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'deleted-account');
         $this->queue
             ->expects($this->once())
             ->method('push')
-            ->withConsecutive(
-                [$this->callback(function(CreateWebHooksDeliveries $task) use ($account): bool {
-                    /** @var AccountEditNotification $notification */
-                    $notification = ReflectionHelper::readPrivateProperty($task, 'notification');
-                    $this->assertInstanceOf(AccountEditNotification::class, $notification);
-                    $this->assertSame($account->id, $notification->getPayloads()['id']);
-                    $this->assertFalse($notification->getPayloads()['isDeleted']);
+            ->willReturnCallback(function(CreateWebHooksDeliveries $task) use ($account): bool {
+                /** @var AccountEditNotification $notification */
+                $notification = ReflectionHelper::readPrivateProperty($task, 'notification');
+                $this->assertInstanceOf(AccountEditNotification::class, $notification);
+                $this->assertSame($account->id, $notification->getPayloads()['id']);
+                $this->assertFalse($notification->getPayloads()['isDeleted']);
 
-                    return true;
-                })],
-            );
+                return true;
+            });
 
         $model = new RestoreAccountForm($account);
         $this->assertTrue($model->performAction());
@@ -57,7 +53,7 @@ class RestoreAccountFormTest extends TestCase {
         $this->assertNull($account->deleted_at);
     }
 
-    public function testPerformActionForNotDeletedAccount() {
+    public function testPerformActionForNotDeletedAccount(): void {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'admin');
         $model = new RestoreAccountForm($account);

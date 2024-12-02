@@ -17,7 +17,7 @@ class RateLimiter extends \yii\filters\RateLimiter {
 
     private $server;
 
-    public function init() {
+    public function init(): void {
         parent::init();
         if ($this->authserverDomain === null) {
             throw new InvalidConfigException('authserverDomain param is required');
@@ -30,10 +30,10 @@ class RateLimiter extends \yii\filters\RateLimiter {
      */
     public function beforeAction($action) {
         $this->checkRateLimit(
-            null,
+            null, // @phpstan-ignore argument.type (at this moment we don't have any specific identity, so pass null (yea, it's hacky))
             $this->request ?: Yii::$app->getRequest(),
             $this->response ?: Yii::$app->getResponse(),
-            $action
+            $action,
         );
 
         return true;
@@ -43,8 +43,8 @@ class RateLimiter extends \yii\filters\RateLimiter {
      * @inheritdoc
      * @throws TooManyRequestsHttpException
      */
-    public function checkRateLimit($user, $request, $response, $action) {
-        if (parse_url($request->getHostInfo(), PHP_URL_HOST) === $this->authserverDomain) {
+    public function checkRateLimit($user, $request, $response, $action): void {
+        if (parse_url((string)$request->getHostInfo(), PHP_URL_HOST) === $this->authserverDomain) {
             return;
         }
 
@@ -66,11 +66,7 @@ class RateLimiter extends \yii\filters\RateLimiter {
         }
     }
 
-    /**
-     * @param Request $request
-     * @return OauthClient|null
-     */
-    protected function getServer(Request $request) {
+    protected function getServer(Request $request): ?OauthClient {
         $serverId = $request->get('server_id');
         if ($serverId === null) {
             $this->server = false;
@@ -78,7 +74,6 @@ class RateLimiter extends \yii\filters\RateLimiter {
         }
 
         if ($this->server === null) {
-            /** @var OauthClient|null $server */
             $this->server = OauthClient::findOne($serverId);
             // TODO: убедится, что это сервер
             if ($this->server === null) {
@@ -93,7 +88,7 @@ class RateLimiter extends \yii\filters\RateLimiter {
         return $this->server;
     }
 
-    protected function buildKey($ip): string {
+    protected function buildKey(string $ip): string {
         return 'sessionserver:ratelimit:' . $ip;
     }
 

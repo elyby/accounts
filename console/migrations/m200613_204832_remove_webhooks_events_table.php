@@ -4,7 +4,7 @@ use console\db\Migration;
 
 class m200613_204832_remove_webhooks_events_table extends Migration {
 
-    public function safeUp() {
+    public function safeUp(): void {
         $this->addColumn('webhooks', 'events', $this->json()->toString('events') . ' AFTER `secret`');
         $webhooksIds = $this->db->createCommand('SELECT id FROM webhooks')->queryColumn();
         foreach ($webhooksIds as $webhookId) {
@@ -19,7 +19,7 @@ class m200613_204832_remove_webhooks_events_table extends Migration {
         $this->dropTable('webhooks_events');
     }
 
-    public function safeDown() {
+    public function safeDown(): void {
         $this->createTable('webhooks_events', [
             'webhook_id' => $this->db->getTableSchema('webhooks')->getColumn('id')->dbType . ' NOT NULL',
             'event_type' => $this->string()->notNull(),
@@ -33,7 +33,7 @@ class m200613_204832_remove_webhooks_events_table extends Migration {
                 continue;
             }
 
-            $events = json_decode($webhook['events'], true);
+            $events = json_decode((string)$webhook['events'], true);
             if (empty($events)) {
                 continue;
             }
@@ -41,7 +41,7 @@ class m200613_204832_remove_webhooks_events_table extends Migration {
             $this->batchInsert(
                 'webhooks_events',
                 ['webhook_id', 'event_type'],
-                array_map(fn($event) => [$webhook['id'], $event], $events),
+                array_map(fn($event): array => [$webhook['id'], $event], $events),
             );
         }
 

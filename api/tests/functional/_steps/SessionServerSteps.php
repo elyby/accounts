@@ -8,7 +8,7 @@ use function Ramsey\Uuid\v4 as uuid;
 
 class SessionServerSteps extends FunctionalTester {
 
-    public function amJoined($byLegacy = false) {
+    public function amJoined($byLegacy = false): array {
         $oauthSteps = new OauthSteps($this->scenario);
         $accessToken = $oauthSteps->getAccessToken([P::MINECRAFT_SERVER_SESSION]);
         $route = new SessionServerRoute($this);
@@ -17,7 +17,7 @@ class SessionServerSteps extends FunctionalTester {
 
         if ($byLegacy) {
             $route->joinLegacy([
-                'sessionId' => 'token:' . $accessToken . ':' . 'df936908-b2e1-544d-96f8-2977ec213022',
+                'sessionId' => 'token:' . $accessToken . ':df936908-b2e1-544d-96f8-2977ec213022',
                 'user' => $username,
                 'serverId' => $serverId,
             ]);
@@ -41,8 +41,8 @@ class SessionServerSteps extends FunctionalTester {
     public function canSeeValidTexturesResponse(
         string $expectedUsername,
         string $expectedUuid,
-        bool $shouldBeSigned = false
-    ) {
+        bool $shouldBeSigned = false,
+    ): void {
         $this->seeResponseIsJson();
         $this->canSeeResponseContainsJson([
             'name' => $expectedUsername,
@@ -65,7 +65,7 @@ class SessionServerSteps extends FunctionalTester {
 
         $this->canSeeResponseJsonMatchesJsonPath('$.properties[0].value');
         $value = $this->grabDataFromResponseByJsonPath('$.properties[0].value')[0];
-        $decoded = json_decode(base64_decode($value), true);
+        $decoded = json_decode(base64_decode((string)$value), true);
         $this->assertArrayHasKey('timestamp', $decoded);
         $this->assertArrayHasKey('textures', $decoded);
         $this->assertSame($expectedUuid, $decoded['profileId']);

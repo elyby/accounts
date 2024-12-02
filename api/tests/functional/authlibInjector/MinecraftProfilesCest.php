@@ -36,7 +36,7 @@ final class MinecraftProfilesCest {
     public function getUuidsByUsernamesWithPostString(FunctionalTester $I, Example $case): void {
         $I->sendPOST(
             $case[0],
-            json_encode(['Admin', 'AccWithOldPassword', 'Notch']),
+            json_encode(['Admin', 'AccWithOldPassword', 'Notch']), // @phpstan-ignore argument.type (it does accept string an we need it to ensure, that JSON passes)
         );
         $this->validateFewValidUsernames($I);
     }
@@ -72,8 +72,9 @@ final class MinecraftProfilesCest {
      */
     public function passTooManyUsernames(FunctionalTester $I, Example $case): void {
         $usernames = [];
+        // generate random UTF-8 usernames
         for ($i = 0; $i < 150; $i++) {
-            $usernames[] = random_bytes(10);
+            $usernames[] = base64_encode(random_bytes(10));
         }
 
         $I->sendPOST($case[0], $usernames);
@@ -108,6 +109,13 @@ final class MinecraftProfilesCest {
         ]);
     }
 
+    public function bulkProfilesEndpoints(): array {
+        return [
+            ['/api/authlib-injector/api/profiles/minecraft'],
+            ['/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname'],
+        ];
+    }
+
     private function validateFewValidUsernames(FunctionalTester $I): void {
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
@@ -125,13 +133,6 @@ final class MinecraftProfilesCest {
                 'name' => 'Notch',
             ],
         ]);
-    }
-
-    private function bulkProfilesEndpoints(): array {
-        return [
-            ['/api/authlib-injector/api/profiles/minecraft'],
-            ['/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname'],
-        ];
     }
 
 }

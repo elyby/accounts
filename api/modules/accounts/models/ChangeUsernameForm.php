@@ -16,9 +16,7 @@ class ChangeUsernameForm extends AccountActionForm {
 
     public function rules(): array {
         return [
-            ['username', UsernameValidator::class, 'accountCallback' => function() {
-                return $this->getAccount()->id;
-            }],
+            ['username', UsernameValidator::class, 'accountCallback' => fn() => $this->getAccount()->id],
             ['password', PasswordRequiredValidator::class, 'account' => $this->getAccount()],
         ];
     }

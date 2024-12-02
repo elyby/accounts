@@ -6,16 +6,13 @@ use api\tests\FunctionalTester;
 
 class ChangeEmailConfirmNewEmailCest {
 
-    /**
-     * @var AccountsRoute
-     */
-    private $route;
+    private AccountsRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new AccountsRoute($I);
     }
 
-    public function testConfirmNewEmail(FunctionalTester $I) {
+    public function testConfirmNewEmail(FunctionalTester $I): void {
         $I->wantTo('change my email and get changed value');
         $I->amAuthenticated('CrafterGameplays');
 

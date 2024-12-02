@@ -32,11 +32,11 @@ class Module extends BaseModule implements BootstrapInterface {
         ], false);
     }
 
-    public static function info($message) {
+    public static function info($message): void {
         Yii::info($message, 'legacy-authserver');
     }
 
-    public static function error($message) {
+    public static function error($message): void {
         Yii::info($message, 'legacy-authserver');
     }
 

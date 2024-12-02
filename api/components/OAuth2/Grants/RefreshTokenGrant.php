@@ -5,15 +5,17 @@ namespace api\components\OAuth2\Grants;
 
 use api\components\OAuth2\CryptTrait;
 use api\components\Tokens\TokenReader;
-use Carbon\Carbon;
+use Carbon\FactoryImmutable;
 use common\models\OauthSession;
 use InvalidArgumentException;
-use Lcobucci\JWT\ValidationData;
+use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
+use Lcobucci\JWT\Validation\Validator;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use League\OAuth2\Server\Grant\RefreshTokenGrant as BaseRefreshTokenGrant;
 use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 use Yii;
 
 class RefreshTokenGrant extends BaseRefreshTokenGrant {
@@ -30,7 +32,7 @@ class RefreshTokenGrant extends BaseRefreshTokenGrant {
      * @return array
      * @throws OAuthServerException
      */
-    protected function validateOldRefreshToken(ServerRequestInterface $request, $clientId): array {
+    protected function validateOldRefreshToken(ServerRequestInterface $request, string $clientId): array {
         $refreshToken = $this->getRequestParameter('refresh_token', $request);
         if ($refreshToken !== null && mb_strlen($refreshToken) === 40) {
             return $this->validateLegacyRefreshToken($refreshToken);
@@ -41,7 +43,7 @@ class RefreshTokenGrant extends BaseRefreshTokenGrant {
 
     /**
      * Currently we're not rotating refresh tokens.
-     * So we overriding this method to always return null, which means,
+     * So we're overriding this method to always return null, which means,
      * that refresh_token will not be issued.
      *
      * @param AccessTokenEntityInterface $accessToken
@@ -67,8 +69,8 @@ class RefreshTokenGrant extends BaseRefreshTokenGrant {
             [
                 'access_token_id' => $accessTokenId,
                 'session_id' => $sessionId,
-            ] = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\Exception $e) {
+            ] = json_decode((string)$result, true, 512, JSON_THROW_ON_ERROR);
+        } catch (Throwable $e) {
             throw OAuthServerException::invalidRefreshToken('Cannot decrypt the refresh token', $e);
         }
 
@@ -89,8 +91,14 @@ class RefreshTokenGrant extends BaseRefreshTokenGrant {
     }
 
     /**
-     * @param string $jwt
-     * @return array
+     * @return array{
+     *     client_id: string,
+     *     refresh_token_id?: string,
+     *     access_token_id?: string,
+     *     scopes: list<string>|null,
+     *     user_id: string|null,
+     *     expire_time: int|null,
+     * }
      * @throws OAuthServerException
      */
     private function validateAccessToken(string $jwt): array {
@@ -104,7 +112,7 @@ class RefreshTokenGrant extends BaseRefreshTokenGrant {
             throw OAuthServerException::invalidRefreshToken('Cannot decrypt the refresh token');
         }
 
-        if (!$token->validate(new ValidationData(Carbon::now()->getTimestamp()))) {
+        if (!(new Validator())->validate($token, new LooseValidAt(FactoryImmutable::getDefaultInstance()))) {
             throw OAuthServerException::invalidRefreshToken('Token has expired');
         }
 

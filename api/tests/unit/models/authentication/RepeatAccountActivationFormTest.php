@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace api\tests\_support\models\authentication;
+namespace api\tests\unit\models\authentication;
 
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\authentication\RepeatAccountActivationForm;
@@ -19,7 +19,7 @@ class RepeatAccountActivationFormTest extends TestCase {
     protected function setUp(): void {
         parent::setUp();
         Yii::$container->set(ReCaptchaValidator::class, new class($this->createMock(ClientInterface::class)) extends ReCaptchaValidator {
-            public function validateValue($value) {
+            public function validateValue($value): ?array {
                 return null;
             }
         });
@@ -32,7 +32,7 @@ class RepeatAccountActivationFormTest extends TestCase {
         ];
     }
 
-    public function testValidateEmailForAccount() {
+    public function testValidateEmailForAccount(): void {
         $model = $this->createWithAccount(null);
         $model->validateEmailForAccount('email');
         $this->assertSame(['error.email_not_found'], $model->getErrors('email'));
@@ -50,7 +50,7 @@ class RepeatAccountActivationFormTest extends TestCase {
         $this->assertEmpty($model->getErrors('email'));
     }
 
-    public function testValidateExistsActivation() {
+    public function testValidateExistsActivation(): void {
         $activation = new RegistrationConfirmation();
         $activation->created_at = time() - 10;
         $model = $this->createWithActivation($activation);
@@ -64,7 +64,7 @@ class RepeatAccountActivationFormTest extends TestCase {
         $this->assertEmpty($model->getErrors('email'));
     }
 
-    public function testSendRepeatMessage() {
+    public function testSendRepeatMessage(): void {
         $model = new RepeatAccountActivationForm();
         $this->assertFalse($model->sendRepeatMessage(), 'no magic if we don\'t pass validation');
         $this->assertEmpty($this->tester->grabQueueJobs());

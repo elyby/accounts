@@ -23,7 +23,7 @@ class CleanupControllerTest extends TestCase {
         ];
     }
 
-    public function testActionEmailKeys() {
+    public function testActionEmailKeys(): void {
         /** @var EmailActivation $expiredConfirmation */
         $expiredConfirmation = $this->tester->grabFixture('emailActivations', 'deeplyExpiredConfirmation');
 
@@ -33,7 +33,7 @@ class CleanupControllerTest extends TestCase {
         $this->tester->cantSeeRecord(EmailActivation::class, ['key' => $expiredConfirmation->key]);
     }
 
-    public function testActionWebSessions() {
+    public function testActionWebSessions(): void {
         /** @var AccountSession $expiredSession */
         $expiredSession = $this->tester->grabFixture('accountsSessions', 'very-expired-session');
         /** @var AccountSession $notRefreshedSession */
@@ -48,9 +48,8 @@ class CleanupControllerTest extends TestCase {
         $this->assertSame($totalSessionsCount - 2, (int)AccountSession::find()->count());
     }
 
-    public function testActionOauthClients() {
-        /** @var OauthClient $deletedClient */
-        $totalClientsCount = OauthClient::find()->includeDeleted()->count();
+    public function testActionOauthClients(): void {
+        $totalClientsCount = (int)OauthClient::find()->includeDeleted()->count();
 
         $controller = new CleanupController('cleanup', Yii::$app);
         $this->assertSame(0, $controller->actionOauthClients());

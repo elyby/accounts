@@ -1,18 +1,18 @@
 <?php
 declare(strict_types=1);
 
-namespace codeception\api\unit\models\authentication;
+namespace api\tests\unit\models\authentication;
 
 use api\components\ReCaptcha\Validator as ReCaptchaValidator;
 use api\models\authentication\ForgotPasswordForm;
 use api\tests\unit\TestCase;
 use common\models\Account;
-use common\models\confirmations\ForgotPassword;
 use common\models\EmailActivation;
 use common\tasks\SendPasswordRecoveryEmail;
 use common\tests\fixtures\AccountFixture;
 use common\tests\fixtures\EmailActivationFixture;
 use GuzzleHttp\ClientInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use Yii;
 
 class ForgotPasswordFormTest extends TestCase {
@@ -20,7 +20,7 @@ class ForgotPasswordFormTest extends TestCase {
     protected function setUp(): void {
         parent::setUp();
         Yii::$container->set(ReCaptchaValidator::class, new class($this->createMock(ClientInterface::class)) extends ReCaptchaValidator {
-            public function validateValue($value) {
+            public function validateValue($value): ?array {
                 return null;
             }
         });
@@ -33,7 +33,7 @@ class ForgotPasswordFormTest extends TestCase {
         ];
     }
 
-    public function testValidateLogin() {
+    public function testValidateLogin(): void {
         $model = new ForgotPasswordForm(['login' => 'unexist']);
         $model->validateLogin('login');
         $this->assertSame(['error.login_not_exist'], $model->getErrors('login'), 'error.login_not_exist if login is invalid');
@@ -43,7 +43,7 @@ class ForgotPasswordFormTest extends TestCase {
         $this->assertEmpty($model->getErrors('login'), 'empty errors if login is exists');
     }
 
-    public function testValidateActivity() {
+    public function testValidateActivity(): void {
         $model = new ForgotPasswordForm([
             'login' => $this->tester->grabFixture('accounts', 'not-activated-account')['username'],
         ]);
@@ -57,30 +57,28 @@ class ForgotPasswordFormTest extends TestCase {
         $this->assertEmpty($model->getErrors('login'), 'empty errors if login is exists');
     }
 
-    public function testValidateFrequency() {
-        $model = $this->createModel([
-            'login' => $this->tester->grabFixture('accounts', 'admin')['username'],
-            'key' => $this->tester->grabFixture('emailActivations', 'freshPasswordRecovery')['key'],
-        ]);
+    public function testValidateFrequency(): void {
+        $model = $this->createModel();
+        $model->login = $this->tester->grabFixture('accounts', 'admin')['username'];
+        $model->method('getEmailActivation')->willReturn($this->tester->grabFixture('emailActivations', 'freshPasswordRecovery'));
+
         $model->validateFrequency('login');
         $this->assertSame(['error.recently_sent_message'], $model->getErrors('login'), 'error.account_not_activated if recently was message');
 
-        $model = $this->createModel([
-            'login' => $this->tester->grabFixture('accounts', 'admin')['username'],
-            'key' => $this->tester->grabFixture('emailActivations', 'oldPasswordRecovery')['key'],
-        ]);
+        $model = $this->createModel();
+        $model->login = $this->tester->grabFixture('accounts', 'admin')['username'];
+        $model->method('getEmailActivation')->willReturn($this->tester->grabFixture('emailActivations', 'oldPasswordRecovery'));
         $model->validateFrequency('login');
         $this->assertEmpty($model->getErrors('login'), 'empty errors if email was sent a long time ago');
 
-        $model = $this->createModel([
-            'login' => $this->tester->grabFixture('accounts', 'admin')['username'],
-            'key' => 'invalid-key',
-        ]);
+        $model = $this->createModel();
+        $model->login = $this->tester->grabFixture('accounts', 'admin')['username'];
+        $model->method('getEmailActivation')->willReturn(null);
         $model->validateFrequency('login');
         $this->assertEmpty($model->getErrors('login'), 'empty errors if previous confirmation model not founded');
     }
 
-    public function testForgotPassword() {
+    public function testForgotPassword(): void {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'admin');
         $model = new ForgotPasswordForm(['login' => $account->username]);
@@ -91,7 +89,7 @@ class ForgotPasswordFormTest extends TestCase {
         $this->assertTaskCreated($this->tester->grabLastQueuedJob(), $account, $activation);
     }
 
-    public function testForgotPasswordResend() {
+    public function testForgotPasswordResend(): void {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'account-with-expired-forgot-password-message');
         $model = new ForgotPasswordForm(['login' => $account->username]);
@@ -109,7 +107,7 @@ class ForgotPasswordFormTest extends TestCase {
      * @param Account $account
      * @param EmailActivation $activation
      */
-    private function assertTaskCreated($job, Account $account, EmailActivation $activation) {
+    private function assertTaskCreated($job, Account $account, EmailActivation $activation): void {
         $this->assertInstanceOf(SendPasswordRecoveryEmail::class, $job);
         /** @var SendPasswordRecoveryEmail $job */
         $this->assertSame($account->username, $job->username);
@@ -119,18 +117,8 @@ class ForgotPasswordFormTest extends TestCase {
         $this->assertSame('http://localhost/recover-password/' . $activation->key, $job->link);
     }
 
-    /**
-     * @param array $params
-     * @return ForgotPasswordForm
-     */
-    private function createModel(array $params = []) {
-        return new class($params) extends ForgotPasswordForm {
-            public $key;
-
-            public function getEmailActivation(): ?ForgotPassword {
-                return EmailActivation::findOne(['key' => $this->key]);
-            }
-        };
+    private function createModel(): ForgotPasswordForm&MockObject {
+        return $this->createPartialMock(ForgotPasswordForm::class, ['getEmailActivation']);
     }
 
 }

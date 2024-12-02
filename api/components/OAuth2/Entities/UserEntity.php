@@ -10,7 +10,7 @@ class UserEntity implements UserEntityInterface {
     use EntityTrait;
 
     public function __construct(int $id) {
-        $this->identifier = $id;
+        $this->identifier = (string)$id;
     }
 
 }

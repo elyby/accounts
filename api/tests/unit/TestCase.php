@@ -17,7 +17,7 @@ class TestCase extends Unit {
      *
      * @url http://codeception.com/docs/modules/Yii2#fixtures
      *
-     * @return array
+     * @return array<string, class-string<\yii\test\Fixture>>
      */
     public function _fixtures(): array {
         return [];

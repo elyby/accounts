@@ -12,7 +12,7 @@ use ReflectionObject;
 
 class BanAccountFormTest extends TestCase {
 
-    public function testValidateAccountActivity() {
+    public function testValidateAccountActivity(): void {
         $account = new Account();
         $account->status = Account::STATUS_ACTIVE;
         $form = new BanAccountForm($account);
@@ -26,7 +26,7 @@ class BanAccountFormTest extends TestCase {
         $this->assertSame([E::ACCOUNT_ALREADY_BANNED], $form->getErrors('account'));
     }
 
-    public function testBan() {
+    public function testBan(): void {
         /** @var Account|\PHPUnit\Framework\MockObject\MockObject $account */
         $account = $this->createPartialMock(Account::class, ['save']);
         $account->expects($this->once())->method('save')->willReturn(true);

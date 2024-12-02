@@ -5,13 +5,9 @@ use api\tests\FunctionalTester;
 
 class BasePage {
 
-    /**
-     * @var FunctionalTester
-     */
-    private $actor;
-
-    public function __construct(FunctionalTester $I) {
-        $this->actor = $I;
+    public function __construct(
+        private readonly FunctionalTester $actor,
+    ) {
     }
 
     public function getActor(): FunctionalTester {

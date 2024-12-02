@@ -30,7 +30,7 @@ use const common\LATEST_RULES_VERSION;
  * @property int|null    $rules_agreement_version
  * @property string|null $registration_ip
  * @property string|null $otp_secret
- * @property int         $is_otp_enabled
+ * @property bool        $is_otp_enabled
  * @property int         $created_at
  * @property int         $updated_at
  * @property int         $password_changed_at
@@ -81,16 +81,11 @@ class Account extends ActiveRecord {
             $passwordHashStrategy = $this->password_hash_strategy;
         }
 
-        switch ($passwordHashStrategy) {
-            case self::PASS_HASH_STRATEGY_OLD_ELY:
-                return UserPass::make($this->email, $password) === $this->password_hash;
-
-            case self::PASS_HASH_STRATEGY_YII2:
-                return Yii::$app->security->validatePassword($password, $this->password_hash);
-
-            default:
-                throw new InvalidConfigException('You must set valid password_hash_strategy before you can validate password');
-        }
+        return match ($passwordHashStrategy) {
+            self::PASS_HASH_STRATEGY_OLD_ELY => UserPass::make($this->email, $password) === $this->password_hash,
+            self::PASS_HASH_STRATEGY_YII2 => Yii::$app->security->validatePassword($password, $this->password_hash),
+            default => throw new InvalidConfigException('You must set valid password_hash_strategy before you can validate password'),
+        };
     }
 
     public function setPassword(string $password): void {
@@ -103,6 +98,9 @@ class Account extends ActiveRecord {
         return $this->hasMany(EmailActivation::class, ['account_id' => 'id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery<\common\models\OauthSession>
+     */
     public function getOauthSessions(): ActiveQuery {
         return $this->hasMany(OauthSession::class, ['account_id' => 'id']);
     }
@@ -116,6 +114,9 @@ class Account extends ActiveRecord {
         return $this->hasMany(UsernameHistory::class, ['account_id' => 'id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery<\common\models\AccountSession>
+     */
     public function getSessions(): ActiveQuery {
         return $this->hasMany(AccountSession::class, ['account_id' => 'id']);
     }

@@ -9,7 +9,7 @@ use function Ramsey\Uuid\v4 as uuid;
 
 class HasJoinedCest {
 
-    public function hasJoined(SessionServerSteps $I) {
+    public function hasJoined(SessionServerSteps $I): void {
         $I->wantTo('check hasJoined user to some server');
         [$username, $serverId] = $I->amJoined();
 
@@ -22,7 +22,7 @@ class HasJoinedCest {
         $I->canSeeValidTexturesResponse($username, 'df936908b2e1544d96f82977ec213022', true);
     }
 
-    public function wrongArguments(FunctionalTester $I) {
+    public function wrongArguments(FunctionalTester $I): void {
         $I->wantTo('get error on wrong amount of arguments');
         $I->sendGET('/api/authlib-injector/sessionserver/session/minecraft/hasJoined', [
             'wrong' => 'argument',
@@ -35,7 +35,7 @@ class HasJoinedCest {
         ]);
     }
 
-    public function hasJoinedWithNoJoinOperation(FunctionalTester $I) {
+    public function hasJoinedWithNoJoinOperation(FunctionalTester $I): void {
         $I->wantTo('hasJoined to some server without join call');
         $I->sendGET('/api/authlib-injector/sessionserver/session/minecraft/hasJoined', [
             'username' => 'some-username',

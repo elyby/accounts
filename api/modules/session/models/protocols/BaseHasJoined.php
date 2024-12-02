@@ -3,9 +3,9 @@ namespace api\modules\session\models\protocols;
 
 abstract class BaseHasJoined implements HasJoinedInterface {
 
-    private $username;
+    private readonly string $username;
 
-    private $serverId;
+    private readonly string $serverId;
 
     public function __construct(string $username, string $serverId) {
         $this->username = trim($username);
@@ -21,11 +21,7 @@ abstract class BaseHasJoined implements HasJoinedInterface {
     }
 
     public function validate(): bool {
-        return !$this->isEmpty($this->username) && !$this->isEmpty($this->serverId);
-    }
-
-    private function isEmpty($value): bool {
-        return $value === null || $value === '';
+        return $this->username !== '' && $this->serverId !== '';
     }
 
 }

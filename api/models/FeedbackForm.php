@@ -12,13 +12,13 @@ use yii\base\InvalidConfigException;
 
 class FeedbackForm extends ApiForm {
 
-    public $subject;
+    public mixed $subject = null;
 
-    public $email;
+    public mixed $email = null;
 
-    public $type;
+    public mixed $type = null;
 
-    public $message;
+    public mixed $message = null;
 
     public function rules(): array {
         return [
@@ -31,27 +31,30 @@ class FeedbackForm extends ApiForm {
         ];
     }
 
+    /**
+     * @throws InvalidConfigException
+     */
     public function sendMessage(): bool {
         if (!$this->validate()) {
             return false;
         }
 
-        /** @var \yii\swiftmailer\Mailer $mailer */
+        /** @var \yii\symfonymailer\Mailer $mailer */
         $mailer = Yii::$app->mailer;
         $supportEmail = Yii::$app->params['supportEmail'];
         if (!$supportEmail) {
-            throw new InvalidConfigException('Please specify supportEmail value in app params');
+            throw new InvalidConfigException('Please specify supportEmail value in the app params');
         }
 
         $account = $this->getAccount();
-        /** @var \yii\swiftmailer\Message $message */
+        /** @var \yii\symfonymailer\Message $message */
         $message = $mailer->compose('@common/emails/views/feedback', [
             'model' => $this,
             'account' => $account,
         ]);
         $message
             ->setTo($supportEmail)
-            ->setFrom([$this->email => $account ? $account->username : $this->email])
+            ->setFrom([$this->email => $account?->username ?? $this->email])
             ->setSubject($this->subject);
 
         Assert::true($message->send(), 'Unable send feedback email.');

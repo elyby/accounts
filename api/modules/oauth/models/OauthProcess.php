@@ -13,22 +13,19 @@ use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
-use League\OAuth2\Server\RequestTypes\AuthorizationRequest;
+use League\OAuth2\Server\RequestTypes\AuthorizationRequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Webmozart\Assert\Assert;
 use Yii;
 
 class OauthProcess {
 
-    private const INTERNAL_PERMISSIONS_TO_PUBLIC_SCOPES = [
+    private const array INTERNAL_PERMISSIONS_TO_PUBLIC_SCOPES = [
         P::OBTAIN_OWN_ACCOUNT_INFO => 'account_info',
         P::OBTAIN_ACCOUNT_EMAIL => 'account_email',
     ];
 
-    private AuthorizationServer $server;
-
-    public function __construct(AuthorizationServer $server) {
-        $this->server = $server;
+    public function __construct(private readonly AuthorizationServer $server) {
     }
 
     /**
@@ -96,17 +93,12 @@ class OauthProcess {
             $canBeAutoApproved = $this->canBeAutoApproved($account, $client, $authRequest);
             $acceptParam = ((array)$request->getParsedBody())['accept'] ?? null;
             if ($acceptParam === null && !$canBeAutoApproved) {
+                Yii::$app->statsd->inc('oauth.complete.approve_required');
                 throw $this->createAcceptRequiredException();
             }
 
-            Yii::$app->statsd->inc('oauth.complete.approve_required');
-
-            if ($acceptParam === null && $canBeAutoApproved) {
-                $approved = true;
-            } else {
-                $approved = in_array($acceptParam, [1, '1', true, 'true'], true);
-            }
-
+            // At this point if the $acceptParam is an empty, then the application can be auto approved
+            $approved = $acceptParam === null || in_array($acceptParam, [1, '1', true, 'true'], true);
             if ($approved) {
                 $this->storeOauthSession($account, $client, $authRequest);
             }
@@ -163,7 +155,7 @@ class OauthProcess {
             Yii::$app->statsd->inc("oauth.issueToken_{$grantType}.attempt");
 
             $shouldIssueRefreshToken = false;
-            $this->server->getEmitter()->addOneTimeListener(RequestedRefreshToken::class, function() use (&$shouldIssueRefreshToken) {
+            $this->server->getEmitter()->subscribeOnceTo(RequestedRefreshToken::class, function() use (&$shouldIssueRefreshToken): void {
                 $shouldIssueRefreshToken = true;
             });
 
@@ -207,14 +199,8 @@ class OauthProcess {
     /**
      * The method checks whether the current user can be automatically authorized for the specified client
      * without requesting access to the necessary list of scopes
-     *
-     * @param Account $account
-     * @param OauthClient $client
-     * @param AuthorizationRequest $request
-     *
-     * @return bool
      */
-    private function canBeAutoApproved(Account $account, OauthClient $client, AuthorizationRequest $request): bool {
+    private function canBeAutoApproved(Account $account, OauthClient $client, AuthorizationRequestInterface $request): bool {
         if ($client->is_trusted) {
             return true;
         }
@@ -231,7 +217,7 @@ class OauthProcess {
         return empty(array_diff($this->getScopesList($request), $session->getScopes()));
     }
 
-    private function storeOauthSession(Account $account, OauthClient $client, AuthorizationRequest $request): void {
+    private function storeOauthSession(Account $account, OauthClient $client, AuthorizationRequestInterface $request): void {
         $session = $this->findOauthSession($account, $client);
         if ($session === null) {
             $session = new OauthSession();
@@ -301,7 +287,7 @@ class OauthProcess {
         ];
 
         if ($e->hasRedirect()) {
-            $response['redirectUri'] = $e->getRedirectUri();
+            $response['redirectUri'] = $e->getRedirectUri() . http_build_query($e->getPayload());
         }
 
         if ($e->getHttpStatusCode() !== 200) {
@@ -345,12 +331,11 @@ class OauthProcess {
         return new OAuthServerException('Client must accept authentication request.', 0, 'accept_required', 401);
     }
 
-    private function getScopesList(AuthorizationRequest $request): array {
-        return array_values(array_map(function(ScopeEntityInterface $scope): string {
-            return $scope->getIdentifier();
-        }, $request->getScopes()));
+    private function getScopesList(AuthorizationRequestInterface $request): array {
+        return array_values(array_map(fn(ScopeEntityInterface $scope): string => $scope->getIdentifier(), $request->getScopes()));
     }
 
+    /** @noinspection PhpIncompatibleReturnTypeInspection */
     private function findOauthSession(Account $account, OauthClient $client): ?OauthSession {
         return $account->getOauthSessions()->andWhere(['client_id' => $client->id])->one();
     }

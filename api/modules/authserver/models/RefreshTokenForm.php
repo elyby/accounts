@@ -75,7 +75,7 @@ class RefreshTokenForm extends ApiForm {
         $minecraftOauthSession->last_used_at = time();
         Assert::true($minecraftOauthSession->save());
 
-        return new AuthenticateData($account, (string)$token, $this->clientToken, (bool)$this->requestUser);
+        return new AuthenticateData($account, $token->toString(), $this->clientToken, (bool)$this->requestUser);
     }
 
 }

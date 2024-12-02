@@ -7,7 +7,7 @@ use api\tests\FunctionalTester;
 
 class AuthCodeCest {
 
-    public function completeSuccess(FunctionalTester $I) {
+    public function completeSuccess(FunctionalTester $I): void {
         $I->amAuthenticated();
         $I->wantTo('get auth code if I require some scope and pass accept field');
         $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
@@ -26,7 +26,7 @@ class AuthCodeCest {
     /**
      * @before completeSuccess
      */
-    public function completeSuccessWithLessScopes(FunctionalTester $I) {
+    public function completeSuccessWithLessScopes(FunctionalTester $I): void {
         $I->amAuthenticated();
         $I->wantTo('get auth code with less scopes as passed in the previous request without accept param');
         $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
@@ -44,7 +44,7 @@ class AuthCodeCest {
     /**
      * @before completeSuccess
      */
-    public function completeSuccessWithSameScopes(FunctionalTester $I) {
+    public function completeSuccessWithSameScopes(FunctionalTester $I): void {
         $I->amAuthenticated();
         $I->wantTo('get auth code with the same scopes as passed in the previous request without accept param');
         $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
@@ -60,7 +60,7 @@ class AuthCodeCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
     }
 
-    public function acceptRequiredOnFirstAuthRequest1(FunctionalTester $I) {
+    public function acceptRequiredOnFirstAuthRequest1(FunctionalTester $I): void {
         $I->amAuthenticated();
         $I->wantTo('get accept_required if I don\'t require any scope, but this is first time request');
         $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
@@ -77,7 +77,7 @@ class AuthCodeCest {
         ]);
     }
 
-    public function acceptRequiredOnFirstAuthRequest2(FunctionalTester $I) {
+    public function acceptRequiredOnFirstAuthRequest2(FunctionalTester $I): void {
         $I->amAuthenticated();
         $I->wantTo('get accept_required if I require some scopes on first time');
         $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
@@ -95,7 +95,7 @@ class AuthCodeCest {
         ]);
     }
 
-    public function acceptRequiredOnNewScope(FunctionalTester $I) {
+    public function acceptRequiredOnNewScope(FunctionalTester $I): void {
         $I->amAuthenticated();
         $I->wantTo('get accept_required if I have previous successful request, but now require some new scope');
         $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
@@ -119,7 +119,7 @@ class AuthCodeCest {
         ]);
     }
 
-    public function testCompleteActionWithDismissState(FunctionalTester $I) {
+    public function testCompleteActionWithDismissState(FunctionalTester $I): void {
         $I->amAuthenticated();
         $I->wantTo('get access_denied error if I pass accept in false state');
         $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
@@ -134,11 +134,11 @@ class AuthCodeCest {
             'error' => 'access_denied',
             'parameter' => null,
             'statusCode' => 401,
-            'redirectUri' => 'http://ely.by?&error=access_denied&error_description=The+resource+owner+or+authorization+server+denied+the+request.&hint=The+user+denied+the+request&message=The+resource+owner+or+authorization+server+denied+the+request.',
+            'redirectUri' => 'http://ely.by?error=access_denied&error_description=The+resource+owner+or+authorization+server+denied+the+request.&hint=The+user+denied+the+request',
         ]);
     }
 
-    public function invalidClientId(FunctionalTester $I) {
+    public function invalidClientId(FunctionalTester $I): void {
         $I->amAuthenticated();
         $I->wantTo('check behavior on invalid client id');
         $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
@@ -155,7 +155,7 @@ class AuthCodeCest {
         ]);
     }
 
-    public function invalidScopes(FunctionalTester $I) {
+    public function invalidScopes(FunctionalTester $I): void {
         $I->amAuthenticated();
         $I->wantTo('check behavior on some invalid scopes');
         $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
@@ -175,7 +175,7 @@ class AuthCodeCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
     }
 
-    public function requestInternalScope(FunctionalTester $I) {
+    public function requestInternalScope(FunctionalTester $I): void {
         $I->amAuthenticated();
         $I->wantTo('check behavior on request internal scope');
         $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
@@ -195,7 +195,7 @@ class AuthCodeCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
     }
 
-    public function finalizeByAccountMarkedForDeletion(FunctionalTester $I) {
+    public function finalizeByAccountMarkedForDeletion(FunctionalTester $I): void {
         $I->amAuthenticated('DeletedAccount');
         $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
             'client_id' => 'ely',

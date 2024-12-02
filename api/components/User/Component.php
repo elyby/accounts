@@ -18,13 +18,13 @@ use yii\web\User as YiiUserComponent;
  */
 class Component extends YiiUserComponent {
 
-    public const KEEP_MINECRAFT_SESSIONS = 1;
-    public const KEEP_SITE_SESSIONS = 2;
-    public const KEEP_CURRENT_SESSION = 4;
+    public const int KEEP_MINECRAFT_SESSIONS = 1;
+    public const int KEEP_SITE_SESSIONS = 2;
+    public const int KEEP_CURRENT_SESSION = 4;
 
     public $enableSession = false;
 
-    public $loginUrl = null;
+    public $loginUrl;
 
     /**
      * We don't use the standard web authorization mechanism via cookies.
@@ -57,12 +57,13 @@ class Component extends YiiUserComponent {
             return null;
         }
 
-        $sessionId = $identity->getToken()->getClaim('jti', false);
-        if ($sessionId === false) {
+        /** @var int|null $sessionId */
+        $sessionId = $identity->getToken()->claims()->get('jti');
+        if ($sessionId === null) {
             return null;
         }
 
-        return AccountSession::findOne($sessionId);
+        return AccountSession::findOne(['id' => (int)$sessionId]);
     }
 
     public function terminateSessions(Account $account, int $mode = 0): void {

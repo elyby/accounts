@@ -47,7 +47,7 @@ class ApiController extends Controller {
                 }
             }
         } else {
-            /** @var Account|null $record */
+            /** @var Account|null $account */
             $account = Account::findOne(['username' => $username]);
         }
 
@@ -64,7 +64,7 @@ class ApiController extends Controller {
     public function actionUsernamesByUuid(string $uuid) {
         try {
             $uuid = Uuid::fromString($uuid)->toString();
-        } catch (\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException) {
             return $this->illegalArgumentResponse('Invalid uuid format.');
         }
 

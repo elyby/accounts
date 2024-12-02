@@ -47,7 +47,7 @@ class SendPasswordRecoveryEmail implements RetryableJobInterface {
      * @param \yii\queue\Queue $queue
      * @throws \common\emails\exceptions\CannotSendEmailException
      */
-    public function execute($queue) {
+    public function execute($queue): void {
         Yii::$app->statsd->inc('queue.sendPasswordRecovery.attempt');
         $template = new ForgotPasswordEmail(Yii::$app->mailer, Yii::$app->emailsRenderer);
         $template->setLocale($this->locale);

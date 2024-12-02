@@ -48,7 +48,7 @@ final class LogMetricsToStatsd implements BootstrapInterface {
 
     private function getPrefix(ActionEvent $event): ?string {
         $action = $event->action;
-        switch (get_class($action)) {
+        switch ($action::class) {
             case actions\AcceptRulesAction::class: return 'accounts.acceptRules';
             case actions\ChangeEmailAction::class: return 'accounts.changeEmail';
             case actions\ChangeLanguageAction::class: return 'accounts.switchLanguage';

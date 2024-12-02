@@ -6,15 +6,15 @@ use yii\queue\Queue as BaseQueue;
 
 class Queue extends BaseQueue {
 
-    private $messages = [];
+    private array $messages = [];
 
     public function __set($name, $value) {
         // Yii2 components may contains some configuration
         // But we just ignore it for this mock component
     }
 
-    public function push($job) {
-        $this->messages[] = $job;
+    public function push($job): ?string {
+        return (string)array_push($this->messages, $job);
     }
 
     public function status($id) {
@@ -25,8 +25,8 @@ class Queue extends BaseQueue {
         return $this->messages;
     }
 
-    protected function pushMessage($message, $ttr, $delay, $priority) {
-        // This function is abstract, but will be not called
+    protected function pushMessage($message, $ttr, $delay, $priority): string {
+        return '';
     }
 
 }

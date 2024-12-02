@@ -7,7 +7,7 @@ use api\tests\FunctionalTester;
 
 class IndexCest {
 
-    public function index(FunctionalTester $I) {
+    public function index(FunctionalTester $I): void {
         $I->sendGet('/api/authlib-injector');
         $I->seeResponseCodeIs(200);
         $I->canSeeResponseContainsJson([

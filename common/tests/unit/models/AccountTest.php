@@ -17,7 +17,7 @@ use const common\LATEST_RULES_VERSION;
  */
 class AccountTest extends TestCase {
 
-    public function testSetPassword() {
+    public function testSetPassword(): void {
         $model = new Account();
         $model->setPassword('12345678');
         $this->assertNotEmpty($model->password_hash, 'hash should be set');
@@ -25,19 +25,17 @@ class AccountTest extends TestCase {
         $this->assertSame(Account::PASS_HASH_STRATEGY_YII2, $model->password_hash_strategy, 'latest password hash should be used');
     }
 
-    public function testValidatePassword() {
+    public function testValidatePassword(): void {
         // Use old hashing algorithm
         $model = new Account();
         $model->email = 'erick@skrauch.net';
         $model->password_hash = '2cfdb29eb354af970865a923335d17d9'; // 12345678
-        $model->password_hash_strategy = null; // To be sure it's not set
         $this->assertTrue($model->validatePassword('12345678', Account::PASS_HASH_STRATEGY_OLD_ELY), 'valid password should pass');
         $this->assertFalse($model->validatePassword('87654321', Account::PASS_HASH_STRATEGY_OLD_ELY), 'invalid password should fail');
 
         // Modern hash algorithm should also work
         $model = new Account();
         $model->password_hash = '$2y$04$N0q8DaHzlYILCnLYrpZfEeWKEqkPZzbawiS07GbSr/.xbRNweSLU6'; // 12345678
-        $model->password_hash_strategy = null; // To be sure it's not set
         $this->assertTrue($model->validatePassword('12345678', Account::PASS_HASH_STRATEGY_YII2), 'valid password should pass');
         $this->assertFalse($model->validatePassword('87654321', Account::PASS_HASH_STRATEGY_YII2), 'invalid password should fail');
 
@@ -57,7 +55,7 @@ class AccountTest extends TestCase {
         $this->assertFalse($model->validatePassword('87654321'), 'invalid password should fail');
     }
 
-    public function testHasMojangUsernameCollision() {
+    public function testHasMojangUsernameCollision(): void {
         $model = new Account();
         $model->username = 'ErickSkrauch';
         $this->assertFalse($model->hasMojangUsernameCollision());
@@ -69,13 +67,13 @@ class AccountTest extends TestCase {
         $this->assertTrue($model->hasMojangUsernameCollision());
     }
 
-    public function testGetProfileLink() {
+    public function testGetProfileLink(): void {
         $model = new Account();
-        $model->id = '123';
+        $model->id = 123;
         $this->assertSame('http://ely.by/u123', $model->getProfileLink());
     }
 
-    public function testIsAgreedWithActualRules() {
+    public function testIsAgreedWithActualRules(): void {
         $model = new Account();
         $this->assertFalse($model->isAgreedWithActualRules(), 'field is null');
 
@@ -86,7 +84,7 @@ class AccountTest extends TestCase {
         $this->assertTrue($model->isAgreedWithActualRules());
     }
 
-    public function testSetRegistrationIp() {
+    public function testSetRegistrationIp(): void {
         $account = new Account();
         $account->setRegistrationIp('42.72.205.204');
         $this->assertSame('42.72.205.204', inet_ntop($account->registration_ip));
@@ -96,7 +94,7 @@ class AccountTest extends TestCase {
         $this->assertNull($account->registration_ip);
     }
 
-    public function testGetRegistrationIp() {
+    public function testGetRegistrationIp(): void {
         $account = new Account();
         $account->setRegistrationIp('42.72.205.204');
         $this->assertSame('42.72.205.204', $account->getRegistrationIp());
@@ -106,7 +104,7 @@ class AccountTest extends TestCase {
         $this->assertNull($account->getRegistrationIp());
     }
 
-    public function testAfterSaveInsertEvent() {
+    public function testAfterSaveInsertEvent(): void {
         $account = new Account();
         $account->afterSave(true, [
             'username' => 'old-username',
@@ -114,7 +112,7 @@ class AccountTest extends TestCase {
         $this->assertNull($this->tester->grabLastQueuedJob());
     }
 
-    public function testAfterSaveNotMeaningfulAttributes() {
+    public function testAfterSaveNotMeaningfulAttributes(): void {
         $account = new Account();
         $account->afterSave(false, [
             'updatedAt' => time(),
@@ -122,7 +120,7 @@ class AccountTest extends TestCase {
         $this->assertNull($this->tester->grabLastQueuedJob());
     }
 
-    public function testAfterSavePushEvent() {
+    public function testAfterSavePushEvent(): void {
         $changedAttributes = [
             'username' => 'old-username',
             'email' => 'old-email@ely.by',
@@ -144,7 +142,7 @@ class AccountTest extends TestCase {
         $this->assertSame($changedAttributes, $notification->getPayloads()['changedAttributes']);
     }
 
-    public function testAfterDeletePushEvent() {
+    public function testAfterDeletePushEvent(): void {
         $account = new Account();
         $account->id = 1;
         $account->status = Account::STATUS_REGISTERED;

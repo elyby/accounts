@@ -13,12 +13,12 @@ use Webmozart\Assert\Assert;
 use Yii;
 use yii\queue\JobInterface;
 
-class PullMojangUsername implements JobInterface {
+final class PullMojangUsername implements JobInterface {
 
     public $username;
 
     public static function createFromAccount(Account $account): self {
-        $result = new static();
+        $result = new self();
         $result->username = $account->username;
 
         return $result;
@@ -29,17 +29,17 @@ class PullMojangUsername implements JobInterface {
      *
      * @throws \Exception
      */
-    public function execute($queue) {
+    public function execute($queue): void {
         Yii::$app->statsd->inc('queue.pullMojangUsername.attempt');
         /** @var MojangApi $mojangApi */
         $mojangApi = Yii::$container->get(MojangApi::class);
         try {
             $response = $mojangApi->usernameToUUID($this->username);
             Yii::$app->statsd->inc('queue.pullMojangUsername.found');
-        } catch (NoContentException $e) {
+        } catch (NoContentException) {
             $response = false;
             Yii::$app->statsd->inc('queue.pullMojangUsername.not_found');
-        } catch (GuzzleException | MojangApiException $e) {
+        } catch (GuzzleException|MojangApiException) {
             Yii::$app->statsd->inc('queue.pullMojangUsername.error');
             return;
         }

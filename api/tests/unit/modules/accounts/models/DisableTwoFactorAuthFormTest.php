@@ -10,7 +10,7 @@ use common\models\Account;
 
 class DisableTwoFactorAuthFormTest extends TestCase {
 
-    public function testPerformAction() {
+    public function testPerformAction(): void {
         $account = $this->createPartialMock(Account::class, ['save']);
         $account->expects($this->once())->method('save')->willReturn(true);
 
@@ -26,7 +26,7 @@ class DisableTwoFactorAuthFormTest extends TestCase {
         $this->assertFalse($account->is_otp_enabled);
     }
 
-    public function testValidateOtpEnabled() {
+    public function testValidateOtpEnabled(): void {
         $account = new Account();
         $account->is_otp_enabled = false;
         $model = new DisableTwoFactorAuthForm($account);

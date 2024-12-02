@@ -1,4 +1,4 @@
-FROM php:7.4.33-fpm-alpine3.16 AS app
+FROM php:8.3.12-fpm-alpine3.20 AS app
 
 # bash needed to support wait-for-it script
 RUN apk add --update --no-cache git bash patch openssh dcron \
@@ -6,7 +6,7 @@ RUN apk add --update --no-cache git bash patch openssh dcron \
          -o /usr/local/bin/install-php-extensions \
          https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions \
  && chmod +x /usr/local/bin/install-php-extensions \
- && install-php-extensions @composer zip pdo_mysql intl pcntl opcache imagick xdebug-^2 \
+ && install-php-extensions @composer zip pdo_mysql intl pcntl opcache imagick xdebug \
  # Create cron directory
  && mkdir -p /etc/cron.d \
  # Install wait-for-it script
@@ -16,7 +16,6 @@ RUN apk add --update --no-cache git bash patch openssh dcron \
  # Feature: https://docs.docker.com/develop/develop-images/build_enhancements/#new-docker-build-secret-information
  # Track issues: https://github.com/docker/compose/issues/6358, https://github.com/compose-spec/compose-spec/issues/81
 
-COPY ./patches /var/www/html/patches/
 COPY ./composer.* /var/www/html/
 
 ARG build_env=prod

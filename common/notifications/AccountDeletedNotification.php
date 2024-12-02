@@ -6,7 +6,7 @@ namespace common\notifications;
 use common\models\Account;
 use Webmozart\Assert\Assert;
 
-final class AccountDeletedNotification implements NotificationInterface {
+final readonly class AccountDeletedNotification implements NotificationInterface {
 
     private Account $account;
 

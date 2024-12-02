@@ -47,7 +47,7 @@ class SendRegistrationEmail implements RetryableJobInterface {
      * @param \yii\queue\Queue $queue
      * @throws \common\emails\exceptions\CannotSendEmailException
      */
-    public function execute($queue) {
+    public function execute($queue): void {
         Yii::$app->statsd->inc('queue.sendRegistrationEmail.attempt');
         $template = new RegistrationEmail(Yii::$app->mailer, Yii::$app->emailsRenderer);
         $template->setLocale($this->locale);

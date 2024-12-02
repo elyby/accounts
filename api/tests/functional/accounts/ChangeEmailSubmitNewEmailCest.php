@@ -10,16 +10,13 @@ use yii\validators\EmailValidator;
 
 class ChangeEmailSubmitNewEmailCest {
 
-    /**
-     * @var AccountsRoute
-     */
-    private $route;
+    private AccountsRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new AccountsRoute($I);
     }
 
-    public function testSubmitNewEmail(FunctionalTester $I) {
+    public function testSubmitNewEmail(FunctionalTester $I): void {
         // Mock::func(EmailValidator::class, 'checkdnsrr')->andReturnTrue();
 
         $I->wantTo('submit new email');

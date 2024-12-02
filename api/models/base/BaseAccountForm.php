@@ -7,11 +7,11 @@ use common\models\Account;
 
 class BaseAccountForm extends ApiForm {
 
-    private Account $account;
-
-    public function __construct(Account $account, array $config = []) {
+    public function __construct(
+        private readonly Account $account,
+        array $config = [],
+    ) {
         parent::__construct($config);
-        $this->account = $account;
     }
 
     public function getAccount(): Account {

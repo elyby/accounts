@@ -14,14 +14,11 @@ use yii\base\Model;
 
 class HasJoinedForm extends Model {
 
-    /**
-     * @var HasJoinedInterface
-     */
-    private $protocol;
-
-    public function __construct(HasJoinedInterface $protocol, array $config = []) {
+    public function __construct(
+        private readonly HasJoinedInterface $protocol,
+        array $config = [],
+    ) {
         parent::__construct($config);
-        $this->protocol = $protocol;
     }
 
     /**

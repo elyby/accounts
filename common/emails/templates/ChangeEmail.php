@@ -8,10 +8,7 @@ use yii\base\InvalidCallException;
 
 class ChangeEmail extends Template {
 
-    /**
-     * @var string|null
-     */
-    private $key;
+    private ?string $key = null;
 
     public function setKey(string $key): void {
         $this->key = $key;
@@ -31,7 +28,7 @@ class ChangeEmail extends Template {
         ];
     }
 
-    protected function getView() {
+    protected function getView(): array {
         return [
             'html' => '@common/emails/views/current-email-confirmation-html',
             'text' => '@common/emails/views/current-email-confirmation-text',

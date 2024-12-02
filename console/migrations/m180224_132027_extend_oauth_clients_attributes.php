@@ -4,7 +4,7 @@ use console\db\Migration;
 
 class m180224_132027_extend_oauth_clients_attributes extends Migration {
 
-    public function safeUp() {
+    public function safeUp(): void {
         $this->addColumn('{{%oauth_clients}}', 'type', $this->string()->notNull()->after('secret'));
         $this->addColumn('{{%oauth_clients}}', 'website_url', $this->string()->null()->after('redirect_uri'));
         $this->addColumn('{{%oauth_clients}}', 'minecraft_server_ip', $this->string()->null()->after('website_url'));
@@ -18,7 +18,7 @@ class m180224_132027_extend_oauth_clients_attributes extends Migration {
         ]);
     }
 
-    public function safeDown() {
+    public function safeDown(): void {
         $this->dropColumn('{{%oauth_clients}}', 'type');
         $this->dropColumn('{{%oauth_clients}}', 'website_url');
         $this->dropColumn('{{%oauth_clients}}', 'minecraft_server_ip');

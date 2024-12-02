@@ -40,7 +40,7 @@ final class DeleteAccountForm extends AccountActionForm {
         Assert::true($account->save(), 'Cannot delete account');
 
         // Schedule complete account erasing
-        Yii::$app->queue->delay($account->getDeleteAt()->diffInRealSeconds())->push(new DeleteAccount($account->id));
+        Yii::$app->queue->delay($account->getDeleteAt()->diffInUTCSeconds(null, true))->push(new DeleteAccount($account->id));
 
         $transaction->commit();
 

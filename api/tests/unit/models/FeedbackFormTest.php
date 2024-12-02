@@ -1,14 +1,15 @@
 <?php
-namespace codeception\api\unit\models;
+namespace api\tests\unit\models;
 
 use api\models\FeedbackForm;
 use api\tests\unit\TestCase;
 use common\models\Account;
-use yii\swiftmailer\Message;
+use PHPUnit\Framework\MockObject\MockObject;
+use yii\symfonymailer\Message;
 
 class FeedbackFormTest extends TestCase {
 
-    public function testSendMessage() {
+    public function testSendMessage(): void {
         $model = new FeedbackForm([
             'subject' => 'Тема обращения',
             'email' => 'erickskrauch@ely.by',
@@ -18,10 +19,10 @@ class FeedbackFormTest extends TestCase {
         $this->tester->seeEmailIsSent(1, 'message file exists');
     }
 
-    public function testSendMessageWithEmail() {
-        /** @var FeedbackForm|\PHPUnit\Framework\MockObject\MockObject $model */
+    public function testSendMessageWithEmail(): void {
+        /** @var FeedbackForm|MockObject $model */
         $model = $this->getMockBuilder(FeedbackForm::class)
-            ->setMethods(['getAccount'])
+            ->onlyMethods(['getAccount'])
             ->setConstructorArgs([[
                 'subject' => 'Тема обращения',
                 'email' => 'erickskrauch@ely.by',
@@ -32,7 +33,7 @@ class FeedbackFormTest extends TestCase {
         $model
             ->method('getAccount')
             ->willReturn(new Account([
-                'id' => '123',
+                'id' => 123,
                 'username' => 'Erick',
                 'email' => 'find-this@email.net',
                 'created_at' => time() - 86400,
@@ -41,7 +42,7 @@ class FeedbackFormTest extends TestCase {
         /** @var Message $message */
         $message = $this->tester->grabLastSentEmail();
         $this->assertInstanceOf(Message::class, $message);
-        $data = (string)$message;
+        $data = $message;
         $this->assertStringContainsString('find-this@email.net', $data);
     }
 

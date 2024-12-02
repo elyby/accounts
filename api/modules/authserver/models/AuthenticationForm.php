@@ -17,6 +17,7 @@ use common\models\OauthSession;
 use Ramsey\Uuid\Uuid;
 use Webmozart\Assert\Assert;
 use Yii;
+use yii\db\Exception;
 
 class AuthenticationForm extends ApiForm {
 
@@ -50,8 +51,8 @@ class AuthenticationForm extends ApiForm {
 
     /**
      * @return AuthenticateData
-     * @throws \api\modules\authserver\exceptions\IllegalArgumentException
-     * @throws \api\modules\authserver\exceptions\ForbiddenOperationException
+     * @throws ForbiddenOperationException
+     * @throws Exception
      */
     public function authenticate(): AuthenticateData {
         // This validating method will throw an exception in case when validation will not pass successfully
@@ -61,7 +62,7 @@ class AuthenticationForm extends ApiForm {
 
         // The previous authorization server implementation used the nickname field instead of username,
         // so we keep such behavior
-        $attribute = strpos($this->username, '@') === false ? 'nickname' : 'email';
+        $attribute = !str_contains($this->username, '@') ? 'nickname' : 'email';
 
         $password = $this->password;
         $totp = null;
@@ -113,7 +114,7 @@ class AuthenticationForm extends ApiForm {
         $account = $loginForm->getAccount();
         $clientToken = $this->clientToken ?: Uuid::uuid4()->toString();
         $token = Yii::$app->tokensFactory->createForMinecraftAccount($account, $clientToken);
-        $dataModel = new AuthenticateData($account, (string)$token, $clientToken, (bool)$this->requestUser);
+        $dataModel = new AuthenticateData($account, $token->toString(), $clientToken, (bool)$this->requestUser);
         /** @var OauthSession|null $minecraftOauthSession */
         $minecraftOauthSession = $account->getOauthSessions()
             ->andWhere(['client_id' => OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER])

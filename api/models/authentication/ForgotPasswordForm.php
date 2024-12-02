@@ -16,9 +16,9 @@ use yii\base\ErrorException;
 
 class ForgotPasswordForm extends ApiForm {
 
-    public $captcha;
+    public mixed $captcha = null;
 
-    public $login;
+    public mixed $login = null;
 
     public function rules(): array {
         return [
@@ -90,6 +90,7 @@ class ForgotPasswordForm extends ApiForm {
             return null;
         }
 
+        // @phpstan-ignore return.type
         return $account->getEmailActivations()->withType(EmailActivation::TYPE_FORGOT_PASSWORD_KEY)->one();
     }
 

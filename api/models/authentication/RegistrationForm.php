@@ -54,7 +54,7 @@ class RegistrationForm extends ApiForm {
         ];
     }
 
-    public function validatePasswordAndRePasswordMatch($attribute) {
+    public function validatePasswordAndRePasswordMatch($attribute): void {
         if (!$this->hasErrors()) {
             if ($this->password !== $this->rePassword) {
                 $this->addError($attribute, E::RE_PASSWORD_DOES_NOT_MATCH);
@@ -64,7 +64,7 @@ class RegistrationForm extends ApiForm {
 
     public function signup() {
         if (!$this->validate() && !$this->canContinue($this->getFirstErrors())) {
-            return null;
+            return;
         }
 
         $transaction = Yii::$app->db->beginTransaction();

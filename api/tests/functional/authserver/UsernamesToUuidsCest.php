@@ -36,6 +36,7 @@ class UsernamesToUuidsCest {
      */
     public function getUuidsByUsernamesWithPostString(FunctionalTester $I, Example $case): void {
         $I->wantTo('get uuids by few usernames');
+        // @phpstan-ignore argument.type (it does accept string an we need it to ensure, that JSON passes)
         $I->sendPost($case[0], json_encode(['Admin', 'AccWithOldPassword', 'Notch']));
         $this->validateFewValidUsernames($I);
     }
@@ -75,8 +76,9 @@ class UsernamesToUuidsCest {
     public function passTooManyUsernames(FunctionalTester $I, Example $case): void {
         $I->wantTo('get specific response when pass too many usernames');
         $usernames = [];
+        // generate random UTF-8 usernames
         for ($i = 0; $i < 150; $i++) {
-            $usernames[] = random_bytes(10);
+            $usernames[] = base64_encode(random_bytes(10));
         }
 
         $I->sendPost($case[0], $usernames);
@@ -116,6 +118,13 @@ class UsernamesToUuidsCest {
         ]);
     }
 
+    public function bulkProfilesEndpoints(): array {
+        return [
+            ['/api/mojang/profiles'],
+            ['/api/mojang/services/minecraft/profile/lookup/bulk/byname'],
+        ];
+    }
+
     private function validateFewValidUsernames(FunctionalTester $I): void {
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
@@ -133,13 +142,6 @@ class UsernamesToUuidsCest {
                 'name' => 'Notch',
             ],
         ]);
-    }
-
-    private function bulkProfilesEndpoints(): array {
-        return [
-            ['/api/mojang/profiles'],
-            ['/api/mojang/services/minecraft/profile/lookup/bulk/byname'],
-        ];
     }
 
 }

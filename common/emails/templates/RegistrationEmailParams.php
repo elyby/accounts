@@ -5,16 +5,11 @@ namespace common\emails\templates;
 
 class RegistrationEmailParams {
 
-    private $username;
-
-    private $code;
-
-    private $link;
-
-    public function __construct(string $username, string $code, string $link) {
-        $this->username = $username;
-        $this->code = $code;
-        $this->link = $link;
+    public function __construct(
+        private readonly string $username,
+        private readonly string $code,
+        private readonly string $link,
+    ) {
     }
 
     public function getUsername(): string {

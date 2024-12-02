@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace codeception\api\unit\components\User;
+namespace api\tests\unit\components\User;
 
 use api\components\User\Component;
 use api\components\User\JwtIdentity;
@@ -14,20 +14,13 @@ use common\tests\fixtures\AccountFixture;
 use common\tests\fixtures\AccountSessionFixture;
 use common\tests\fixtures\OauthClientFixture;
 use common\tests\fixtures\OauthSessionFixture;
-use Lcobucci\JWT\Claim\Basic;
-use Lcobucci\JWT\Token;
+use DateTimeImmutable;
+use Lcobucci\JWT\Builder as BuilderInterface;
+use Lcobucci\JWT\JwtFacade;
+use Lcobucci\JWT\Signer\Blake2b;
+use Lcobucci\JWT\Signer\Key;
 
 class ComponentTest extends TestCase {
-
-    /**
-     * @var Component|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $component;
-
-    public function _before() {
-        parent::_before();
-        $this->component = new Component();
-    }
 
     public function _fixtures(): array {
         return [
@@ -38,7 +31,7 @@ class ComponentTest extends TestCase {
         ];
     }
 
-    public function testGetActiveSession() {
+    public function testGetActiveSession(): void {
         // User is guest
         $component = new Component();
         $this->assertNull($component->getActiveSession());
@@ -49,26 +42,54 @@ class ComponentTest extends TestCase {
 
         // Identity is correct, but have no jti claim
         $identity = $this->createMock(JwtIdentity::class);
-        $identity->method('getToken')->willReturn(new Token());
+        $identity
+            ->method('getToken')
+            ->willReturn(
+                (new JwtFacade())
+                    ->issue(
+                        new Blake2b(),
+                        Key\InMemory::plainText('MpQd6dDPiqnzFSWmpUfLy4+Rdls90Ca4C8e0QD0IxqY='),
+                        static fn(BuilderInterface $builder, DateTimeImmutable $issuedAt): \Lcobucci\JWT\Builder => $builder,
+                    ),
+            );
         $component->setIdentity($identity);
         $this->assertNull($component->getActiveSession());
 
         // Identity is correct and has jti claim, but there is no associated session
         $identity = $this->createMock(JwtIdentity::class);
-        $identity->method('getToken')->willReturn(new Token([], ['jti' => new Basic('jti', 999999)]));
+        $identity
+            ->method('getToken')
+            ->willReturn(
+                (new JwtFacade())
+                    ->issue(
+                        new Blake2b(),
+                        Key\InMemory::plainText('MpQd6dDPiqnzFSWmpUfLy4+Rdls90Ca4C8e0QD0IxqY='),
+                        static fn(BuilderInterface $builder, DateTimeImmutable $issuedAt): \Lcobucci\JWT\Builder => $builder->identifiedBy('999999'),
+                    ),
+            );
         $component->setIdentity($identity);
         $this->assertNull($component->getActiveSession());
 
         // Identity is correct, has jti claim and associated session exists
         $identity = $this->createMock(JwtIdentity::class);
-        $identity->method('getToken')->willReturn(new Token([], ['jti' => new Basic('jti', 1)]));
+        $identity
+            ->method('getToken')
+            ->willReturn(
+                (new JwtFacade())
+                    ->issue(
+                        new Blake2b(),
+                        Key\InMemory::plainText('MpQd6dDPiqnzFSWmpUfLy4+Rdls90Ca4C8e0QD0IxqY='),
+                        static fn(BuilderInterface $builder, DateTimeImmutable $issuedAt): \Lcobucci\JWT\Builder => $builder->identifiedBy('1'),
+                    ),
+            );
         $component->setIdentity($identity);
         $session = $component->getActiveSession();
+        // @phpstan-ignore method.impossibleType (it is possible since we're changing identity via setIdentity() method)
         $this->assertNotNull($session);
         $this->assertSame(1, $session->id);
     }
 
-    public function testTerminateSessions() {
+    public function testTerminateSessions(): void {
         /** @var AccountSession $session */
         $session = $this->tester->grabFixture('sessions', 'admin2');
 

@@ -5,10 +5,11 @@ use yii\db\Migration as YiiMigration;
 
 /**
  * @property string $tableOptions
+ * @method \SamIT\Yii2\MariaDb\ColumnSchemaBuilder json()
  */
 class Migration extends YiiMigration {
 
-    public function getTableOptions($engine = 'InnoDB') {
+    public function getTableOptions(string $engine = 'InnoDB'): string {
         $tableOptions = null;
         if ($this->db->driverName === 'mysql') {
             $tableOptions = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE=' . $engine;
@@ -17,7 +18,7 @@ class Migration extends YiiMigration {
         return $tableOptions;
     }
 
-    public function createTable($table, $columns, $options = null) {
+    public function createTable($table, $columns, $options = null): void {
         if ($options === null) {
             $options = $this->getTableOptions();
         }

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace api\tests\_support\models\authentication;
+namespace api\tests\unit\models\authentication;
 
 use api\models\authentication\RecoverPasswordForm;
 use api\tests\unit\TestCase;
@@ -17,7 +17,7 @@ class RecoverPasswordFormTest extends TestCase {
         ];
     }
 
-    public function testRecoverPassword() {
+    public function testRecoverPassword(): void {
         $fixture = $this->tester->grabFixture('emailActivations', 'freshPasswordRecovery');
         $model = new RecoverPasswordForm([
             'key' => $fixture['key'],

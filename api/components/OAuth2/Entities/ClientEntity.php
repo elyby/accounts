@@ -12,15 +12,18 @@ class ClientEntity implements ClientEntityInterface {
     use ClientTrait;
 
     /**
-     * @var bool
+     * @param non-empty-string $id
+     * @param string|string[] $redirectUri
      */
-    private $isTrusted;
-
-    public function __construct(string $id, string $name, $redirectUri, bool $isTrusted) {
+    public function __construct(
+        string $id,
+        string $name,
+        string|array $redirectUri,
+        private readonly bool $isTrusted,
+    ) {
         $this->identifier = $id;
         $this->name = $name;
         $this->redirectUri = $redirectUri;
-        $this->isTrusted = $isTrusted;
     }
 
     public function isConfidential(): bool {

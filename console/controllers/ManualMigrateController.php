@@ -20,9 +20,7 @@ class ManualMigrateController extends Controller {
             $cursor = (int)$response[0];
             $keys = $response[1];
             if (!empty($keys)) {
-                $sessionsIds = array_map(function(string $key): int {
-                    return (int)explode(':', $key)[2];
-                }, $keys);
+                $sessionsIds = array_map(fn(string $key): int => (int)explode(':', $key)[2], $keys);
                 /** @var OauthSession[] $sessions */
                 $sessions = OauthSession::find()->andWhere(['legacy_id' => $sessionsIds])->all();
                 foreach ($sessions as $session) {

@@ -9,7 +9,6 @@ use api\modules\session\models\protocols\JoinInterface;
 use api\modules\session\Module as Session;
 use api\modules\session\validators\RequiredValidator;
 use api\rbac\Permissions as P;
-use Closure;
 use common\helpers\StringHelper;
 use common\models\Account;
 use Ramsey\Uuid\Uuid;
@@ -20,35 +19,32 @@ use yii\web\UnauthorizedHttpException;
 
 class JoinForm extends Model {
 
-    public $accessToken;
+    public mixed $accessToken = null;
 
-    public $selectedProfile;
+    public mixed $selectedProfile = null;
 
-    public $serverId;
+    public mixed $serverId = null;
 
     /**
      * @var Account|null
      */
-    private $account;
+    private ?Account $account = null;
 
-    /**
-     * @var JoinInterface
-     */
-    private $protocol;
-
-    public function __construct(JoinInterface $protocol, array $config = []) {
+    public function __construct(
+        private readonly JoinInterface $protocol,
+        array $config = [],
+    ) {
         parent::__construct($config);
-        $this->protocol = $protocol;
-        $this->accessToken = $protocol->getAccessToken();
-        $this->selectedProfile = $protocol->getSelectedProfile();
-        $this->serverId = $protocol->getServerId();
+        $this->accessToken = $this->protocol->getAccessToken();
+        $this->selectedProfile = $this->protocol->getSelectedProfile();
+        $this->serverId = $this->protocol->getServerId();
     }
 
     public function rules(): array {
         return [
             [['accessToken', 'serverId'], RequiredValidator::class],
-            [['accessToken', 'selectedProfile'], Closure::fromCallable([$this, 'validateUuid'])],
-            [['accessToken'], Closure::fromCallable([$this, 'validateAccessToken'])],
+            [['accessToken', 'selectedProfile'], $this->validateUuid(...)],
+            [['accessToken'], $this->validateAccessToken(...)],
         ];
     }
 
@@ -147,7 +143,7 @@ class JoinForm extends Model {
             throw new ForbiddenOperationException('Wrong selected_profile.');
         }
 
-        if (!$isUuid && mb_strtolower($account->username) !== mb_strtolower($selectedProfile)) {
+        if (!$isUuid && mb_strtolower($account->username) !== mb_strtolower((string)$selectedProfile)) {
             Session::error("User with access_token = '{$accessToken}' trying to join with identity = '{$selectedProfile}', but access_token issued to account with username = '{$account->username}'.");
             Yii::$app->statsd->inc('sessionserver.join.fail_username_mismatch');
 

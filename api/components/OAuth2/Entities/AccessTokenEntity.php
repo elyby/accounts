@@ -9,12 +9,12 @@ use League\OAuth2\Server\Entities\Traits\EntityTrait;
 use League\OAuth2\Server\Entities\Traits\TokenEntityTrait;
 use Yii;
 
-class AccessTokenEntity implements AccessTokenEntityInterface {
+final class AccessTokenEntity implements AccessTokenEntityInterface {
     use EntityTrait;
     use TokenEntityTrait;
 
-    public function __toString(): string {
-        return (string)Yii::$app->tokensFactory->createForOAuthClient($this);
+    public function toString(): string {
+        return Yii::$app->tokensFactory->createForOAuthClient($this)->toString();
     }
 
     public function setPrivateKey(CryptKeyInterface $privateKey): void {

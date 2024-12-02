@@ -8,16 +8,13 @@ use api\tests\FunctionalTester;
 
 class DeleteClientCest {
 
-    /**
-     * @var OauthRoute
-     */
-    private $route;
+    private OauthRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new OauthRoute($I);
     }
 
-    public function testDelete(FunctionalTester $I) {
+    public function testDelete(FunctionalTester $I): void {
         $I->amAuthenticated('TwoOauthClients');
         $this->route->deleteClient('first-test-oauth-client');
         $I->canSeeResponseCodeIs(200);

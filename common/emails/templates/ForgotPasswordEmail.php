@@ -8,10 +8,7 @@ use yii\base\InvalidCallException;
 
 class ForgotPasswordEmail extends TemplateWithRenderer {
 
-    /**
-     * @var ForgotPasswordParams|null
-     */
-    private $params;
+    private ?ForgotPasswordParams $params = null;
 
     public function getSubject(): string {
         return 'Ely.by Account forgot password';
@@ -31,9 +28,9 @@ class ForgotPasswordEmail extends TemplateWithRenderer {
         }
 
         return [
-            'username' => $this->params->getUsername(),
-            'code' => $this->params->getCode(),
-            'link' => $this->params->getLink(),
+            'username' => $this->params->username,
+            'code' => $this->params->code,
+            'link' => $this->params->link,
         ];
     }
 

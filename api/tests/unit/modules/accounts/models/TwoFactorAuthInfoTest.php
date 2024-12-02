@@ -9,7 +9,7 @@ use common\models\Account;
 
 class TwoFactorAuthInfoTest extends TestCase {
 
-    public function testGetCredentials() {
+    public function testGetCredentials(): void {
         $account = $this->createPartialMock(Account::class, ['save']);
         $account->method('save')->willReturn(true);
 
@@ -24,11 +24,11 @@ class TwoFactorAuthInfoTest extends TestCase {
         $this->assertArrayHasKey('uri', $result);
         $this->assertArrayHasKey('secret', $result);
         $this->assertSame($account->otp_secret, $result['secret']);
-        $this->assertSame(strtoupper($account->otp_secret), $account->otp_secret);
+        $this->assertSame(strtoupper((string)$account->otp_secret), $account->otp_secret);
         $this->assertStringStartsWith('data:image/svg+xml,<?xml', $result['qr']);
 
         $previous = libxml_use_internal_errors(true);
-        simplexml_load_string(base64_decode($result['qr']));
+        simplexml_load_string(base64_decode((string)$result['qr']));
         libxml_use_internal_errors($previous);
         $this->assertEmpty(libxml_get_errors());
 

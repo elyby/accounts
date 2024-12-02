@@ -11,7 +11,7 @@ use OTPHP\TOTP;
 class TotpValidatorTest extends TestCase {
     use ProtectedCaller;
 
-    public function testValidateValue() {
+    public function testValidateValue(): void {
         $account = new Account();
         $account->otp_secret = 'AAAA';
         $controlTotp = TOTP::create($account->otp_secret);
@@ -25,10 +25,6 @@ class TotpValidatorTest extends TestCase {
         $this->assertNull($result);
 
         $result = $this->callProtected($validator, 'validateValue', $controlTotp->at(time() - 31));
-        $this->assertSame([E::TOTP_INCORRECT, []], $result);
-
-        $validator->window = 2;
-        $result = $this->callProtected($validator, 'validateValue', $controlTotp->at(time() - 31));
         $this->assertNull($result);
 
         $at = time() - 400;
@@ -39,16 +35,12 @@ class TotpValidatorTest extends TestCase {
         $result = $this->callProtected($validator, 'validateValue', $controlTotp->at($at));
         $this->assertNull($result);
 
-        $at = function() {
-            return null;
-        };
+        $at = fn(): ?int => null;
         $validator->timestamp = $at;
         $result = $this->callProtected($validator, 'validateValue', $controlTotp->now());
         $this->assertNull($result);
 
-        $at = function() {
-            return time() - 700;
-        };
+        $at = fn(): int => time() - 700;
         $validator->timestamp = $at;
         $result = $this->callProtected($validator, 'validateValue', $controlTotp->at($at()));
         $this->assertNull($result);

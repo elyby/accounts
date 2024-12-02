@@ -10,16 +10,13 @@ use function Ramsey\Uuid\v4 as uuid;
 
 class JoinLegacyCest {
 
-    /**
-     * @var SessionServerRoute
-     */
-    private $route;
+    private SessionServerRoute $route;
 
-    public function _before(AuthserverSteps $I) {
+    public function _before(AuthserverSteps $I): void {
         $this->route = new SessionServerRoute($I);
     }
 
-    public function joinByLegacyAuthserver(AuthserverSteps $I) {
+    public function joinByLegacyAuthserver(AuthserverSteps $I): void {
         $I->wantTo('join to server by legacy protocol, using legacy authserver access token');
         [$accessToken] = $I->amAuthenticated();
         $this->route->joinLegacy([
@@ -30,7 +27,7 @@ class JoinLegacyCest {
         $this->expectSuccessResponse($I);
     }
 
-    public function joinByOauth2TokenAndDifferentLetterCase(AuthserverSteps $I) {
+    public function joinByOauth2TokenAndDifferentLetterCase(AuthserverSteps $I): void {
         $I->wantTo('join to server by legacy protocol, using legacy authserver access token and different letter case');
         [$accessToken] = $I->amAuthenticated();
         $this->route->joinLegacy([
@@ -41,29 +38,29 @@ class JoinLegacyCest {
         $this->expectSuccessResponse($I);
     }
 
-    public function joinByNewSessionFormat(AuthserverSteps $I) {
+    public function joinByNewSessionFormat(AuthserverSteps $I): void {
         $I->wantTo('join to server by legacy protocol with new launcher session format, using legacy authserver');
         [$accessToken] = $I->amAuthenticated();
         $this->route->joinLegacy([
-            'sessionId' => 'token:' . $accessToken . ':' . 'df936908-b2e1-544d-96f8-2977ec213022',
+            'sessionId' => 'token:' . $accessToken . ':df936908-b2e1-544d-96f8-2977ec213022',
             'user' => 'Admin',
             'serverId' => uuid(),
         ]);
         $this->expectSuccessResponse($I);
     }
 
-    public function joinByOauth2Token(OauthSteps $I) {
+    public function joinByOauth2Token(OauthSteps $I): void {
         $I->wantTo('join to server using modern oAuth2 generated token with new launcher session format');
         $accessToken = $I->getAccessToken([P::MINECRAFT_SERVER_SESSION]);
         $this->route->joinLegacy([
-            'sessionId' => 'token:' . $accessToken . ':' . 'df936908-b2e1-544d-96f8-2977ec213022',
+            'sessionId' => 'token:' . $accessToken . ':df936908-b2e1-544d-96f8-2977ec213022',
             'user' => 'Admin',
             'serverId' => uuid(),
         ]);
         $this->expectSuccessResponse($I);
     }
 
-    public function wrongArguments(FunctionalTester $I) {
+    public function wrongArguments(FunctionalTester $I): void {
         $I->wantTo('get error on wrong amount of arguments');
         $this->route->joinLegacy([
             'wrong' => 'argument',
@@ -72,7 +69,7 @@ class JoinLegacyCest {
         $I->canSeeResponseContains('credentials can not be null.');
     }
 
-    public function joinWithWrongAccessToken(FunctionalTester $I) {
+    public function joinWithWrongAccessToken(FunctionalTester $I): void {
         $I->wantTo('join to some server with wrong accessToken');
         $this->route->joinLegacy([
             'sessionId' => 'token:' . uuid() . ':' . uuid(),
@@ -83,11 +80,11 @@ class JoinLegacyCest {
         $I->canSeeResponseContains('Ely.by authorization required');
     }
 
-    public function joinWithAccessTokenWithoutMinecraftPermission(OauthSteps $I) {
+    public function joinWithAccessTokenWithoutMinecraftPermission(OauthSteps $I): void {
         $I->wantTo('join to some server with wrong accessToken');
         $accessToken = $I->getAccessToken(['account_info']);
         $this->route->joinLegacy([
-            'sessionId' => 'token:' . $accessToken . ':' . 'df936908-b2e1-544d-96f8-2977ec213022',
+            'sessionId' => 'token:' . $accessToken . ':df936908-b2e1-544d-96f8-2977ec213022',
             'user' => 'Admin',
             'serverId' => uuid(),
         ]);
@@ -95,7 +92,7 @@ class JoinLegacyCest {
         $I->canSeeResponseContains('Ely.by authorization required');
     }
 
-    public function joinWithNilUuids(FunctionalTester $I) {
+    public function joinWithNilUuids(FunctionalTester $I): void {
         $I->wantTo('join to some server by legacy protocol with nil accessToken and selectedProfile');
         $this->route->joinLegacy([
             'sessionId' => 'token:00000000-0000-0000-0000-000000000000:00000000-0000-0000-0000-000000000000',
@@ -106,7 +103,7 @@ class JoinLegacyCest {
         $I->canSeeResponseContains('credentials can not be null.');
     }
 
-    public function joinByAccountMarkedForDeletion(FunctionalTester $I) {
+    public function joinByAccountMarkedForDeletion(FunctionalTester $I): void {
         $I->wantTo('join to some server by legacy protocol with nil accessToken and selectedProfile');
         $this->route->joinLegacy([
             'sessionId' => 'token:239ba889-7020-4383-8d99-cd8c8aab4a2f:6383de63-8f85-4ed5-92b7-5401a1fa68cd',
@@ -117,7 +114,7 @@ class JoinLegacyCest {
         $I->canSeeResponseContains('Ely.by authorization required');
     }
 
-    private function expectSuccessResponse(FunctionalTester $I) {
+    private function expectSuccessResponse(FunctionalTester $I): void {
         $I->seeResponseCodeIs(200);
         $I->canSeeResponseEquals('OK');
     }

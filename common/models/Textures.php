@@ -10,12 +10,9 @@ use Yii;
 
 class Textures {
 
-    private const MAX_RETRIES = 3;
+    private const int MAX_RETRIES = 3;
 
-    protected Account $account;
-
-    public function __construct(Account $account) {
-        $this->account = $account;
+    public function __construct(protected Account $account) {
     }
 
     public function getMinecraftResponse(bool $signed = false): array {

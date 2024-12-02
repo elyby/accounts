@@ -8,16 +8,13 @@ use function Ramsey\Uuid\v4 as uuid;
 
 class HasJoinedLegacyCest {
 
-    /**
-     * @var SessionServerRoute
-     */
-    private $route;
+    private SessionServerRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new SessionServerRoute($I);
     }
 
-    public function hasJoined(SessionServerSteps $I) {
+    public function hasJoined(SessionServerSteps $I): void {
         $I->wantTo('test hasJoined user to some server by legacy version');
         [$username, $serverId] = $I->amJoined(true);
 
@@ -29,7 +26,7 @@ class HasJoinedLegacyCest {
         $I->canSeeResponseEquals('YES');
     }
 
-    public function wrongArguments(FunctionalTester $I) {
+    public function wrongArguments(FunctionalTester $I): void {
         $I->wantTo('get error on wrong amount of arguments');
         $this->route->hasJoinedLegacy([
             'wrong' => 'argument',
@@ -38,7 +35,7 @@ class HasJoinedLegacyCest {
         $I->canSeeResponseEquals('credentials can not be null.');
     }
 
-    public function hasJoinedWithNoJoinOperation(FunctionalTester $I) {
+    public function hasJoinedWithNoJoinOperation(FunctionalTester $I): void {
         $I->wantTo('hasJoined by legacy version to some server without join call');
         $this->route->hasJoinedLegacy([
             'user' => 'random-username',

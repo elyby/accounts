@@ -11,10 +11,9 @@ class RequiredValidator extends \yii\validators\RequiredValidator {
 
     /**
      * @param string $value
-     * @return null
      * @throws \api\modules\session\exceptions\SessionServerException
      */
-    protected function validateValue($value) {
+    protected function validateValue($value): ?array {
         if (parent::validateValue($value) !== null) {
             throw new IllegalArgumentException();
         }

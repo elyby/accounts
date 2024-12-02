@@ -6,17 +6,27 @@ namespace api\tests\unit\modules\session\filters;
 use api\modules\session\filters\RateLimiter;
 use api\tests\unit\TestCase;
 use common\models\OauthClient;
+use PHPUnit\Framework\MockObject\MockObject;
 use Yii;
+use yii\base\Action;
+use yii\filters\RateLimitInterface;
 use yii\redis\Connection;
 use yii\web\Request;
+use yii\web\Response;
 use yii\web\TooManyRequestsHttpException;
 
 class RateLimiterTest extends TestCase {
 
-    public function testCheckRateLimiterWithOldAuthserver() {
+    private RateLimitInterface&MockObject $user;
+
+    private Response&MockObject $response;
+
+    private Action&MockObject $action;
+
+    public function testCheckRateLimiterWithOldAuthserver(): void {
         /** @var Connection|\PHPUnit\Framework\MockObject\MockObject $redis */
         $redis = $this->getMockBuilder(Connection::class)
-            ->setMethods(['executeCommand'])
+            ->onlyMethods(['executeCommand'])
             ->getMock();
 
         $redis->expects($this->never())
@@ -29,19 +39,19 @@ class RateLimiterTest extends TestCase {
             ->setConstructorArgs([[
                 'authserverDomain' => 'authserver.ely.by',
             ]])
-            ->setMethods(['getServer'])
+            ->onlyMethods(['getServer'])
             ->getMock();
 
         $filter->method('getServer')
             ->willReturn(new OauthClient());
 
-        $filter->checkRateLimit(null, new Request(), null, null);
+        $filter->checkRateLimit($this->user, new Request(), $this->response, $this->action);
     }
 
-    public function testCheckRateLimiterWithValidServerId() {
+    public function testCheckRateLimiterWithValidServerId(): void {
         /** @var Connection|\PHPUnit\Framework\MockObject\MockObject $redis */
         $redis = $this->getMockBuilder(Connection::class)
-            ->setMethods(['executeCommand'])
+            ->onlyMethods(['executeCommand'])
             ->getMock();
 
         $redis->expects($this->never())
@@ -51,7 +61,7 @@ class RateLimiterTest extends TestCase {
 
         /** @var Request|\PHPUnit\Framework\MockObject\MockObject $request */
         $request = $this->getMockBuilder(Request::class)
-            ->setMethods(['getHostInfo'])
+            ->onlyMethods(['getHostInfo'])
             ->getMock();
 
         $request->method('getHostInfo')
@@ -60,15 +70,15 @@ class RateLimiterTest extends TestCase {
         $filter = new RateLimiter([
             'authserverDomain' => 'authserver.ely.by',
         ]);
-        $filter->checkRateLimit(null, $request, null, null);
+        $filter->checkRateLimit($this->user, $request, $this->response, $this->action);
     }
 
-    public function testCheckRateLimiter() {
+    public function testCheckRateLimiter(): void {
         $this->expectException(TooManyRequestsHttpException::class);
 
         /** @var Connection|\PHPUnit\Framework\MockObject\MockObject $redis */
         $redis = $this->getMockBuilder(Connection::class)
-            ->setMethods(['executeCommand'])
+            ->onlyMethods(['executeCommand'])
             ->getMock();
 
         $redis->expects($this->exactly(5))
@@ -79,7 +89,7 @@ class RateLimiterTest extends TestCase {
 
         /** @var Request|\PHPUnit\Framework\MockObject\MockObject $request */
         $request = $this->getMockBuilder(Request::class)
-            ->setMethods(['getUserIP'])
+            ->onlyMethods(['getUserIP'])
             ->getMock();
 
         $request->method('getUserIp')
@@ -91,15 +101,22 @@ class RateLimiterTest extends TestCase {
                 'limit' => 3,
                 'authserverDomain' => 'authserver.ely.by',
             ]])
-            ->setMethods(['getServer'])
+            ->onlyMethods(['getServer'])
             ->getMock();
 
         $filter->method('getServer')
             ->willReturn(null);
 
         for ($i = 0; $i < 5; $i++) {
-            $filter->checkRateLimit(null, $request, null, null);
+            $filter->checkRateLimit($this->user, $request, $this->response, $this->action);
         }
+    }
+
+    protected function _setUp(): void {
+        parent::_setUp();
+        $this->user = $this->createMock(RateLimitInterface::class);
+        $this->response = $this->createMock(Response::class);
+        $this->action = $this->createMock(Action::class);
     }
 
 }

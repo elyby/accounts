@@ -22,11 +22,11 @@ class AccessTokenRepository implements AccessTokenRepositoryInterface {
     public function getNewToken(
         ClientEntityInterface $clientEntity,
         array $scopes,
-        $userIdentifier = null
+        $userIdentifier = null,
     ): AccessTokenEntityInterface {
         $accessToken = new AccessTokenEntity();
         $accessToken->setClient($clientEntity);
-        array_map([$accessToken, 'addScope'], $scopes);
+        array_map($accessToken->addScope(...), $scopes);
         if ($userIdentifier !== null) {
             $accessToken->setUserIdentifier($userIdentifier);
         }

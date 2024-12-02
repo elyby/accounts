@@ -30,6 +30,7 @@ final class AccessTokenCest {
         $I->wantTo('complete oauth flow with offline_access scope and obtain access_token and refresh_token');
         $authCode = $I->obtainAuthCode(['offline_access']);
         $I->haveHttpHeader('Content-Type', 'application/json');
+        // @phpstan-ignore argument.type (it does accept string an we need it to ensure, that JSON passes)
         $I->sendPOST('/api/oauth2/v1/token', json_encode([
             'grant_type' => 'authorization_code',
             'code' => $authCode,
@@ -46,7 +47,7 @@ final class AccessTokenCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.refresh_token');
     }
 
-    public function callEndpointWithByEmptyRequest(OauthSteps $I) {
+    public function callEndpointWithByEmptyRequest(OauthSteps $I): void {
         $I->wantTo('check behavior on on request without any params');
         $I->sendPOST('/api/oauth2/v1/token');
         $I->canSeeResponseCodeIs(400);
@@ -56,7 +57,7 @@ final class AccessTokenCest {
         ]);
     }
 
-    public function issueTokenByPassingInvalidAuthCode(OauthSteps $I) {
+    public function issueTokenByPassingInvalidAuthCode(OauthSteps $I): void {
         $I->wantTo('check behavior on passing invalid auth code');
         $I->sendPOST('/api/oauth2/v1/token', [
             'grant_type' => 'authorization_code',
@@ -67,12 +68,14 @@ final class AccessTokenCest {
         ]);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
-            'error' => 'invalid_request',
-            'message' => 'The request is missing a required parameter, includes an invalid parameter value, includes a parameter more than once, or is otherwise malformed. Check the "code" parameter.',
+            'error' => 'invalid_grant',
+            'message' => 'The provided authorization grant (e.g., authorization code, resource owner credentials) or refresh token '
+                . 'is invalid, expired, revoked, does not match the redirection URI used in the authorization request, '
+                . 'or was issued to another client.',
         ]);
     }
 
-    public function issueTokenByPassingInvalidRedirectUri(OauthSteps $I) {
+    public function issueTokenByPassingInvalidRedirectUri(OauthSteps $I): void {
         $I->wantTo('check behavior on passing invalid redirect_uri');
         $authCode = $I->obtainAuthCode();
         $I->sendPOST('/api/oauth2/v1/token', [

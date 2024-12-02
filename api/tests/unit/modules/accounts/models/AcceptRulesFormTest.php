@@ -10,7 +10,7 @@ use const common\LATEST_RULES_VERSION;
 
 class AcceptRulesFormTest extends TestCase {
 
-    public function testAgreeWithLatestRules() {
+    public function testAgreeWithLatestRules(): void {
         $account = $this->createPartialMock(Account::class, ['save']);
         $account->method('save')->willReturn(true);
         $account->rules_agreement_version = LATEST_RULES_VERSION - 1;

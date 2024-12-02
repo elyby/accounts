@@ -30,7 +30,7 @@ class PullMojangUsernameTest extends TestCase {
         ];
     }
 
-    public function _before() {
+    public function _before(): void {
         parent::_before();
 
         /** @var \PHPUnit\Framework\MockObject\MockObject|MojangApi $mockApi */
@@ -40,14 +40,14 @@ class PullMojangUsernameTest extends TestCase {
         Yii::$container->set(MojangApi::class, $mockApi);
     }
 
-    public function testCreateFromAccount() {
+    public function testCreateFromAccount(): void {
         $account = new Account();
         $account->username = 'find-me';
         $result = PullMojangUsername::createFromAccount($account);
         $this->assertSame('find-me', $result->username);
     }
 
-    public function testExecuteUsernameExists() {
+    public function testExecuteUsernameExists(): void {
         $this->mockedMethod->willReturn(new ProfileInfo('069a79f444e94726a5befca90e38aaf5', 'Notch'));
 
         /** @var MojangUsername $mojangUsernameFixture */
@@ -62,7 +62,7 @@ class PullMojangUsernameTest extends TestCase {
         $this->assertLessThanOrEqual(time(), $mojangUsername->last_pulled_at);
     }
 
-    public function testExecuteChangedUsernameExists() {
+    public function testExecuteChangedUsernameExists(): void {
         $this->mockedMethod->willReturn(new ProfileInfo('069a79f444e94726a5befca90e38aaf5', 'Notch'));
 
         /** @var MojangUsername $mojangUsernameFixture */
@@ -77,7 +77,7 @@ class PullMojangUsernameTest extends TestCase {
         $this->assertLessThanOrEqual(time(), $mojangUsername->last_pulled_at);
     }
 
-    public function testExecuteChangedUsernameNotExists() {
+    public function testExecuteChangedUsernameNotExists(): void {
         $this->mockedMethod->willReturn(new ProfileInfo('607153852b8c4909811f507ed8ee737f', 'Chest'));
 
         $task = new PullMojangUsername();
@@ -88,7 +88,7 @@ class PullMojangUsernameTest extends TestCase {
         $this->assertInstanceOf(MojangUsername::class, $mojangUsername);
     }
 
-    public function testExecuteRemoveIfExistsNoMore() {
+    public function testExecuteRemoveIfExistsNoMore(): void {
         $this->mockedMethod->willThrowException(new NoContentException(new Request('GET', ''), new Response()));
 
         $username = $this->tester->grabFixture('mojangUsernames', 'not-exists')['username'];
@@ -100,7 +100,7 @@ class PullMojangUsernameTest extends TestCase {
         $this->assertNull($mojangUsername);
     }
 
-    public function testExecuteUuidUpdated() {
+    public function testExecuteUuidUpdated(): void {
         $this->mockedMethod->willReturn(new ProfileInfo('f498513ce8c84773be26ecfc7ed5185d', 'jeb'));
 
         /** @var MojangUsername $mojangInfo */

@@ -14,7 +14,7 @@ use yii\web\User;
 class PasswordRequiredValidatorTest extends TestCase {
     use ProtectedCaller;
 
-    public function testValidateValue() {
+    public function testValidateValue(): void {
         $account = new Account(['password' => '12345678']);
         $model = new PasswordRequiredValidator(['account' => $account]);
 

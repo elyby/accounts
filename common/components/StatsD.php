@@ -9,22 +9,13 @@ use yii\base\Component;
 
 class StatsD extends Component {
 
-    /**
-     * @var string
-     */
-    public $host;
+    public string $host;
 
-    /**
-     * @var int
-     */
-    public $port = 8125;
+    public int $port = 8125;
 
-    /**
-     * @var string
-     */
-    public $namespace = '';
+    public string $namespace = '';
 
-    private $client;
+    private ?Client $client = null;
 
     public function inc(string $key): void {
         $this->getClient()->increment($key);

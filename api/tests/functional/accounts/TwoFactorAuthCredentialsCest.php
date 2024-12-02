@@ -6,16 +6,13 @@ use api\tests\FunctionalTester;
 
 class TwoFactorAuthCredentialsCest {
 
-    /**
-     * @var AccountsRoute
-     */
-    private $route;
+    private AccountsRoute $route;
 
-    public function _before(FunctionalTester $I) {
+    public function _before(FunctionalTester $I): void {
         $this->route = new AccountsRoute($I);
     }
 
-    public function testGetCredentials(FunctionalTester $I) {
+    public function testGetCredentials(FunctionalTester $I): void {
         $accountId = $I->amAuthenticated();
         $this->route->getTwoFactorAuthCredentials($accountId);
         $I->canSeeResponseCodeIs(200);

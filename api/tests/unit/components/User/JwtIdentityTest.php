@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace codeception\api\unit\components\User;
+namespace api\tests\unit\components\User;
 
 use api\components\User\JwtIdentity;
 use api\tests\unit\TestCase;
@@ -21,12 +21,12 @@ class JwtIdentityTest extends TestCase {
         ];
     }
 
-    public function testFindIdentityByAccessToken() {
+    public function testFindIdentityByAccessToken(): void {
         $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ2MTA1NDIsImV4cCI6MTU2NDYxNDE0Miwic3ViIjoiZWx5fDEifQ.4Oidvuo4spvUf9hkpHR72eeqZUh2Zbxh_L8Od3vcgTj--0iOrcOEp6zwmEW6vF7BTHtjz2b3mXce61bqsCjXjQ';
         /** @var JwtIdentity $identity */
         $identity = JwtIdentity::findIdentityByAccessToken($token);
         $this->assertSame($token, $identity->getId());
-        $this->assertSame($token, (string)$identity->getToken());
+        $this->assertSame($token, $identity->getToken()->toString());
         /** @var \common\models\Account $account */
         $account = $this->tester->grabFixture('accounts', 'admin');
         $this->assertSame($account->id, $identity->getAccount()->id);
@@ -35,13 +35,13 @@ class JwtIdentityTest extends TestCase {
     /**
      * @dataProvider getFindIdentityByAccessTokenInvalidCases
      */
-    public function testFindIdentityByAccessTokenInvalidCases(string $token, string $expectedExceptionMessage) {
+    public function testFindIdentityByAccessTokenInvalidCases(string $token, string $expectedExceptionMessage): void {
         $this->expectException(UnauthorizedHttpException::class);
         $this->expectExceptionMessage($expectedExceptionMessage);
         JwtIdentity::findIdentityByAccessToken($token);
     }
 
-    public function getFindIdentityByAccessTokenInvalidCases() {
+    public function getFindIdentityByAccessTokenInvalidCases(): iterable {
         yield 'expired token' => [
             'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ2MDMzNDIsImV4cCI6MTU2NDYwNjk0Miwic3ViIjoiZWx5fDEifQ.36cDWyiXRArv-lgK_S5dyC5m_Ddytwkb78tMrxcPcbWEpoeg2VtwPC7zr6NI0cd0CuLw6InC2hZ9Ey95SSOsHw',
             'Token expired',
@@ -65,7 +65,7 @@ class JwtIdentityTest extends TestCase {
         yield 'empty token' => ['', 'Incorrect token'];
     }
 
-    public function testGetAccount() {
+    public function testGetAccount(): void {
         // Token with sub claim
         $identity = JwtIdentity::findIdentityByAccessToken('eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ2MTA1NDIsImV4cCI6MTU2NDYxNDE0Miwic3ViIjoiZWx5fDEifQ.4Oidvuo4spvUf9hkpHR72eeqZUh2Zbxh_L8Od3vcgTj--0iOrcOEp6zwmEW6vF7BTHtjz2b3mXce61bqsCjXjQ');
         $this->assertSame(1, $identity->getAccount()->id);
@@ -83,7 +83,7 @@ class JwtIdentityTest extends TestCase {
         $this->assertNull($identity->getAccount());
     }
 
-    public function testGetAssignedPermissions() {
+    public function testGetAssignedPermissions(): void {
         // Token with ely-scopes claim
         $identity = JwtIdentity::findIdentityByAccessToken('eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoicGVybTEscGVybTIscGVybTMiLCJpYXQiOjE1NjQ2MTA1NDIsImV4cCI6MTU2NDYxNDE0Miwic3ViIjoiZWx5fDEifQ.MO6T92EOFcZSPIdK8VBUG0qyV-pdayzOPQmpWLPwpl1933E9ann9GdV49piX1IfLHeCHVGThm5_v7AJgyZ5Oaw');
         $this->assertSame(['perm1', 'perm2', 'perm3'], $identity->getAssignedPermissions());
@@ -93,12 +93,12 @@ class JwtIdentityTest extends TestCase {
         $this->assertSame([], $identity->getAssignedPermissions());
     }
 
-    protected function _before() {
+    protected function _before(): void {
         parent::_before();
         Carbon::setTestNow(Carbon::create(2019, 8, 1, 1, 2, 22, 'Europe/Minsk'));
     }
 
-    protected function _after() {
+    protected function _after(): void {
         parent::_after();
         Carbon::setTestNow();
     }

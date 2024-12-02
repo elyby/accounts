@@ -1,0 +1,30 @@
+# https://github.com/phpstan/phpstan#configuration
+includes:
+  - phpstan-baseline.neon
+
+parameters:
+  scanFiles:
+    - vendor/yiisoft/yii2/Yii.php
+    # - vendor/yiisoft/yii2-dev/framework/Yii.php
+  paths:
+    - api
+    - common
+    - console
+  excludePaths:
+    analyse:
+      - api/tests/_support/_generated
+      - common/tests/_support/_generated
+      - console/tests/_support/_generated
+    analyseAndScan:
+      - api/tests/_data
+      - common/tests/_data
+      - console/tests/_data
+  level: 7
+  yii2:
+    config_path: ./common/config/config-phpstan.php
+  ignoreErrors:
+    # Controllers shouldn't specify the return type so strictly
+    - message: '#Method .+Controller::action.+\(\) return type has no value type specified in iterable type array\.$#'
+
+    # Individual actions shouldn't specify the return type so strictly
+    - message: '#Method .+Action::run\(\) return type has no value type specified in iterable type array\.$#'
