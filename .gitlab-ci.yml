@@ -46,12 +46,11 @@ variables:
 # Steps to extend #
 ###################
 
-.vendorCache:
-  cache:
-    key: backend-deps
-    paths:
-      - vendor
-    policy: pull
+.vendorCache: &vendorCache
+  key: composer
+  paths:
+    - vendor
+  policy: pull
 
 #################
 # Prepare stage #
@@ -59,9 +58,8 @@ variables:
 
 Composer:
   stage: prepare
-  extends:
-    - .vendorCache
   cache:
+    <<: *vendorCache
     policy: pull-push
   before_script:
     - sudo composer self-update --2
@@ -76,15 +74,20 @@ Composer:
 
 PHP-CS-Fixer:
   stage: testing
-  extends:
-    - .vendorCache
+  cache:
+    - *vendorCache
+    - key: php-cs-fixer-$CI_COMMIT_REF_SLUG
+      fallback_keys:
+        - php-cs-fixer-$CI_DEFAULT_BRANCH
+      paths:
+        - .php-cs-fixer.cache
+      when: always
   script:
     - vendor/bin/php-cs-fixer fix -v --dry-run
 
 Codeception:
   stage: testing
-  extends:
-    - .vendorCache
+  cache: *vendorCache
   services:
     - name: redis:4.0.10-alpine
       alias: redis
@@ -113,6 +116,24 @@ Codeception:
     - php yii rbac/generate
     - wait-for-it "${DB_HOST}:3306" -s -t 0 -- php yii migrate/up --interactive=0
     - vendor/bin/codecept run
+
+PHPStan:
+  stage: testing
+  image: $PHP_BUILD_IMAGE
+  cache:
+    - *vendorCache
+    - key: phpstan-$CI_COMMIT_REF_SLUG
+      fallback_keys:
+        - phpstan-$CI_DEFAULT_BRANCH
+      paths:
+        - .phpstan
+      when: on_success
+  before_script:
+    - |
+      echo -e "includes: [phpstan.dist.neon]\nparameters:\n  tmpDir: .phpstan\n  reportUnmatchedIgnoredErrors: false" > phpstan.neon
+  script:
+    - vendor/bin/codecept build
+    - vendor/bin/phpstan analyse --no-progress --memory-limit 2G
 
 ###############
 # Build stage #
