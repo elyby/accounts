@@ -10,6 +10,8 @@ variables:
   APP_IMAGE_NAME: "$CI_REGISTRY_IMAGE/app"
   WEB_IMAGE_NAME: "$CI_REGISTRY_IMAGE/web"
   DB_IMAGE_NAME: "$CI_REGISTRY_IMAGE/db"
+  PHP_EXTENSION_INTL: 1
+  PHP_EXTENSION_IMAGICK: 1
 
 #######################
 # Shared script steps #
@@ -33,7 +35,6 @@ variables:
   docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
 .installSentry: &installSentry |-
-  apk add --update-cache --upgrade curl bash
   curl -sL https://sentry.io/get-cli/ | bash
 
 .setupSSH: &setupSSH |-
@@ -62,9 +63,7 @@ Composer:
     <<: *vendorCache
     policy: pull-push
   before_script:
-    - sudo composer self-update --2
     - composer config github-oauth.github.com "$GITHUB_TOKEN"
-    - sudo apk add --update --no-cache patch # necessary to make cweagans/composer-patches work
   script:
     - composer install --ignore-platform-reqs
 
