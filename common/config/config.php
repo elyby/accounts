@@ -59,7 +59,7 @@ return [
             'class' => yii\symfonymailer\Mailer::class,
             'viewPath' => '@common/mail',
             'transport' => [
-                'class' => Symfony\Component\Mailer\Transport\Smtp\SmtpTransport::class,
+                'scheme' => 'smtp',
                 'host' => getenv('SMTP_HOST'),
                 'username' => getenv('SMTP_USER'),
                 'password' => getenv('SMTP_PASS'),
