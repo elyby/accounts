@@ -106,8 +106,6 @@ Codeception:
     MARIADB_USER: "ely_accounts_tester"
     MARIADB_PASSWORD: "ely_accounts_tester_password"
   before_script:
-    # We don't count code coverage yet, so xdebug can be removed
-    - sudo rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
     # Install wait-for-it script
     - sudo curl "https://raw.githubusercontent.com/vishnubob/wait-for-it/81b1373f17855/wait-for-it.sh" -o /usr/local/bin/wait-for-it
     - sudo chmod a+x /usr/local/bin/wait-for-it
@@ -118,7 +116,6 @@ Codeception:
 
 PHPStan:
   stage: testing
-  image: $PHP_BUILD_IMAGE
   cache:
     - *vendorCache
     - key: phpstan-$CI_COMMIT_REF_SLUG
