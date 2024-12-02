@@ -109,6 +109,9 @@ Codeception:
     # Install wait-for-it script
     - sudo curl "https://raw.githubusercontent.com/vishnubob/wait-for-it/81b1373f17855/wait-for-it.sh" -o /usr/local/bin/wait-for-it
     - sudo chmod a+x /usr/local/bin/wait-for-it
+    # Add SVG support (remove after https://github.com/thecodingmachine/docker-images-php/issues/393 will be resolved)
+    - sudo apt update
+    - sudo apt install -y libmagickcore-6.q16-6-extra
   script:
     - php yii rbac/generate
     - wait-for-it "${DB_HOST}:3306" -s -t 0 -- php yii migrate/up --interactive=0
