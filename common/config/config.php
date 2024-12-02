@@ -63,7 +63,7 @@ return [
                 'host' => getenv('SMTP_HOST'),
                 'username' => getenv('SMTP_USER'),
                 'password' => getenv('SMTP_PASS'),
-                'port' => getenv('SMTP_PORT') ?: 587,
+                'port' => (int)(getenv('SMTP_PORT') ?: 587),
                 'encryption' => getenv('SMTP_ENCRYPTION') ?: 'tls',
             ],
         ],
