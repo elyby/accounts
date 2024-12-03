@@ -62,7 +62,7 @@ class Component extends BaseComponent {
      */
     public function create(array $payloads = [], array $headers = []): UnencryptedToken {
         $now = Carbon::now();
-        $builder = (new Builder(new JoseEncoder(), ChainedFormatter::default()))->issuedAt($now->toDateTimeImmutable());
+        $builder = (new Builder(new JoseEncoder(), ChainedFormatter::withUnixTimestampDates()))->issuedAt($now->toDateTimeImmutable());
         if (isset($payloads['sub'])) {
             $builder = $builder->relatedTo($payloads['sub']);
         }
