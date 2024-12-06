@@ -26,6 +26,7 @@ return [
                     'http://' . (getenv('CHRLY_HOST') ?: 'skinsystem.ely.by'),
                 ],
             ],
+            League\OAuth2\Server\AuthorizationServer::class => common\components\OAuth2\AuthorizationServerFactory::build(...),
         ],
     ],
     'components' => [

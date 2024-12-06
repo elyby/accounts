@@ -9,10 +9,20 @@ use api\rbac\Permissions as P;
 use GuzzleHttp\Psr7\ServerRequest;
 use Psr\Http\Message\ServerRequestInterface;
 use Yii;
+use yii\base\Module;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 
-class AuthorizationController extends Controller {
+final class AuthorizationController extends Controller {
+
+    public function __construct(
+        string $id,
+        Module $module,
+        private readonly OauthProcess $oauthProcess,
+        array $config = [],
+    ) {
+        parent::__construct($id, $module, $config);
+    }
 
     public function behaviors(): array {
         return ArrayHelper::merge(Controller::behaviors(), [
@@ -45,19 +55,15 @@ class AuthorizationController extends Controller {
     }
 
     public function actionValidate(): array {
-        return $this->createOauthProcess()->validate($this->getServerRequest());
+        return $this->oauthProcess->validate($this->getServerRequest());
     }
 
     public function actionComplete(): array {
-        return $this->createOauthProcess()->complete($this->getServerRequest());
+        return $this->oauthProcess->complete($this->getServerRequest());
     }
 
     public function actionToken(): array {
-        return $this->createOauthProcess()->getToken($this->getServerRequest());
-    }
-
-    private function createOauthProcess(): OauthProcess {
-        return new OauthProcess(Yii::$app->oauth->getAuthServer());
+        return $this->oauthProcess->getToken($this->getServerRequest());
     }
 
     private function getServerRequest(): ServerRequestInterface {

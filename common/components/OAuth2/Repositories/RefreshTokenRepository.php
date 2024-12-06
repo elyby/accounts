@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace api\components\OAuth2\Repositories;
+namespace common\components\OAuth2\Repositories;
 
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface;
 
-class RefreshTokenRepository implements RefreshTokenRepositoryInterface {
+final class RefreshTokenRepository implements RefreshTokenRepositoryInterface {
 
     public function getNewRefreshToken(): ?RefreshTokenEntityInterface {
         return null;
@@ -16,11 +16,11 @@ class RefreshTokenRepository implements RefreshTokenRepositoryInterface {
         // Do nothing
     }
 
-    public function revokeRefreshToken($tokenId): void {
+    public function revokeRefreshToken(string $tokenId): void {
         // Do nothing
     }
 
-    public function isRefreshTokenRevoked($tokenId): bool {
+    public function isRefreshTokenRevoked(string $tokenId): bool {
         return false;
     }
 

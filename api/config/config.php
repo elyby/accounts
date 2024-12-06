@@ -26,9 +26,6 @@ return [
         'user' => [
             'class' => api\components\User\Component::class,
         ],
-        'oauth' => [
-            'class' => api\components\OAuth2\Component::class,
-        ],
         'tokens' => [
             'class' => api\components\Tokens\Component::class,
             'privateKeyPath' => getenv('JWT_PRIVATE_KEY_PATH') ?: __DIR__ . '/../../data/certs/private.pem',

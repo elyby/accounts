@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace api\components\OAuth2;
+namespace common\components\OAuth2;
 
 use LogicException;
 use RangeException;
@@ -18,11 +18,11 @@ use Yii;
  */
 trait CryptTrait {
 
-    protected function encrypt($unencryptedData): string {
+    protected function encrypt(string $unencryptedData): string {
         return Yii::$app->tokens->encryptValue($unencryptedData);
     }
 
-    protected function decrypt($encryptedData): string {
+    protected function decrypt(string $encryptedData): string {
         try {
             return Yii::$app->tokens->decryptValue($encryptedData);
         } catch (SodiumException|RangeException $e) {

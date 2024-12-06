@@ -1,28 +1,23 @@
 <?php
 declare(strict_types=1);
 
-namespace api\components\OAuth2\Repositories;
+namespace common\components\OAuth2\Repositories;
 
-use api\components\OAuth2\Entities\AccessTokenEntity;
+use common\components\OAuth2\Entities\AccessTokenEntity;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Repositories\AccessTokenRepositoryInterface;
 
-class AccessTokenRepository implements AccessTokenRepositoryInterface {
+final class AccessTokenRepository implements AccessTokenRepositoryInterface {
 
     /**
-     * Create a new access token
-     *
-     * @param ClientEntityInterface $clientEntity
-     * @param \League\OAuth2\Server\Entities\ScopeEntityInterface[] $scopes
-     * @param mixed $userIdentifier
-     *
-     * @return AccessTokenEntityInterface
+     * @inheritDoc
+     * @phpstan-param non-empty-string|null $userIdentifier
      */
     public function getNewToken(
         ClientEntityInterface $clientEntity,
         array $scopes,
-        $userIdentifier = null,
+        ?string $userIdentifier = null,
     ): AccessTokenEntityInterface {
         $accessToken = new AccessTokenEntity();
         $accessToken->setClient($clientEntity);
@@ -38,11 +33,11 @@ class AccessTokenRepository implements AccessTokenRepositoryInterface {
         // We don't store access tokens, so there's no need to do anything here
     }
 
-    public function revokeAccessToken($tokenId): void {
+    public function revokeAccessToken(string $tokenId): void {
         // We don't store access tokens, so there's no need to do anything here
     }
 
-    public function isAccessTokenRevoked($tokenId): bool {
+    public function isAccessTokenRevoked(string $tokenId): bool {
         return false;
     }
 

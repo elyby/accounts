@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace api\components\OAuth2\Repositories;
+namespace common\components\OAuth2\Repositories;
 
-use api\components\OAuth2\Entities\ScopeEntity;
 use api\rbac\Permissions as P;
+use common\components\OAuth2\Entities\ScopeEntity;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Repositories\ScopeRepositoryInterface;
 
-class PublicScopeRepository implements ScopeRepositoryInterface {
+final class PublicScopeRepository implements ScopeRepositoryInterface {
 
     public const string OFFLINE_ACCESS = 'offline_access';
     public const string CHANGE_SKIN = 'change_skin';
@@ -41,9 +41,9 @@ class PublicScopeRepository implements ScopeRepositoryInterface {
 
     public function finalizeScopes(
         array $scopes,
-        $grantType,
+        string $grantType,
         ClientEntityInterface $clientEntity,
-        $userIdentifier = null,
+        ?string $userIdentifier = null,
         ?string $authCodeId = null,
     ): array {
         return $scopes;

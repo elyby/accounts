@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace api\tests\unit\components\OAuth2\Entities;
 
-use api\components\OAuth2\Entities\AccessTokenEntity;
 use api\tests\unit\TestCase;
+use common\components\OAuth2\Entities\AccessTokenEntity;
 use DateTimeImmutable;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;

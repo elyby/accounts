@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace api\modules\oauth\models;
 
-use api\components\OAuth2\Entities\UserEntity;
-use api\components\OAuth2\Events\RequestedRefreshToken;
 use api\rbac\Permissions as P;
+use common\components\OAuth2\Entities\UserEntity;
+use common\components\OAuth2\Events\RequestedRefreshToken;
 use common\models\Account;
 use common\models\OauthClient;
 use common\models\OauthSession;
@@ -18,14 +18,16 @@ use Psr\Http\Message\ServerRequestInterface;
 use Webmozart\Assert\Assert;
 use Yii;
 
-class OauthProcess {
+final readonly class OauthProcess {
 
     private const array INTERNAL_PERMISSIONS_TO_PUBLIC_SCOPES = [
         P::OBTAIN_OWN_ACCOUNT_INFO => 'account_info',
         P::OBTAIN_ACCOUNT_EMAIL => 'account_email',
     ];
 
-    public function __construct(private readonly AuthorizationServer $server) {
+    public function __construct(
+        private AuthorizationServer $server,
+    ) {
     }
 
     /**
@@ -43,8 +45,7 @@ class OauthProcess {
      *
      * In addition, you can pass the description value to override the application's description.
      *
-     * @param ServerRequestInterface $request
-     * @return array
+     * @return array<mixed>
      */
     public function validate(ServerRequestInterface $request): array {
         try {
@@ -77,8 +78,7 @@ class OauthProcess {
      * If the field is present, it will be interpreted as any value resulting in false positives.
      * Otherwise, the value will be interpreted as "true".
      *
-     * @param ServerRequestInterface $request
-     * @return array
+     * @return array<mixed>
      */
     public function complete(ServerRequestInterface $request): array {
         try {
@@ -144,8 +144,7 @@ class OauthProcess {
      *     grant_type,
      * ]
      *
-     * @param ServerRequestInterface $request
-     * @return array
+     * @return array<mixed>
      */
     public function getToken(ServerRequestInterface $request): array {
         $params = (array)$request->getParsedBody();
@@ -232,11 +231,9 @@ class OauthProcess {
     }
 
     /**
-     * @param ServerRequestInterface $request
-     * @param OauthClient $client
      * @param ScopeEntityInterface[] $scopes
      *
-     * @return array
+     * @return array<mixed>
      */
     private function buildSuccessResponse(ServerRequestInterface $request, OauthClient $client, array $scopes): array {
         return [
@@ -262,7 +259,7 @@ class OauthProcess {
 
     /**
      * @param ScopeEntityInterface[] $scopes
-     * @return array
+     * @return string[]
      */
     private function buildScopesArray(array $scopes): array {
         $result = [];
@@ -273,6 +270,15 @@ class OauthProcess {
         return $result;
     }
 
+    /**
+     * @return array{
+     *     success: false,
+     *     error: string,
+     *     parameter: string|null,
+     *     statusCode: int,
+     *     redirectUri?: string,
+     * }
+     */
     private function buildCompleteErrorResponse(OAuthServerException $e): array {
         $hint = $e->getPayload()['hint'] ?? '';
         if (preg_match('/the `(\w+)` scope/', $hint, $matches)) {
@@ -304,8 +310,10 @@ class OauthProcess {
      *
      * Part of the existing texts are the legacy from the previous implementation.
      *
-     * @param OAuthServerException $e
-     * @return array
+     * @return array{
+     *     error: string,
+     *     message: string,
+     * }
      */
     private function buildIssueErrorResponse(OAuthServerException $e): array {
         $errorType = $e->getErrorType();
@@ -331,6 +339,9 @@ class OauthProcess {
         return new OAuthServerException('Client must accept authentication request.', 0, 'accept_required', 401);
     }
 
+    /**
+     * @return list<string>
+     */
     private function getScopesList(AuthorizationRequestInterface $request): array {
         return array_values(array_map(fn(ScopeEntityInterface $scope): string => $scope->getIdentifier(), $request->getScopes()));
     }

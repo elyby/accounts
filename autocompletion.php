@@ -34,7 +34,6 @@ abstract class BaseApplication extends yii\base\Application {
  *
  * @property \api\components\User\Component       $user
  * @property \api\components\ReCaptcha\Component  $reCaptcha
- * @property \api\components\OAuth2\Component     $oauth
  * @property \api\components\Tokens\Component     $tokens
  * @property \api\components\Tokens\TokensFactory $tokensFactory
  *

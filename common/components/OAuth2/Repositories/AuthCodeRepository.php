@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace api\components\OAuth2\Repositories;
+namespace common\components\OAuth2\Repositories;
 
-use api\components\OAuth2\Entities\AuthCodeEntity;
+use common\components\OAuth2\Entities\AuthCodeEntity;
 use League\OAuth2\Server\Entities\AuthCodeEntityInterface;
 use League\OAuth2\Server\Repositories\AuthCodeRepositoryInterface;
 
-class AuthCodeRepository implements AuthCodeRepositoryInterface {
+final class AuthCodeRepository implements AuthCodeRepositoryInterface {
 
     public function getNewAuthCode(): AuthCodeEntityInterface {
         return new AuthCodeEntity();
@@ -16,10 +16,10 @@ class AuthCodeRepository implements AuthCodeRepositoryInterface {
     public function persistNewAuthCode(AuthCodeEntityInterface $authCodeEntity): void {
     }
 
-    public function revokeAuthCode($codeId): void {
+    public function revokeAuthCode(string $codeId): void {
     }
 
-    public function isAuthCodeRevoked($codeId): bool {
+    public function isAuthCodeRevoked(string $codeId): bool {
         return false;
     }
 

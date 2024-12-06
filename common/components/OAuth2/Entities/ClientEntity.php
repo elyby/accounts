@@ -1,19 +1,19 @@
 <?php
 declare(strict_types=1);
 
-namespace api\components\OAuth2\Entities;
+namespace common\components\OAuth2\Entities;
 
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\Traits\ClientTrait;
 use League\OAuth2\Server\Entities\Traits\EntityTrait;
 
-class ClientEntity implements ClientEntityInterface {
+final class ClientEntity implements ClientEntityInterface {
     use EntityTrait;
     use ClientTrait;
 
     /**
-     * @param non-empty-string $id
-     * @param string|string[] $redirectUri
+     * @phpstan-param non-empty-string $id
+     * @phpstan-param string|list<string> $redirectUri
      */
     public function __construct(
         string $id,

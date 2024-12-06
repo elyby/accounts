@@ -30,6 +30,9 @@ final readonly class TokenReader {
         return $this->token->claims()->get('client_id', false) ?: null;
     }
 
+    /**
+     * @return list<string>|null
+     */
     public function getScopes(): ?array {
         $scopes = $this->token->claims()->get('scope', false);
         if ($scopes !== false) {

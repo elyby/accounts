@@ -6,151 +6,6 @@ parameters:
 			path: api/components/ErrorHandler.php
 
 		-
-			message: "#^Property api\\\\components\\\\OAuth2\\\\Entities\\\\ScopeEntity\\:\\:\\$identifier \\(non\\-empty\\-string\\) does not accept string\\.$#"
-			count: 1
-			path: api/components/OAuth2/Entities/ScopeEntity.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Grants\\\\AuthCodeGrant\\:\\:decrypt\\(\\) has parameter \\$encryptedData with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/Grants/AuthCodeGrant.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Grants\\\\AuthCodeGrant\\:\\:encrypt\\(\\) has parameter \\$unencryptedData with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/Grants/AuthCodeGrant.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Grants\\\\ClientCredentialsGrant\\:\\:decrypt\\(\\) has parameter \\$encryptedData with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/Grants/ClientCredentialsGrant.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Grants\\\\ClientCredentialsGrant\\:\\:encrypt\\(\\) has parameter \\$unencryptedData with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/Grants/ClientCredentialsGrant.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Grants\\\\RefreshTokenGrant\\:\\:decrypt\\(\\) has parameter \\$encryptedData with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/Grants/RefreshTokenGrant.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Grants\\\\RefreshTokenGrant\\:\\:encrypt\\(\\) has parameter \\$unencryptedData with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/Grants/RefreshTokenGrant.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Grants\\\\RefreshTokenGrant\\:\\:validateAccessToken\\(\\) should return array\\{client_id\\: string, refresh_token_id\\?\\: string, access_token_id\\?\\: string, scopes\\: array\\<int, string\\>\\|null, user_id\\: string\\|null, expire_time\\: int\\|null\\} but returns array\\{client_id\\: string\\|null, refresh_token_id\\: '', access_token_id\\: '', scopes\\: array\\|null, user_id\\: int\\|null, expire_time\\: null\\}\\.$#"
-			count: 1
-			path: api/components/OAuth2/Grants/RefreshTokenGrant.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Grants\\\\RefreshTokenGrant\\:\\:validateLegacyRefreshToken\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/components/OAuth2/Grants/RefreshTokenGrant.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Grants\\\\RefreshTokenGrant\\:\\:validateOldRefreshToken\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/components/OAuth2/Grants/RefreshTokenGrant.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Repositories\\\\AccessTokenRepository\\:\\:isAccessTokenRevoked\\(\\) has parameter \\$tokenId with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/Repositories/AccessTokenRepository.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Repositories\\\\AccessTokenRepository\\:\\:revokeAccessToken\\(\\) has parameter \\$tokenId with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/Repositories/AccessTokenRepository.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Repositories\\\\AuthCodeRepository\\:\\:isAuthCodeRevoked\\(\\) has parameter \\$codeId with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/Repositories/AuthCodeRepository.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Repositories\\\\AuthCodeRepository\\:\\:revokeAuthCode\\(\\) has parameter \\$codeId with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/Repositories/AuthCodeRepository.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Repositories\\\\ClientRepository\\:\\:getClientEntity\\(\\) has parameter \\$clientId with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/Repositories/ClientRepository.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Repositories\\\\ClientRepository\\:\\:validateClient\\(\\) has parameter \\$clientId with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/Repositories/ClientRepository.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Repositories\\\\ClientRepository\\:\\:validateClient\\(\\) has parameter \\$clientSecret with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/Repositories/ClientRepository.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Repositories\\\\ClientRepository\\:\\:validateClient\\(\\) has parameter \\$grantType with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/Repositories/ClientRepository.php
-
-		-
-			message: "#^Parameter \\#1 \\$id of class api\\\\components\\\\OAuth2\\\\Entities\\\\ClientEntity constructor expects non\\-empty\\-string, string given\\.$#"
-			count: 1
-			path: api/components/OAuth2/Repositories/ClientRepository.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Repositories\\\\EmptyScopeRepository\\:\\:finalizeScopes\\(\\) has parameter \\$grantType with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/Repositories/EmptyScopeRepository.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Repositories\\\\EmptyScopeRepository\\:\\:finalizeScopes\\(\\) has parameter \\$userIdentifier with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/Repositories/EmptyScopeRepository.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Repositories\\\\InternalScopeRepository\\:\\:finalizeScopes\\(\\) has parameter \\$grantType with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/Repositories/InternalScopeRepository.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Repositories\\\\InternalScopeRepository\\:\\:finalizeScopes\\(\\) has parameter \\$userIdentifier with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/Repositories/InternalScopeRepository.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Repositories\\\\PublicScopeRepository\\:\\:finalizeScopes\\(\\) has parameter \\$grantType with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/Repositories/PublicScopeRepository.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Repositories\\\\PublicScopeRepository\\:\\:finalizeScopes\\(\\) has parameter \\$userIdentifier with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/Repositories/PublicScopeRepository.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Repositories\\\\RefreshTokenRepository\\:\\:isRefreshTokenRevoked\\(\\) has parameter \\$tokenId with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/Repositories/RefreshTokenRepository.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\Repositories\\\\RefreshTokenRepository\\:\\:revokeRefreshToken\\(\\) has parameter \\$tokenId with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/Repositories/RefreshTokenRepository.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\ResponseTypes\\\\BearerTokenResponse\\:\\:decrypt\\(\\) has parameter \\$encryptedData with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/ResponseTypes/BearerTokenResponse.php
-
-		-
-			message: "#^Method api\\\\components\\\\OAuth2\\\\ResponseTypes\\\\BearerTokenResponse\\:\\:encrypt\\(\\) has parameter \\$unencryptedData with no type specified\\.$#"
-			count: 1
-			path: api/components/OAuth2/ResponseTypes/BearerTokenResponse.php
-
-		-
 			message: "#^Property api\\\\components\\\\ReCaptcha\\\\Component\\:\\:\\$public has no type specified\\.$#"
 			count: 1
 			path: api/components/ReCaptcha/Component.php
@@ -219,11 +74,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$value of method api\\\\components\\\\Tokens\\\\Component\\:\\:prepareValue\\(\\) expects api\\\\components\\\\Tokens\\\\EncryptedValue\\|string, DateTimeImmutable\\|string given\\.$#"
 			count: 1
 			path: api/components/Tokens/Component.php
-
-		-
-			message: "#^Method api\\\\components\\\\Tokens\\\\TokenReader\\:\\:getScopes\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/components/Tokens/TokenReader.php
 
 		-
 			message: "#^Property api\\\\components\\\\User\\\\Component\\:\\:\\$loginUrl type has no value type specified in iterable type array\\.$#"
@@ -304,16 +154,6 @@ parameters:
 			message: "#^Property api\\\\models\\\\authentication\\\\ConfirmEmailForm\\:\\:\\$key has no type specified\\.$#"
 			count: 1
 			path: api/models/authentication/ConfirmEmailForm.php
-
-		-
-			message: "#^Property api\\\\models\\\\authentication\\\\ForgotPasswordForm\\:\\:\\$captcha has no type specified\\.$#"
-			count: 1
-			path: api/models/authentication/ForgotPasswordForm.php
-
-		-
-			message: "#^Property api\\\\models\\\\authentication\\\\ForgotPasswordForm\\:\\:\\$login has no type specified\\.$#"
-			count: 1
-			path: api/models/authentication/ForgotPasswordForm.php
 
 		-
 			message: "#^Property api\\\\models\\\\authentication\\\\RecoverPasswordForm\\:\\:\\$key has no type specified\\.$#"
@@ -694,46 +534,6 @@ parameters:
 			message: "#^Method api\\\\modules\\\\oauth\\\\models\\\\OauthClientTypeForm\\:\\:load\\(\\) has parameter \\$data with no type specified\\.$#"
 			count: 1
 			path: api/modules/oauth/models/OauthClientTypeForm.php
-
-		-
-			message: "#^Method api\\\\modules\\\\oauth\\\\models\\\\OauthProcess\\:\\:buildCompleteErrorResponse\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/modules/oauth/models/OauthProcess.php
-
-		-
-			message: "#^Method api\\\\modules\\\\oauth\\\\models\\\\OauthProcess\\:\\:buildIssueErrorResponse\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/modules/oauth/models/OauthProcess.php
-
-		-
-			message: "#^Method api\\\\modules\\\\oauth\\\\models\\\\OauthProcess\\:\\:buildScopesArray\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/modules/oauth/models/OauthProcess.php
-
-		-
-			message: "#^Method api\\\\modules\\\\oauth\\\\models\\\\OauthProcess\\:\\:buildSuccessResponse\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/modules/oauth/models/OauthProcess.php
-
-		-
-			message: "#^Method api\\\\modules\\\\oauth\\\\models\\\\OauthProcess\\:\\:complete\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/modules/oauth/models/OauthProcess.php
-
-		-
-			message: "#^Method api\\\\modules\\\\oauth\\\\models\\\\OauthProcess\\:\\:getScopesList\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/modules/oauth/models/OauthProcess.php
-
-		-
-			message: "#^Method api\\\\modules\\\\oauth\\\\models\\\\OauthProcess\\:\\:getToken\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/modules/oauth/models/OauthProcess.php
-
-		-
-			message: "#^Method api\\\\modules\\\\oauth\\\\models\\\\OauthProcess\\:\\:validate\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/modules/oauth/models/OauthProcess.php
 
 		-
 			message: "#^Method api\\\\modules\\\\session\\\\Module\\:\\:error\\(\\) has parameter \\$message with no type specified\\.$#"

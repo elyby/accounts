@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace api\components\OAuth2\Grants;
+namespace common\components\OAuth2\Grants;
 
-use api\components\OAuth2\CryptTrait;
 use api\components\Tokens\TokenReader;
 use Carbon\FactoryImmutable;
+use common\components\OAuth2\CryptTrait;
 use common\models\OauthSession;
 use InvalidArgumentException;
 use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
@@ -18,7 +18,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use Yii;
 
-class RefreshTokenGrant extends BaseRefreshTokenGrant {
+final class RefreshTokenGrant extends BaseRefreshTokenGrant {
     use CryptTrait;
 
     /**
@@ -26,11 +26,7 @@ class RefreshTokenGrant extends BaseRefreshTokenGrant {
      * If received refresh token is matches the legacy token template,
      * restore the information from the legacy storage.
      *
-     * @param ServerRequestInterface $request
-     * @param string $clientId
-     *
-     * @return array
-     * @throws OAuthServerException
+     * @inheritDoc
      */
     protected function validateOldRefreshToken(ServerRequestInterface $request, string $clientId): array {
         $refreshToken = $this->getRequestParameter('refresh_token', $request);
@@ -45,18 +41,13 @@ class RefreshTokenGrant extends BaseRefreshTokenGrant {
      * Currently we're not rotating refresh tokens.
      * So we're overriding this method to always return null, which means,
      * that refresh_token will not be issued.
-     *
-     * @param AccessTokenEntityInterface $accessToken
-     *
-     * @return RefreshTokenEntityInterface|null
      */
     protected function issueRefreshToken(AccessTokenEntityInterface $accessToken): ?RefreshTokenEntityInterface {
         return null;
     }
 
     /**
-     * @param string $refreshToken
-     * @return array
+     * @return array<string, mixed>
      * @throws OAuthServerException
      */
     private function validateLegacyRefreshToken(string $refreshToken): array {
@@ -91,14 +82,7 @@ class RefreshTokenGrant extends BaseRefreshTokenGrant {
     }
 
     /**
-     * @return array{
-     *     client_id: string,
-     *     refresh_token_id?: string,
-     *     access_token_id?: string,
-     *     scopes: list<string>|null,
-     *     user_id: string|null,
-     *     expire_time: int|null,
-     * }
+     * @return array<string, mixed>
      * @throws OAuthServerException
      */
     private function validateAccessToken(string $jwt): array {

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace api\components\OAuth2\Entities;
+namespace common\components\OAuth2\Entities;
 
 use League\OAuth2\Server\CryptKeyInterface;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;

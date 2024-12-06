@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace api\tests\functional\_steps;
 
-use api\components\OAuth2\Repositories\PublicScopeRepository;
 use api\tests\FunctionalTester;
+use common\components\OAuth2\Repositories\PublicScopeRepository;
 
 class OauthSteps extends FunctionalTester {
 
