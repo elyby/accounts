@@ -50,6 +50,7 @@ final class AuthorizationController extends Controller {
         return [
             'validate' => ['GET'],
             'complete' => ['POST'],
+            'device' => ['POST'],
             'token' => ['POST'],
         ];
     }
@@ -60,6 +61,10 @@ final class AuthorizationController extends Controller {
 
     public function actionComplete(): array {
         return $this->oauthProcess->complete($this->getServerRequest());
+    }
+
+    public function actionDevice(): array {
+        return $this->oauthProcess->deviceCode($this->getServerRequest());
     }
 
     public function actionToken(): array {

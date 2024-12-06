@@ -126,6 +126,31 @@ final readonly class OauthProcess {
     }
 
     /**
+     * @return array{
+     *     device_code: string,
+     *     user_code: string,
+     *     verification_uri: string,
+     *     interval: int,
+     *     expires_in: int,
+     * }|array{
+     *     error: string,
+     *     message: string,
+     * }
+     */
+    public function deviceCode(ServerRequestInterface $request): array {
+        try {
+            $response = $this->server->respondToDeviceAuthorizationRequest($request, new Response());
+        } catch (OAuthServerException $e) {
+            Yii::$app->response->statusCode = $e->getHttpStatusCode();
+            return $this->buildIssueErrorResponse($e);
+        }
+
+        Yii::$app->statsd->inc('oauth.deviceCode.initialize');
+
+        return json_decode((string)$response->getBody(), true);
+    }
+
+    /**
      * The method is executed by the application server to which auth_token or refresh_token was given.
      *
      * Input data is a standard list of POST parameters according to the OAuth2 standard:

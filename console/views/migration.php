@@ -5,16 +5,17 @@
 
 echo "<?php\n";
 ?>
+declare(strict_types=1);
 
 use console\db\Migration;
 
-class <?= $className; ?> extends Migration {
+final class <?= $className; ?> extends Migration {
 
-    public function safeUp() {
+    public function safeUp(): void {
 
     }
 
-    public function safeDown() {
+    public function safeDown(): void {
 
     }
 

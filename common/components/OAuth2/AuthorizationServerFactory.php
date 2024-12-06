@@ -7,9 +7,9 @@ use Carbon\CarbonInterval;
 use DateInterval;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Grant\DeviceCodeGrant;
-use yii\base\Component as BaseComponent;
+use Yii;
 
-final class AuthorizationServerFactory extends BaseComponent {
+final class AuthorizationServerFactory {
 
     public static function build(): AuthorizationServer {
         $clientsRepo = new Repositories\ClientRepository();
@@ -44,8 +44,9 @@ final class AuthorizationServerFactory extends BaseComponent {
         $authServer->enableGrantType($clientCredentialsGrant, $accessTokenTTL);
         $clientCredentialsGrant->setScopeRepository($internalScopesRepo); // Change repository after enabling
 
-        // TODO: provide verification url
-        $deviceCodeGrant = new DeviceCodeGrant($deviceCodesRepo, $refreshTokensRepo, new DateInterval('PT2M'), '');
+        $verificationUri = Yii::$app->request->getHostInfo() . '/code';
+        $deviceCodeGrant = new DeviceCodeGrant($deviceCodesRepo, $refreshTokensRepo, new DateInterval('PT10M'), $verificationUri);
+        $deviceCodeGrant->setIntervalVisibility(true);
         $authServer->enableGrantType($deviceCodeGrant, $accessTokenTTL);
         $deviceCodeGrant->setScopeRepository($publicScopesRepo); // Change repository after enabling
 

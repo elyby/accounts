@@ -811,31 +811,6 @@ parameters:
 			path: api/tests/functional/_steps/AuthserverSteps.php
 
 		-
-			message: "#^Method api\\\\tests\\\\functional\\\\_steps\\\\OauthSteps\\:\\:getAccessToken\\(\\) has parameter \\$permissions with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/tests/functional/_steps/OauthSteps.php
-
-		-
-			message: "#^Method api\\\\tests\\\\functional\\\\_steps\\\\OauthSteps\\:\\:getAccessTokenByClientCredentialsGrant\\(\\) has parameter \\$permissions with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/tests/functional/_steps/OauthSteps.php
-
-		-
-			message: "#^Method api\\\\tests\\\\functional\\\\_steps\\\\OauthSteps\\:\\:getRefreshToken\\(\\) has parameter \\$permissions with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/tests/functional/_steps/OauthSteps.php
-
-		-
-			message: "#^Method api\\\\tests\\\\functional\\\\_steps\\\\OauthSteps\\:\\:issueToken\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/tests/functional/_steps/OauthSteps.php
-
-		-
-			message: "#^Method api\\\\tests\\\\functional\\\\_steps\\\\OauthSteps\\:\\:obtainAuthCode\\(\\) has parameter \\$permissions with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/tests/functional/_steps/OauthSteps.php
-
-		-
 			message: "#^Offset 1 does not exist on array\\{0\\?\\: string, 1\\?\\: non\\-empty\\-string\\}\\.$#"
 			count: 1
 			path: api/tests/functional/_steps/OauthSteps.php
@@ -1431,56 +1406,6 @@ parameters:
 			path: common/models/UsernameHistory.php
 
 		-
-			message: "#^Property common\\\\models\\\\amqp\\\\AccountBanned\\:\\:\\$accountId has no type specified\\.$#"
-			count: 1
-			path: common/models/amqp/AccountBanned.php
-
-		-
-			message: "#^Property common\\\\models\\\\amqp\\\\AccountBanned\\:\\:\\$duration has no type specified\\.$#"
-			count: 1
-			path: common/models/amqp/AccountBanned.php
-
-		-
-			message: "#^Property common\\\\models\\\\amqp\\\\AccountBanned\\:\\:\\$message has no type specified\\.$#"
-			count: 1
-			path: common/models/amqp/AccountBanned.php
-
-		-
-			message: "#^Property common\\\\models\\\\amqp\\\\AccountPardoned\\:\\:\\$accountId has no type specified\\.$#"
-			count: 1
-			path: common/models/amqp/AccountPardoned.php
-
-		-
-			message: "#^Property common\\\\models\\\\amqp\\\\EmailChanged\\:\\:\\$accountId has no type specified\\.$#"
-			count: 1
-			path: common/models/amqp/EmailChanged.php
-
-		-
-			message: "#^Property common\\\\models\\\\amqp\\\\EmailChanged\\:\\:\\$newEmail has no type specified\\.$#"
-			count: 1
-			path: common/models/amqp/EmailChanged.php
-
-		-
-			message: "#^Property common\\\\models\\\\amqp\\\\EmailChanged\\:\\:\\$oldEmail has no type specified\\.$#"
-			count: 1
-			path: common/models/amqp/EmailChanged.php
-
-		-
-			message: "#^Property common\\\\models\\\\amqp\\\\UsernameChanged\\:\\:\\$accountId has no type specified\\.$#"
-			count: 1
-			path: common/models/amqp/UsernameChanged.php
-
-		-
-			message: "#^Property common\\\\models\\\\amqp\\\\UsernameChanged\\:\\:\\$newUsername has no type specified\\.$#"
-			count: 1
-			path: common/models/amqp/UsernameChanged.php
-
-		-
-			message: "#^Property common\\\\models\\\\amqp\\\\UsernameChanged\\:\\:\\$oldUsername has no type specified\\.$#"
-			count: 1
-			path: common/models/amqp/UsernameChanged.php
-
-		-
 			message: "#^Method common\\\\notifications\\\\AccountDeletedNotification\\:\\:getPayloads\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: common/notifications/AccountDeletedNotification.php
@@ -1879,11 +1804,6 @@ parameters:
 			message: "#^Method common\\\\validators\\\\UsernameValidator\\:\\:validateAttribute\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: common/validators/UsernameValidator.php
-
-		-
-			message: "#^Method console\\\\db\\\\Migration\\:\\:createTable\\(\\) has parameter \\$columns with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: console/db/Migration.php
 
 		-
 			message: "#^Return type \\(void\\) of method m130524_201442_init\\:\\:down\\(\\) should be compatible with return type \\(bool\\) of method yii\\\\db\\\\MigrationInterface\\:\\:down\\(\\)$#"

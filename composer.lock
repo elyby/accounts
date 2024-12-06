@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1b49f881a8b10f52645cc0b04cf58bf3",
+    "content-hash": "b50434a13836bd5adf5d0083e8be7d73",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -1450,16 +1450,16 @@
         },
         {
             "name": "league/oauth2-server",
-            "version": "9.1.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/oauth2-server.git",
-                "reference": "d511107cb018ead0bd84f86402b086306738c686"
+                "reference": "03dcdd7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/oauth2-server/zipball/d511107cb018ead0bd84f86402b086306738c686",
-                "reference": "d511107cb018ead0bd84f86402b086306738c686",
+                "url": "https://api.github.com/repos/thephpleague/oauth2-server/zipball/03dcdd7",
+                "reference": "03dcdd7",
                 "shasum": ""
             },
             "require": {
@@ -1491,6 +1491,7 @@
                 "slevomat/coding-standard": "^8.14.1",
                 "squizlabs/php_codesniffer": "^3.8"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -1534,7 +1535,7 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/oauth2-server/issues",
-                "source": "https://github.com/thephpleague/oauth2-server/tree/9.1.0"
+                "source": "https://github.com/thephpleague/oauth2-server/tree/master"
             },
             "funding": [
                 {
@@ -1542,7 +1543,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-11-21T22:47:09+00:00"
+            "time": "2024-11-25T19:29:16+00:00"
         },
         {
             "name": "league/uri",
@@ -10862,11 +10863,19 @@
             "time": "2024-03-03T12:36:25+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "league/oauth2-server",
+            "version": "9999999-dev",
+            "alias": "9.2.0",
+            "alias_normalized": "9.2.0.0"
+        }
+    ],
     "minimum-stability": "stable",
     "stability-flags": {
         "ely/yii2-tempmail-validator": 20,
         "erickskrauch/phpstan-yii2": 20,
+        "league/oauth2-server": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,
