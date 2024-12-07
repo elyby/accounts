@@ -7,10 +7,9 @@ use common\emails\EmailHelper;
 use common\emails\templates\ChangeEmail;
 use common\models\confirmations\CurrentEmailConfirmation;
 use Yii;
-use yii\mail\MailerInterface;
 use yii\queue\RetryableJobInterface;
 
-class SendCurrentEmailConfirmation implements RetryableJobInterface {
+final class SendCurrentEmailConfirmation implements RetryableJobInterface {
 
     public mixed $email = null;
 
@@ -18,11 +17,8 @@ class SendCurrentEmailConfirmation implements RetryableJobInterface {
 
     public mixed $code = null;
 
-    public function __construct(public MailerInterface $mailer) {
-    }
-
     public static function createFromConfirmation(CurrentEmailConfirmation $confirmation): self {
-        $result = new self(Yii::$app->mailer);
+        $result = new self();
         $result->email = $confirmation->account->email;
         $result->username = $confirmation->account->username;
         $result->code = $confirmation->key;
@@ -44,7 +40,7 @@ class SendCurrentEmailConfirmation implements RetryableJobInterface {
      */
     public function execute($queue): void {
         Yii::$app->statsd->inc('queue.sendCurrentEmailConfirmation.attempt');
-        $template = new ChangeEmail($this->mailer);
+        $template = new ChangeEmail(Yii::$app->mailer);
         $template->setKey($this->code);
         $template->send(EmailHelper::buildTo($this->username, $this->email));
     }
