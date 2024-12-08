@@ -6,7 +6,6 @@ namespace common\components\OAuth2;
 use Carbon\CarbonInterval;
 use DateInterval;
 use League\OAuth2\Server\AuthorizationServer;
-use League\OAuth2\Server\Grant\DeviceCodeGrant;
 use Yii;
 
 final class AuthorizationServerFactory {
@@ -45,7 +44,7 @@ final class AuthorizationServerFactory {
         $clientCredentialsGrant->setScopeRepository($internalScopesRepo); // Change repository after enabling
 
         $verificationUri = Yii::$app->request->getHostInfo() . '/code';
-        $deviceCodeGrant = new DeviceCodeGrant($deviceCodesRepo, $refreshTokensRepo, new DateInterval('PT10M'), $verificationUri);
+        $deviceCodeGrant = new Grants\DeviceCodeGrant($deviceCodesRepo, $refreshTokensRepo, new DateInterval('PT10M'), $verificationUri);
         $deviceCodeGrant->setIntervalVisibility(true);
         $authServer->enableGrantType($deviceCodeGrant, $accessTokenTTL);
         $deviceCodeGrant->setScopeRepository($publicScopesRepo); // Change repository after enabling

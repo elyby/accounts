@@ -51,6 +51,7 @@ class FixtureHelper extends Module {
             'usernamesHistory' => fixtures\UsernameHistoryFixture::class,
             'oauthClients' => fixtures\OauthClientFixture::class,
             'oauthSessions' => fixtures\OauthSessionFixture::class,
+            'oauthDeviceCodes' => fixtures\OauthDeviceCodeFixture::class,
             'legacyOauthSessionsScopes' => fixtures\LegacyOauthSessionScopeFixtures::class,
             'legacyOauthAccessTokens' => fixtures\LegacyOauthAccessTokenFixture::class,
             'legacyOauthAccessTokensScopes' => fixtures\LegacyOauthAccessTokenScopeFixture::class,

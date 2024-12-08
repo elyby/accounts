@@ -3,18 +3,14 @@ declare(strict_types=1);
 
 namespace common\components\OAuth2\Repositories;
 
-use Carbon\CarbonImmutable;
-use common\components\OAuth2\Entities\ClientEntity;
 use common\components\OAuth2\Entities\DeviceCodeEntity;
-use common\components\OAuth2\Entities\ScopeEntity;
 use common\models\OauthDeviceCode;
 use League\OAuth2\Server\Entities\DeviceCodeEntityInterface;
 use League\OAuth2\Server\Exception\UniqueTokenIdentifierConstraintViolationException;
-use League\OAuth2\Server\Repositories\DeviceCodeRepositoryInterface;
 use Webmozart\Assert\Assert;
 use yii\db\Exception;
 
-final class DeviceCodeRepository implements DeviceCodeRepositoryInterface {
+final class DeviceCodeRepository implements ExtendedDeviceCodeRepositoryInterface {
 
     public function getNewDeviceCode(): DeviceCodeEntityInterface {
         return new DeviceCodeEntity();
@@ -50,25 +46,16 @@ final class DeviceCodeRepository implements DeviceCodeRepositoryInterface {
             return null;
         }
 
-        $entity = $this->getNewDeviceCode();
-        $entity->setIdentifier($model->device_code); // @phpstan-ignore argument.type
-        $entity->setUserCode($model->user_code);
-        $entity->setClient(ClientEntity::fromModel($model->client));
-        $entity->setExpiryDateTime(CarbonImmutable::createFromTimestampUTC($model->expires_at));
-        foreach ($model->scopes as $scope) {
-            $entity->addScope(new ScopeEntity($scope));
+        return DeviceCodeEntity::fromModel($model);
+    }
+
+    public function getDeviceCodeEntityByUserCode(string $userCode): ?DeviceCodeEntityInterface {
+        $model = OauthDeviceCode::findOne(['user_code' => $userCode]);
+        if ($model === null) {
+            return null;
         }
 
-        if ($model->account_id !== null) {
-            $entity->setUserIdentifier((string)$model->account_id);
-            $entity->setUserApproved((bool)$model->is_approved === true);
-        }
-
-        if ($model->last_polled_at !== null) {
-            $entity->setLastPolledAt(CarbonImmutable::createFromTimestampUTC($model->last_polled_at));
-        }
-
-        return $entity;
+        return DeviceCodeEntity::fromModel($model);
     }
 
     public function revokeDeviceCode(string $codeId): void {

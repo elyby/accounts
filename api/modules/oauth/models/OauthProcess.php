@@ -270,6 +270,7 @@ final readonly class OauthProcess {
                 'response_type',
                 'scope',
                 'state',
+                'user_code',
             ])),
             'client' => [
                 'id' => $client->id,
@@ -306,14 +307,19 @@ final readonly class OauthProcess {
      */
     private function buildCompleteErrorResponse(OAuthServerException $e): array {
         $hint = $e->getPayload()['hint'] ?? '';
+        $parameter = null;
         if (preg_match('/the `(\w+)` scope/', $hint, $matches)) {
             $parameter = $matches[1];
+        }
+
+        if ($parameter === null && str_starts_with($e->getErrorType(), 'invalid_')) {
+            $parameter = substr($e->getErrorType(), 8); // 8 is the length of the "invalid_"
         }
 
         $response = [
             'success' => false,
             'error' => $e->getErrorType(),
-            'parameter' => $parameter ?? null,
+            'parameter' => $parameter,
             'statusCode' => $e->getHttpStatusCode(),
         ];
 

@@ -5,10 +5,9 @@ namespace api\tests\functional\oauth;
 
 use api\tests\FunctionalTester;
 
-class ValidateCest {
+final class ValidateCest {
 
-    public function completelyValidateValidRequest(FunctionalTester $I): void {
-        $I->wantTo('validate and obtain information about new oauth request');
+    public function successfullyValidateRequestForAuthFlow(FunctionalTester $I): void {
         $I->sendGET('/api/oauth2/v1/validate', [
             'client_id' => 'ely',
             'redirect_uri' => 'http://ely.by',
@@ -41,7 +40,31 @@ class ValidateCest {
         ]);
     }
 
-    public function completelyValidateValidRequestWithOverriddenDescription(FunctionalTester $I): void {
+    public function successfullyValidateRequestForDeviceCode(FunctionalTester $I): void {
+        $I->sendGET('/api/oauth2/v1/validate', [
+            'user_code' => 'AAAABBBB',
+        ]);
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseContainsJson([
+            'success' => true,
+            'oAuth' => [
+                'user_code' => 'AAAABBBB',
+            ],
+            'client' => [
+                'id' => 'ely',
+                'name' => 'Ely.by',
+                'description' => 'Всем знакомое елуби',
+            ],
+            'session' => [
+                'scopes' => [
+                    'minecraft_server_session',
+                    'account_info',
+                ],
+            ],
+        ]);
+    }
+
+    public function successfullyValidateRequestWithOverriddenDescriptionForAuthFlow(FunctionalTester $I): void {
         $I->wantTo('validate and get information with description replacement');
         $I->sendGET('/api/oauth2/v1/validate', [
             'client_id' => 'ely',
@@ -57,7 +80,7 @@ class ValidateCest {
         ]);
     }
 
-    public function unknownClientId(FunctionalTester $I): void {
+    public function unknownClientIdAuthFlow(FunctionalTester $I): void {
         $I->wantTo('check behavior on invalid client id');
         $I->sendGET('/api/oauth2/v1/validate', [
             'client_id' => 'non-exists-client',
@@ -72,7 +95,20 @@ class ValidateCest {
         ]);
     }
 
-    public function invalidScopes(FunctionalTester $I): void {
+    public function invalidCodeForDeviceCode(FunctionalTester $I): void {
+        $I->sendGET('/api/oauth2/v1/validate', [
+            'user_code' => 'XXXXXXXX',
+        ]);
+        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+            'error' => 'invalid_user_code',
+            'parameter' => 'user_code',
+            'statusCode' => 401,
+        ]);
+    }
+
+    public function invalidScopesAuthFlow(FunctionalTester $I): void {
         $I->wantTo('check behavior on some invalid scopes');
         $I->sendGET('/api/oauth2/v1/validate', [
             'client_id' => 'ely',
@@ -91,7 +127,7 @@ class ValidateCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
     }
 
-    public function requestInternalScope(FunctionalTester $I): void {
+    public function requestInternalScopeAuthFlow(FunctionalTester $I): void {
         $I->wantTo('check behavior on request internal scope');
         $I->sendGET('/api/oauth2/v1/validate', [
             'client_id' => 'ely',
