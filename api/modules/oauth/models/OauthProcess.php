@@ -109,8 +109,10 @@ final readonly class OauthProcess {
 
             $result = [
                 'success' => true,
-                'redirectUri' => $response->getHeaderLine('Location'),
             ];
+            if ($response->hasHeader('Location')) {
+                $result['redirectUri'] = $response->getHeaderLine('Location');
+            }
 
             Yii::$app->statsd->inc('oauth.complete.success');
         } catch (OAuthServerException $e) {
@@ -123,6 +125,31 @@ final readonly class OauthProcess {
         }
 
         return $result;
+    }
+
+    /**
+     * @return array{
+     *     device_code: string,
+     *     user_code: string,
+     *     verification_uri: string,
+     *     interval: int,
+     *     expires_in: int,
+     * }|array{
+     *     error: string,
+     *     message: string,
+     * }
+     */
+    public function deviceCode(ServerRequestInterface $request): array {
+        try {
+            $response = $this->server->respondToDeviceAuthorizationRequest($request, new Response());
+        } catch (OAuthServerException $e) {
+            Yii::$app->response->statusCode = $e->getHttpStatusCode();
+            return $this->buildIssueErrorResponse($e);
+        }
+
+        Yii::$app->statsd->inc('oauth.deviceCode.initialize');
+
+        return json_decode((string)$response->getBody(), true);
     }
 
     /**
@@ -245,6 +272,7 @@ final readonly class OauthProcess {
                 'response_type',
                 'scope',
                 'state',
+                'user_code',
             ])),
             'client' => [
                 'id' => $client->id,
@@ -281,14 +309,19 @@ final readonly class OauthProcess {
      */
     private function buildCompleteErrorResponse(OAuthServerException $e): array {
         $hint = $e->getPayload()['hint'] ?? '';
+        $parameter = null;
         if (preg_match('/the `(\w+)` scope/', $hint, $matches)) {
             $parameter = $matches[1];
+        }
+
+        if ($parameter === null && str_starts_with($e->getErrorType(), 'invalid_')) {
+            $parameter = substr($e->getErrorType(), 8); // 8 is the length of the "invalid_"
         }
 
         $response = [
             'success' => false,
             'error' => $e->getErrorType(),
-            'parameter' => $parameter ?? null,
+            'parameter' => $parameter,
             'statusCode' => $e->getHttpStatusCode(),
         ];
 

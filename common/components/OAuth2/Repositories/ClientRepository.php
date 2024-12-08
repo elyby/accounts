@@ -16,8 +16,7 @@ final class ClientRepository implements ClientRepositoryInterface {
             return null;
         }
 
-        // @phpstan-ignore argument.type
-        return new ClientEntity($client->id, $client->name, $client->redirect_uri ?: '', (bool)$client->is_trusted);
+        return ClientEntity::fromModel($client);
     }
 
     public function validateClient(string $clientIdentifier, ?string $clientSecret, ?string $grantType): bool {
@@ -30,7 +29,7 @@ final class ClientRepository implements ClientRepositoryInterface {
             return false;
         }
 
-        if ($clientSecret !== null && $clientSecret !== $client->secret) {
+        if (!empty($clientSecret) && $clientSecret !== $client->secret) {
             return false;
         }
 

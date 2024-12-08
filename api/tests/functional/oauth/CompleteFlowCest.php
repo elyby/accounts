@@ -4,12 +4,12 @@ declare(strict_types=1);
 namespace api\tests\functional\oauth;
 
 use api\tests\FunctionalTester;
+use Codeception\Attribute\Before;
 
-class AuthCodeCest {
+final class CompleteFlowCest {
 
-    public function completeSuccess(FunctionalTester $I): void {
+    public function successfullyCompleteAuthCodeFlow(FunctionalTester $I): void {
         $I->amAuthenticated();
-        $I->wantTo('get auth code if I require some scope and pass accept field');
         $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
             'client_id' => 'ely',
             'redirect_uri' => 'http://ely.by',
@@ -23,10 +23,20 @@ class AuthCodeCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
     }
 
-    /**
-     * @before completeSuccess
-     */
-    public function completeSuccessWithLessScopes(FunctionalTester $I): void {
+    public function successfullyCompleteDeviceCodeFlow(FunctionalTester $I): void {
+        $I->amAuthenticated();
+        $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
+            'user_code' => 'AAAABBBB',
+        ]), ['accept' => true]);
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseContainsJson([
+            'success' => true,
+        ]);
+        $I->cantSeeResponseJsonMatchesJsonPath('$.redirectUri');
+    }
+
+    #[Before('successfullyCompleteAuthCodeFlow')]
+    public function successfullyCompleteAuthCodeFlowWithLessScopes(FunctionalTester $I): void {
         $I->amAuthenticated();
         $I->wantTo('get auth code with less scopes as passed in the previous request without accept param');
         $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
@@ -41,10 +51,8 @@ class AuthCodeCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
     }
 
-    /**
-     * @before completeSuccess
-     */
-    public function completeSuccessWithSameScopes(FunctionalTester $I): void {
+    #[Before('successfullyCompleteAuthCodeFlow')]
+    public function successfullyCompleteAuthCodeFlowWithSameScopes(FunctionalTester $I): void {
         $I->amAuthenticated();
         $I->wantTo('get auth code with the same scopes as passed in the previous request without accept param');
         $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
@@ -119,9 +127,8 @@ class AuthCodeCest {
         ]);
     }
 
-    public function testCompleteActionWithDismissState(FunctionalTester $I): void {
+    public function completeAuthCodeFlowWithDecline(FunctionalTester $I): void {
         $I->amAuthenticated();
-        $I->wantTo('get access_denied error if I pass accept in false state');
         $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
             'client_id' => 'ely',
             'redirect_uri' => 'http://ely.by',
@@ -135,6 +142,34 @@ class AuthCodeCest {
             'parameter' => null,
             'statusCode' => 401,
             'redirectUri' => 'http://ely.by?error=access_denied&error_description=The+resource+owner+or+authorization+server+denied+the+request.&hint=The+user+denied+the+request',
+        ]);
+    }
+
+    public function completeDeviceCodeFlowWithDecline(FunctionalTester $I): void {
+        $I->amAuthenticated();
+        $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
+            'user_code' => 'AAAABBBB',
+        ]), ['accept' => false]);
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseContainsJson([
+            'success' => true,
+        ]);
+    }
+
+    public function tryToCompleteAlreadyCompletedDeviceCodeFlow(FunctionalTester $I): void {
+        $I->amAuthenticated();
+        $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
+            'user_code' => 'AAAABBBB',
+        ]), ['accept' => true]);
+        $I->canSeeResponseCodeIs(200);
+
+        $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
+            'user_code' => 'AAAABBBB',
+        ]), ['accept' => true]);
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+            'error' => 'used_user_code',
         ]);
     }
 

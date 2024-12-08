@@ -1,6 +1,9 @@
 <?php
+declare(strict_types=1);
+
 namespace console\db;
 
+use yii\db\Exception;
 use yii\db\Migration as YiiMigration;
 
 /**
@@ -18,6 +21,9 @@ class Migration extends YiiMigration {
         return $tableOptions;
     }
 
+    /**
+     * @param array<string|\yii\db\ColumnSchemaBuilder>|null $columns
+     */
     public function createTable($table, $columns, $options = null): void {
         if ($options === null) {
             $options = $this->getTableOptions();
@@ -32,6 +38,23 @@ class Migration extends YiiMigration {
         }
 
         return ' PRIMARY KEY (' . implode(', ', $columns) . ') ';
+    }
+
+    protected function getPrimaryKeyType(string $table, bool $nullable = false): string {
+        $primaryKeys = $this->db->getTableSchema($table)->primaryKey;
+        if (count($primaryKeys) === 0) {
+            throw new Exception("The table \"{$table}\" have no primary keys.");
+        }
+
+        if (count($primaryKeys) > 1) {
+            throw new Exception("The table \"{$table}\" have more than one primary key.");
+        }
+
+        return $this->getColumnType($table, $primaryKeys[0], $nullable);
+    }
+
+    protected function getColumnType(string $table, string $column, bool $nullable = false): string {
+        return $this->db->getTableSchema($table)->getColumn($column)->dbType . ($nullable ? '' : ' NOT NULL');
     }
 
 }
