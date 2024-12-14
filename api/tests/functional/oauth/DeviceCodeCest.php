@@ -36,6 +36,19 @@ final class DeviceCodeCest {
         ]);
     }
 
+    public function pollExpiredDeviceCode(FunctionalTester $I): void {
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'urn:ietf:params:oauth:grant-type:device_code',
+            'client_id' => 'ely',
+            'device_code' => 'ZFPbWycSxdRpHiYP2wnv3S0KHBgYky8fRDqfhhCqzke7nKuYFfwckZywqU8iUKv3ek4VtiMiMCkiC0YT',
+        ]);
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContainsJson([
+            'error' => 'expired_token',
+            'message' => 'The `device_code` has expired and the device authorization session has concluded.',
+        ]);
+    }
+
     /**
      * @param Example<array{boolean}> $case
      */

@@ -314,8 +314,8 @@ final readonly class OauthProcess {
             $parameter = $matches[1];
         }
 
-        if ($parameter === null && str_starts_with($e->getErrorType(), 'invalid_')) {
-            $parameter = substr($e->getErrorType(), 8); // 8 is the length of the "invalid_"
+        if ($parameter === null && $hint === 'user_code') {
+            $parameter = $hint;
         }
 
         $response = [

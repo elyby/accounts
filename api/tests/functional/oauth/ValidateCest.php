@@ -108,6 +108,32 @@ final class ValidateCest {
         ]);
     }
 
+    public function expiredCodeForDeviceCode(FunctionalTester $I): void {
+        $I->sendGET('/api/oauth2/v1/validate', [
+            'user_code' => 'EXPIRED',
+        ]);
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+            'error' => 'expired_token',
+            'parameter' => 'user_code',
+            'statusCode' => 400,
+        ]);
+    }
+
+    public function completedCodeForDeviceCode(FunctionalTester $I): void {
+        $I->sendGET('/api/oauth2/v1/validate', [
+            'user_code' => 'COMPLETED',
+        ]);
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+            'error' => 'used_user_code',
+            'parameter' => 'user_code',
+            'statusCode' => 400,
+        ]);
+    }
+
     public function invalidScopesAuthFlow(FunctionalTester $I): void {
         $I->wantTo('check behavior on some invalid scopes');
         $I->sendGET('/api/oauth2/v1/validate', [

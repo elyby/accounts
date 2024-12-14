@@ -9,6 +9,7 @@ use api\modules\accounts\actions\ChangeEmailAction;
 use api\modules\accounts\actions\EmailVerificationAction;
 use api\modules\accounts\actions\NewEmailVerificationAction;
 use api\modules\accounts\controllers\DefaultController;
+use api\modules\oauth\controllers\AuthorizationController as OauthAuthorizationController;
 use Closure;
 use yii\base\ActionEvent;
 use yii\base\BootstrapInterface;
@@ -37,11 +38,15 @@ final class MockDataResponse implements BootstrapInterface {
         $event->isValid = false;
     }
 
+    /**
+     * @return array<mixed>|null
+     */
     private function getResponse(ActionEvent $event): ?array {
         $action = $event->action;
         /** @var \yii\web\Controller $controller */
         $controller = $action->controller;
         $request = $controller->request;
+        $response = $controller->response;
         if ($controller instanceof SignupController && $action->id === 'index') {
             $email = $request->post('email');
             if ($email === 'let-me-register@ely.by') {
@@ -88,6 +93,63 @@ final class MockDataResponse implements BootstrapInterface {
                     'access_token' => 'dummy_token',
                     'expires_in' => time() + 60,
                 ];
+            }
+        }
+
+        if ($controller instanceof OauthAuthorizationController) {
+            if ($action->id === 'validate') {
+                $userCode = $request->get('user_code');
+                if ($userCode === 'E2E-APPROVED' || $userCode === 'E2E-UNAPPROVED') {
+                    return [
+                        'success' => true,
+                        'client' => [
+                            'id' => 'test',
+                            'name' => 'Ely.by Test',
+                            'description' => "Some client's description",
+                        ],
+                        'session' => [
+                            'scopes' => 'account_info minecraft_server_session',
+                        ],
+                    ];
+                }
+
+                if ($userCode === 'E2E-EXPIRED') {
+                    $response->setStatusCode(400);
+                    return [
+                        'success' => false,
+                        'error' => 'expired_token',
+                        'parameter' => 'user_code',
+                        'statusCode' => 400,
+                    ];
+                }
+
+                if ($userCode === 'E2E-COMPLETED') {
+                    $response->setStatusCode(400);
+                    return [
+                        'success' => false,
+                        'error' => 'used_user_code',
+                        'parameter' => 'user_code',
+                        'statusCode' => 400,
+                    ];
+                }
+            }
+
+            if ($action->id === 'complete') {
+                $userCode = $request->get('user_code');
+                $accept = $request->post('accept');
+                if ($userCode === 'E2E-APPROVED' || ($userCode === 'E2E-UNAPPROVED' && $accept !== null)) {
+                    return ['success' => true];
+                }
+
+                if ($userCode === 'E2E-UNAPPROVED' && $accept === null) {
+                    $response->setStatusCode(401);
+                    return [
+                        'success' => false,
+                        'error' => 'accept_required',
+                        'parameter' => null,
+                        'statusCode' => 401,
+                    ];
+                }
             }
         }
 

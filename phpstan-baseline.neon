@@ -131,11 +131,6 @@ parameters:
 			path: api/controllers/SignupController.php
 
 		-
-			message: "#^Method api\\\\eventListeners\\\\MockDataResponse\\:\\:getResponse\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/eventListeners/MockDataResponse.php
-
-		-
 			message: "#^Cannot access offset string on array\\|\\(callable\\(\\)\\: mixed\\)\\.$#"
 			count: 1
 			path: api/filters/NginxCache.php

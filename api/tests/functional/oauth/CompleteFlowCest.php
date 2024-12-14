@@ -156,15 +156,22 @@ final class CompleteFlowCest {
         ]);
     }
 
+    public function tryToCompleteExpiredDeviceCodeFlow(FunctionalTester $I): void {
+        $I->amAuthenticated();
+        $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
+            'user_code' => 'EXPIRED',
+        ]), ['accept' => true]);
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+            'error' => 'expired_token',
+        ]);
+    }
+
     public function tryToCompleteAlreadyCompletedDeviceCodeFlow(FunctionalTester $I): void {
         $I->amAuthenticated();
         $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
-            'user_code' => 'AAAABBBB',
-        ]), ['accept' => true]);
-        $I->canSeeResponseCodeIs(200);
-
-        $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
-            'user_code' => 'AAAABBBB',
+            'user_code' => 'COMPLETED',
         ]), ['accept' => true]);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([

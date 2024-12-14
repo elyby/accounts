@@ -50,11 +50,15 @@ final class DeviceCodeGrant extends BaseDeviceCodeGrant {
 
         $deviceCode = $this->deviceCodeRepository->getDeviceCodeEntityByUserCode($userCode);
         if ($deviceCode === null) {
-            throw new OAuthServerException('Unknown user code', 4, 'invalid_user_code', 401);
+            throw new OAuthServerException('Unknown user code', 4, 'invalid_user_code', 401, 'user_code');
+        }
+
+        if ($deviceCode->getExpiryDateTime()->getTimestamp() < time()) {
+            throw OAuthServerException::expiredToken('user_code');
         }
 
         if ($deviceCode->getUserIdentifier() !== null) {
-            throw new OAuthServerException('The user code has already been used', 6, 'used_user_code', 400);
+            throw new OAuthServerException('The user code has already been used', 6, 'used_user_code', 400, 'user_code');
         }
 
         $authorizationRequest = new AuthorizationRequest();
