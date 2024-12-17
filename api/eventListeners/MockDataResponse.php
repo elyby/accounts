@@ -10,7 +10,6 @@ use api\modules\accounts\actions\EmailVerificationAction;
 use api\modules\accounts\actions\NewEmailVerificationAction;
 use api\modules\accounts\controllers\DefaultController;
 use api\modules\oauth\controllers\AuthorizationController as OauthAuthorizationController;
-use Closure;
 use yii\base\ActionEvent;
 use yii\base\BootstrapInterface;
 use yii\base\Controller;
