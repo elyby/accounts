@@ -20,7 +20,7 @@ use yii\web\Response;
 final class MockDataResponse implements BootstrapInterface {
 
     public function bootstrap($app): void {
-        Event::on(Controller::class, Controller::EVENT_BEFORE_ACTION, Closure::fromCallable([$this, 'beforeAction']));
+        Event::on(Controller::class, Controller::EVENT_BEFORE_ACTION, $this->beforeAction(...));
     }
 
     private function beforeAction(ActionEvent $event): void {
@@ -108,7 +108,7 @@ final class MockDataResponse implements BootstrapInterface {
                             'description' => "Some client's description",
                         ],
                         'session' => [
-                            'scopes' => 'account_info minecraft_server_session',
+                            'scopes' => ['account_info', 'minecraft_server_session'],
                         ],
                     ];
                 }
