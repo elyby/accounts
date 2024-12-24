@@ -50,7 +50,7 @@ final class AuthorizationController extends Controller {
         return [
             'validate' => ['GET'],
             'complete' => ['POST'],
-            'device' => ['POST'],
+            'devicecode' => ['POST'],
             'token' => ['POST'],
         ];
     }
