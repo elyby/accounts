@@ -63,7 +63,7 @@ final class AuthorizationController extends Controller {
         return $this->oauthProcess->complete($this->getServerRequest());
     }
 
-    public function actionDevice(): array {
+    public function actionDevicecode(): array {
         return $this->oauthProcess->deviceCode($this->getServerRequest());
     }
 

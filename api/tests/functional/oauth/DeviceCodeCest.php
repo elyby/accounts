@@ -10,7 +10,7 @@ use Codeception\Example;
 final class DeviceCodeCest {
 
     public function initiateFlow(FunctionalTester $I): void {
-        $I->sendPOST('/api/oauth2/v1/device', [
+        $I->sendPOST('/api/oauth2/v1/devicecode', [
             'client_id' => 'ely',
             'scope' => 'account_info minecraft_server_session',
         ]);
@@ -56,7 +56,7 @@ final class DeviceCodeCest {
     #[Examples(false)]
     public function finishFlowWithApprovedCode(FunctionalTester $I, Example $case): void {
         // Initialize flow
-        $I->sendPOST('/api/oauth2/v1/device', [
+        $I->sendPOST('/api/oauth2/v1/devicecode', [
             'client_id' => 'ely',
             'scope' => 'account_info minecraft_server_session',
         ]);
@@ -95,7 +95,7 @@ final class DeviceCodeCest {
     }
 
     public function getAnErrorForUnknownClient(FunctionalTester $I): void {
-        $I->sendPOST('/api/oauth2/v1/device', [
+        $I->sendPOST('/api/oauth2/v1/devicecode', [
             'client_id' => 'invalid-client',
             'scope' => 'account_info minecraft_server_session',
         ]);
@@ -106,7 +106,7 @@ final class DeviceCodeCest {
     }
 
     public function getAnErrorForInvalidScopes(FunctionalTester $I): void {
-        $I->sendPOST('/api/oauth2/v1/device', [
+        $I->sendPOST('/api/oauth2/v1/devicecode', [
             'client_id' => 'ely',
             'scope' => 'unknown-scope',
         ]);
