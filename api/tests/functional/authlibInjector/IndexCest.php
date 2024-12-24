@@ -16,6 +16,7 @@ class IndexCest {
                 'implementationName' => 'Account Ely.by adapter for the authlib-injector library',
                 'implementationVersion' => '1.0.0',
                 'feature.no_mojang_namespace' => true,
+                'feature.enable_profile_key' => true, 
                 'links' => [
                     'homepage' => 'https://ely.by',
                     'register' => 'https://account.ely.by/register',
