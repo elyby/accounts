@@ -39,22 +39,6 @@ final class DeviceCodeGrant extends BaseDeviceCodeGrant {
         );
     }
 
-    protected function issueAccessToken(
-        DateInterval $accessTokenTTL,
-        ClientEntityInterface $client,
-        ?string $userIdentifier,
-        array $scopes = [],
-    ): AccessTokenEntityInterface {
-        foreach ($scopes as $i => $scope) {
-            if ($scope->getIdentifier() === PublicScopeRepository::OFFLINE_ACCESS) {
-                unset($scopes[$i]);
-                $this->getEmitter()->emit(new RequestedRefreshToken('refresh_token_requested'));
-            }
-        }
-
-        return parent::issueAccessToken($accessTokenTTL, $client, $userIdentifier, $scopes);
-    }
-
     public function canRespondToAuthorizationRequest(ServerRequestInterface $request): bool {
         return isset($request->getQueryParams()['user_code']);
     }
@@ -103,6 +87,22 @@ final class DeviceCodeGrant extends BaseDeviceCodeGrant {
         );
 
         return new EmptyResponse();
+    }
+
+    protected function issueAccessToken(
+        DateInterval $accessTokenTTL,
+        ClientEntityInterface $client,
+        ?string $userIdentifier,
+        array $scopes = [],
+    ): AccessTokenEntityInterface {
+        foreach ($scopes as $i => $scope) {
+            if ($scope->getIdentifier() === PublicScopeRepository::OFFLINE_ACCESS) {
+                unset($scopes[$i]);
+                $this->getEmitter()->emit(new RequestedRefreshToken('refresh_token_requested'));
+            }
+        }
+
+        return parent::issueAccessToken($accessTokenTTL, $client, $userIdentifier, $scopes);
     }
 
 }
