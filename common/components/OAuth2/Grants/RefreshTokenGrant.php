@@ -11,18 +11,16 @@ use InvalidArgumentException;
 use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
 use Lcobucci\JWT\Validation\Validator;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
-use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use League\OAuth2\Server\Grant\RefreshTokenGrant as BaseRefreshTokenGrant;
-use League\OAuth2\Server\RequestEvent;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use Yii;
-use yii\helpers\StringHelper;
 
 final class RefreshTokenGrant extends BaseRefreshTokenGrant {
     use CryptTrait;
+    use ValidateRedirectUriTrait;
 
     /**
      * Previously, refresh tokens were stored in Redis.
@@ -113,22 +111,6 @@ final class RefreshTokenGrant extends BaseRefreshTokenGrant {
             'user_id' => $reader->getAccountId(),
             'expire_time' => null,
         ];
-    }
-
-    protected function validateRedirectUri(
-        string $redirectUri,
-        ClientEntityInterface $client,
-        ServerRequestInterface $request,
-    ): void {
-        $allowedRedirectUris = (array)$client->getRedirectUri();
-        foreach ($allowedRedirectUris as $allowedRedirectUri) {
-            if (StringHelper::startsWith($redirectUri, $allowedRedirectUri)) {
-                return;
-            }
-        }
-
-        $this->getEmitter()->emit(new RequestEvent(RequestEvent::CLIENT_AUTHENTICATION_FAILED, $request));
-        throw OAuthServerException::invalidClient($request);
     }
 
 }

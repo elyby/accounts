@@ -3,9 +3,7 @@ declare(strict_types=1);
 
 namespace common\components\OAuth2\Grants;
 
-use common\components\OAuth2\Events\RequestedRefreshToken;
 use common\components\OAuth2\Repositories\ExtendedDeviceCodeRepositoryInterface;
-use common\components\OAuth2\Repositories\PublicScopeRepository;
 use common\components\OAuth2\ResponseTypes\EmptyResponse;
 use DateInterval;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
@@ -22,6 +20,7 @@ use Psr\Http\Message\ServerRequestInterface;
  * @property ExtendedDeviceCodeRepositoryInterface $deviceCodeRepository
  */
 final class DeviceCodeGrant extends BaseDeviceCodeGrant {
+    use CheckOfflineAccessScopeTrait;
 
     public function __construct(
         ExtendedDeviceCodeRepositoryInterface $deviceCodeRepository,
@@ -95,12 +94,7 @@ final class DeviceCodeGrant extends BaseDeviceCodeGrant {
         ?string $userIdentifier,
         array $scopes = [],
     ): AccessTokenEntityInterface {
-        foreach ($scopes as $i => $scope) {
-            if ($scope->getIdentifier() === PublicScopeRepository::OFFLINE_ACCESS) {
-                unset($scopes[$i]);
-                $this->getEmitter()->emit(new RequestedRefreshToken('refresh_token_requested'));
-            }
-        }
+        $this->checkOfflineAccessScope($scopes);
 
         return parent::issueAccessToken($accessTokenTTL, $client, $userIdentifier, $scopes);
     }
