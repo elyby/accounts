@@ -20,6 +20,7 @@ use Yii;
 
 final class RefreshTokenGrant extends BaseRefreshTokenGrant {
     use CryptTrait;
+    use ValidateRedirectUriTrait;
 
     /**
      * Previously, refresh tokens were stored in Redis.
