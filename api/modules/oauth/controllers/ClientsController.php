@@ -94,7 +94,7 @@ class ClientsController extends Controller {
 
         $client = new OauthClient();
         $client->account_id = $account->id;
-        $client->type = $type;
+        $client->type = $type; // @phpstan-ignore assign.propertyType (this value will be validated in the createForm())
         $requestModel = $this->createForm($client);
         $requestModel->load(Yii::$app->request->post());
         $form = new OauthClientForm($client);
@@ -163,7 +163,7 @@ class ClientsController extends Controller {
         /** @var \common\models\OauthSession[] $oauthSessions */
         $oauthSessions = $account->getOauthSessions()
             ->innerJoinWith(['client c' => function(ActiveQuery $query): void {
-                $query->andOnCondition(['c.type' => OauthClient::TYPE_APPLICATION]);
+                $query->andOnCondition(['c.type' => OauthClient::TYPE_WEB_APPLICATION]);
             }])
             ->andWhere([
                 'OR',
@@ -206,10 +206,12 @@ class ClientsController extends Controller {
         return ['success' => true];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function formatClient(OauthClient $client): array {
         $result = [
             'clientId' => $client->id,
-            'clientSecret' => $client->secret,
             'type' => $client->type,
             'name' => $client->name,
             'websiteUrl' => $client->website_url,
@@ -217,12 +219,18 @@ class ClientsController extends Controller {
         ];
 
         switch ($client->type) {
-            case OauthClient::TYPE_APPLICATION:
+            case OauthClient::TYPE_WEB_APPLICATION:
+                $result['clientSecret'] = $client->secret;
                 $result['description'] = $client->description;
                 $result['redirectUri'] = $client->redirect_uri;
                 $result['countUsers'] = (int)$client->getSessions()->count();
                 break;
+            case OauthClient::TYPE_DESKTOP_APPLICATION:
+                $result['description'] = $client->description;
+                $result['countUsers'] = (int)$client->getSessions()->count();
+                break;
             case OauthClient::TYPE_MINECRAFT_SERVER:
+                $result['clientSecret'] = $client->secret;
                 $result['minecraftServerIp'] = $client->minecraft_server_ip;
                 break;
         }

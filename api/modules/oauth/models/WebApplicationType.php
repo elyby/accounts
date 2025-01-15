@@ -3,21 +3,20 @@ declare(strict_types=1);
 
 namespace api\modules\oauth\models;
 
-use Closure;
 use common\helpers\Error as E;
 use common\models\OauthClient;
 use yii\helpers\ArrayHelper;
 
-final class ApplicationType extends BaseOauthClientType {
+final class WebApplicationType extends BaseOauthClientType {
 
-    public $description;
+    public mixed $description = null;
 
-    public $redirectUri;
+    public mixed $redirectUri = null;
 
     public function rules(): array {
         return ArrayHelper::merge(parent::rules(), [
             ['redirectUri', 'required', 'message' => E::REDIRECT_URI_REQUIRED],
-            ['redirectUri', Closure::fromCallable([$this, 'validateUrl'])],
+            ['redirectUri', $this->validateUrl(...)],
             ['description', 'string'],
         ]);
     }

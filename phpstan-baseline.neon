@@ -476,37 +476,12 @@ parameters:
 			path: api/modules/oauth/controllers/AuthorizationController.php
 
 		-
-			message: "#^Method api\\\\modules\\\\oauth\\\\controllers\\\\ClientsController\\:\\:formatClient\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/modules/oauth/controllers/ClientsController.php
-
-		-
-			message: "#^Property api\\\\modules\\\\oauth\\\\models\\\\ApplicationType\\:\\:\\$description has no type specified\\.$#"
-			count: 1
-			path: api/modules/oauth/models/ApplicationType.php
-
-		-
-			message: "#^Property api\\\\modules\\\\oauth\\\\models\\\\ApplicationType\\:\\:\\$redirectUri has no type specified\\.$#"
-			count: 1
-			path: api/modules/oauth/models/ApplicationType.php
-
-		-
 			message: "#^Method api\\\\modules\\\\oauth\\\\models\\\\BaseOauthClientType\\:\\:getValidationErrors\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: api/modules/oauth/models/BaseOauthClientType.php
 
 		-
 			message: "#^Method api\\\\modules\\\\oauth\\\\models\\\\BaseOauthClientType\\:\\:load\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/modules/oauth/models/BaseOauthClientType.php
-
-		-
-			message: "#^Property api\\\\modules\\\\oauth\\\\models\\\\BaseOauthClientType\\:\\:\\$name has no type specified\\.$#"
-			count: 1
-			path: api/modules/oauth/models/BaseOauthClientType.php
-
-		-
-			message: "#^Property api\\\\modules\\\\oauth\\\\models\\\\BaseOauthClientType\\:\\:\\$websiteUrl has no type specified\\.$#"
 			count: 1
 			path: api/modules/oauth/models/BaseOauthClientType.php
 
@@ -719,16 +694,6 @@ parameters:
 			message: "#^Method api\\\\tests\\\\_pages\\\\MojangApiRoute\\:\\:usernamesByUuid\\(\\) has parameter \\$uuid with no type specified\\.$#"
 			count: 1
 			path: api/tests/_pages/MojangApiRoute.php
-
-		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\OauthRoute\\:\\:createClient\\(\\) has parameter \\$postParams with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/tests/_pages/OauthRoute.php
-
-		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\OauthRoute\\:\\:updateClient\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/tests/_pages/OauthRoute.php
 
 		-
 			message: "#^Method api\\\\tests\\\\_pages\\\\SessionServerRoute\\:\\:hasJoined\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
@@ -1349,16 +1314,6 @@ parameters:
 			message: "#^Method common\\\\models\\\\EmailActivation\\:\\:instantiate\\(\\) has parameter \\$row with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: common/models/EmailActivation.php
-
-		-
-			message: "#^Method common\\\\models\\\\OauthClient\\:\\:getAccount\\(\\) return type with generic class yii\\\\db\\\\ActiveQuery does not specify its types\\: T$#"
-			count: 1
-			path: common/models/OauthClient.php
-
-		-
-			message: "#^Method common\\\\models\\\\OauthClient\\:\\:getSessions\\(\\) return type with generic class yii\\\\db\\\\ActiveQuery does not specify its types\\: T$#"
-			count: 1
-			path: common/models/OauthClient.php
 
 		-
 			message: "#^Class common\\\\models\\\\OauthClientQuery extends generic class yii\\\\db\\\\ActiveQuery but does not specify its types\\: T$#"

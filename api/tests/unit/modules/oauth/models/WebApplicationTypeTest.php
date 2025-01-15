@@ -1,14 +1,16 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\unit\modules\oauth\models;
 
-use api\modules\oauth\models\ApplicationType;
+use api\modules\oauth\models\WebApplicationType;
 use api\tests\unit\TestCase;
 use common\models\OauthClient;
 
-class ApplicationTypeTest extends TestCase {
+final class WebApplicationTypeTest extends TestCase {
 
     public function testApplyToClient(): void {
-        $model = new ApplicationType();
+        $model = new WebApplicationType();
         $model->name = 'Application name';
         $model->websiteUrl = 'http://example.com';
         $model->redirectUri = 'http://example.com/oauth/ely';

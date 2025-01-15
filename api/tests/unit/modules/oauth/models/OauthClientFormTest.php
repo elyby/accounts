@@ -9,13 +9,13 @@ use api\tests\unit\TestCase;
 use common\models\OauthClient;
 use common\tasks\ClearOauthSessions;
 
-class OauthClientFormTest extends TestCase {
+final class OauthClientFormTest extends TestCase {
 
     public function testSave(): void {
         $client = $this->createPartialMock(OauthClient::class, ['save']);
         $client->method('save')->willReturn(true);
         $client->account_id = 1;
-        $client->type = OauthClient::TYPE_APPLICATION;
+        $client->type = OauthClient::TYPE_WEB_APPLICATION;
         $client->name = 'Test application';
 
         $form = $this->createPartialMock(OauthClientForm::class, ['getClient', 'isClientExists']);
@@ -39,7 +39,7 @@ class OauthClientFormTest extends TestCase {
         $client->id = 'application-id';
         $client->secret = 'application_secret';
         $client->account_id = 1;
-        $client->type = OauthClient::TYPE_APPLICATION;
+        $client->type = OauthClient::TYPE_WEB_APPLICATION;
         $client->name = 'Application name';
         $client->description = 'Application description';
         $client->redirect_uri = 'http://example.com/oauth/ely';
@@ -81,7 +81,7 @@ class OauthClientFormTest extends TestCase {
         $client = $this->createPartialMock(OauthClient::class, ['save']);
         $client->method('save')->willReturn(true);
         $client->id = 'mocked-id';
-        $client->type = OauthClient::TYPE_APPLICATION;
+        $client->type = OauthClient::TYPE_WEB_APPLICATION;
 
         $form = new OauthClientForm($client);
         $this->assertTrue($form->delete());
@@ -98,7 +98,7 @@ class OauthClientFormTest extends TestCase {
         $client->method('save')->willReturn(true);
         $client->id = 'mocked-id';
         $client->secret = 'initial_secret';
-        $client->type = OauthClient::TYPE_APPLICATION;
+        $client->type = OauthClient::TYPE_WEB_APPLICATION;
 
         $form = new OauthClientForm($client);
         $this->assertTrue($form->reset());
@@ -115,7 +115,7 @@ class OauthClientFormTest extends TestCase {
         $client->method('save')->willReturn(true);
         $client->id = 'mocked-id';
         $client->secret = 'initial_secret';
-        $client->type = OauthClient::TYPE_APPLICATION;
+        $client->type = OauthClient::TYPE_WEB_APPLICATION;
 
         $form = new OauthClientForm($client);
         $this->assertTrue($form->reset(true));

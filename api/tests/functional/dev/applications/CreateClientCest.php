@@ -3,20 +3,13 @@ declare(strict_types=1);
 
 namespace api\tests\functional\dev\applications;
 
-use api\tests\_pages\OauthRoute;
 use api\tests\FunctionalTester;
 
 final class CreateClientCest {
 
-    private OauthRoute $route;
-
-    public function _before(FunctionalTester $I): void {
-        $this->route = new OauthRoute($I);
-    }
-
-    public function testCreateApplication(FunctionalTester $I): void {
+    public function testCreateWebApplication(FunctionalTester $I): void {
         $I->amAuthenticated('admin');
-        $this->route->createClient('application', [
+        $I->sendPOST('/api/v1/oauth2/application', [
             'name' => 'My admin application',
             'description' => 'Application description.',
             'redirectUri' => 'http://some-site.com/oauth/ely',
@@ -39,9 +32,33 @@ final class CreateClientCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.data.createdAt');
     }
 
+    public function testCreateDesktopApplication(FunctionalTester $I): void {
+        $I->amAuthenticated('admin');
+        $I->sendPOST('/api/v1/oauth2/desktop-application', [
+            'name' => 'Mega Launcher',
+            'description' => "Launcher's description.",
+            'websiteUrl' => 'http://mega-launcher.com',
+        ]);
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseIsJson();
+        $I->canSeeResponseContainsJson([
+            'success' => true,
+            'data' => [
+                'clientId' => 'mega-launcher',
+                'type' => 'desktop-application',
+                'name' => 'Mega Launcher',
+                'description' => "Launcher's description.",
+                'websiteUrl' => 'http://mega-launcher.com',
+                'countUsers' => 0,
+            ],
+        ]);
+        $I->cantSeeResponseJsonMatchesJsonPath('$.data.clientSecret');
+        $I->canSeeResponseJsonMatchesJsonPath('$.data.createdAt');
+    }
+
     public function testCreateMinecraftServer(FunctionalTester $I): void {
         $I->amAuthenticated('admin');
-        $this->route->createClient('minecraft-server', [
+        $I->sendPOST('/api/v1/oauth2/minecraft-server', [
             'name' => 'My amazing server',
             'websiteUrl' => 'http://some-site.com',
             'minecraftServerIp' => 'hypixel.com:25565',
@@ -64,7 +81,7 @@ final class CreateClientCest {
     public function testCreateApplicationWithTheSameNameAsDeletedApp(FunctionalTester $I): void {
         $I->wantTo('create application with the same name as the recently deleted application');
         $I->amAuthenticated('admin');
-        $this->route->createClient('application', [
+        $I->sendPOST('/api/v1/oauth2/application', [
             'name' => 'Deleted OAuth Client',
             'description' => '',
             'redirectUri' => 'http://some-site.com/oauth/ely',
@@ -82,8 +99,7 @@ final class CreateClientCest {
 
     public function testCreateApplicationWithWrongParams(FunctionalTester $I): void {
         $I->amAuthenticated('admin');
-
-        $this->route->createClient('application', []);
+        $I->sendPOST('/api/v1/oauth2/application', []);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseContainsJson([
             'success' => false,

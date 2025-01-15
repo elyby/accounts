@@ -3,20 +3,13 @@ declare(strict_types=1);
 
 namespace api\tests\functional\dev\applications;
 
-use api\tests\_pages\OauthRoute;
 use api\tests\FunctionalTester;
 
-class ResetClientCest {
-
-    private OauthRoute $route;
-
-    public function _before(FunctionalTester $I): void {
-        $this->route = new OauthRoute($I);
-    }
+final class ResetClientCest {
 
     public function testReset(FunctionalTester $I): void {
         $I->amAuthenticated('TwoOauthClients');
-        $this->route->resetClient('first-test-oauth-client');
+        $I->sendPOST('/api/v1/oauth2/first-test-oauth-client/reset');
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -36,7 +29,7 @@ class ResetClientCest {
 
     public function testResetWithSecretChanging(FunctionalTester $I): void {
         $I->amAuthenticated('TwoOauthClients');
-        $this->route->resetClient('first-test-oauth-client', true);
+        $I->sendPOST('/api/v1/oauth2/first-test-oauth-client/reset?regenerateSecret');
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([

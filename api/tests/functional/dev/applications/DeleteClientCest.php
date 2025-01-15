@@ -3,20 +3,13 @@ declare(strict_types=1);
 
 namespace api\tests\functional\dev\applications;
 
-use api\tests\_pages\OauthRoute;
 use api\tests\FunctionalTester;
 
-class DeleteClientCest {
-
-    private OauthRoute $route;
-
-    public function _before(FunctionalTester $I): void {
-        $this->route = new OauthRoute($I);
-    }
+final class DeleteClientCest {
 
     public function testDelete(FunctionalTester $I): void {
         $I->amAuthenticated('TwoOauthClients');
-        $this->route->deleteClient('first-test-oauth-client');
+        $I->sendDELETE('/api/v1/oauth2/first-test-oauth-client');
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([

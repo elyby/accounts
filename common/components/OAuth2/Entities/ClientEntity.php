@@ -20,7 +20,8 @@ final class ClientEntity implements ClientEntityInterface {
         string $id,
         string $name,
         string|array $redirectUri,
-        private readonly bool $isTrusted,
+        private readonly bool $isTrusted = false,
+        public readonly ?OauthClient $model = null,
     ) {
         $this->identifier = $id;
         $this->name = $name;
@@ -29,15 +30,20 @@ final class ClientEntity implements ClientEntityInterface {
 
     public static function fromModel(OauthClient $model): self {
         return new self(
-            $model->id, // @phpstan-ignore argument.type
-            $model->name,
-            $model->redirect_uri ?: '',
-            (bool)$model->is_trusted,
+            id: $model->id, // @phpstan-ignore argument.type
+            name: $model->name,
+            redirectUri: $model->redirect_uri ?: '',
+            isTrusted: (bool)$model->is_trusted,
+            model: $model,
         );
     }
 
     public function isConfidential(): bool {
-        return true;
+        return match ($this->model->type) {
+            OauthClient::TYPE_WEB_APPLICATION => true,
+            OauthClient::TYPE_DESKTOP_APPLICATION => false,
+            OauthClient::TYPE_MINECRAFT_SERVER => true,
+        };
     }
 
     public function isTrusted(): bool {

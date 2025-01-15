@@ -9,9 +9,9 @@ use common\models\OauthClient;
 
 abstract class BaseOauthClientType extends ApiForm implements OauthClientTypeForm {
 
-    public $name;
+    public mixed $name = null;
 
-    public $websiteUrl;
+    public mixed $websiteUrl = null;
 
     public function rules(): array {
         return [

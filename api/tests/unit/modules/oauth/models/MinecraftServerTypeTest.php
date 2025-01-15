@@ -1,11 +1,13 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\unit\modules\oauth\models;
 
 use api\modules\oauth\models\MinecraftServerType;
 use api\tests\unit\TestCase;
 use common\models\OauthClient;
 
-class MinecraftServerTypeTest extends TestCase {
+final class MinecraftServerTypeTest extends TestCase {
 
     public function testApplyToClient(): void {
         $model = new MinecraftServerType();

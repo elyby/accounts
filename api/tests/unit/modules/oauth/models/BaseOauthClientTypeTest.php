@@ -7,7 +7,7 @@ use api\modules\oauth\models\BaseOauthClientType;
 use api\tests\unit\TestCase;
 use common\models\OauthClient;
 
-class BaseOauthClientTypeTest extends TestCase {
+final class BaseOauthClientTypeTest extends TestCase {
 
     public function testApplyTyClient(): void {
         $client = new OauthClient();

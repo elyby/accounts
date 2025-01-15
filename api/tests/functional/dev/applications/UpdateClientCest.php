@@ -3,20 +3,13 @@ declare(strict_types=1);
 
 namespace api\tests\functional\dev\applications;
 
-use api\tests\_pages\OauthRoute;
 use api\tests\FunctionalTester;
 
-class UpdateClientCest {
+final class UpdateClientCest {
 
-    private OauthRoute $route;
-
-    public function _before(FunctionalTester $I): void {
-        $this->route = new OauthRoute($I);
-    }
-
-    public function testUpdateApplication(FunctionalTester $I): void {
+    public function testUpdateWebApplication(FunctionalTester $I): void {
         $I->amAuthenticated('TwoOauthClients');
-        $this->route->updateClient('first-test-oauth-client', [
+        $I->sendPUT('/api/v1/oauth2/first-test-oauth-client', [
             'name' => 'Updated name',
             'description' => 'Updated description.',
             'redirectUri' => 'http://new-site.com/oauth/ely',
@@ -41,7 +34,7 @@ class UpdateClientCest {
 
     public function testUpdateMinecraftServer(FunctionalTester $I): void {
         $I->amAuthenticated('TwoOauthClients');
-        $this->route->updateClient('another-test-oauth-client', [
+        $I->sendPUT('/api/v1/oauth2/another-test-oauth-client', [
             'name' => 'Updated server name',
             'websiteUrl' => 'http://new-site.com',
             'minecraftServerIp' => 'hypixel.com:25565',

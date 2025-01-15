@@ -3,20 +3,13 @@ declare(strict_types=1);
 
 namespace api\tests\functional\dev\applications;
 
-use api\tests\_pages\OauthRoute;
 use api\tests\FunctionalTester;
 
-class GetClientsCest {
-
-    private OauthRoute $route;
-
-    public function _before(FunctionalTester $I): void {
-        $this->route = new OauthRoute($I);
-    }
+final class GetClientsCest {
 
     public function testGet(FunctionalTester $I): void {
         $I->amAuthenticated('admin');
-        $this->route->getClient('admin-oauth-client');
+        $I->sendGET('/api/v1/oauth2/admin-oauth-client');
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -33,7 +26,7 @@ class GetClientsCest {
 
     public function testGetNotOwn(FunctionalTester $I): void {
         $I->amAuthenticated('admin');
-        $this->route->getClient('another-test-oauth-client');
+        $I->sendGET('/api/v1/oauth2/another-test-oauth-client');
         $I->canSeeResponseCodeIs(403);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -44,8 +37,8 @@ class GetClientsCest {
     }
 
     public function testGetAllPerAccountList(FunctionalTester $I): void {
-        $I->amAuthenticated('TwoOauthClients');
-        $this->route->getPerAccount(14);
+        $accountId = $I->amAuthenticated('TwoOauthClients');
+        $I->sendGET("/api/v1/accounts/{$accountId}/oauth2/clients");
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
@@ -74,7 +67,7 @@ class GetClientsCest {
 
     public function testGetAllPerNotOwnAccount(FunctionalTester $I): void {
         $I->amAuthenticated('TwoOauthClients');
-        $this->route->getPerAccount(1);
+        $I->sendGET('/api/v1/accounts/1/oauth2/clients');
         $I->canSeeResponseCodeIs(403);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([

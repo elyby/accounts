@@ -25,11 +25,11 @@ final class ClientRepository implements ClientRepositoryInterface {
             return false;
         }
 
-        if ($client->type !== OauthClient::TYPE_APPLICATION) {
+        if (!in_array($client->type, [OauthClient::TYPE_WEB_APPLICATION, OauthClient::TYPE_DESKTOP_APPLICATION], true)) {
             return false;
         }
 
-        if (!empty($clientSecret) && $clientSecret !== $client->secret) {
+        if ($client->type === OauthClient::TYPE_WEB_APPLICATION && !empty($clientSecret) && $clientSecret !== $client->secret) {
             return false;
         }
 
@@ -37,12 +37,7 @@ final class ClientRepository implements ClientRepositoryInterface {
     }
 
     private function findModel(string $id): ?OauthClient {
-        $client = OauthClient::findOne(['id' => $id]);
-        if ($client === null || $client->type !== OauthClient::TYPE_APPLICATION) {
-            return null;
-        }
-
-        return $client;
+        return OauthClient::findOne(['id' => $id]);
     }
 
 }

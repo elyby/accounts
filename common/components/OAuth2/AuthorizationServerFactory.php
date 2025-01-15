@@ -31,7 +31,6 @@ final class AuthorizationServerFactory {
         );
         /** @noinspection PhpUnhandledExceptionInspection */
         $authCodeGrant = new Grants\AuthCodeGrant($authCodesRepo, $refreshTokensRepo, new DateInterval('PT10M'));
-        $authCodeGrant->disableRequireCodeChallengeForPublicClients();
         $authServer->enableGrantType($authCodeGrant, $accessTokenTTL);
         $authCodeGrant->setScopeRepository($publicScopesRepo); // Change repository after enabling
 

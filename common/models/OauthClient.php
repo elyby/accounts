@@ -12,7 +12,7 @@ use yii\db\ActiveRecord;
  * Fields:
  * @property string         $id
  * @property string         $secret
- * @property string         $type
+ * @property self::TYPE_*   $type
  * @property string         $name
  * @property string         $description
  * @property string|null    $redirect_uri
@@ -29,14 +29,14 @@ use yii\db\ActiveRecord;
  */
 class OauthClient extends ActiveRecord {
 
-    public const TYPE_APPLICATION = 'application';
-    public const TYPE_MINECRAFT_SERVER = 'minecraft-server';
-    public const TYPE_MINECRAFT_GAME_LAUNCHER = 'minecraft-game-launcher';
+    public const string TYPE_WEB_APPLICATION = 'application';
+    public const string TYPE_DESKTOP_APPLICATION = 'desktop-application';
+    public const string TYPE_MINECRAFT_SERVER = 'minecraft-server';
 
     /**
      * Abstract oauth_client, used to
      */
-    public const UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER = 'unauthorized_minecraft_game_launcher';
+    public const string UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER = 'unauthorized_minecraft_game_launcher';
 
     public static function tableName(): string {
         return 'oauth_clients';
@@ -55,10 +55,13 @@ class OauthClient extends ActiveRecord {
         $this->secret = Yii::$app->security->generateRandomString(64);
     }
 
-    public function getAccount(): ActiveQuery {
+    public function getAccount(): AccountQuery {
         return $this->hasOne(Account::class, ['id' => 'account_id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery<\common\models\OauthSession>
+     */
     public function getSessions(): ActiveQuery {
         return $this->hasMany(OauthSession::class, ['client_id' => 'id']);
     }
