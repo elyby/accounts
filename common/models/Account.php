@@ -77,6 +77,10 @@ class Account extends ActiveRecord {
     }
 
     public function validatePassword(string $password, int $passwordHashStrategy = null): bool {
+        if (empty($password)) {
+            return false;
+        }
+
         if ($passwordHashStrategy === null) {
             $passwordHashStrategy = $this->password_hash_strategy;
         }

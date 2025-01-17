@@ -6,7 +6,6 @@ namespace api\eventListeners;
 use api\controllers\AuthenticationController;
 use api\controllers\SignupController;
 use api\modules\accounts\actions;
-use Closure;
 use Yii;
 use yii\base\ActionEvent;
 use yii\base\BootstrapInterface;
@@ -16,8 +15,8 @@ use yii\base\Event;
 final class LogMetricsToStatsd implements BootstrapInterface {
 
     public function bootstrap($app): void {
-        Event::on(Controller::class, Controller::EVENT_BEFORE_ACTION, Closure::fromCallable([$this, 'beforeAction']));
-        Event::on(Controller::class, Controller::EVENT_AFTER_ACTION, Closure::fromCallable([$this, 'afterAction']));
+        Event::on(Controller::class, Controller::EVENT_BEFORE_ACTION, $this->beforeAction(...));
+        Event::on(Controller::class, Controller::EVENT_AFTER_ACTION, $this->afterAction(...));
     }
 
     private function beforeAction(ActionEvent $event): void {

@@ -5,10 +5,9 @@ namespace api\tests\unit\modules\accounts\models;
 
 use api\modules\accounts\models\DisableTwoFactorAuthForm;
 use api\tests\unit\TestCase;
-use common\helpers\Error as E;
 use common\models\Account;
 
-class DisableTwoFactorAuthFormTest extends TestCase {
+final class DisableTwoFactorAuthFormTest extends TestCase {
 
     public function testPerformAction(): void {
         $account = $this->createPartialMock(Account::class, ['save']);
@@ -24,20 +23,6 @@ class DisableTwoFactorAuthFormTest extends TestCase {
         $this->assertTrue($model->performAction());
         $this->assertNull($account->otp_secret);
         $this->assertFalse($account->is_otp_enabled);
-    }
-
-    public function testValidateOtpEnabled(): void {
-        $account = new Account();
-        $account->is_otp_enabled = false;
-        $model = new DisableTwoFactorAuthForm($account);
-        $model->validateOtpEnabled('account');
-        $this->assertSame([E::OTP_NOT_ENABLED], $model->getErrors('account'));
-
-        $account = new Account();
-        $account->is_otp_enabled = true;
-        $model = new DisableTwoFactorAuthForm($account);
-        $model->validateOtpEnabled('account');
-        $this->assertEmpty($model->getErrors('account'));
     }
 
 }

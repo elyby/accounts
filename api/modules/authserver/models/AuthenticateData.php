@@ -15,6 +15,28 @@ final readonly class AuthenticateData {
     ) {
     }
 
+    /**
+     * @return array{
+     *     accessToken: string,
+     *     clientToken: string,
+     *     selectedProfile: array{
+     *         id: string,
+     *         name: string,
+     *     },
+     *     availableProfiles?: array<array{
+     *         id: string,
+     *         name: string,
+     *     }>,
+     *     user?: array{
+     *         id: string,
+     *         username: string,
+     *         properties: array<array{
+     *             name: string,
+     *             value: string,
+     *         }>,
+     *     },
+     * }
+     */
     public function getResponseData(bool $includeAvailableProfiles = false): array {
         $uuid = str_replace('-', '', $this->account->uuid);
         $result = [

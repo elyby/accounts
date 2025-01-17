@@ -5,7 +5,7 @@ namespace api\models\base;
 
 use yii\base\Model;
 
-class ApiForm extends Model {
+abstract class ApiForm extends Model {
 
     public function formName(): string {
         return '';

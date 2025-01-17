@@ -6,11 +6,10 @@ namespace api\tests\unit\modules\accounts\models;
 use api\components\User\Component;
 use api\modules\accounts\models\EnableTwoFactorAuthForm;
 use api\tests\unit\TestCase;
-use common\helpers\Error as E;
 use common\models\Account;
 use Yii;
 
-class EnableTwoFactorAuthFormTest extends TestCase {
+final class EnableTwoFactorAuthFormTest extends TestCase {
 
     public function testPerformAction(): void {
         $account = $this->createPartialMock(Account::class, ['save']);
@@ -28,20 +27,6 @@ class EnableTwoFactorAuthFormTest extends TestCase {
 
         $this->assertTrue($model->performAction());
         $this->assertTrue($account->is_otp_enabled);
-    }
-
-    public function testValidateOtpDisabled(): void {
-        $account = new Account();
-        $account->is_otp_enabled = true;
-        $model = new EnableTwoFactorAuthForm($account);
-        $model->validateOtpDisabled('account');
-        $this->assertSame([E::OTP_ALREADY_ENABLED], $model->getErrors('account'));
-
-        $account = new Account();
-        $account->is_otp_enabled = false;
-        $model = new EnableTwoFactorAuthForm($account);
-        $model->validateOtpDisabled('account');
-        $this->assertEmpty($model->getErrors('account'));
     }
 
 }

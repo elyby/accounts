@@ -6,6 +6,7 @@ namespace api\models\authentication;
 use DateTimeImmutable;
 use Lcobucci\JWT\UnencryptedToken;
 
+// TODO: remove this class
 final readonly class AuthenticationResult {
 
     public function __construct(

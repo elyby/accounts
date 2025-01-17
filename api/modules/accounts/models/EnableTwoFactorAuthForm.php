@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\modules\accounts\models;
 
 use api\components\User\Component;
@@ -10,13 +12,13 @@ use Yii;
 
 class EnableTwoFactorAuthForm extends AccountActionForm {
 
-    public $totp;
+    public mixed $totp = null;
 
-    public $password;
+    public mixed $password = null;
 
     public function rules(): array {
         return [
-            ['account', 'validateOtpDisabled'],
+            ['account', $this->validateOtpDisabled(...)],
             ['totp', 'required', 'message' => E::TOTP_REQUIRED],
             ['totp', TotpValidator::class, 'account' => $this->getAccount()],
             ['password', PasswordRequiredValidator::class, 'account' => $this->getAccount()],
@@ -41,7 +43,7 @@ class EnableTwoFactorAuthForm extends AccountActionForm {
         return true;
     }
 
-    public function validateOtpDisabled($attribute): void {
+    private function validateOtpDisabled(string $attribute): void {
         if ($this->getAccount()->is_otp_enabled) {
             $this->addError($attribute, E::OTP_ALREADY_ENABLED);
         }

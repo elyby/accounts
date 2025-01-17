@@ -331,36 +331,6 @@ parameters:
 			path: api/modules/accounts/models/DeleteAccountForm.php
 
 		-
-			message: "#^Method api\\\\modules\\\\accounts\\\\models\\\\DisableTwoFactorAuthForm\\:\\:validateOtpEnabled\\(\\) has parameter \\$attribute with no type specified\\.$#"
-			count: 1
-			path: api/modules/accounts/models/DisableTwoFactorAuthForm.php
-
-		-
-			message: "#^Property api\\\\modules\\\\accounts\\\\models\\\\DisableTwoFactorAuthForm\\:\\:\\$password has no type specified\\.$#"
-			count: 1
-			path: api/modules/accounts/models/DisableTwoFactorAuthForm.php
-
-		-
-			message: "#^Property api\\\\modules\\\\accounts\\\\models\\\\DisableTwoFactorAuthForm\\:\\:\\$totp has no type specified\\.$#"
-			count: 1
-			path: api/modules/accounts/models/DisableTwoFactorAuthForm.php
-
-		-
-			message: "#^Method api\\\\modules\\\\accounts\\\\models\\\\EnableTwoFactorAuthForm\\:\\:validateOtpDisabled\\(\\) has parameter \\$attribute with no type specified\\.$#"
-			count: 1
-			path: api/modules/accounts/models/EnableTwoFactorAuthForm.php
-
-		-
-			message: "#^Property api\\\\modules\\\\accounts\\\\models\\\\EnableTwoFactorAuthForm\\:\\:\\$password has no type specified\\.$#"
-			count: 1
-			path: api/modules/accounts/models/EnableTwoFactorAuthForm.php
-
-		-
-			message: "#^Property api\\\\modules\\\\accounts\\\\models\\\\EnableTwoFactorAuthForm\\:\\:\\$totp has no type specified\\.$#"
-			count: 1
-			path: api/modules/accounts/models/EnableTwoFactorAuthForm.php
-
-		-
 			message: "#^Property api\\\\modules\\\\accounts\\\\models\\\\SendEmailVerificationForm\\:\\:\\$password has no type specified\\.$#"
 			count: 1
 			path: api/modules/accounts/models/SendEmailVerificationForm.php
@@ -414,11 +384,6 @@ parameters:
 			message: "#^Method api\\\\modules\\\\authserver\\\\controllers\\\\AuthenticationController\\:\\:verbs\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: api/modules/authserver/controllers/AuthenticationController.php
-
-		-
-			message: "#^Method api\\\\modules\\\\authserver\\\\models\\\\AuthenticateData\\:\\:getResponseData\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/modules/authserver/models/AuthenticateData.php
 
 		-
 			message: "#^Method api\\\\modules\\\\authserver\\\\validators\\\\AccessTokenValidator\\:\\:validateValue\\(\\) return type has no value type specified in iterable type array\\.$#"
@@ -861,11 +826,6 @@ parameters:
 			path: api/tests/functional/authserver/RefreshCest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\functional\\\\authserver\\\\SignoutCest\\:\\:signout\\(\\) has parameter \\$example with no value type specified in iterable type Codeception\\\\Example\\.$#"
-			count: 1
-			path: api/tests/functional/authserver/SignoutCest.php
-
-		-
 			message: "#^Method api\\\\tests\\\\functional\\\\authserver\\\\UsernamesToUuidsCest\\:\\:bulkProfilesEndpoints\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: api/tests/functional/authserver/UsernamesToUuidsCest.php
@@ -1046,11 +1006,6 @@ parameters:
 			path: api/tests/unit/modules/accounts/models/ChangeUsernameFormTest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\unit\\\\modules\\\\authserver\\\\models\\\\AuthenticationFormTest\\:\\:getInvalidCredentialsCases\\(\\) return type has no value type specified in iterable type iterable\\.$#"
-			count: 1
-			path: api/tests/unit/modules/authserver/models/AuthenticationFormTest.php
-
-		-
 			message: "#^Method api\\\\tests\\\\unit\\\\modules\\\\authserver\\\\validators\\\\RequiredValidatorTest\\:\\:callProtected\\(\\) has no return type specified\\.$#"
 			count: 1
 			path: api/tests/unit/modules/authserver/validators/RequiredValidatorTest.php
@@ -1101,31 +1056,6 @@ parameters:
 			path: api/tests/unit/validators/PasswordRequiredValidatorTest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\unit\\\\validators\\\\TotpValidatorTest\\:\\:callProtected\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: api/tests/unit/validators/TotpValidatorTest.php
-
-		-
-			message: "#^Method api\\\\tests\\\\unit\\\\validators\\\\TotpValidatorTest\\:\\:callProtected\\(\\) has parameter \\$args with no type specified\\.$#"
-			count: 1
-			path: api/tests/unit/validators/TotpValidatorTest.php
-
-		-
-			message: "#^Parameter \\#1 \\$input of method OTPHP\\\\TOTP\\:\\:at\\(\\) expects int\\<0, max\\>, int\\<\\-30, max\\> given\\.$#"
-			count: 1
-			path: api/tests/unit/validators/TotpValidatorTest.php
-
-		-
-			message: "#^Parameter \\#1 \\$input of method OTPHP\\\\TOTP\\:\\:at\\(\\) expects int\\<0, max\\>, int\\<\\-399, max\\> given\\.$#"
-			count: 1
-			path: api/tests/unit/validators/TotpValidatorTest.php
-
-		-
-			message: "#^Parameter \\#1 \\$input of method OTPHP\\\\TOTP\\:\\:at\\(\\) expects int\\<0, max\\>, int\\<\\-699, max\\> given\\.$#"
-			count: 1
-			path: api/tests/unit/validators/TotpValidatorTest.php
-
-		-
 			message: "#^Property api\\\\validators\\\\EmailActivationKeyValidator\\:\\:\\$expired has no type specified\\.$#"
 			count: 1
 			path: api/validators/EmailActivationKeyValidator.php
@@ -1149,31 +1079,6 @@ parameters:
 			message: "#^Property api\\\\validators\\\\PasswordRequiredValidator\\:\\:\\$user \\(string\\|yii\\\\web\\\\User\\) does not accept object\\.$#"
 			count: 1
 			path: api/validators/PasswordRequiredValidator.php
-
-		-
-			message: "#^Parameter \\#1 \\$callback of function call_user_func expects callable\\(\\)\\: mixed, \\(callable\\(\\)\\: mixed\\)\\|int\\|null given\\.$#"
-			count: 1
-			path: api/validators/TotpValidator.php
-
-		-
-			message: "#^Parameter \\#1 \\$otp of method OTPHP\\\\TOTP\\:\\:verify\\(\\) expects non\\-empty\\-string, string given\\.$#"
-			count: 1
-			path: api/validators/TotpValidator.php
-
-		-
-			message: "#^Parameter \\#1 \\$secret of static method OTPHP\\\\TOTP\\:\\:create\\(\\) expects non\\-empty\\-string\\|null, string\\|null given\\.$#"
-			count: 1
-			path: api/validators/TotpValidator.php
-
-		-
-			message: "#^Parameter \\#2 \\$timestamp of method OTPHP\\\\TOTP\\:\\:verify\\(\\) expects int\\<0, max\\>\\|null, int\\|null given\\.$#"
-			count: 1
-			path: api/validators/TotpValidator.php
-
-		-
-			message: "#^Parameter \\#3 \\$leeway of method OTPHP\\\\TOTP\\:\\:verify\\(\\) expects int\\<0, max\\>\\|null, int given\\.$#"
-			count: 1
-			path: api/validators/TotpValidator.php
 
 		-
 			message: "#^Method common\\\\components\\\\EmailsRenderer\\\\Request\\\\TemplateRequest\\:\\:__construct\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
@@ -1284,11 +1189,6 @@ parameters:
 			message: "#^Property common\\\\models\\\\Account\\:\\:\\$registration_ip \\(string\\|null\\) does not accept string\\|false\\|null\\.$#"
 			count: 1
 			path: common/models/Account.php
-
-		-
-			message: "#^Class common\\\\models\\\\AccountQuery extends generic class yii\\\\db\\\\ActiveQuery but does not specify its types\\: T$#"
-			count: 1
-			path: common/models/AccountQuery.php
 
 		-
 			message: "#^Method common\\\\models\\\\AccountSession\\:\\:getAccount\\(\\) return type with generic class yii\\\\db\\\\ActiveQuery does not specify its types\\: T$#"

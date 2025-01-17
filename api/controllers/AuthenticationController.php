@@ -1,18 +1,35 @@
 <?php
+declare(strict_types=1);
+
 namespace api\controllers;
 
 use api\models\authentication\ForgotPasswordForm;
 use api\models\authentication\LoginForm;
-use api\models\authentication\LogoutForm;
 use api\models\authentication\RecoverPasswordForm;
 use api\models\authentication\RefreshTokenForm;
+use common\components\Authentication\Entities\Credentials;
+use common\components\Authentication\Exceptions;
+use common\components\Authentication\Exceptions\AuthenticationException;
+use common\components\Authentication\LoginServiceInterface;
 use common\helpers\Error as E;
 use common\helpers\StringHelper;
+use DateTimeImmutable;
 use Yii;
+use yii\base\Module;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
+use yii\web\Request;
 
-class AuthenticationController extends Controller {
+final class AuthenticationController extends Controller {
+
+    public function __construct(
+        string $id,
+        Module $module,
+        private readonly LoginServiceInterface $loginService,
+        array $config = [],
+    ) {
+        parent::__construct($id, $module, $config);
+    }
 
     public function behaviors(): array {
         return ArrayHelper::merge(parent::behaviors(), [
@@ -38,7 +55,7 @@ class AuthenticationController extends Controller {
         ]);
     }
 
-    public function verbs() {
+    public function verbs(): array {
         return [
             'login' => ['POST'],
             'logout' => ['POST'],
@@ -48,30 +65,63 @@ class AuthenticationController extends Controller {
         ];
     }
 
-    public function actionLogin(): array {
-        $model = new LoginForm();
-        $model->load(Yii::$app->request->post());
-        if (($result = $model->login()) === null) {
+    public function actionLogin(Request $request): array {
+        $form = new LoginForm();
+        $form->load($request->post());
+        if (!$form->validate()) {
+            return [
+                'success' => false,
+                'errors' => $form->getFirstErrors(),
+            ];
+        }
+
+        try {
+            $loginResult = $this->loginService->loginByCredentials(new Credentials(
+                login: (string)$form->login,
+                password: (string)$form->password,
+                totp: (string)$form->totp,
+                rememberMe: (bool)$form->rememberMe,
+            ));
+        } catch (AuthenticationException $e) {
             $data = [
                 'success' => false,
-                'errors' => $model->getFirstErrors(),
+                'errors' => match ($e::class) {
+                    Exceptions\UnknownLoginException::class => ['login' => E::LOGIN_NOT_EXIST],
+                    Exceptions\InvalidPasswordException::class => ['password' => E::PASSWORD_INCORRECT],
+                    Exceptions\TotpRequiredException::class => ['totp' => E::TOTP_REQUIRED],
+                    Exceptions\InvalidTotpException::class => ['totp' => E::TOTP_INCORRECT],
+                    Exceptions\AccountBannedException::class => ['login' => E::ACCOUNT_BANNED],
+                    Exceptions\AccountNotActivatedException::class => ['login' => E::ACCOUNT_NOT_ACTIVATED],
+                    default => $e->getMessage(),
+                },
             ];
 
-            if (ArrayHelper::getValue($data['errors'], 'login') === E::ACCOUNT_NOT_ACTIVATED) {
-                $data['data']['email'] = $model->getAccount()->email;
+            if ($e instanceof Exceptions\AccountNotActivatedException) {
+                $data['data']['email'] = $e->account->email;
             }
 
             return $data;
         }
 
-        return array_merge([
+        $token = Yii::$app->tokensFactory->createForWebAccount($loginResult->account, $loginResult->session);
+        $data = [
             'success' => true,
-        ], $result->formatAsOAuth2Response());
+            'access_token' => $token->toString(),
+            'expires_in' => $token->claims()->get('exp')->getTimestamp() - (new DateTimeImmutable())->getTimestamp(),
+        ];
+
+        if ($loginResult->session) {
+            $data['refresh_token'] = $loginResult->session->refresh_token;
+        }
+
+        return $data;
     }
 
     public function actionLogout(): array {
-        $form = new LogoutForm();
-        $form->logout();
+        $session = Yii::$app->user->getActiveSession();
+        if ($session) {
+            $this->loginService->logout($session);
+        }
 
         return [
             'success' => true,

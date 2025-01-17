@@ -27,6 +27,7 @@ return [
                 ],
             ],
             League\OAuth2\Server\AuthorizationServer::class => common\components\OAuth2\AuthorizationServerFactory::build(...),
+            common\components\Authentication\LoginServiceInterface::class => common\components\Authentication\LoginService::class,
         ],
     ],
     'components' => [

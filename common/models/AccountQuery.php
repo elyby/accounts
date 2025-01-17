@@ -6,7 +6,7 @@ namespace common\models;
 use yii\db\ActiveQuery;
 
 /**
- * @see Account
+ * @extends \yii\db\ActiveQuery<\common\models\Account>
  */
 class AccountQuery extends ActiveQuery {
 

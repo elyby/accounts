@@ -1,15 +1,17 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\unit\validators;
 
 use api\tests\unit\TestCase;
 use api\validators\TotpValidator;
+use Carbon\CarbonImmutable;
 use common\helpers\Error as E;
 use common\models\Account;
-use common\tests\_support\ProtectedCaller;
+use Lcobucci\Clock\FrozenClock;
 use OTPHP\TOTP;
 
-class TotpValidatorTest extends TestCase {
-    use ProtectedCaller;
+final class TotpValidatorTest extends TestCase {
 
     public function testValidateValue(): void {
         $account = new Account();
@@ -18,32 +20,25 @@ class TotpValidatorTest extends TestCase {
 
         $validator = new TotpValidator(['account' => $account]);
 
-        $result = $this->callProtected($validator, 'validateValue', 123456);
-        $this->assertSame([E::TOTP_INCORRECT, []], $result);
+        $this->assertFalse($validator->validate(123456, $error));
+        $this->assertSame(E::TOTP_INCORRECT, $error);
 
-        $result = $this->callProtected($validator, 'validateValue', $controlTotp->now());
-        $this->assertNull($result);
+        $error = null;
 
-        $result = $this->callProtected($validator, 'validateValue', $controlTotp->at(time() - 31));
-        $this->assertNull($result);
+        $this->assertTrue($validator->validate($controlTotp->now(), $error));
+        $this->assertNull($error);
 
-        $at = time() - 400;
-        $validator->timestamp = $at;
-        $result = $this->callProtected($validator, 'validateValue', $controlTotp->now());
-        $this->assertSame([E::TOTP_INCORRECT, []], $result);
+        $error = null;
 
-        $result = $this->callProtected($validator, 'validateValue', $controlTotp->at($at));
-        $this->assertNull($result);
+        // @phpstan-ignore argument.type
+        $this->assertTrue($validator->validate($controlTotp->at(time() - 31), $error));
+        $this->assertNull($error);
 
-        $at = fn(): ?int => null;
-        $validator->timestamp = $at;
-        $result = $this->callProtected($validator, 'validateValue', $controlTotp->now());
-        $this->assertNull($result);
+        $error = null;
 
-        $at = fn(): int => time() - 700;
-        $validator->timestamp = $at;
-        $result = $this->callProtected($validator, 'validateValue', $controlTotp->at($at()));
-        $this->assertNull($result);
+        $validator->setClock(new FrozenClock(CarbonImmutable::now()->subSeconds(400)));
+        $this->assertFalse($validator->validate($controlTotp->now(), $error));
+        $this->assertSame(E::TOTP_INCORRECT, $error);
     }
 
 }

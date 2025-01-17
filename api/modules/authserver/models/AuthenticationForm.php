@@ -3,43 +3,40 @@ declare(strict_types=1);
 
 namespace api\modules\authserver\models;
 
-use api\models\authentication\LoginForm;
+use api\components\Tokens\TokensFactory;
 use api\models\base\ApiForm;
 use api\modules\authserver\exceptions\ForbiddenOperationException;
 use api\modules\authserver\Module as Authserver;
 use api\modules\authserver\validators\ClientTokenValidator;
 use api\modules\authserver\validators\RequiredValidator;
 use api\rbac\Permissions as P;
-use common\helpers\Error as E;
+use common\components\Authentication\Entities\Credentials;
+use common\components\Authentication\Exceptions;
+use common\components\Authentication\Exceptions\AuthenticationException;
+use common\components\Authentication\LoginServiceInterface;
 use common\models\Account;
 use common\models\OauthClient;
 use common\models\OauthSession;
 use Ramsey\Uuid\Uuid;
 use Webmozart\Assert\Assert;
-use Yii;
-use yii\db\Exception;
 
-class AuthenticationForm extends ApiForm {
+final class AuthenticationForm extends ApiForm {
 
-    /**
-     * @var string
-     */
-    public $username;
+    public mixed $username = null;
 
-    /**
-     * @var string
-     */
-    public $password;
+    public mixed $password = null;
 
-    /**
-     * @var string
-     */
-    public $clientToken;
+    public mixed $clientToken = null;
 
-    /**
-     * @var string|bool
-     */
-    public $requestUser;
+    public mixed $requestUser = null;
+
+    public function __construct(
+        private readonly LoginServiceInterface $loginService,
+        private readonly TokensFactory $tokensFactory,
+        array $config = [],
+    ) {
+        parent::__construct($config);
+    }
 
     public function rules(): array {
         return [
@@ -50,9 +47,7 @@ class AuthenticationForm extends ApiForm {
     }
 
     /**
-     * @return AuthenticateData
      * @throws ForbiddenOperationException
-     * @throws Exception
      */
     public function authenticate(): AuthenticateData {
         // This validating method will throw an exception in case when validation will not pass successfully
@@ -60,11 +55,7 @@ class AuthenticationForm extends ApiForm {
 
         Authserver::info("Trying to authenticate user by login = '{$this->username}'.");
 
-        // The previous authorization server implementation used the nickname field instead of username,
-        // so we keep such behavior
-        $attribute = !str_contains($this->username, '@') ? 'nickname' : 'email';
-
-        $password = $this->password;
+        $password = (string)$this->password;
         $totp = null;
         if (preg_match('/.{8,}:(\d{6})$/', $password, $matches) === 1) {
             $totp = $matches[1];
@@ -73,47 +64,32 @@ class AuthenticationForm extends ApiForm {
 
         login:
 
-        $loginForm = new LoginForm();
-        $loginForm->login = $this->username;
-        $loginForm->password = $password;
-        $loginForm->totp = $totp;
+        $credentials = new Credentials(
+            login: (string)$this->username,
+            password: $password,
+            totp: $totp,
+        );
 
-        $isValid = $loginForm->validate();
-        // Handle case when user's password matches the template for totp via password
-        if (!$isValid && $totp !== null && $loginForm->getFirstError('password') === E::PASSWORD_INCORRECT) {
-            $password = "{$password}:{$totp}";
-            $totp = null;
-
-            goto login;
-        }
-
-        if (!$isValid || $loginForm->getAccount()->status === Account::STATUS_DELETED) {
-            $errors = $loginForm->getFirstErrors();
-            if (isset($errors['login'])) {
-                if ($errors['login'] === E::ACCOUNT_BANNED) {
-                    Authserver::error("User with login = '{$this->username}' is banned");
-                    throw new ForbiddenOperationException('This account has been suspended.');
-                }
-
-                Authserver::error("Cannot find user by login = '{$this->username}'");
-            } elseif (isset($errors['password'])) {
-                Authserver::error("User with login = '{$this->username}' passed wrong password.");
-            } elseif (isset($errors['totp'])) {
-                if ($errors['totp'] === E::TOTP_REQUIRED) {
-                    Authserver::error("User with login = '{$this->username}' protected by two factor auth.");
-                    throw new ForbiddenOperationException('Account protected with two factor auth.');
-                }
-
-                Authserver::error("User with login = '{$this->username}' passed wrong totp token");
+        try {
+            $result = $this->loginService->loginByCredentials($credentials);
+        } catch (Exceptions\InvalidPasswordException $e) {
+            if ($totp !== null) {
+                $password = $this->password;
+                goto login;
             }
 
-            throw new ForbiddenOperationException("Invalid credentials. Invalid {$attribute} or password.");
+            $this->convertAuthenticationException($e);
+        } catch (AuthenticationException $e) {
+            $this->convertAuthenticationException($e);
         }
 
-        /** @var Account $account */
-        $account = $loginForm->getAccount();
+        $account = $result->account;
+        if ($account->status === Account::STATUS_DELETED) {
+            throw new ForbiddenOperationException('Invalid credentials. Invalid username or password.');
+        }
+
         $clientToken = $this->clientToken ?: Uuid::uuid4()->toString();
-        $token = Yii::$app->tokensFactory->createForMinecraftAccount($account, $clientToken);
+        $token = $this->tokensFactory->createForMinecraftAccount($account, $clientToken);
         $dataModel = new AuthenticateData($account, $token->toString(), $clientToken, (bool)$this->requestUser);
         /** @var OauthSession|null $minecraftOauthSession */
         $minecraftOauthSession = $account->getOauthSessions()
@@ -132,6 +108,17 @@ class AuthenticationForm extends ApiForm {
         Authserver::info("User with id = {$account->id}, username = '{$account->username}' and email = '{$account->email}' successfully logged in.");
 
         return $dataModel;
+    }
+
+    /**
+     * @throws \api\modules\authserver\exceptions\ForbiddenOperationException
+     */
+    private function convertAuthenticationException(AuthenticationException $e): never {
+        throw match ($e::class) {
+            Exceptions\AccountBannedException::class => new ForbiddenOperationException('This account has been suspended.'),
+            Exceptions\TotpRequiredException::class => new ForbiddenOperationException('Account protected with two factor auth.'),
+            default => new ForbiddenOperationException('Invalid credentials. Invalid username or password.'),
+        };
     }
 
 }

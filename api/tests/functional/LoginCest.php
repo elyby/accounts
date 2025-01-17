@@ -8,7 +8,7 @@ use api\tests\FunctionalTester;
 use OTPHP\TOTP;
 
 // TODO: very outdated tests. Need to rewrite
-class LoginCest {
+final class LoginCest {
 
     public function testLoginEmailOrUsername(FunctionalTester $I): void {
         $route = new AuthenticationRoute($I);

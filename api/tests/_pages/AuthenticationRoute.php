@@ -1,14 +1,10 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\_pages;
 
-class AuthenticationRoute extends BasePage {
+final class AuthenticationRoute extends BasePage {
 
-    /**
-     * @param string $login
-     * @param string $password
-     * @param bool|string|null $rememberMeOrToken
-     * @param bool $rememberMe
-     */
     public function login(string $login = '', string $password = '', bool|string|null $rememberMeOrToken = null, bool $rememberMe = false): void {
         $params = [
             'login' => $login,

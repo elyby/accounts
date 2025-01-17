@@ -9,7 +9,6 @@ use Carbon\Carbon;
 use common\models\Account;
 use common\models\AccountSession;
 use DateTime;
-use Lcobucci\JWT\Token;
 use Lcobucci\JWT\UnencryptedToken;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;

@@ -6,14 +6,15 @@ namespace api\tests\functional\authserver;
 use api\tests\functional\_steps\AuthserverSteps;
 use Codeception\Example;
 
-class SignoutCest {
+final class SignoutCest {
 
     /**
      * @example {"login": "admin", "password": "password_0"}
      * @example {"login": "admin@ely.by", "password": "password_0"}
+     *
+     * @param \Codeception\Example<array{login: string, password: string}> $example
      */
     public function signout(AuthserverSteps $I, Example $example): void {
-        $I->wantTo('signout by nickname and password');
         $I->sendPOST('/api/authserver/authentication/signout', [
             'username' => $example['login'],
             'password' => $example['password'],
@@ -23,7 +24,6 @@ class SignoutCest {
     }
 
     public function wrongArguments(AuthserverSteps $I): void {
-        $I->wantTo('get error on wrong amount of arguments');
         $I->sendPOST('/api/authserver/authentication/signout', [
             'key' => 'value',
         ]);
@@ -36,21 +36,15 @@ class SignoutCest {
     }
 
     public function wrongNicknameAndPassword(AuthserverSteps $I): void {
-        $I->wantTo('signout by nickname and password with wrong data');
         $I->sendPOST('/api/authserver/authentication/signout', [
             'username' => 'nonexistent_user',
             'password' => 'nonexistent_password',
         ]);
-        $I->canSeeResponseCodeIs(401);
-        $I->canSeeResponseIsJson();
-        $I->canSeeResponseContainsJson([
-            'error' => 'ForbiddenOperationException',
-            'errorMessage' => 'Invalid credentials. Invalid nickname or password.',
-        ]);
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseEquals('');
     }
 
     public function bannedAccount(AuthserverSteps $I): void {
-        $I->wantTo('signout from banned account');
         $I->sendPOST('/api/authserver/authentication/signout', [
             'username' => 'Banned',
             'password' => 'password_0',

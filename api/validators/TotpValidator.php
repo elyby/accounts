@@ -1,49 +1,52 @@
 <?php
+declare(strict_types=1);
+
 namespace api\validators;
 
+use Carbon\FactoryImmutable;
 use common\helpers\Error as E;
 use common\models\Account;
 use OTPHP\TOTP;
+use Psr\Clock\ClockInterface;
 use RangeException;
-use Yii;
 use yii\base\InvalidConfigException;
 use yii\validators\Validator;
 
-class TotpValidator extends Validator {
+final class TotpValidator extends Validator {
 
     public ?Account $account = null;
 
-    /**
-     * @var int|callable|null Allows you to set the exact time against which the validation will be performed.
-     * It may be the unix time or a function returning a unix time.
-     * If not specified, the current time will be used.
-     */
-    public mixed $timestamp = null;
-
     public $skipOnEmpty = false;
+
+    private ClockInterface $clock;
 
     /**
      * @throws InvalidConfigException
      */
     public function init(): void {
         parent::init();
-        if ($this->account === null) {
-            $this->account = Yii::$app->user->identity;
-        }
 
         if (!$this->account instanceof Account) {
-            throw new InvalidConfigException('account should be instance of ' . Account::class);
+            throw new InvalidConfigException('This validator must be instantiated with the account param');
         }
 
         if (empty($this->account->otp_secret)) {
             throw new InvalidConfigException('account should have not empty otp_secret');
         }
+
+        $this->clock = FactoryImmutable::getDefaultInstance();
+    }
+
+    public function setClock(ClockInterface $clock): void {
+        $this->clock = $clock;
     }
 
     protected function validateValue($value): ?array {
         try {
+            // @phpstan-ignore argument.type (it is non empty, its checked in the init method)
             $totp = TOTP::create($this->account->otp_secret);
-            if (!$totp->verify((string)$value, $this->getTimestamp(), $totp->getPeriod() - 1)) {
+            // @phpstan-ignore argument.type,argument.type,argument.type (all types are fine, they're just not declared well)
+            if (!$totp->verify((string)$value, $this->clock->now()->getTimestamp(), $totp->getPeriod() - 1)) {
                 return [E::TOTP_INCORRECT, []];
             }
         } catch (RangeException) {
@@ -51,19 +54,6 @@ class TotpValidator extends Validator {
         }
 
         return null;
-    }
-
-    private function getTimestamp(): ?int {
-        $timestamp = $this->timestamp;
-        if (is_callable($timestamp)) {
-            $timestamp = call_user_func($this->timestamp);
-        }
-
-        if ($timestamp === null) {
-            return null;
-        }
-
-        return (int)$timestamp;
     }
 
 }

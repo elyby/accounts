@@ -7,7 +7,7 @@ use api\controllers\Controller;
 use api\modules\authserver\models;
 use Yii;
 
-class AuthenticationController extends Controller {
+final class AuthenticationController extends Controller {
 
     public function behaviors(): array {
         $behaviors = parent::behaviors();
@@ -27,12 +27,11 @@ class AuthenticationController extends Controller {
     }
 
     /**
-     * @return array
      * @throws \api\modules\authserver\exceptions\ForbiddenOperationException
-     * @throws \api\modules\authserver\exceptions\IllegalArgumentException
      */
     public function actionAuthenticate(): array {
-        $model = new models\AuthenticationForm();
+        /** @var \api\modules\authserver\models\AuthenticationForm $model */
+        $model = Yii::createObject(models\AuthenticationForm::class);
         $model->load(Yii::$app->request->post());
 
         return $model->authenticate()->getResponseData(true);
@@ -62,10 +61,6 @@ class AuthenticationController extends Controller {
         // In case of an error, an exception is thrown which will be processed by ErrorHandler
     }
 
-    /**
-     * @throws \api\modules\authserver\exceptions\ForbiddenOperationException
-     * @throws \api\modules\authserver\exceptions\IllegalArgumentException
-     */
     public function actionSignout(): void {
         $model = new models\SignoutForm();
         $model->load(Yii::$app->request->post());

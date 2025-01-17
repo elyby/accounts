@@ -156,7 +156,7 @@ class AuthorizationCest {
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
             'error' => 'ForbiddenOperationException',
-            'errorMessage' => 'Invalid credentials. Invalid nickname or password.',
+            'errorMessage' => 'Invalid credentials. Invalid username or password.',
         ]);
     }
 
@@ -170,7 +170,7 @@ class AuthorizationCest {
         $I->canSeeResponseCodeIs(401);
         $I->canSeeResponseContainsJson([
             'error' => 'ForbiddenOperationException',
-            'errorMessage' => 'Invalid credentials. Invalid nickname or password.',
+            'errorMessage' => 'Invalid credentials. Invalid username or password.',
         ]);
     }
 
