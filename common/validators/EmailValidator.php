@@ -66,9 +66,16 @@ final class EmailValidator extends Validator {
             }
         };
 
-        $idnaDomain = new validators\FilterValidator(['filter' => function(string $value): string {
+        $idnaDomain = new validators\FilterValidator(['filter' => function(string $value) use ($model, $attribute): string {
             [$name, $domain] = explode('@', $value);
-            return idn_to_ascii($name) . '@' . idn_to_ascii($domain);
+            $idnName = idn_to_ascii($name);
+            $idnDomain = idn_to_ascii($domain);
+            if ($idnName === false || $idnDomain === false) {
+                $this->addError($model, $attribute, E::EMAIL_INVALID);
+                return '';
+            }
+
+            return "{$idnName}@{$idnDomain}";
         }]);
 
         $unique = new validators\UniqueValidator();
