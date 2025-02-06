@@ -27,7 +27,7 @@ class ApiController extends Controller {
         ]);
     }
 
-    public function actionUuidByUsername(string $username, int $at = null) {
+    public function actionUuidByUsername(string $username, int $at = null): Response|array {
         if ($at !== null) {
             /** @var UsernameHistory|null $record */
             $record = UsernameHistory::find()
@@ -52,7 +52,7 @@ class ApiController extends Controller {
         }
 
         if ($account === null || $account->status === Account::STATUS_DELETED) {
-            return $this->noContentResponse();
+            return $this->contentNotFound("Couldn't find any profile with name {$username}");
         }
 
         return [
@@ -61,16 +61,49 @@ class ApiController extends Controller {
         ];
     }
 
-    public function actionUsernamesByUuid(string $uuid) {
+    public function actionUsernameByUuid(string $uuid): Response|array {
         try {
             $uuid = Uuid::fromString($uuid)->toString();
         } catch (\InvalidArgumentException) {
-            return $this->illegalArgumentResponse('Invalid uuid format.');
+            return $this->constraintViolation("Invalid UUID string: {$uuid}");
+        }
+
+        /** @var Account|null $account */
+        $account = Account::findOne(['uuid' => $uuid]);
+
+        if ($account === null || $account->status === Account::STATUS_DELETED) {
+            return $this->contentNotFound();
+        }
+
+        return [
+            'id' => str_replace('-', '', $account->uuid),
+            'name' => $account->username,
+        ];
+    }
+
+    public function actionUsernamesByUuid(string $uuid): Response|array {
+        try {
+            $uuid = Uuid::fromString($uuid)->toString();
+        } catch (\InvalidArgumentException) {
+            $response = Yii::$app->getResponse();
+            $response->setStatusCode(400);
+            $response->format = Response::FORMAT_JSON;
+            $response->data = [
+                'error' => 'IllegalArgumentException',
+                'errorMessage' => 'Invalid uuid format.',
+            ];
+
+            return $response;
         }
 
         $account = Account::find()->excludeDeleted()->andWhere(['uuid' => $uuid])->one();
         if ($account === null) {
-            return $this->noContentResponse();
+            $response = Yii::$app->getResponse();
+            $response->setStatusCode(204);
+            $response->format = Response::FORMAT_RAW;
+            $response->content = '';
+
+            return $response;
         }
 
         /** @var UsernameHistory[] $usernameHistory */
@@ -93,20 +126,20 @@ class ApiController extends Controller {
         return $data;
     }
 
-    public function actionUuidsByUsernames() {
+    public function actionUuidsByUsernames(): Response|array {
         $usernames = Yii::$app->request->post();
         if (empty($usernames)) {
-            return $this->illegalArgumentResponse('Passed array of profile names is an invalid JSON string.');
+            return $this->constraintViolation('size must be between 1 and 100');
         }
 
         $usernames = array_unique($usernames);
         if (count($usernames) > 100) {
-            return $this->illegalArgumentResponse('Not more that 100 profile name per call is allowed.');
+            return $this->constraintViolation('size must be between 1 and 100');
         }
 
         foreach ($usernames as $username) {
             if (empty($username) || is_array($username)) {
-                return $this->illegalArgumentResponse('profileName can not be null, empty or array key.');
+                return $this->constraintViolation('Invalid profile name');
             }
         }
 
@@ -129,21 +162,33 @@ class ApiController extends Controller {
         return $responseData;
     }
 
-    private function noContentResponse() {
+    private function contentNotFound(string|null $errorMessage = null): Response {
         $response = Yii::$app->getResponse();
-        $response->setStatusCode(204);
-        $response->format = Response::FORMAT_RAW;
-        $response->content = '';
+        $response->setStatusCode(404);
+        $response->format = Response::FORMAT_JSON;
+        if ($errorMessage === null) {
+            $response->data = [
+                'path' => Yii::$app->getRequest()->url,
+                'error' => 'NOT_FOUND',
+                'errorMessage' => 'Not Found',
+            ];
+        } else {
+            $response->data = [
+                'path' => Yii::$app->getRequest()->url,
+                'errorMessage' => $errorMessage,
+            ];
+        }
 
         return $response;
     }
 
-    private function illegalArgumentResponse(string $errorMessage) {
+    private function constraintViolation(string $errorMessage): Response {
         $response = Yii::$app->getResponse();
         $response->setStatusCode(400);
         $response->format = Response::FORMAT_JSON;
         $response->data = [
-            'error' => 'IllegalArgumentException',
+            'path' => Yii::$app->getRequest()->url,
+            'error' => 'CONSTRAINT_VIOLATION',
             'errorMessage' => $errorMessage,
         ];
 

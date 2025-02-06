@@ -4,18 +4,16 @@ namespace api\tests\functional\mojang;
 use api\tests\FunctionalTester;
 use Codeception\Example;
 
-final class UsernameToUuidCest {
+class UsernameToUuidCest {
 
-    /**
-     * @return iterable<array{string}>
-     */
-    public static function endpoints(): iterable {
-        yield ['/api/mojang/profiles'];
-        yield ['/api/mojang/services/minecraft/profile/lookup/name'];
+    public static function endpoints(): array {
+        return [
+            ['/api/mojang/profiles'],
+            ['/api/mojang/services/minecraft/profile/lookup/name'],
+        ];
     }
 
     /**
-     * @param Example<array{string}> $url
      * @dataProvider endpoints
      */
     public function getUuidByUsername(FunctionalTester $I, Example $url): void {
@@ -30,7 +28,6 @@ final class UsernameToUuidCest {
     }
 
     /**
-     * @param Example<array{string}> $url
      * @dataProvider endpoints
      */
     public function getUuidByUsernameAtMoment(FunctionalTester $I, Example $url): void {
@@ -45,57 +42,77 @@ final class UsernameToUuidCest {
     }
 
     /**
-     * @param Example<array{string}> $url
      * @dataProvider endpoints
      */
     public function getUuidByUsernameAtWrongMoment(FunctionalTester $I, Example $url): void {
         $I->wantTo('get 204 if passed once used, but changed username at moment, when it was changed');
         $I->sendGET("{$url[0]}/klik201", ['at' => 1474404144]);
-        $I->canSeeResponseCodeIs(204);
-        $I->canSeeResponseEquals('');
+        $I->canSeeResponseCodeIs(404);
+        $I->canSeeResponseIsJson();
+        $I->canSeeResponseContainsJson([
+            'path' => "{$url[0]}/klik201?at=1474404144",
+            'errorMessage' => "Couldn't find any profile with name klik201",
+        ]);
     }
 
     /**
-     * @param Example<array{string}> $url
      * @dataProvider endpoints
      */
     public function getUuidByUsernameWithoutMoment(FunctionalTester $I, Example $url): void {
         $I->wantTo('get 204 if username not busy and not passed valid time mark, when it was busy');
         $I->sendGET("{$url[0]}/klik201");
-        $I->canSeeResponseCodeIs(204);
-        $I->canSeeResponseEquals('');
+        $I->canSeeResponseCodeIs(404);
+        $I->canSeeResponseIsJson();
+        $I->canSeeResponseContainsJson([
+            'path' => "{$url[0]}/klik201",
+            'errorMessage' => "Couldn't find any profile with name klik201",
+        ]);
     }
 
     /**
-     * @param Example<array{string}> $url
      * @dataProvider endpoints
      */
     public function getUuidByWrongUsername(FunctionalTester $I, Example $url): void {
         $I->wantTo('get user uuid by some wrong username');
         $I->sendGET("{$url[0]}/not-exists-user");
-        $I->canSeeResponseCodeIs(204);
-        $I->canSeeResponseEquals('');
+        $I->canSeeResponseCodeIs(404);
+        $I->canSeeResponseIsJson();
+        $I->canSeeResponseContainsJson([
+            'path' => "{$url[0]}/not-exists-user",
+            'errorMessage' => "Couldn't find any profile with name not-exists-user",
+        ]);
     }
 
     /**
-     * @param Example<array{string}> $url
      * @dataProvider endpoints
      */
     public function getUuidForDeletedAccount(FunctionalTester $I, Example $url): void {
         $I->wantTo('get uuid for account that marked for deleting');
         $I->sendGET("{$url[0]}/DeletedAccount");
-        $I->canSeeResponseCodeIs(204);
-        $I->canSeeResponseEquals('');
+        $I->canSeeResponseCodeIs(404);
+        $I->canSeeResponseIsJson();
+        $I->canSeeResponseContainsJson([
+            'path' => "{$url[0]}/DeletedAccount",
+            'errorMessage' => "Couldn't find any profile with name DeletedAccount",
+        ]);
     }
 
-    /**
-     * @param Example<array{string}> $url
-     * @dataProvider endpoints
-     */
-    public function nonPassedUsername(FunctionalTester $I, Example $url): void {
-        $I->wantTo('get 404 on not passed username');
-        $I->sendGET($url[0]);
+    public function legacyNonPassedUsername(FunctionalTester $I): void {
+        $I->wantTo('get 404 if no username is passed on old endpoint');
+        $I->sendGET('/api/mojang/profiles');
         $I->canSeeResponseCodeIs(404);
+    }
+
+    public function nonPassedUsername(FunctionalTester $I): void {
+        $I->wantTo('get UUID error if no username is passed on new endpoint');
+        $I->sendGET('/api/mojang/services/minecraft/profile/lookup/name');
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseIsJson();
+        $I->canSeeResponseContainsJson([
+            'path' => '/api/mojang/services/minecraft/profile/lookup/name',
+            'error' => 'CONSTRAINT_VIOLATION',
+            'errorMessage' => "Invalid UUID string: name",
+        ]);
     }
 
 }

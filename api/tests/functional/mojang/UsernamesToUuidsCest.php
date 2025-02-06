@@ -1,5 +1,5 @@
 <?php
-namespace api\tests\functional\authserver;
+namespace api\tests\functional\mojang;
 
 use api\tests\FunctionalTester;
 use Codeception\Example;
@@ -85,8 +85,9 @@ class UsernamesToUuidsCest {
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
-            'error' => 'IllegalArgumentException',
-            'errorMessage' => 'Not more that 100 profile name per call is allowed.',
+            'path' => $case[0],
+            'error' => 'CONSTRAINT_VIOLATION',
+            'errorMessage' => 'size must be between 1 and 100',
         ]);
     }
 
@@ -99,8 +100,9 @@ class UsernamesToUuidsCest {
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
-            'error' => 'IllegalArgumentException',
-            'errorMessage' => 'profileName can not be null, empty or array key.',
+            'path' => $case[0],
+            'error' => 'CONSTRAINT_VIOLATION',
+            'errorMessage' => 'Invalid profile name',
         ]);
     }
 
@@ -113,8 +115,9 @@ class UsernamesToUuidsCest {
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
-            'error' => 'IllegalArgumentException',
-            'errorMessage' => 'Passed array of profile names is an invalid JSON string.',
+            'path' => $case[0],
+            'error' => 'CONSTRAINT_VIOLATION',
+            'errorMessage' => 'size must be between 1 and 100',
         ]);
     }
 
