@@ -112,7 +112,7 @@ final class MinecraftProfilesCest {
     public function bulkProfilesEndpoints(): array {
         return [
             ['/api/authlib-injector/api/profiles/minecraft'],
-            ['/api/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname'],
+            ['/api/authlib-injector/minecraftservices/minecraft/profile/lookup/bulk/byname'],
         ];
     }
 
