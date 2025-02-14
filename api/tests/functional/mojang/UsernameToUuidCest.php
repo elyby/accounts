@@ -111,7 +111,7 @@ class UsernameToUuidCest {
         $I->canSeeResponseContainsJson([
             'path' => '/api/mojang/services/minecraft/profile/lookup/name',
             'error' => 'CONSTRAINT_VIOLATION',
-            'errorMessage' => "Invalid UUID string: name",
+            'errorMessage' => 'Invalid UUID string: name',
         ]);
     }
 
