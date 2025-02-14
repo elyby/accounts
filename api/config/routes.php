@@ -48,6 +48,7 @@ return [
     'POST /mojang/profiles' => 'mojang/api/uuids-by-usernames',
     'GET /mojang/services/minecraft/profile' => 'mojang/services/profile',
     'POST /mojang/services/minecraft/profile/lookup/bulk/byname' => 'mojang/api/uuids-by-usernames',
+    'GET /mojang/services/minecraft/profile/lookup/name/<username>' => 'mojang/api/uuid-by-username',
 
     // authlib-injector
     '/authlib-injector/authserver/<action>' => 'authserver/authentication/<action>',
@@ -56,4 +57,5 @@ return [
     '/authlib-injector/sessionserver/session/minecraft/profile/<uuid>' => 'session/session/profile',
     '/authlib-injector/api/profiles/minecraft' => 'mojang/api/uuids-by-usernames',
     '/authlib-injector/sessionserver/session/minecraft/profile/lookup/bulk/byname' => 'mojang/api/uuids-by-usernames',
+    '/authlib-injector/minecraftservices/minecraft/profile/lookup/name/<username>' => 'mojang/api/uuid-by-username',
 ];
