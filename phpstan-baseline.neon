@@ -646,16 +646,6 @@ parameters:
 			path: api/tests/_pages/AuthenticationRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\MojangApiRoute\\:\\:usernameToUuid\\(\\) has parameter \\$at with no type specified\\.$#"
-			count: 1
-			path: api/tests/_pages/MojangApiRoute.php
-
-		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\MojangApiRoute\\:\\:usernameToUuid\\(\\) has parameter \\$username with no type specified\\.$#"
-			count: 1
-			path: api/tests/_pages/MojangApiRoute.php
-
-		-
 			message: "#^Method api\\\\tests\\\\_pages\\\\MojangApiRoute\\:\\:usernamesByUuid\\(\\) has parameter \\$uuid with no type specified\\.$#"
 			count: 1
 			path: api/tests/_pages/MojangApiRoute.php
