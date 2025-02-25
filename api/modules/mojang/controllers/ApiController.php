@@ -27,7 +27,7 @@ class ApiController extends Controller {
         ]);
     }
 
-    public function actionUuidByUsername(string $username, int $at = null): Response|array {
+    public function actionUuidByUsername(string $username, int $at = null): array {
         if ($at !== null) {
             /** @var UsernameHistory|null $record */
             $record = UsernameHistory::find()
@@ -61,39 +61,17 @@ class ApiController extends Controller {
         ];
     }
 
-    public function actionUsernameByUuid(string $uuid): Response|array {
-        try {
-            $uuid = Uuid::fromString($uuid)->toString();
-        } catch (\InvalidArgumentException) {
-            return $this->constraintViolation("Invalid UUID string: {$uuid}");
-        }
-
-        /** @var Account|null $account */
-        $account = Account::findOne(['uuid' => $uuid]);
-
-        if ($account === null || $account->status === Account::STATUS_DELETED) {
-            return $this->contentNotFound();
-        }
-
-        return [
-            'id' => str_replace('-', '', $account->uuid),
-            'name' => $account->username,
-        ];
-    }
-
-    public function actionUsernamesByUuid(string $uuid): Response|array {
+    public function actionUsernamesByUuid(string $uuid): ?array {
         try {
             $uuid = Uuid::fromString($uuid)->toString();
         } catch (\InvalidArgumentException) {
             $response = Yii::$app->getResponse();
             $response->setStatusCode(400);
             $response->format = Response::FORMAT_JSON;
-            $response->data = [
+            return [
                 'error' => 'IllegalArgumentException',
                 'errorMessage' => 'Invalid uuid format.',
             ];
-
-            return $response;
         }
 
         $account = Account::find()->excludeDeleted()->andWhere(['uuid' => $uuid])->one();
@@ -101,9 +79,8 @@ class ApiController extends Controller {
             $response = Yii::$app->getResponse();
             $response->setStatusCode(204);
             $response->format = Response::FORMAT_RAW;
-            $response->content = '';
 
-            return $response;
+            return null;
         }
 
         /** @var UsernameHistory[] $usernameHistory */
@@ -126,7 +103,27 @@ class ApiController extends Controller {
         return $data;
     }
 
-    public function actionUuidsByUsernames(): Response|array {
+    public function actionUsernameByUuid(string $uuid): array {
+        try {
+            $uuid = Uuid::fromString($uuid)->toString();
+        } catch (\InvalidArgumentException) {
+            return $this->constraintViolation("Invalid UUID string: {$uuid}");
+        }
+
+        /** @var Account|null $account */
+        $account = Account::findOne(['uuid' => $uuid]);
+
+        if ($account === null || $account->status === Account::STATUS_DELETED) {
+            return $this->contentNotFound();
+        }
+
+        return [
+            'id' => str_replace('-', '', $account->uuid),
+            'name' => $account->username,
+        ];
+    }
+
+    public function actionUuidsByUsernames(): array {
         $usernames = Yii::$app->request->post();
         if (empty($usernames)) {
             return $this->constraintViolation('size must be between 1 and 100');
@@ -162,37 +159,33 @@ class ApiController extends Controller {
         return $responseData;
     }
 
-    private function contentNotFound(string|null $errorMessage = null): Response {
+    private function contentNotFound(?string $errorMessage = null): array {
         $response = Yii::$app->getResponse();
         $response->setStatusCode(404);
         $response->format = Response::FORMAT_JSON;
         if ($errorMessage === null) {
-            $response->data = [
+            return [
                 'path' => Yii::$app->getRequest()->url,
                 'error' => 'NOT_FOUND',
                 'errorMessage' => 'Not Found',
             ];
-        } else {
-            $response->data = [
-                'path' => Yii::$app->getRequest()->url,
-                'errorMessage' => $errorMessage,
-            ];
         }
 
-        return $response;
+        return [
+            'path' => Yii::$app->getRequest()->url,
+            'errorMessage' => $errorMessage,
+        ];
     }
 
-    private function constraintViolation(string $errorMessage): Response {
+    private function constraintViolation(string $errorMessage): array {
         $response = Yii::$app->getResponse();
         $response->setStatusCode(400);
         $response->format = Response::FORMAT_JSON;
-        $response->data = [
+        return [
             'path' => Yii::$app->getRequest()->url,
             'error' => 'CONSTRAINT_VIOLATION',
             'errorMessage' => $errorMessage,
         ];
-
-        return $response;
     }
 
 }

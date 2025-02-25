@@ -1,12 +1,13 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\functional\mojang;
 
 use api\tests\FunctionalTester;
 
-class UuidToUsernameCest {
+final class UuidToUsernameCest {
 
     public function getUsernameByUuid(FunctionalTester $I): void {
-        $I->wantTo('get username by uuid');
         $I->sendGET('/api/mojang/services/minecraft/profile/lookup/df936908b2e1544d96f82977ec213022');
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
@@ -17,7 +18,6 @@ class UuidToUsernameCest {
     }
 
     public function getUsernameByInvalidUuid(FunctionalTester $I): void {
-        $I->wantTo('get username by invalid uuid');
         $I->sendGET('/api/mojang/services/minecraft/profile/lookup/123ABC');
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();
@@ -29,7 +29,6 @@ class UuidToUsernameCest {
     }
 
     public function getUsernameByWrongUuid(FunctionalTester $I): void {
-        $I->wantTo('get username by wrong uuid');
         $I->sendGET('/api/mojang/services/minecraft/profile/lookup/644b25a8-1b0e-46a8-ad2a-97b53ecbb0a2');
         $I->canSeeResponseCodeIs(404);
         $I->canSeeResponseIsJson();
@@ -41,7 +40,6 @@ class UuidToUsernameCest {
     }
 
     public function getUuidForDeletedAccount(FunctionalTester $I): void {
-        $I->wantTo('get username for account that marked for deleting');
         $I->sendGET('/api/mojang/services/minecraft/profile/lookup/6383de63-8f85-4ed5-92b7-5401a1fa68cd');
         $I->canSeeResponseCodeIs(404);
         $I->canSeeResponseIsJson();
@@ -53,7 +51,6 @@ class UuidToUsernameCest {
     }
 
     public function nonPassedUuid(FunctionalTester $I): void {
-        $I->wantTo('get 404 on not passed uuid');
         $I->sendGET('/api/mojang/services/minecraft/profile/lookup/');
         $I->canSeeResponseCodeIs(404);
     }

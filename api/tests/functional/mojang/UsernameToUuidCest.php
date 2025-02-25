@@ -4,7 +4,7 @@ namespace api\tests\functional\mojang;
 use api\tests\FunctionalTester;
 use Codeception\Example;
 
-class UsernameToUuidCest {
+final class UsernameToUuidCest {
 
     public static function endpoints(): array {
         return [
@@ -103,8 +103,7 @@ class UsernameToUuidCest {
         $I->canSeeResponseCodeIs(404);
     }
 
-    public function nonPassedUsername(FunctionalTester $I): void {
-        $I->wantTo('get UUID error if no username is passed on new endpoint');
+    public function getUuidForIncompletePath(FunctionalTester $I): void {
         $I->sendGET('/api/mojang/services/minecraft/profile/lookup/name');
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();
