@@ -27,11 +27,6 @@ class ApiController extends Controller {
         ]);
     }
 
-    private function isModernEndpoint(): bool {
-        $url = Yii::$app->getRequest()->url;
-        return str_contains($url, "mojang/services") || str_contains($url, "minecraftservices");
-    }
-
     public function actionUuidByUsername(string $username, int $at = null): ?array {
         if ($at !== null) {
             /** @var UsernameHistory|null $record */
@@ -152,6 +147,11 @@ class ApiController extends Controller {
         }
 
         return $responseData;
+    }
+
+    private function isModernEndpoint(): bool {
+        $url = Yii::$app->getRequest()->url;
+        return str_contains($url, 'mojang/services') || str_contains($url, 'minecraftservices');
     }
 
     private function noContent(): null {
