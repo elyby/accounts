@@ -43,28 +43,12 @@ return [
     '/minecraft/session/profile/<uuid>' => 'session/session/profile',
 
     // Mojang API module routes
+    '/mojang/profiles/<username>' => 'mojang/api/uuid-by-username',
     '/mojang/profiles/<uuid>/names' => 'mojang/api/usernames-by-uuid',
-    [
-        'pattern' => '/mojang/profiles/<username>',
-        'route' => 'mojang/api/uuid-by-username',
-        'defaults' => ['modernResponse' => false],
-    ],
-    [
-        'pattern' => 'POST /mojang/profiles',
-        'route' => 'mojang/api/uuids-by-usernames',
-        'defaults' => ['modernResponse' => false],
-    ],
+    'POST /mojang/profiles' => 'mojang/api/uuids-by-usernames',
     'GET /mojang/services/minecraft/profile' => 'mojang/services/profile',
-    [
-        'pattern' => 'POST /mojang/services/minecraft/profile/lookup/bulk/byname',
-        'route' => 'mojang/api/uuids-by-usernames',
-        'defaults' => ['modernResponse' => true],
-    ],
-    [
-        'pattern' => 'GET /mojang/services/minecraft/profile/lookup/name/<username>',
-        'route' => 'mojang/api/uuid-by-username',
-        'defaults' => ['modernResponse' => true],
-    ],
+    'POST /mojang/services/minecraft/profile/lookup/bulk/byname' => 'mojang/api/uuids-by-usernames',
+    'GET /mojang/services/minecraft/profile/lookup/name/<username>' => 'mojang/api/uuid-by-username',
     'GET /mojang/services/minecraft/profile/lookup/<uuid>' => 'mojang/api/username-by-uuid',
 
     // authlib-injector
@@ -72,20 +56,8 @@ return [
     '/authlib-injector/sessionserver/session/minecraft/join' => 'session/session/join',
     '/authlib-injector/sessionserver/session/minecraft/hasJoined' => 'session/session/has-joined',
     '/authlib-injector/sessionserver/session/minecraft/profile/<uuid>' => 'session/session/profile',
-    [
-        'pattern' => '/authlib-injector/api/profiles/minecraft',
-        'route' => 'mojang/api/uuids-by-usernames',
-        'defaults' => ['modernResponse' => false],
-    ],
-    [
-        'pattern' => '/authlib-injector/minecraftservices/minecraft/profile/lookup/bulk/byname',
-        'route' => 'mojang/api/uuids-by-usernames',
-        'defaults' => ['modernResponse' => true],
-    ],
-    [
-        'pattern' => '/authlib-injector/minecraftservices/minecraft/profile/lookup/name/<username>',
-        'route' => 'mojang/api/uuid-by-username',
-        'defaults' => ['modernResponse' => true],
-    ],
+    '/authlib-injector/api/profiles/minecraft' => 'mojang/api/uuids-by-usernames',
+    '/authlib-injector/minecraftservices/minecraft/profile/lookup/bulk/byname' => 'mojang/api/uuids-by-usernames',
+    '/authlib-injector/minecraftservices/minecraft/profile/lookup/name/<username>' => 'mojang/api/uuid-by-username',
     '/authlib-injector/minecraftservices/minecraft/profile/lookup/<uuid>' => 'mojang/api/username-by-uuid',
 ];

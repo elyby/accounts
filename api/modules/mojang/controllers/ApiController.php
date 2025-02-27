@@ -27,7 +27,12 @@ class ApiController extends Controller {
         ]);
     }
 
-    public function actionUuidByUsername(string $username, int $at = null, bool $modernResponse = true): ?array {
+    private function isModernEndpoint(): bool {
+        $url = Yii::$app->getRequest()->url;
+        return str_contains($url, "mojang/services") || str_contains($url, "minecraftservices");
+    }
+
+    public function actionUuidByUsername(string $username, int $at = null): ?array {
         if ($at !== null) {
             /** @var UsernameHistory|null $record */
             $record = UsernameHistory::find()
@@ -52,7 +57,7 @@ class ApiController extends Controller {
         }
 
         if ($account === null || $account->status === Account::STATUS_DELETED) {
-            return $modernResponse ? $this->contentNotFound("Couldn't find any profile with name {$username}") : $this->noContent();
+            return $this->isModernEndpoint() ? $this->contentNotFound("Couldn't find any profile with name {$username}") : $this->noContent();
         }
 
         return [
@@ -113,20 +118,20 @@ class ApiController extends Controller {
         ];
     }
 
-    public function actionUuidsByUsernames(bool $modernResponse): array {
+    public function actionUuidsByUsernames(): array {
         $usernames = Yii::$app->request->post();
         if (empty($usernames)) {
-            return $modernResponse ? $this->constraintViolation('size must be between 1 and 100') : $this->illegalArgumentResponse('Passed array of profile names is an invalid JSON string.');
+            return $this->isModernEndpoint() ? $this->constraintViolation('size must be between 1 and 100') : $this->illegalArgumentResponse('Passed array of profile names is an invalid JSON string.');
         }
 
         $usernames = array_unique($usernames);
         if (count($usernames) > 100) {
-            return $modernResponse ? $this->constraintViolation('size must be between 1 and 100') : $this->illegalArgumentResponse('Not more that 100 profile name per call is allowed.');
+            return $this->isModernEndpoint() ? $this->constraintViolation('size must be between 1 and 100') : $this->illegalArgumentResponse('Not more that 100 profile name per call is allowed.');
         }
 
         foreach ($usernames as $username) {
             if (empty($username) || is_array($username)) {
-                return $modernResponse ? $this->constraintViolation('Invalid profile name') : $this->illegalArgumentResponse('profileName can not be null, empty or array key.');
+                return $this->isModernEndpoint() ? $this->constraintViolation('Invalid profile name') : $this->illegalArgumentResponse('profileName can not be null, empty or array key.');
             }
         }
 
