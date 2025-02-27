@@ -1,5 +1,5 @@
 <?php
-namespace api\tests\functional\authserver;
+namespace api\tests\functional\mojang;
 
 use api\tests\FunctionalTester;
 use Codeception\Example;
@@ -84,10 +84,18 @@ class UsernamesToUuidsCest {
         $I->sendPost($case[0], $usernames);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();
-        $I->canSeeResponseContainsJson([
-            'error' => 'IllegalArgumentException',
-            'errorMessage' => 'Not more that 100 profile name per call is allowed.',
-        ]);
+        if (self::isModernEndpoint($case[0])) {
+            $I->canSeeResponseContainsJson([
+                'path' => $case[0],
+                'error' => 'CONSTRAINT_VIOLATION',
+                'errorMessage' => 'size must be between 1 and 100',
+            ]);
+        } else {
+            $I->canSeeResponseContainsJson([
+                'error' => 'IllegalArgumentException',
+                'errorMessage' => 'Not more that 100 profile name per call is allowed.',
+            ]);
+        }
     }
 
     /**
@@ -98,10 +106,18 @@ class UsernamesToUuidsCest {
         $I->sendPost($case[0], ['Admin', '']);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();
-        $I->canSeeResponseContainsJson([
-            'error' => 'IllegalArgumentException',
-            'errorMessage' => 'profileName can not be null, empty or array key.',
-        ]);
+        if (self::isModernEndpoint($case[0])) {
+            $I->canSeeResponseContainsJson([
+                'path' => $case[0],
+                'error' => 'CONSTRAINT_VIOLATION',
+                'errorMessage' => 'Invalid profile name',
+            ]);
+        } else {
+            $I->canSeeResponseContainsJson([
+                'error' => 'IllegalArgumentException',
+                'errorMessage' => 'profileName can not be null, empty or array key.',
+            ]);
+        }
     }
 
     /**
@@ -112,10 +128,18 @@ class UsernamesToUuidsCest {
         $I->sendPost($case[0], []);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();
-        $I->canSeeResponseContainsJson([
-            'error' => 'IllegalArgumentException',
-            'errorMessage' => 'Passed array of profile names is an invalid JSON string.',
-        ]);
+        if (self::isModernEndpoint($case[0])) {
+            $I->canSeeResponseContainsJson([
+                'path' => $case[0],
+                'error' => 'CONSTRAINT_VIOLATION',
+                'errorMessage' => 'size must be between 1 and 100',
+            ]);
+        } else {
+            $I->canSeeResponseContainsJson([
+                'error' => 'IllegalArgumentException',
+                'errorMessage' => 'Passed array of profile names is an invalid JSON string.',
+            ]);
+        }
     }
 
     public function bulkProfilesEndpoints(): array {
@@ -123,6 +147,10 @@ class UsernamesToUuidsCest {
             ['/api/mojang/profiles'],
             ['/api/mojang/services/minecraft/profile/lookup/bulk/byname'],
         ];
+    }
+
+    private static function isModernEndpoint(string $url): bool {
+        return str_contains($url, 'mojang/services');
     }
 
     private function validateFewValidUsernames(FunctionalTester $I): void {

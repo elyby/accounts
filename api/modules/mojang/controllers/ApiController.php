@@ -27,7 +27,7 @@ class ApiController extends Controller {
         ]);
     }
 
-    public function actionUuidByUsername(string $username, int $at = null) {
+    public function actionUuidByUsername(string $username, int $at = null): ?array {
         if ($at !== null) {
             /** @var UsernameHistory|null $record */
             $record = UsernameHistory::find()
@@ -52,7 +52,7 @@ class ApiController extends Controller {
         }
 
         if ($account === null || $account->status === Account::STATUS_DELETED) {
-            return $this->noContentResponse();
+            return $this->isModernEndpoint() ? $this->contentNotFound("Couldn't find any profile with name {$username}") : $this->noContent();
         }
 
         return [
@@ -61,7 +61,7 @@ class ApiController extends Controller {
         ];
     }
 
-    public function actionUsernamesByUuid(string $uuid) {
+    public function actionUsernamesByUuid(string $uuid): ?array {
         try {
             $uuid = Uuid::fromString($uuid)->toString();
         } catch (\InvalidArgumentException) {
@@ -70,7 +70,7 @@ class ApiController extends Controller {
 
         $account = Account::find()->excludeDeleted()->andWhere(['uuid' => $uuid])->one();
         if ($account === null) {
-            return $this->noContentResponse();
+            return $this->noContent();
         }
 
         /** @var UsernameHistory[] $usernameHistory */
@@ -93,20 +93,40 @@ class ApiController extends Controller {
         return $data;
     }
 
-    public function actionUuidsByUsernames() {
+    public function actionUsernameByUuid(string $uuid): array {
+        try {
+            $uuid = Uuid::fromString($uuid)->toString();
+        } catch (\InvalidArgumentException) {
+            return $this->constraintViolation("Invalid UUID string: {$uuid}");
+        }
+
+        /** @var Account|null $account */
+        $account = Account::findOne(['uuid' => $uuid]);
+
+        if ($account === null || $account->status === Account::STATUS_DELETED) {
+            return $this->contentNotFound();
+        }
+
+        return [
+            'id' => str_replace('-', '', $account->uuid),
+            'name' => $account->username,
+        ];
+    }
+
+    public function actionUuidsByUsernames(): array {
         $usernames = Yii::$app->request->post();
         if (empty($usernames)) {
-            return $this->illegalArgumentResponse('Passed array of profile names is an invalid JSON string.');
+            return $this->isModernEndpoint() ? $this->constraintViolation('size must be between 1 and 100') : $this->illegalArgumentResponse('Passed array of profile names is an invalid JSON string.');
         }
 
         $usernames = array_unique($usernames);
         if (count($usernames) > 100) {
-            return $this->illegalArgumentResponse('Not more that 100 profile name per call is allowed.');
+            return $this->isModernEndpoint() ? $this->constraintViolation('size must be between 1 and 100') : $this->illegalArgumentResponse('Not more that 100 profile name per call is allowed.');
         }
 
         foreach ($usernames as $username) {
             if (empty($username) || is_array($username)) {
-                return $this->illegalArgumentResponse('profileName can not be null, empty or array key.');
+                return $this->isModernEndpoint() ? $this->constraintViolation('Invalid profile name') : $this->illegalArgumentResponse('profileName can not be null, empty or array key.');
             }
         }
 
@@ -129,25 +149,58 @@ class ApiController extends Controller {
         return $responseData;
     }
 
-    private function noContentResponse() {
+    private function isModernEndpoint(): bool {
+        $url = Yii::$app->getRequest()->url;
+        return str_contains($url, 'mojang/services') || str_contains($url, 'minecraftservices');
+    }
+
+    private function noContent(): null {
         $response = Yii::$app->getResponse();
         $response->setStatusCode(204);
         $response->format = Response::FORMAT_RAW;
-        $response->content = '';
 
-        return $response;
+        return null;
     }
 
-    private function illegalArgumentResponse(string $errorMessage) {
+    private function contentNotFound(?string $errorMessage = null): array {
+        $response = Yii::$app->getResponse();
+        $response->setStatusCode(404);
+        $response->format = Response::FORMAT_JSON;
+        if ($errorMessage === null) {
+            return [
+                'path' => Yii::$app->getRequest()->url,
+                'error' => 'NOT_FOUND',
+                'errorMessage' => 'Not Found',
+            ];
+        }
+
+        return [
+            'path' => Yii::$app->getRequest()->url,
+            'errorMessage' => $errorMessage,
+        ];
+    }
+
+    private function constraintViolation(string $errorMessage): array {
         $response = Yii::$app->getResponse();
         $response->setStatusCode(400);
         $response->format = Response::FORMAT_JSON;
-        $response->data = [
+
+        return [
+            'path' => Yii::$app->getRequest()->url,
+            'error' => 'CONSTRAINT_VIOLATION',
+            'errorMessage' => $errorMessage,
+        ];
+    }
+
+    private function illegalArgumentResponse(string $errorMessage): array {
+        $response = Yii::$app->getResponse();
+        $response->setStatusCode(400);
+        $response->format = Response::FORMAT_JSON;
+
+        return [
             'error' => 'IllegalArgumentException',
             'errorMessage' => $errorMessage,
         ];
-
-        return $response;
     }
 
 }
