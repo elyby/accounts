@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\functional\mojang;
 
 use api\tests\FunctionalTester;
@@ -15,7 +17,7 @@ final class UsernameToUuidCest {
     }
 
     /**
-     * @param Example<array{string}> $url
+     * @param \Codeception\Example<array{string}> $url
      * @dataProvider endpoints
      */
     public function getUuidByUsername(FunctionalTester $I, Example $url): void {
@@ -30,7 +32,7 @@ final class UsernameToUuidCest {
     }
 
     /**
-     * @param Example<array{string}> $url
+     * @param \Codeception\Example<array{string}> $url
      * @dataProvider endpoints
      */
     public function getUuidByUsernameAtMoment(FunctionalTester $I, Example $url): void {
@@ -45,57 +47,104 @@ final class UsernameToUuidCest {
     }
 
     /**
-     * @param Example<array{string}> $url
+     * @param \Codeception\Example<array{string}> $url
      * @dataProvider endpoints
      */
     public function getUuidByUsernameAtWrongMoment(FunctionalTester $I, Example $url): void {
         $I->wantTo('get 204 if passed once used, but changed username at moment, when it was changed');
         $I->sendGET("{$url[0]}/klik201", ['at' => 1474404144]);
-        $I->canSeeResponseCodeIs(204);
-        $I->canSeeResponseEquals('');
+        if (self::isModernEndpoint($url[0])) {
+            $I->canSeeResponseCodeIs(404);
+            $I->canSeeResponseIsJson();
+            $I->canSeeResponseContainsJson([
+                'path' => "{$url[0]}/klik201?at=1474404144",
+                'errorMessage' => "Couldn't find any profile with name klik201",
+            ]);
+        } else {
+            $I->canSeeResponseCodeIs(204);
+            $I->canSeeResponseEquals('');
+        }
     }
 
     /**
-     * @param Example<array{string}> $url
+     * @param \Codeception\Example<array{string}> $url
      * @dataProvider endpoints
      */
     public function getUuidByUsernameWithoutMoment(FunctionalTester $I, Example $url): void {
         $I->wantTo('get 204 if username not busy and not passed valid time mark, when it was busy');
         $I->sendGET("{$url[0]}/klik201");
-        $I->canSeeResponseCodeIs(204);
-        $I->canSeeResponseEquals('');
+        if (self::isModernEndpoint($url[0])) {
+            $I->canSeeResponseCodeIs(404);
+            $I->canSeeResponseIsJson();
+            $I->canSeeResponseContainsJson([
+                'path' => "{$url[0]}/klik201",
+                'errorMessage' => "Couldn't find any profile with name klik201",
+            ]);
+        } else {
+            $I->canSeeResponseCodeIs(204);
+            $I->canSeeResponseEquals('');
+        }
     }
 
     /**
-     * @param Example<array{string}> $url
+     * @param \Codeception\Example<array{string}> $url
      * @dataProvider endpoints
      */
     public function getUuidByWrongUsername(FunctionalTester $I, Example $url): void {
         $I->wantTo('get user uuid by some wrong username');
         $I->sendGET("{$url[0]}/not-exists-user");
-        $I->canSeeResponseCodeIs(204);
-        $I->canSeeResponseEquals('');
+        if (self::isModernEndpoint($url[0])) {
+            $I->canSeeResponseCodeIs(404);
+            $I->canSeeResponseIsJson();
+            $I->canSeeResponseContainsJson([
+                'path' => "{$url[0]}/not-exists-user",
+                'errorMessage' => "Couldn't find any profile with name not-exists-user",
+            ]);
+        } else {
+            $I->canSeeResponseCodeIs(204);
+            $I->canSeeResponseEquals('');
+        }
     }
 
     /**
-     * @param Example<array{string}> $url
+     * @param \Codeception\Example<array{string}> $url
      * @dataProvider endpoints
      */
     public function getUuidForDeletedAccount(FunctionalTester $I, Example $url): void {
         $I->wantTo('get uuid for account that marked for deleting');
         $I->sendGET("{$url[0]}/DeletedAccount");
-        $I->canSeeResponseCodeIs(204);
-        $I->canSeeResponseEquals('');
+        if (self::isModernEndpoint($url[0])) {
+            $I->canSeeResponseCodeIs(404);
+            $I->canSeeResponseIsJson();
+            $I->canSeeResponseContainsJson([
+                'path' => "{$url[0]}/DeletedAccount",
+                'errorMessage' => "Couldn't find any profile with name DeletedAccount",
+            ]);
+        } else {
+            $I->canSeeResponseCodeIs(204);
+            $I->canSeeResponseEquals('');
+        }
     }
 
-    /**
-     * @param Example<array{string}> $url
-     * @dataProvider endpoints
-     */
-    public function nonPassedUsername(FunctionalTester $I, Example $url): void {
-        $I->wantTo('get 404 on not passed username');
-        $I->sendGET($url[0]);
+    public function legacyNonPassedUsername(FunctionalTester $I): void {
+        $I->wantTo('get 404 if no username is passed on old endpoint');
+        $I->sendGET('/api/mojang/profiles');
         $I->canSeeResponseCodeIs(404);
+    }
+
+    public function getUuidForIncompletePath(FunctionalTester $I): void {
+        $I->sendGET('/api/mojang/services/minecraft/profile/lookup/name');
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseIsJson();
+        $I->canSeeResponseContainsJson([
+            'path' => '/api/mojang/services/minecraft/profile/lookup/name',
+            'error' => 'CONSTRAINT_VIOLATION',
+            'errorMessage' => 'Invalid UUID string: name',
+        ]);
+    }
+
+    private static function isModernEndpoint(string $url): bool {
+        return str_contains($url, 'mojang/services');
     }
 
 }

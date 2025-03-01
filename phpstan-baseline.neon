@@ -406,36 +406,6 @@ parameters:
 			path: api/modules/internal/controllers/AccountsController.php
 
 		-
-			message: "#^Call to an undefined method yii\\\\console\\\\Response\\|yii\\\\web\\\\Response\\:\\:setStatusCode\\(\\)\\.$#"
-			count: 2
-			path: api/modules/mojang/controllers/ApiController.php
-
-		-
-			message: "#^Method api\\\\modules\\\\mojang\\\\controllers\\\\ApiController\\:\\:actionUsernamesByUuid\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: api/modules/mojang/controllers/ApiController.php
-
-		-
-			message: "#^Method api\\\\modules\\\\mojang\\\\controllers\\\\ApiController\\:\\:actionUuidByUsername\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: api/modules/mojang/controllers/ApiController.php
-
-		-
-			message: "#^Method api\\\\modules\\\\mojang\\\\controllers\\\\ApiController\\:\\:actionUuidsByUsernames\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: api/modules/mojang/controllers/ApiController.php
-
-		-
-			message: "#^Method api\\\\modules\\\\mojang\\\\controllers\\\\ApiController\\:\\:illegalArgumentResponse\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: api/modules/mojang/controllers/ApiController.php
-
-		-
-			message: "#^Method api\\\\modules\\\\mojang\\\\controllers\\\\ApiController\\:\\:noContentResponse\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: api/modules/mojang/controllers/ApiController.php
-
-		-
 			message: "#^Method api\\\\modules\\\\oauth\\\\controllers\\\\AuthorizationController\\:\\:verbs\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: api/modules/oauth/controllers/AuthorizationController.php
@@ -751,51 +721,6 @@ parameters:
 			path: api/tests/functional/authlibInjector/JoinCest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\functional\\\\authlibInjector\\\\MinecraftProfilesCest\\:\\:bulkProfilesEndpoints\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/tests/functional/authlibInjector/MinecraftProfilesCest.php
-
-		-
-			message: "#^Method api\\\\tests\\\\functional\\\\authlibInjector\\\\MinecraftProfilesCest\\:\\:getUuidByOneUsername\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
-			count: 1
-			path: api/tests/functional/authlibInjector/MinecraftProfilesCest.php
-
-		-
-			message: "#^Method api\\\\tests\\\\functional\\\\authlibInjector\\\\MinecraftProfilesCest\\:\\:getUuidsByPartialNonexistentUsernames\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
-			count: 1
-			path: api/tests/functional/authlibInjector/MinecraftProfilesCest.php
-
-		-
-			message: "#^Method api\\\\tests\\\\functional\\\\authlibInjector\\\\MinecraftProfilesCest\\:\\:getUuidsByUsernames\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
-			count: 1
-			path: api/tests/functional/authlibInjector/MinecraftProfilesCest.php
-
-		-
-			message: "#^Method api\\\\tests\\\\functional\\\\authlibInjector\\\\MinecraftProfilesCest\\:\\:getUuidsByUsernamesWithPostString\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
-			count: 1
-			path: api/tests/functional/authlibInjector/MinecraftProfilesCest.php
-
-		-
-			message: "#^Method api\\\\tests\\\\functional\\\\authlibInjector\\\\MinecraftProfilesCest\\:\\:passAllNonexistentUsernames\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
-			count: 1
-			path: api/tests/functional/authlibInjector/MinecraftProfilesCest.php
-
-		-
-			message: "#^Method api\\\\tests\\\\functional\\\\authlibInjector\\\\MinecraftProfilesCest\\:\\:passEmptyField\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
-			count: 1
-			path: api/tests/functional/authlibInjector/MinecraftProfilesCest.php
-
-		-
-			message: "#^Method api\\\\tests\\\\functional\\\\authlibInjector\\\\MinecraftProfilesCest\\:\\:passEmptyUsername\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
-			count: 1
-			path: api/tests/functional/authlibInjector/MinecraftProfilesCest.php
-
-		-
-			message: "#^Method api\\\\tests\\\\functional\\\\authlibInjector\\\\MinecraftProfilesCest\\:\\:passTooManyUsernames\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
-			count: 1
-			path: api/tests/functional/authlibInjector/MinecraftProfilesCest.php
-
-		-
 			message: "#^Method api\\\\tests\\\\functional\\\\authlibInjector\\\\ProfileCest\\:\\:getProfile\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
 			count: 1
 			path: api/tests/functional/authlibInjector/ProfileCest.php
@@ -814,51 +739,6 @@ parameters:
 			message: "#^Method api\\\\tests\\\\functional\\\\authserver\\\\RefreshCest\\:\\:refresh\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
 			count: 1
 			path: api/tests/functional/authserver/RefreshCest.php
-
-		-
-			message: "#^Method api\\\\tests\\\\functional\\\\authserver\\\\UsernamesToUuidsCest\\:\\:bulkProfilesEndpoints\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/tests/functional/authserver/UsernamesToUuidsCest.php
-
-		-
-			message: "#^Method api\\\\tests\\\\functional\\\\authserver\\\\UsernamesToUuidsCest\\:\\:getUuidByOneUsername\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
-			count: 1
-			path: api/tests/functional/authserver/UsernamesToUuidsCest.php
-
-		-
-			message: "#^Method api\\\\tests\\\\functional\\\\authserver\\\\UsernamesToUuidsCest\\:\\:getUuidsByPartialNonexistentUsernames\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
-			count: 1
-			path: api/tests/functional/authserver/UsernamesToUuidsCest.php
-
-		-
-			message: "#^Method api\\\\tests\\\\functional\\\\authserver\\\\UsernamesToUuidsCest\\:\\:getUuidsByUsernames\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
-			count: 1
-			path: api/tests/functional/authserver/UsernamesToUuidsCest.php
-
-		-
-			message: "#^Method api\\\\tests\\\\functional\\\\authserver\\\\UsernamesToUuidsCest\\:\\:getUuidsByUsernamesWithPostString\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
-			count: 1
-			path: api/tests/functional/authserver/UsernamesToUuidsCest.php
-
-		-
-			message: "#^Method api\\\\tests\\\\functional\\\\authserver\\\\UsernamesToUuidsCest\\:\\:passAllNonexistentUsernames\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
-			count: 1
-			path: api/tests/functional/authserver/UsernamesToUuidsCest.php
-
-		-
-			message: "#^Method api\\\\tests\\\\functional\\\\authserver\\\\UsernamesToUuidsCest\\:\\:passEmptyField\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
-			count: 1
-			path: api/tests/functional/authserver/UsernamesToUuidsCest.php
-
-		-
-			message: "#^Method api\\\\tests\\\\functional\\\\authserver\\\\UsernamesToUuidsCest\\:\\:passEmptyUsername\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
-			count: 1
-			path: api/tests/functional/authserver/UsernamesToUuidsCest.php
-
-		-
-			message: "#^Method api\\\\tests\\\\functional\\\\authserver\\\\UsernamesToUuidsCest\\:\\:passTooManyUsernames\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
-			count: 1
-			path: api/tests/functional/authserver/UsernamesToUuidsCest.php
 
 		-
 			message: "#^Method api\\\\tests\\\\functional\\\\sessionserver\\\\ProfileCest\\:\\:getProfile\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
