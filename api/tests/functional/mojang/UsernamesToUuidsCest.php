@@ -1,12 +1,23 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\functional\mojang;
 
 use api\tests\FunctionalTester;
 use Codeception\Example;
 
-class UsernamesToUuidsCest {
+final class UsernamesToUuidsCest {
 
     /**
+     * @return iterable<array{string}>
+     */
+    public function bulkProfilesEndpoints(): iterable {
+        yield ['/api/mojang/profiles'];
+        yield ['/api/mojang/services/minecraft/profile/lookup/bulk/byname'];
+    }
+
+    /**
+     * @param \Codeception\Example<array{string}> $case
      * @dataProvider bulkProfilesEndpoints
      */
     public function getUuidByOneUsername(FunctionalTester $I, Example $case): void {
@@ -23,6 +34,7 @@ class UsernamesToUuidsCest {
     }
 
     /**
+     * @param \Codeception\Example<array{string}> $case
      * @dataProvider bulkProfilesEndpoints
      */
     public function getUuidsByUsernames(FunctionalTester $I, Example $case): void {
@@ -32,6 +44,7 @@ class UsernamesToUuidsCest {
     }
 
     /**
+     * @param \Codeception\Example<array{string}> $case
      * @dataProvider bulkProfilesEndpoints
      */
     public function getUuidsByUsernamesWithPostString(FunctionalTester $I, Example $case): void {
@@ -42,6 +55,7 @@ class UsernamesToUuidsCest {
     }
 
     /**
+     * @param \Codeception\Example<array{string}> $case
      * @dataProvider bulkProfilesEndpoints
      */
     public function getUuidsByPartialNonexistentUsernames(FunctionalTester $I, Example $case): void {
@@ -60,6 +74,7 @@ class UsernamesToUuidsCest {
     }
 
     /**
+     * @param \Codeception\Example<array{string}> $case
      * @dataProvider bulkProfilesEndpoints
      */
     public function passAllNonexistentUsernames(FunctionalTester $I, Example $case): void {
@@ -71,6 +86,7 @@ class UsernamesToUuidsCest {
     }
 
     /**
+     * @param \Codeception\Example<array{string}> $case
      * @dataProvider bulkProfilesEndpoints
      */
     public function passTooManyUsernames(FunctionalTester $I, Example $case): void {
@@ -99,6 +115,7 @@ class UsernamesToUuidsCest {
     }
 
     /**
+     * @param \Codeception\Example<array{string}> $case
      * @dataProvider bulkProfilesEndpoints
      */
     public function passEmptyUsername(FunctionalTester $I, Example $case): void {
@@ -121,6 +138,7 @@ class UsernamesToUuidsCest {
     }
 
     /**
+     * @param \Codeception\Example<array{string}> $case
      * @dataProvider bulkProfilesEndpoints
      */
     public function passEmptyField(FunctionalTester $I, Example $case): void {
@@ -140,13 +158,6 @@ class UsernamesToUuidsCest {
                 'errorMessage' => 'Passed array of profile names is an invalid JSON string.',
             ]);
         }
-    }
-
-    public function bulkProfilesEndpoints(): array {
-        return [
-            ['/api/mojang/profiles'],
-            ['/api/mojang/services/minecraft/profile/lookup/bulk/byname'],
-        ];
     }
 
     private static function isModernEndpoint(string $url): bool {

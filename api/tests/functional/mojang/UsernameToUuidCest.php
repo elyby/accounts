@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace api\tests\functional\mojang;
 
 use api\tests\FunctionalTester;
@@ -6,14 +8,16 @@ use Codeception\Example;
 
 final class UsernameToUuidCest {
 
-    public static function endpoints(): array {
-        return [
-            ['/api/mojang/profiles'],
-            ['/api/mojang/services/minecraft/profile/lookup/name'],
-        ];
+    /**
+     * @return iterable<array{string}>
+     */
+    public static function endpoints(): iterable {
+        yield ['/api/mojang/profiles'];
+        yield ['/api/mojang/services/minecraft/profile/lookup/name'];
     }
 
     /**
+     * @param \Codeception\Example<array{string}> $url
      * @dataProvider endpoints
      */
     public function getUuidByUsername(FunctionalTester $I, Example $url): void {
@@ -28,6 +32,7 @@ final class UsernameToUuidCest {
     }
 
     /**
+     * @param \Codeception\Example<array{string}> $url
      * @dataProvider endpoints
      */
     public function getUuidByUsernameAtMoment(FunctionalTester $I, Example $url): void {
@@ -42,6 +47,7 @@ final class UsernameToUuidCest {
     }
 
     /**
+     * @param \Codeception\Example<array{string}> $url
      * @dataProvider endpoints
      */
     public function getUuidByUsernameAtWrongMoment(FunctionalTester $I, Example $url): void {
@@ -61,6 +67,7 @@ final class UsernameToUuidCest {
     }
 
     /**
+     * @param \Codeception\Example<array{string}> $url
      * @dataProvider endpoints
      */
     public function getUuidByUsernameWithoutMoment(FunctionalTester $I, Example $url): void {
@@ -80,6 +87,7 @@ final class UsernameToUuidCest {
     }
 
     /**
+     * @param \Codeception\Example<array{string}> $url
      * @dataProvider endpoints
      */
     public function getUuidByWrongUsername(FunctionalTester $I, Example $url): void {
@@ -99,6 +107,7 @@ final class UsernameToUuidCest {
     }
 
     /**
+     * @param \Codeception\Example<array{string}> $url
      * @dataProvider endpoints
      */
     public function getUuidForDeletedAccount(FunctionalTester $I, Example $url): void {

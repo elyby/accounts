@@ -13,7 +13,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\UnsetArrayValue;
 use yii\web\Response;
 
-class ApiController extends Controller {
+final class ApiController extends Controller {
 
     public function behaviors(): array {
         return ArrayHelper::merge(parent::behaviors(), [
@@ -102,7 +102,6 @@ class ApiController extends Controller {
 
         /** @var Account|null $account */
         $account = Account::findOne(['uuid' => $uuid]);
-
         if ($account === null || $account->status === Account::STATUS_DELETED) {
             return $this->contentNotFound();
         }
@@ -151,51 +150,55 @@ class ApiController extends Controller {
 
     private function isModernEndpoint(): bool {
         $url = Yii::$app->getRequest()->url;
-        return str_contains($url, 'mojang/services') || str_contains($url, 'minecraftservices');
+
+        return str_contains($url, 'mojang/services')
+            || str_contains($url, 'minecraftservices');
     }
 
     private function noContent(): null {
-        $response = Yii::$app->getResponse();
-        $response->setStatusCode(204);
-        $response->format = Response::FORMAT_RAW;
+        $this->response->setStatusCode(204);
+        $this->response->format = Response::FORMAT_RAW;
 
         return null;
     }
 
+    /**
+     * @phpstan-return array<mixed>
+     */
     private function contentNotFound(?string $errorMessage = null): array {
-        $response = Yii::$app->getResponse();
-        $response->setStatusCode(404);
-        $response->format = Response::FORMAT_JSON;
+        $this->response->setStatusCode(404);
         if ($errorMessage === null) {
             return [
-                'path' => Yii::$app->getRequest()->url,
+                'path' => $this->request->url,
                 'error' => 'NOT_FOUND',
                 'errorMessage' => 'Not Found',
             ];
         }
 
         return [
-            'path' => Yii::$app->getRequest()->url,
+            'path' => $this->request->url,
             'errorMessage' => $errorMessage,
         ];
     }
 
+    /**
+     * @phpstan-return array<mixed>
+     */
     private function constraintViolation(string $errorMessage): array {
-        $response = Yii::$app->getResponse();
-        $response->setStatusCode(400);
-        $response->format = Response::FORMAT_JSON;
+        $this->response->setStatusCode(400);
 
         return [
-            'path' => Yii::$app->getRequest()->url,
+            'path' => $this->request->url,
             'error' => 'CONSTRAINT_VIOLATION',
             'errorMessage' => $errorMessage,
         ];
     }
 
+    /**
+     * @phpstan-return array<mixed>
+     */
     private function illegalArgumentResponse(string $errorMessage): array {
-        $response = Yii::$app->getResponse();
-        $response->setStatusCode(400);
-        $response->format = Response::FORMAT_JSON;
+        $this->response->setStatusCode(400);
 
         return [
             'error' => 'IllegalArgumentException',
