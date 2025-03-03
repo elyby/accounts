@@ -5,7 +5,7 @@ namespace api\tests\functional\mojang;
 
 use api\tests\FunctionalTester;
 
-final class UuidToUsernameCest {
+final class UsernameByUuidCest {
 
     public function getUsernameByUuid(FunctionalTester $I): void {
         $I->sendGET('/api/mojang/services/minecraft/profile/lookup/df936908b2e1544d96f82977ec213022');
