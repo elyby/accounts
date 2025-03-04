@@ -5,7 +5,7 @@ use api\tests\_pages\MojangApiRoute;
 use api\tests\FunctionalTester;
 use function Ramsey\Uuid\v4 as uuid;
 
-class UuidToUsernamesHistoryCest {
+class UsernameHistoryByUuidCest {
 
     private MojangApiRoute $route;
 

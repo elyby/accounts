@@ -6,7 +6,7 @@ namespace api\tests\functional\mojang;
 use api\tests\FunctionalTester;
 use Codeception\Example;
 
-final class UsernamesToUuidsCest {
+final class UuidsByUsernamesCest {
 
     /**
      * @return iterable<array{string}>
