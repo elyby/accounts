@@ -47,6 +47,10 @@ return [
     '/mojang/profiles/<uuid>/names' => 'mojang/api/usernames-by-uuid',
     'POST /mojang/profiles' => 'mojang/api/uuids-by-usernames',
     'GET /mojang/services/minecraft/profile' => 'mojang/services/profile',
+    // This is correct. There are identical endpoints hosted on both MojangAPI and MinecraftServices. Do not ask questions.
+    'POST /mojang/minecraft/profile/lookup/bulk/byname' => 'mojang/api/uuids-by-usernames',
+    'GET /mojang/minecraft/profile/lookup/name/<username>' => 'mojang/api/uuid-by-username',
+    'GET /mojang/minecraft/profile/lookup/<uuid>' => 'mojang/api/username-by-uuid',
     'POST /mojang/services/minecraft/profile/lookup/bulk/byname' => 'mojang/api/uuids-by-usernames',
     'GET /mojang/services/minecraft/profile/lookup/name/<username>' => 'mojang/api/uuid-by-username',
     'GET /mojang/services/minecraft/profile/lookup/<uuid>' => 'mojang/api/username-by-uuid',
@@ -57,6 +61,10 @@ return [
     '/authlib-injector/sessionserver/session/minecraft/hasJoined' => 'session/session/has-joined',
     '/authlib-injector/sessionserver/session/minecraft/profile/<uuid>' => 'session/session/profile',
     '/authlib-injector/api/profiles/minecraft' => 'mojang/api/uuids-by-usernames',
+    // This is correct. There are identical endpoints hosted on both MojangAPI and MinecraftServices. Do not ask questions.
+    '/authlib-injector/api/minecraft/profile/lookup/bulk/byname' => 'mojang/api/uuids-by-usernames',
+    '/authlib-injector/api/minecraft/profile/lookup/name/<username>' => 'mojang/api/uuid-by-username',
+    '/authlib-injector/api/minecraft/profile/lookup/<uuid>' => 'mojang/api/username-by-uuid',
     '/authlib-injector/minecraftservices/minecraft/profile/lookup/bulk/byname' => 'mojang/api/uuids-by-usernames',
     '/authlib-injector/minecraftservices/minecraft/profile/lookup/name/<username>' => 'mojang/api/uuid-by-username',
     '/authlib-injector/minecraftservices/minecraft/profile/lookup/<uuid>' => 'mojang/api/username-by-uuid',
