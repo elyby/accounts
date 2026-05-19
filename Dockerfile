@@ -42,7 +42,7 @@ CMD ["php-fpm"]
 
 # ================================================================================
 
-FROM fholzer/nginx-brotli:v1.19.1 AS web
+FROM fholzer/nginx-brotli:v1.31 AS web
 
 ENV PHP_SERVERS php:9000
 
@@ -61,7 +61,7 @@ RUN apk add --update --no-cache --virtual ".nginx-module-build-deps" \
     autoconf \
     git \
  && cd /opt \
- && git clone --depth 1 -b v0.33 --single-branch https://github.com/openresty/headers-more-nginx-module.git \
+ && git clone --depth 1 -b v0.39 --single-branch https://github.com/openresty/headers-more-nginx-module.git \
  && cd /opt/headers-more-nginx-module \
  && git submodule update --init \
  && cd /opt \
