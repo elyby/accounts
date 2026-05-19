@@ -91,7 +91,7 @@ Codeception:
   services:
     - name: redis:4.0.10-alpine
       alias: redis
-    - name: bitnami/mariadb:10.3.20-debian-9-r4
+    - name: bitnamilegacy/mariadb:10.3.20-debian-9-r4
       alias: db
   variables:
     # App config

@@ -90,7 +90,7 @@ CMD ["nginx", "-g", "daemon off;"]
 
 # ================================================================================
 
-FROM bitnami/mariadb:10.6-debian-11 AS db
+FROM bitnamilegacy/mariadb:10.6-debian-11 AS db
 
 USER 0
 
