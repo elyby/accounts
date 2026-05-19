@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b50434a13836bd5adf5d0083e8be7d73",
+    "content-hash": "4d149183d9b22be925238bb0b0ea74c5",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -516,61 +516,6 @@
                 }
             ],
             "time": "2024-02-05T11:56:58+00:00"
-        },
-        {
-            "name": "domnikl/statsd",
-            "version": "3.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/domnikl/statsd-php.git",
-                "reference": "393c6565efbfb23c8296ae3099a62fb6366c6ce3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/domnikl/statsd-php/zipball/393c6565efbfb23c8296ae3099a62fb6366c6ce3",
-                "reference": "393c6565efbfb23c8296ae3099a62fb6366c6ce3",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">= 7.2"
-            },
-            "require-dev": {
-                "flyeralarm/php-code-validator": "^2.2",
-                "phpunit/phpunit": "~8.0",
-                "vimeo/psalm": "^3.4"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Domnikl\\Statsd\\": "src/",
-                    "Domnikl\\Test\\Statsd\\": "tests/unit"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Dominik Liebler",
-                    "email": "liebler.dominik@gmail.com"
-                }
-            ],
-            "description": "a PHP client for statsd",
-            "homepage": "https://domnikl.github.com/statsd-php",
-            "keywords": [
-                "Metrics",
-                "monitoring",
-                "statistics",
-                "statsd",
-                "udp"
-            ],
-            "support": {
-                "issues": "https://github.com/domnikl/statsd-php/issues",
-                "source": "https://github.com/domnikl/statsd-php/tree/master"
-            },
-            "abandoned": "slickdeals/statsd",
-            "time": "2020-01-03T14:24:58+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -3111,6 +3056,62 @@
                 }
             ],
             "time": "2024-11-06T07:44:19+00:00"
+        },
+        {
+            "name": "slickdeals/statsd",
+            "version": "3.2.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Slickdeals/statsd-php.git",
+                "reference": "2a92aa0a251731adf1b12b0011ac458cccf42dcf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Slickdeals/statsd-php/zipball/2a92aa0a251731adf1b12b0011ac458cccf42dcf",
+                "reference": "2a92aa0a251731adf1b12b0011ac458cccf42dcf",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">= 7.3 || ^8"
+            },
+            "replace": {
+                "domnikl/statsd": "<=3.0.2"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.0",
+                "phpunit/phpunit": "^9",
+                "vimeo/psalm": "^4.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Domnikl\\Statsd\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dominik Liebler",
+                    "email": "liebler.dominik@gmail.com"
+                }
+            ],
+            "description": "a PHP client for statsd",
+            "homepage": "https://github.com/Slickdeals/statsd-php",
+            "keywords": [
+                "Metrics",
+                "monitoring",
+                "statistics",
+                "statsd",
+                "udp"
+            ],
+            "support": {
+                "issues": "https://github.com/Slickdeals/statsd-php/issues",
+                "source": "https://github.com/Slickdeals/statsd-php/tree/3.2.3"
+            },
+            "time": "2026-02-09T04:11:22+00:00"
         },
         {
             "name": "spomky-labs/otphp",
@@ -10893,5 +10894,5 @@
         "ext-sodium": "*"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
