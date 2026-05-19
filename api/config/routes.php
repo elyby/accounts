@@ -43,9 +43,14 @@ return [
     '/minecraft/session/profile/<uuid>' => 'session/session/profile',
 
     // Mojang API module routes
-    '/mojang/profiles/<username>' => 'mojang/api/uuid-by-username',
+    '/mojang/users/profiles/minecraft/<username>' => 'mojang/api/uuid-by-username',
     '/mojang/profiles/<uuid>/names' => 'mojang/api/usernames-by-uuid',
+    'POST /mojang/profiles/minecraft' => 'mojang/api/uuids-by-usernames',
+    // Incorrect Mojang API routes, preserved for backwards compatibility
+    'GET /mojang/profiles/<username>' => 'mojang/api/uuid-by-username',
     'POST /mojang/profiles' => 'mojang/api/uuids-by-usernames',
+
+    // Minecraft services API module routes
     'GET /mojang/services/minecraft/profile' => 'mojang/services/profile',
     'POST /mojang/services/minecraft/profile/lookup/bulk/byname' => 'mojang/api/uuids-by-usernames',
     'GET /mojang/services/minecraft/profile/lookup/name/<username>' => 'mojang/api/uuid-by-username',
@@ -56,6 +61,7 @@ return [
     '/authlib-injector/sessionserver/session/minecraft/join' => 'session/session/join',
     '/authlib-injector/sessionserver/session/minecraft/hasJoined' => 'session/session/has-joined',
     '/authlib-injector/sessionserver/session/minecraft/profile/<uuid>' => 'session/session/profile',
+    '/authlib-injector/api/users/profiles/minecraft/<username>' => 'mojang/api/uuid-by-username',
     '/authlib-injector/api/profiles/minecraft' => 'mojang/api/uuids-by-usernames',
     '/authlib-injector/minecraftservices/minecraft/profile/lookup/bulk/byname' => 'mojang/api/uuids-by-usernames',
     '/authlib-injector/minecraftservices/minecraft/profile/lookup/name/<username>' => 'mojang/api/uuid-by-username',
