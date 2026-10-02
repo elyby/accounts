@@ -22,6 +22,36 @@ return [
         'accounts' => api\modules\accounts\Module::class,
         'oauth' => api\modules\oauth\Module::class,
     ],
+    'container' => [
+        'singletons' => [
+            api\components\Captcha\CaptchaRegistry::class => function(): api\components\Captcha\CaptchaRegistry {
+                $providers = [];
+                if (getenv('RECAPTCHA_SECRET') && getenv('RECAPTCHA_PUBLIC') && getenv('RECAPTCHA_PROJECT_ID')) {
+                    $providers[api\components\Captcha\Providers\ReCaptchaEnterprise::NAME] = Yii::createObject([
+                        '__class' => api\components\Captcha\Providers\ReCaptchaEnterprise::class,
+                        '__construct()' => [
+                            'apiKey' => getenv('RECAPTCHA_SECRET'),
+                            'siteKey' => getenv('RECAPTCHA_PUBLIC'),
+                            'projectId' => getenv('RECAPTCHA_PROJECT_ID'),
+                        ],
+                    ]);
+                }
+
+                if (getenv('YANDEX_CAPTCHA_SERVER_KEY') && getenv('YANDEX_CAPTCHA_CLIENT_KEY')) {
+                    $providers[api\components\Captcha\Providers\YandexSmartCaptcha::NAME] = Yii::createObject([
+                        '__class' => api\components\Captcha\Providers\YandexSmartCaptcha::class,
+                        '__construct()' => [
+                            'serverKey' => getenv('YANDEX_CAPTCHA_SERVER_KEY'),
+                            'clientKey' => getenv('YANDEX_CAPTCHA_CLIENT_KEY'),
+                        ],
+                    ]);
+                }
+
+                // Not Yii::createObject(): this closure is the container definition of CaptchaRegistry itself
+                return new api\components\Captcha\CaptchaRegistry($providers);
+            },
+        ],
+    ],
     'components' => [
         'user' => [
             'class' => api\components\User\Component::class,
@@ -89,11 +119,6 @@ return [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => require __DIR__ . '/routes.php',
-        ],
-        'reCaptcha' => [
-            'class' => api\components\ReCaptcha\Component::class,
-            'public' => getenv('RECAPTCHA_PUBLIC'),
-            'secret' => getenv('RECAPTCHA_SECRET'),
         ],
         'response' => [
             'format' => yii\web\Response::FORMAT_JSON,

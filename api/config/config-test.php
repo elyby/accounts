@@ -6,21 +6,16 @@ return [
             'privateKeyPass' => null,
             'encryptionKey' => 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
         ],
-        'reCaptcha' => [
-            'public' => 'public-key',
-            'secret' => 'private-key',
-        ],
     ],
     'params' => [
         'authserverHost' => 'localhost',
     ],
     'container' => [
         'singletons' => [
-            api\components\ReCaptcha\Validator::class => fn(): api\components\ReCaptcha\Validator => new class(new GuzzleHttp\Client()) extends api\components\ReCaptcha\Validator {
-                protected function validateValue($value): ?array {
-                    return null;
-                }
-            },
+            api\components\Captcha\CaptchaRegistry::class => fn(): api\components\Captcha\CaptchaRegistry => new api\components\Captcha\CaptchaRegistry([
+                api\components\Captcha\Providers\ReCaptchaEnterprise::NAME => new api\tests\_support\Captcha\FakeCaptchaProvider('public-key'),
+                api\components\Captcha\Providers\YandexSmartCaptcha::NAME => new api\tests\_support\Captcha\FakeCaptchaProvider('yandex-public-key'),
+            ]),
             common\components\SkinsSystemApi::class => fn(): common\components\SkinsSystemApi => new class('http://chrly.ely.by') extends common\components\SkinsSystemApi {
                 public function textures(string $username): ?array {
                     return [

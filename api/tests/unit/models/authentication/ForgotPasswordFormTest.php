@@ -3,28 +3,18 @@ declare(strict_types=1);
 
 namespace api\tests\unit\models\authentication;
 
-use api\components\ReCaptcha\Validator as ReCaptchaValidator;
+use api\components\Captcha\Providers\ReCaptchaEnterprise;
 use api\models\authentication\ForgotPasswordForm;
+use api\tests\_support\Captcha\FakeCaptchaProvider;
 use api\tests\unit\TestCase;
 use common\models\Account;
 use common\models\EmailActivation;
 use common\tasks\SendPasswordRecoveryEmail;
 use common\tests\fixtures\AccountFixture;
 use common\tests\fixtures\EmailActivationFixture;
-use GuzzleHttp\ClientInterface;
 use PHPUnit\Framework\MockObject\MockObject;
-use Yii;
 
 class ForgotPasswordFormTest extends TestCase {
-
-    protected function setUp(): void {
-        parent::setUp();
-        Yii::$container->set(ReCaptchaValidator::class, new class($this->createMock(ClientInterface::class)) extends ReCaptchaValidator {
-            public function validateValue($value): ?array {
-                return null;
-            }
-        });
-    }
 
     public function _fixtures(): array {
         return [
@@ -81,7 +71,7 @@ class ForgotPasswordFormTest extends TestCase {
     public function testForgotPassword(): void {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'admin');
-        $model = new ForgotPasswordForm(['login' => $account->username]);
+        $model = new ForgotPasswordForm(['login' => $account->username, 'captcha' => FakeCaptchaProvider::VALID, 'captchaType' => ReCaptchaEnterprise::NAME]);
         $this->assertTrue($model->forgotPassword(), 'form should be successfully processed');
         $activation = $model->getEmailActivation();
         $this->assertInstanceOf(EmailActivation::class, $activation, 'getEmailActivation should return valid object instance');
@@ -92,7 +82,7 @@ class ForgotPasswordFormTest extends TestCase {
     public function testForgotPasswordResend(): void {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'account-with-expired-forgot-password-message');
-        $model = new ForgotPasswordForm(['login' => $account->username]);
+        $model = new ForgotPasswordForm(['login' => $account->username, 'captcha' => FakeCaptchaProvider::VALID, 'captchaType' => ReCaptchaEnterprise::NAME]);
         $callTime = time();
         $this->assertTrue($model->forgotPassword(), 'form should be successfully processed');
         $emailActivation = $model->getEmailActivation();

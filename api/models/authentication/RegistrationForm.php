@@ -1,7 +1,7 @@
 <?php
 namespace api\models\authentication;
 
-use api\components\ReCaptcha\Validator as ReCaptchaValidator;
+use api\components\Captcha\CaptchaTrait;
 use api\models\base\ApiForm;
 use common\components\UserFriendlyRandomKey;
 use common\helpers\Error as E;
@@ -21,8 +21,7 @@ use yii\helpers\ArrayHelper;
 use const common\LATEST_RULES_VERSION;
 
 class RegistrationForm extends ApiForm {
-
-    public $captcha;
+    use CaptchaTrait;
 
     public $username;
 
@@ -37,8 +36,7 @@ class RegistrationForm extends ApiForm {
     public $lang;
 
     public function rules() {
-        return [
-            ['captcha', ReCaptchaValidator::class],
+        return ArrayHelper::merge(self::getCaptchaValidationRules(), [
             ['rulesAgreement', 'required', 'message' => E::RULES_AGREEMENT_REQUIRED],
 
             ['username', UsernameValidator::class],
@@ -51,7 +49,7 @@ class RegistrationForm extends ApiForm {
 
             ['lang', LanguageValidator::class],
             ['lang', 'default', 'value' => 'en'],
-        ];
+        ]);
     }
 
     public function validatePasswordAndRePasswordMatch($attribute): void {

@@ -33,7 +33,6 @@ abstract class BaseApplication extends yii\base\Application {
  * Include only Web application related components here
  *
  * @property \api\components\User\Component       $user
- * @property \api\components\ReCaptcha\Component  $reCaptcha
  * @property \api\components\Tokens\Component     $tokens
  * @property \api\components\Tokens\TokensFactory $tokensFactory
  *

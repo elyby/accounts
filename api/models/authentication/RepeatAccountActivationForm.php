@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace api\models\authentication;
 
-use api\components\ReCaptcha\Validator as ReCaptchaValidator;
+use api\components\Captcha\CaptchaTrait;
 use api\models\base\ApiForm;
 use common\components\UserFriendlyRandomKey;
 use common\helpers\Error as E;
@@ -13,21 +13,20 @@ use common\models\EmailActivation;
 use common\tasks\SendRegistrationEmail;
 use Webmozart\Assert\Assert;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 class RepeatAccountActivationForm extends ApiForm {
-
-    public mixed $captcha = null;
+    use CaptchaTrait;
 
     public mixed $email = null;
 
     public function rules(): array {
-        return [
-            ['captcha', ReCaptchaValidator::class],
+        return ArrayHelper::merge(self::getCaptchaValidationRules(), [
             ['email', 'filter', 'filter' => 'trim'],
             ['email', 'required', 'message' => E::EMAIL_REQUIRED],
             ['email', 'validateEmailForAccount'],
             ['email', 'validateExistsActivation'],
-        ];
+        ]);
     }
 
     public function validateEmailForAccount(string $attribute): void {

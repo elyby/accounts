@@ -6,31 +6,6 @@ parameters:
 			path: api/components/ErrorHandler.php
 
 		-
-			message: "#^Property api\\\\components\\\\ReCaptcha\\\\Component\\:\\:\\$public has no type specified\\.$#"
-			count: 1
-			path: api/components/ReCaptcha/Component.php
-
-		-
-			message: "#^Property api\\\\components\\\\ReCaptcha\\\\Component\\:\\:\\$secret has no type specified\\.$#"
-			count: 1
-			path: api/components/ReCaptcha/Component.php
-
-		-
-			message: "#^Cannot access property \\$secret on api\\\\components\\\\ReCaptcha\\\\Component\\|string\\.$#"
-			count: 1
-			path: api/components/ReCaptcha/Validator.php
-
-		-
-			message: "#^Method api\\\\components\\\\ReCaptcha\\\\Validator\\:\\:validateValue\\(\\) should return array\\{string, array\\<string, string\\>\\|null\\}\\|null but returns array\\{string\\|null, array\\{\\}\\}\\.$#"
-			count: 1
-			path: api/components/ReCaptcha/Validator.php
-
-		-
-			message: "#^Property api\\\\components\\\\ReCaptcha\\\\Validator\\:\\:\\$component \\(api\\\\components\\\\ReCaptcha\\\\Component\\|string\\) does not accept object\\.$#"
-			count: 1
-			path: api/components/ReCaptcha/Validator.php
-
-		-
 			message: "#^Cannot access offset 'key' on array\\|false\\.$#"
 			count: 1
 			path: api/components/Tokens/Algorithms/ES256.php
@@ -86,12 +61,12 @@ parameters:
 			path: api/components/User/LegacyOAuth2Identity.php
 
 		-
-			message: "#^Method class@anonymous/api/config/config\\-test\\.php\\:24\\:\\:profile\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method class@anonymous/api/config/config\\-test\\.php\\:19\\:\\:profile\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: api/config/config-test.php
 
 		-
-			message: "#^Method class@anonymous/api/config/config\\-test\\.php\\:24\\:\\:textures\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method class@anonymous/api/config/config\\-test\\.php\\:19\\:\\:textures\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: api/config/config-test.php
 
@@ -182,11 +157,6 @@ parameters:
 
 		-
 			message: "#^Method api\\\\models\\\\authentication\\\\RegistrationForm\\:\\:validatePasswordAndRePasswordMatch\\(\\) has parameter \\$attribute with no type specified\\.$#"
-			count: 1
-			path: api/models/authentication/RegistrationForm.php
-
-		-
-			message: "#^Property api\\\\models\\\\authentication\\\\RegistrationForm\\:\\:\\$captcha has no type specified\\.$#"
 			count: 1
 			path: api/models/authentication/RegistrationForm.php
 
@@ -769,11 +739,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$objectOrClass of class ReflectionClass constructor expects class\\-string\\<T of object\\>\\|T of object, string given\\.$#"
 			count: 1
 			path: api/tests/unit/TestCase.php
-
-		-
-			message: "#^Parameter \\#3 \\$body of class GuzzleHttp\\\\Psr7\\\\Response constructor expects Psr\\\\Http\\\\Message\\\\StreamInterface\\|resource\\|string\\|null, string\\|false given\\.$#"
-			count: 3
-			path: api/tests/unit/components/ReCaptcha/ValidatorTest.php
 
 		-
 			message: "#^Method api\\\\tests\\\\unit\\\\components\\\\Tokens\\\\TokenReaderTest\\:\\:getAccountIdTestCases\\(\\) return type has no value type specified in iterable type iterable\\.$#"

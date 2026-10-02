@@ -1,8 +1,9 @@
 <?php
 namespace api\controllers;
 
+use api\components\Captcha\CaptchaRegistry;
+use api\components\Captcha\CaptchaValidator;
 use api\filters\NginxCache;
-use Yii;
 use yii\helpers\ArrayHelper;
 
 class OptionsController extends Controller {
@@ -27,9 +28,13 @@ class OptionsController extends Controller {
         ];
     }
 
-    public function actionIndex(): array {
+    public function actionIndex(
+        CaptchaRegistry $captchaRegistry,
+    ): array {
         return [
-            'reCaptchaPublicKey' => Yii::$app->reCaptcha->public,
+            // Kept for backward compatibility, use captcha instead
+            'reCaptchaPublicKey' => $captchaRegistry->getProvider(CaptchaValidator::DEFAULT_TYPE)->getPublicParams()['publicKey'],
+            'captcha' => $captchaRegistry->getPublicParams(),
         ];
     }
 

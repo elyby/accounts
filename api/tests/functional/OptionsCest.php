@@ -12,14 +12,22 @@ class OptionsCest {
         $this->route = new OptionsRoute($I);
     }
 
-    public function testRecaptchaPublicKey(FunctionalTester $I): void {
-        $I->wantTo('Get recaptcha public key');
+    public function testCaptchaPublicParams(FunctionalTester $I): void {
+        $I->wantTo('Get captcha public params');
 
         $this->route->get();
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
             'reCaptchaPublicKey' => 'public-key',
+            'captcha' => [
+                'recaptcha' => [
+                    'publicKey' => 'public-key',
+                ],
+                'yandex' => [
+                    'publicKey' => 'yandex-public-key',
+                ],
+            ],
         ]);
     }
 

@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace api\tests\_pages;
 
+use api\components\Captcha\Providers\ReCaptchaEnterprise;
+use api\tests\_support\Captcha\FakeCaptchaProvider;
+
 final class AuthenticationRoute extends BasePage {
 
     public function login(string $login = '', string $password = '', bool|string|null $rememberMeOrToken = null, bool $rememberMe = false): void {
@@ -24,6 +27,8 @@ final class AuthenticationRoute extends BasePage {
         $this->getActor()->sendPOST('/api/authentication/forgot-password', [
             'login' => $login,
             'totp' => $token,
+            'captcha' => FakeCaptchaProvider::VALID,
+            'captchaType' => ReCaptchaEnterprise::NAME,
         ]);
     }
 

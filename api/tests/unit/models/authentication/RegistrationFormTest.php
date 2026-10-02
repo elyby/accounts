@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace api\tests\unit\models\authentication;
 
-use api\components\ReCaptcha\Validator as ReCaptchaValidator;
+use api\components\Captcha\Providers\ReCaptchaEnterprise;
 use api\models\authentication\RegistrationForm;
+use api\tests\_support\Captcha\FakeCaptchaProvider;
 use api\tests\unit\TestCase;
 use common\models\Account;
 use common\models\EmailActivation;
@@ -13,7 +14,6 @@ use common\tasks\SendRegistrationEmail;
 use common\tests\fixtures\AccountFixture;
 use common\tests\fixtures\EmailActivationFixture;
 use common\tests\fixtures\UsernameHistoryFixture;
-use GuzzleHttp\ClientInterface;
 use Yii;
 use yii\validators\EmailValidator;
 use yii\web\Request;
@@ -24,11 +24,6 @@ class RegistrationFormTest extends TestCase {
     protected function setUp(): void {
         parent::setUp();
         $this->mockRequest();
-        Yii::$container->set(ReCaptchaValidator::class, new class($this->createMock(ClientInterface::class)) extends ReCaptchaValidator {
-            public function validateValue($value): ?array {
-                return null;
-            }
-        });
     }
 
     public function _fixtures(): array {
@@ -64,6 +59,8 @@ class RegistrationFormTest extends TestCase {
             'password' => 'some_password',
             'rePassword' => 'some_password',
             'rulesAgreement' => true,
+            'captcha' => FakeCaptchaProvider::VALID,
+            'captchaType' => ReCaptchaEnterprise::NAME,
             'lang' => 'ru',
         ]);
 
@@ -82,6 +79,8 @@ class RegistrationFormTest extends TestCase {
             'password' => 'some_password',
             'rePassword' => 'some_password',
             'rulesAgreement' => true,
+            'captcha' => FakeCaptchaProvider::VALID,
+            'captchaType' => ReCaptchaEnterprise::NAME,
         ]);
 
         $account = $model->signup();

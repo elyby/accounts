@@ -3,27 +3,17 @@ declare(strict_types=1);
 
 namespace api\tests\unit\models\authentication;
 
-use api\components\ReCaptcha\Validator as ReCaptchaValidator;
+use api\components\Captcha\Providers\ReCaptchaEnterprise;
 use api\models\authentication\RepeatAccountActivationForm;
+use api\tests\_support\Captcha\FakeCaptchaProvider;
 use api\tests\unit\TestCase;
 use common\models\Account;
 use common\models\confirmations\RegistrationConfirmation;
 use common\tasks\SendRegistrationEmail;
 use common\tests\fixtures\AccountFixture;
 use common\tests\fixtures\EmailActivationFixture;
-use GuzzleHttp\ClientInterface;
-use Yii;
 
 class RepeatAccountActivationFormTest extends TestCase {
-
-    protected function setUp(): void {
-        parent::setUp();
-        Yii::$container->set(ReCaptchaValidator::class, new class($this->createMock(ClientInterface::class)) extends ReCaptchaValidator {
-            public function validateValue($value): ?array {
-                return null;
-            }
-        });
-    }
 
     public function _fixtures(): array {
         return [
@@ -71,7 +61,7 @@ class RepeatAccountActivationFormTest extends TestCase {
 
         /** @var \common\models\Account $account */
         $account = $this->tester->grabFixture('accounts', 'not-activated-account-with-expired-message');
-        $model = new RepeatAccountActivationForm(['email' => $account->email]);
+        $model = new RepeatAccountActivationForm(['email' => $account->email, 'captcha' => FakeCaptchaProvider::VALID, 'captchaType' => ReCaptchaEnterprise::NAME]);
         $this->assertTrue($model->sendRepeatMessage());
         $activation = $model->getActivation();
         $this->assertNotNull($activation);

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace api\models\authentication;
 
-use api\components\ReCaptcha\Validator as ReCaptchaValidator;
+use api\components\Captcha\CaptchaTrait;
 use api\models\base\ApiForm;
 use common\components\UserFriendlyRandomKey;
 use common\helpers\Error as E;
@@ -13,21 +13,20 @@ use common\models\EmailActivation;
 use common\tasks\SendPasswordRecoveryEmail;
 use Yii;
 use yii\base\ErrorException;
+use yii\helpers\ArrayHelper;
 
 class ForgotPasswordForm extends ApiForm {
-
-    public mixed $captcha = null;
+    use CaptchaTrait;
 
     public mixed $login = null;
 
     public function rules(): array {
-        return [
-            ['captcha', ReCaptchaValidator::class],
+        return ArrayHelper::merge(self::getCaptchaValidationRules(), [
             ['login', 'required', 'message' => E::LOGIN_REQUIRED],
             ['login', 'validateLogin'],
             ['login', 'validateActivity'],
             ['login', 'validateFrequency'],
-        ];
+        ]);
     }
 
     public function validateLogin(string $attribute): void {
