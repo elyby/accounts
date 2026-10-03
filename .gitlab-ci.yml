@@ -246,12 +246,12 @@ Docker:
         docker pull "$WEB_VERSIONED_IMAGE_NAME"
         docker tag "$APP_VERSIONED_IMAGE_NAME" "$APP_IMAGE_NAME:$DEPLOY_RELEASE"
         docker tag "$WEB_VERSIONED_IMAGE_NAME" "$WEB_IMAGE_NAME:$DEPLOY_RELEASE"
-        docker-compose stop $DEPLOY_SERVICES
-        docker-compose rm -fv $DEPLOY_SERVICES
-        docker-compose up -d $DEPLOY_SERVICES
-        docker-compose stop web
-        docker-compose rm -fv web
-        docker-compose up -d web
+        docker compose stop $DEPLOY_SERVICES
+        docker compose rm -fv $DEPLOY_SERVICES
+        docker compose up -d $DEPLOY_SERVICES
+        docker compose stop web
+        docker compose rm -fv web
+        docker compose up -d web
       EOF
     - *afterSentryDeploy
 
