@@ -193,6 +193,10 @@ Docker:
     - docker push $DB_VERSIONED_IMAGE_NAME
     - docker push $DB_LATEST_IMAGE_NAME
   rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_COMMIT_MESSAGE =~ /\[skip deploy\]/'
+      when: never
     - if: '$CI_COMMIT_TAG'
       when: on_success
     - if: '$CI_COMMIT_BRANCH == "master"'
@@ -219,28 +223,32 @@ Docker:
   image: docksal/ssh-agent:1.3
   needs:
     - Docker
+  # This skips downloading build artifacts
+  dependencies: []
   variables:
     GIT_STRATEGY: none
+    DEPLOY_HOST: 167.235.12.151
+    DEPLOY_PORT: 4534
+    DEPLOY_SERVICES: app worker cron
   before_script:
     - *defineVars
     - *installSentry
     - *setupSSH
   script:
     - *beforeSentryDeploy
-    # Escape $ with backslash to prevent value evaluation from CI container.
-    # We're not using $APP_LATEST_IMAGE_NAME because on remote server might be
-    # a different semantic of preferred image version tag
+    # Dev and Prod live on the same host, so images are tagged with $DEPLOY_RELEASE
+    # (dev/latest) instead of the shared "latest" to not affect each other
     - |
-      ssh -J deploy@ely.by:4534 -p 722 "root@$VM_HOST_NAME" /bin/bash << EOF
-        set -e
-        cd "$VM_DEPLOY_PATH"
+      ssh -p "${DEPLOY_PORT:-22}" "${DEPLOY_USER:-root}@${DEPLOY_HOST}" /bin/bash << EOF
+        set -ex
+        cd "$DEPLOY_PATH"
         docker pull "$APP_VERSIONED_IMAGE_NAME"
         docker pull "$WEB_VERSIONED_IMAGE_NAME"
-        docker tag "$APP_VERSIONED_IMAGE_NAME" "$APP_IMAGE_NAME:latest"
-        docker tag "$WEB_VERSIONED_IMAGE_NAME" "$WEB_IMAGE_NAME:latest"
-        docker-compose stop app worker cron
-        docker-compose rm -fv app worker cron
-        docker-compose up -d --scale worker=3 app worker cron
+        docker tag "$APP_VERSIONED_IMAGE_NAME" "$APP_IMAGE_NAME:$DEPLOY_RELEASE"
+        docker tag "$WEB_VERSIONED_IMAGE_NAME" "$WEB_IMAGE_NAME:$DEPLOY_RELEASE"
+        docker-compose stop $DEPLOY_SERVICES
+        docker-compose rm -fv $DEPLOY_SERVICES
+        docker-compose up -d $DEPLOY_SERVICES
         docker-compose stop web
         docker-compose rm -fv web
         docker-compose up -d web
@@ -253,9 +261,13 @@ Dev:
   environment:
     name: Development
   variables:
-    VM_HOST_NAME: playground.ely.local
-    VM_DEPLOY_PATH: /srv/dev.account.ely.by
+    DEPLOY_PATH: /srv/account.dev.ely.by
+    DEPLOY_RELEASE: dev
   rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_COMMIT_MESSAGE =~ /\[skip deploy\]/'
+      when: never
     - if: '$CI_COMMIT_TAG'
       when: on_success
     - if: '$CI_COMMIT_BRANCH == "master"'
@@ -271,9 +283,13 @@ Prod:
   environment:
     name: Production
   variables:
-    VM_HOST_NAME: accounts.ely.local
-    VM_DEPLOY_PATH: /srv
+    DEPLOY_PATH: /srv/account.ely.by
+    DEPLOY_RELEASE: latest
   rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_COMMIT_MESSAGE =~ /\[skip deploy\]/'
+      when: never
     - if: '$CI_COMMIT_BRANCH != "master"'
       when: never
     - if: '$CI_COMMIT_MESSAGE =~ /\[deploy\]/'
