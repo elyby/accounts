@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace api\components\Captcha;
 
-use api\components\Captcha\Providers\ProviderInterface;
+use api\components\Captcha\Events\CaptchaEvent;
+use api\components\Captcha\Events\CaptchaResultEvent;
 use api\components\Captcha\Providers\ReCaptchaEnterprise;
+use Carbon\CarbonInterval;
 use common\helpers\Error as E;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
@@ -14,6 +16,9 @@ use yii\validators\Validator;
 final class CaptchaValidator extends Validator {
 
     public const string DEFAULT_TYPE = ReCaptchaEnterprise::NAME;
+
+    public const string EVENT_BEFORE_VERIFY = 'beforeVerify';
+    public const string EVENT_AFTER_VERIFY = 'afterVerify';
 
     private const int REPEAT_LIMIT = 3;
     private const int REPEAT_TIMEOUT = 1;
@@ -65,26 +70,35 @@ final class CaptchaValidator extends Validator {
         }
 
         $provider = $this->captchaRegistry->getProvider($type);
-        if (!$this->verifyWithRetries($provider, $value, Yii::$app->getRequest()->getUserIP())) {
-            return [(string)$this->message, []];
-        }
 
-        return null;
-    }
+        $this->trigger(self::EVENT_BEFORE_VERIFY, new CaptchaEvent($type));
 
-    private function verifyWithRetries(ProviderInterface $provider, string $token, ?string $remoteIp): bool {
+        $remoteIp = Yii::$app->getRequest()->getUserIP();
         $repeats = 0;
         while (true) {
+            $startedAt = hrtime(true);
             try {
-                return $provider->verify($token, $remoteIp);
+                $isValid = $provider->verify($value, $remoteIp);
             } catch (ConnectException|ServerException $e) {
                 if (++$repeats >= self::REPEAT_LIMIT) {
                     throw $e;
                 }
 
                 sleep(self::REPEAT_TIMEOUT);
+                continue;
             }
+
+            $duration = CarbonInterval::microseconds(intdiv(hrtime(true) - $startedAt, 1000));
+            break;
         }
+
+        $this->trigger(self::EVENT_AFTER_VERIFY, new CaptchaResultEvent($type, $isValid, $duration));
+
+        if (!$isValid) {
+            return [(string)$this->message, []];
+        }
+
+        return null;
     }
 
 }

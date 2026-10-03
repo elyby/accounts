@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace api\eventListeners;
 
+use api\components\Captcha\CaptchaValidator;
+use api\components\Captcha\Events\CaptchaEvent;
+use api\components\Captcha\Events\CaptchaResultEvent;
 use api\controllers\AuthenticationController;
 use api\controllers\SignupController;
 use api\modules\accounts\actions;
@@ -17,6 +20,9 @@ final class LogMetricsToStatsd implements BootstrapInterface {
     public function bootstrap($app): void {
         Event::on(Controller::class, Controller::EVENT_BEFORE_ACTION, $this->beforeAction(...));
         Event::on(Controller::class, Controller::EVENT_AFTER_ACTION, $this->afterAction(...));
+
+        Event::on(CaptchaValidator::class, CaptchaValidator::EVENT_BEFORE_VERIFY, $this->beforeCaptchaVerify(...));
+        Event::on(CaptchaValidator::class, CaptchaValidator::EVENT_AFTER_VERIFY, $this->afterCaptchaVerify(...));
     }
 
     private function beforeAction(ActionEvent $event): void {
@@ -43,6 +49,15 @@ final class LogMetricsToStatsd implements BootstrapInterface {
                 Yii::$app->statsd->inc($prefix . '.' . $errors[array_key_first($errors)]);
             }
         }
+    }
+
+    private function beforeCaptchaVerify(CaptchaEvent $event): void {
+        Yii::$app->statsd->inc("captcha.{$event->provider}.attempt");
+    }
+
+    private function afterCaptchaVerify(CaptchaResultEvent $event): void {
+        Yii::$app->statsd->inc("captcha.{$event->provider}." . ($event->isValid ? 'success' : 'invalid'));
+        Yii::$app->statsd->time("captcha.{$event->provider}.time", $event->duration->totalMilliseconds);
     }
 
     private function getPrefix(ActionEvent $event): ?string {

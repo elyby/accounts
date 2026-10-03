@@ -5,6 +5,8 @@ namespace api\tests\unit\components\Captcha;
 
 use api\components\Captcha\CaptchaRegistry;
 use api\components\Captcha\CaptchaValidator;
+use api\components\Captcha\Events\CaptchaEvent;
+use api\components\Captcha\Events\CaptchaResultEvent;
 use api\components\Captcha\Providers\ProviderInterface;
 use api\tests\_support\Captcha\FakeCaptchaProvider;
 use api\tests\unit\TestCase;
@@ -60,6 +62,38 @@ final class CaptchaValidatorTest extends TestCase {
         $this->assertSame(['error.captcha_invalid'], $model->getErrors('captcha'));
     }
 
+    /**
+     * @dataProvider getEventsCases
+     *
+     * @param list<string> $expectedEvents
+     */
+    public function testValidateTriggersEvents(mixed $captcha, mixed $captchaType, array $expectedEvents): void {
+        $validator = $this->createValidator([
+            'recaptcha' => new FakeCaptchaProvider('recaptcha-public'),
+            'yandex' => new FakeCaptchaProvider('yandex-public'),
+        ]);
+        $events = $this->collectEvents($validator);
+        $validator->validateAttribute($this->createModel($captcha, $captchaType), 'captcha');
+
+        $this->assertSame($expectedEvents, $events->list);
+    }
+
+    /**
+     * @return iterable<string, array{mixed, mixed, list<string>}>
+     */
+    public static function getEventsCases(): iterable {
+        yield 'valid default token' => [FakeCaptchaProvider::VALID, null, [
+            'beforeVerify:recaptcha',
+            'afterVerify:recaptcha:valid',
+        ]];
+        yield 'invalid yandex token' => ['invalid', 'yandex', [
+            'beforeVerify:yandex',
+            'afterVerify:yandex:invalid',
+        ]];
+        yield 'empty token' => ['', 'yandex', []];
+        yield 'unknown type' => [FakeCaptchaProvider::VALID, 'unknown', []];
+    }
+
     public function testValidateWithNetworkTroubles(): void {
         $provider = $this->createMock(ProviderInterface::class);
         $provider->expects($this->exactly(2))->method('verify')->willReturnOnConsecutiveCalls(
@@ -69,8 +103,14 @@ final class CaptchaValidatorTest extends TestCase {
         $this->getFunctionMock(CaptchaValidator::class, 'sleep')->expects($this->once());
 
         $model = $this->createModel('token', null);
-        $this->createValidator(['recaptcha' => $provider])->validateAttribute($model, 'captcha');
+        $validator = $this->createValidator(['recaptcha' => $provider]);
+        $events = $this->collectEvents($validator);
+        $validator->validateAttribute($model, 'captcha');
         $this->assertFalse($model->hasErrors());
+        $this->assertSame([
+            'beforeVerify:recaptcha',
+            'afterVerify:recaptcha:valid',
+        ], $events->list);
     }
 
     public function testValidateWithHugeNetworkTroubles(): void {
@@ -78,8 +118,39 @@ final class CaptchaValidatorTest extends TestCase {
         $provider->expects($this->exactly(3))->method('verify')->willThrowException($this->createMock(ServerException::class));
         $this->getFunctionMock(CaptchaValidator::class, 'sleep')->expects($this->exactly(2));
 
-        $this->expectException(ServerException::class);
-        $this->createValidator(['recaptcha' => $provider])->validateAttribute($this->createModel('token', null), 'captcha');
+        $validator = $this->createValidator(['recaptcha' => $provider]);
+        $events = $this->collectEvents($validator);
+        try {
+            $validator->validateAttribute($this->createModel('token', null), 'captcha');
+            $this->fail('Expected exception wasn\'t thrown');
+        } catch (ServerException) {
+            // The after verify event mustn't be triggered when the verification has failed
+            $this->assertSame(['beforeVerify:recaptcha'], $events->list);
+        }
+    }
+
+    /**
+     * @return object{list: list<string>}
+     */
+    private function collectEvents(CaptchaValidator $validator): object {
+        $events = new class {
+            /** @var list<string> */
+            public array $list = [];
+        };
+        $handler = function(CaptchaEvent $event) use ($events): void {
+            $item = $event->name . ':' . $event->provider;
+            if ($event->name === CaptchaValidator::EVENT_AFTER_VERIFY) {
+                $this->assertInstanceOf(CaptchaResultEvent::class, $event);
+                $this->assertGreaterThanOrEqual(0, $event->duration->totalMicroseconds);
+                $item .= ':' . ($event->isValid ? 'valid' : 'invalid');
+            }
+
+            $events->list[] = $item;
+        };
+        $validator->on(CaptchaValidator::EVENT_BEFORE_VERIFY, $handler);
+        $validator->on(CaptchaValidator::EVENT_AFTER_VERIFY, $handler);
+
+        return $events;
     }
 
     /**
