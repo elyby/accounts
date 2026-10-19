@@ -25,6 +25,43 @@ class RegisterCest {
         $I->cantSeeResponseJsonMatchesJsonPath('$.errors');
     }
 
+    public function testRegistrationWithAltcha(FunctionalTester $I): void {
+        $I->wantTo('register with the altcha captcha');
+        $captcha = $I->solveAltchaChallenge();
+        $I->sendPOST('/api/signup', [
+            'username' => 'altcha_user',
+            'email' => 'altcha_user@gmail.com',
+            'password' => 'some_password',
+            'rePassword' => 'some_password',
+            'rulesAgreement' => true,
+            'lang' => 'ru',
+            'captcha' => $captcha,
+            'captchaType' => 'altcha',
+        ]);
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseContainsJson(['success' => true]);
+        $I->cantSeeResponseJsonMatchesJsonPath('$.errors');
+
+        $I->wantTo('not be able to reuse the same altcha solution');
+        $I->sendPOST('/api/signup', [
+            'username' => 'altcha_user2',
+            'email' => 'altcha_user2@gmail.com',
+            'password' => 'some_password',
+            'rePassword' => 'some_password',
+            'rulesAgreement' => true,
+            'lang' => 'ru',
+            'captcha' => $captcha,
+            'captchaType' => 'altcha',
+        ]);
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+            'errors' => [
+                'captcha' => 'error.captcha_invalid',
+            ],
+        ]);
+    }
+
     /**
      * @dataProvider getInvalidInputExamples
      */

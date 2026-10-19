@@ -6,10 +6,16 @@ namespace api\components\Captcha\Providers;
 interface ProviderInterface {
 
     /**
-     * Parameters the client side needs to render the captcha widget.
-     * Must contain at least the "publicKey".
+     * A well known param for traditional captcha providers.
+     */
+    public const string PUBLIC_KEY_PARAM = 'publicKey';
+
+    /**
+     * Provider-specific parameters the client side needs to render the captcha widget.
+     * The response is shared between all clients (/api/options is cached by nginx),
+     * so the params must not depend on the current request.
      *
-     * @return array{publicKey: string}&array<string, mixed>
+     * @return array<string, mixed>
      */
     public function getPublicParams(): array;
 

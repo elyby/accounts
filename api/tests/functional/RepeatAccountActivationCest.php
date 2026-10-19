@@ -66,4 +66,17 @@ class RepeatAccountActivationCest {
         $I->cantSeeResponseJsonMatchesJsonPath('$.errors');
     }
 
+    public function testSuccessWithAltcha(FunctionalTester $I): void {
+        $I->wantTo('successfully resend account activation message with the altcha captcha');
+        $I->sendPOST('/api/signup/repeat-message', [
+            'email' => 'jon@ely.by',
+            'captcha' => $I->solveAltchaChallenge(),
+            'captchaType' => 'altcha',
+        ]);
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseIsJson();
+        $I->canSeeResponseContainsJson(['success' => true]);
+        $I->cantSeeResponseJsonMatchesJsonPath('$.errors');
+    }
+
 }

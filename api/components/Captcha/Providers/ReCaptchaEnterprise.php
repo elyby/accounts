@@ -18,6 +18,9 @@ final readonly class ReCaptchaEnterprise implements ProviderInterface {
 
     private const string BASE_URL = 'https://recaptchaenterprise.googleapis.com/v1';
 
+    /**
+     * @param non-empty-string $siteKey
+     */
     public function __construct(
         private string $apiKey,
         private string $siteKey,
@@ -26,9 +29,12 @@ final readonly class ReCaptchaEnterprise implements ProviderInterface {
     ) {
     }
 
+    /**
+     * @return array{publicKey: non-empty-string}
+     */
     public function getPublicParams(): array {
         return [
-            'publicKey' => $this->siteKey,
+            self::PUBLIC_KEY_PARAM => $this->siteKey,
         ];
     }
 

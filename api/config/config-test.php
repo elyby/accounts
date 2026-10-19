@@ -15,6 +15,16 @@ return [
             api\components\Captcha\CaptchaRegistry::class => fn(): api\components\Captcha\CaptchaRegistry => new api\components\Captcha\CaptchaRegistry([
                 api\components\Captcha\Providers\ReCaptchaEnterprise::NAME => new api\tests\_support\Captcha\FakeCaptchaProvider('public-key'),
                 api\components\Captcha\Providers\YandexSmartCaptcha::NAME => new api\tests\_support\Captcha\FakeCaptchaProvider('yandex-public-key'),
+                // The real provider with the minimal difficulty, so the tests can solve its challenges
+                api\components\Captcha\Providers\Altcha::NAME => new api\components\Captcha\Providers\Altcha(
+                    altcha: new AltchaOrg\Altcha\Altcha('test-signature-secret-0123456789abcdef', 'test-key-signature-secret-0123456789ab'),
+                    algorithm: new api\components\Captcha\Providers\Altcha\OpensslPbkdf2(),
+                    usedChallenges: new api\components\Captcha\Providers\Altcha\UsedChallengesStorage(Yii::$app->redis),
+                    cost: 1,
+                    counterMin: 1,
+                    counterMax: 10,
+                    ttl: 600,
+                ),
             ]),
             common\components\SkinsSystemApi::class => fn(): common\components\SkinsSystemApi => new class('http://chrly.ely.by') extends common\components\SkinsSystemApi {
                 public function textures(string $username): ?array {

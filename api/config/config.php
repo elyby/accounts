@@ -47,6 +47,36 @@ return [
                     ]);
                 }
 
+                if (getenv('ALTCHA_HMAC_SECRET')) {
+                    $signatureSecret = getenv('ALTCHA_HMAC_SECRET');
+                    // The library treats an empty key secret as a valid HMAC key, so it must be checked explicitly
+                    $keySignatureSecret = (string)getenv('ALTCHA_HMAC_KEY_SECRET');
+                    Webmozart\Assert\Assert::minLength($signatureSecret, 32, 'ALTCHA_HMAC_SECRET must be at least 32 bytes long');
+                    Webmozart\Assert\Assert::minLength($keySignatureSecret, 32, 'ALTCHA_HMAC_KEY_SECRET must be at least 32 bytes long');
+                    Webmozart\Assert\Assert::notSame($signatureSecret, $keySignatureSecret, 'ALTCHA_HMAC_SECRET and ALTCHA_HMAC_KEY_SECRET must be different');
+                    $cost = (int)(getenv('ALTCHA_COST') ?: 1000);
+                    $counterMin = (int)(getenv('ALTCHA_COUNTER_MIN') ?: 500);
+                    $counterMax = (int)(getenv('ALTCHA_COUNTER_MAX') ?: 1500);
+                    $ttl = (int)(getenv('ALTCHA_TTL') ?: 600);
+                    Webmozart\Assert\Assert::positiveInteger($cost, 'ALTCHA_COST must be a positive integer');
+                    Webmozart\Assert\Assert::natural($counterMin, 'ALTCHA_COUNTER_MIN must be a non-negative integer');
+                    Webmozart\Assert\Assert::natural($counterMax, 'ALTCHA_COUNTER_MAX must be a non-negative integer');
+                    Webmozart\Assert\Assert::positiveInteger($ttl, 'ALTCHA_TTL must be a positive integer');
+
+                    $providers[api\components\Captcha\Providers\Altcha::NAME] = Yii::createObject([
+                        '__class' => api\components\Captcha\Providers\Altcha::class,
+                        '__construct()' => [
+                            'altcha' => new AltchaOrg\Altcha\Altcha($signatureSecret, $keySignatureSecret),
+                            'algorithm' => new api\components\Captcha\Providers\Altcha\OpensslPbkdf2(),
+                            'usedChallenges' => new api\components\Captcha\Providers\Altcha\UsedChallengesStorage(Yii::$app->redis),
+                            'cost' => $cost,
+                            'counterMin' => $counterMin,
+                            'counterMax' => $counterMax,
+                            'ttl' => $ttl,
+                        ],
+                    ]);
+                }
+
                 // Not Yii::createObject(): this closure is the container definition of CaptchaRegistry itself
                 return new api\components\Captcha\CaptchaRegistry($providers);
             },

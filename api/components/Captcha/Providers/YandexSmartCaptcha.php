@@ -16,6 +16,9 @@ final readonly class YandexSmartCaptcha implements ProviderInterface {
 
     private const string VALIDATE_URL = 'https://smartcaptcha.cloud.yandex.ru/validate';
 
+    /**
+     * @param non-empty-string $clientKey
+     */
     public function __construct(
         private string $serverKey,
         private string $clientKey,
@@ -23,9 +26,12 @@ final readonly class YandexSmartCaptcha implements ProviderInterface {
     ) {
     }
 
+    /**
+     * @return array{publicKey: non-empty-string}
+     */
     public function getPublicParams(): array {
         return [
-            'publicKey' => $this->clientKey,
+            self::PUBLIC_KEY_PARAM => $this->clientKey,
         ];
     }
 

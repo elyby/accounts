@@ -35,6 +35,9 @@ return [
     'DELETE /two-factor-auth' => 'accounts/default/disable-two-factor-auth',
     'POST /accounts/change-lang' => 'accounts/default/language',
 
+    // Captcha routes
+    'GET /captcha/altcha/challenge' => 'captcha/altcha-challenge',
+
     // Session server module routes
     '/minecraft/session/join' => 'session/session/join',
     '/minecraft/session/legacy/join' => 'session/session/join-legacy',

@@ -44,6 +44,16 @@ class ForgotPasswordCest {
         $this->assertSuccessResponse($I, true);
     }
 
+    public function testForgotPasswordWithAltcha(FunctionalTester $I): void {
+        $I->wantTo('create new password recover request with the altcha captcha');
+        $I->sendPOST('/api/authentication/forgot-password', [
+            'login' => 'Admin',
+            'captcha' => $I->solveAltchaChallenge(),
+            'captchaType' => 'altcha',
+        ]);
+        $this->assertSuccessResponse($I, true);
+    }
+
     public function testDataForFrequencyError(FunctionalTester $I): void {
         $I->wantTo('get info about time to repeat recover password request');
         $this->route->forgotPassword('Notch');

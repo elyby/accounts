@@ -27,6 +27,9 @@ class OptionsCest {
                 'yandex' => [
                     'publicKey' => 'yandex-public-key',
                 ],
+                'altcha' => [
+                    'challengeUrl' => '/api/captcha/altcha/challenge',
+                ],
             ],
         ]);
     }

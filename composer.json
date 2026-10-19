@@ -30,6 +30,7 @@
         "ext-pdo": "*",
         "ext-simplexml": "*",
         "ext-sodium": "*",
+        "altcha-org/altcha": "~2.3.0",
         "bacon/bacon-qr-code": "^1.0",
         "ely/mojang-api": "^0.2.0",
         "ely/yii2-tempmail-validator": "dev-master",

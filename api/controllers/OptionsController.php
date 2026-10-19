@@ -3,6 +3,7 @@ namespace api\controllers;
 
 use api\components\Captcha\CaptchaRegistry;
 use api\components\Captcha\CaptchaValidator;
+use api\components\Captcha\Providers\ProviderInterface;
 use api\filters\NginxCache;
 use yii\helpers\ArrayHelper;
 
@@ -33,7 +34,7 @@ class OptionsController extends Controller {
     ): array {
         return [
             // Kept for backward compatibility, use captcha instead
-            'reCaptchaPublicKey' => $captchaRegistry->getProvider(CaptchaValidator::DEFAULT_TYPE)->getPublicParams()['publicKey'],
+            'reCaptchaPublicKey' => $captchaRegistry->getProvider(CaptchaValidator::DEFAULT_TYPE)->getPublicParams()[ProviderInterface::PUBLIC_KEY_PARAM],
             'captcha' => $captchaRegistry->getPublicParams(),
         ];
     }
