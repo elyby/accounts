@@ -27,6 +27,9 @@ return [
                 ),
             ]),
             common\components\SkinsSystemApi::class => fn(): common\components\SkinsSystemApi => new class('http://chrly.ely.by') extends common\components\SkinsSystemApi {
+                /**
+                 * @return array<string, mixed>|null
+                 */
                 public function textures(string $username): ?array {
                     return [
                         'SKIN' => [
@@ -35,6 +38,9 @@ return [
                     ];
                 }
 
+                /**
+                 * @return array<string, mixed>|null
+                 */
                 public function profile(string $username, bool $signed = false, ?string $fallbackUuid = null): ?array {
                     if ($username === 'NotSynchronized') {
                         if ($fallbackUuid === null) {

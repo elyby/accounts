@@ -61,16 +61,6 @@ parameters:
 			path: api/components/User/LegacyOAuth2Identity.php
 
 		-
-			message: "#^Method class@anonymous/api/config/config\\-test\\.php\\:19\\:\\:profile\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/config/config-test.php
-
-		-
-			message: "#^Method class@anonymous/api/config/config\\-test\\.php\\:19\\:\\:textures\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/config/config-test.php
-
-		-
 			message: "#^Parameter \\#1 \\$string of function base64_encode expects string, string\\|false given\\.$#"
 			count: 2
 			path: api/config/config-test.php
