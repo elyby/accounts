@@ -33,8 +33,6 @@ class OptionsController extends Controller {
         CaptchaRegistry $captchaRegistry,
     ): array {
         return [
-            // Kept for backward compatibility, use captcha instead
-            'reCaptchaPublicKey' => $captchaRegistry->getProvider(CaptchaValidator::DEFAULT_TYPE)->getPublicParams()[ProviderInterface::PUBLIC_KEY_PARAM],
             'captcha' => $captchaRegistry->getPublicParams(),
         ];
     }
