@@ -2,8 +2,6 @@
 namespace api\controllers;
 
 use api\components\Captcha\CaptchaRegistry;
-use api\components\Captcha\CaptchaValidator;
-use api\components\Captcha\Providers\ProviderInterface;
 use api\filters\NginxCache;
 use yii\helpers\ArrayHelper;
 

@@ -19,7 +19,6 @@ class OptionsCest {
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
-            'reCaptchaPublicKey' => 'public-key',
             'captcha' => [
                 'recaptcha' => [
                     'publicKey' => 'public-key',
