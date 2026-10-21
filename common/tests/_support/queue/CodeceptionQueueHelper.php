@@ -10,6 +10,8 @@ class CodeceptionQueueHelper extends Module {
 
     /**
      * Returns last sent message
+     *
+     * @phpstan-impure
      */
     public function grabLastQueuedJob(): ?JobInterface {
         $messages = $this->grabQueueJobs();

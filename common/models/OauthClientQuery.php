@@ -7,6 +7,7 @@ use yii\db\ActiveQuery;
 use yii\db\Command;
 
 /**
+ * @extends ActiveQuery<OauthClient>
  * @see OauthClient
  */
 class OauthClientQuery extends ActiveQuery {

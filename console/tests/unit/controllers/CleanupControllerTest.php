@@ -58,7 +58,6 @@ class CleanupControllerTest extends TestCase {
         $this->assertNotNull(OauthClient::find()->includeDeleted()->andWhere(['id' => 'deleted-oauth-client-with-sessions'])->one());
         $this->assertSame($totalClientsCount - 1, (int)OauthClient::find()->includeDeleted()->count());
 
-        /** @var ClearOauthSessions $job */
         $job = $this->tester->grabLastQueuedJob();
         $this->assertInstanceOf(ClearOauthSessions::class, $job);
         $this->assertSame('deleted-oauth-client-with-sessions', $job->clientId);

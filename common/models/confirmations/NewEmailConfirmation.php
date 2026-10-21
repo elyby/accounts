@@ -7,6 +7,9 @@ use common\models\EmailActivation;
 use common\models\EmailActivationQuery;
 use yii\helpers\ArrayHelper;
 
+/**
+ * @property string $newEmail
+ */
 class NewEmailConfirmation extends EmailActivation {
 
     public static function find(): EmailActivationQuery {

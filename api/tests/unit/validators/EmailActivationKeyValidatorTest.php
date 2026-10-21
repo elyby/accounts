@@ -58,12 +58,10 @@ class EmailActivationKeyValidatorTest extends TestCase {
 
         $key = $this->tester->grabFixture('emailActivations', 'freshRegistrationConfirmation')['key'];
         $model = new EmailActivationKeyValidator();
-        /** @var EmailActivation $result */
         $result = $this->callProtected($model, 'findEmailActivationModel', $key);
         $this->assertInstanceOf(EmailActivation::class, $result, 'valid key without specifying type must return model');
         $this->assertSame($key, $result->key);
 
-        /** @var EmailActivation $result */
         $result = $this->callProtected($model, 'findEmailActivationModel', $key, 0);
         $this->assertInstanceOf(EmailActivation::class, $result, 'valid key with valid type must return model');
 

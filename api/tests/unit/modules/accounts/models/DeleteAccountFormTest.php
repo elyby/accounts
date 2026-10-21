@@ -49,7 +49,6 @@ class DeleteAccountFormTest extends TestCase {
             ->method('push')
             ->willReturnCallback(function($task) use ($account): bool {
                 if ($task instanceof CreateWebHooksDeliveries) {
-                    /** @var AccountEditNotification $notification */
                     $notification = ReflectionHelper::readPrivateProperty($task, 'notification');
                     $this->assertInstanceOf(AccountEditNotification::class, $notification);
                     $this->assertSame($account->id, $notification->getPayloads()['id']);

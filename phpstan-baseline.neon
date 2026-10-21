@@ -1,1536 +1,2179 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Method api\\\\components\\\\ErrorHandler\\:\\:convertExceptionToArray\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Call to static method Webmozart\\Assert\\Assert\:\:greaterThanEq\(\) with int\<0, max\> and 0 will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
+			count: 1
+			path: api/components/Captcha/Providers/Altcha.php
+
+		-
+			message: '#^Method api\\components\\ErrorHandler\:\:convertExceptionToArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/components/ErrorHandler.php
 
 		-
-			message: "#^Cannot access offset 'key' on array\\|false\\.$#"
+			message: '#^Cannot access offset ''key'' on array\|false\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: api/components/Tokens/Algorithms/ES256.php
 
 		-
-			message: "#^Parameter \\#1 \\$contents of static method Lcobucci\\\\JWT\\\\Signer\\\\Key\\\\InMemory\\:\\:plainText\\(\\) expects non\\-empty\\-string, string given\\.$#"
+			message: '#^Parameter \#1 \$contents of static method Lcobucci\\JWT\\Signer\\Key\\InMemory\:\:plainText\(\) expects non\-empty\-string, string given\.$#'
+			identifier: argument.type
 			count: 1
 			path: api/components/Tokens/Algorithms/ES256.php
 
 		-
-			message: "#^Parameter \\#1 \\$key of function openssl_pkey_get_details expects OpenSSLAsymmetricKey, OpenSSLAsymmetricKey\\|false given\\.$#"
+			message: '#^Parameter \#1 \$key of function openssl_pkey_get_details expects OpenSSLAsymmetricKey, OpenSSLAsymmetricKey\|false given\.$#'
+			identifier: argument.type
 			count: 1
 			path: api/components/Tokens/Algorithms/ES256.php
 
 		-
-			message: "#^Method api\\\\components\\\\Tokens\\\\Component\\:\\:create\\(\\) has parameter \\$headers with no value type specified in iterable type array\\.$#"
+			message: '#^Call to function in_array\(\) with arguments ''exp''\|''iat''\|''jti''\|''nbf''\|''sub'', array\{''aud'', ''exp'', ''jti'', ''iat'', ''iss'', ''nbf'', ''sub''\} and true will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
 			count: 1
 			path: api/components/Tokens/Component.php
 
 		-
-			message: "#^Parameter \\#1 \\$id of method Lcobucci\\\\JWT\\\\Builder\\:\\:identifiedBy\\(\\) expects non\\-empty\\-string, string given\\.$#"
+			message: '#^Method api\\components\\Tokens\\Component\:\:create\(\) has parameter \$headers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/components/Tokens/Component.php
 
 		-
-			message: "#^Parameter \\#1 \\$jwt of method Lcobucci\\\\JWT\\\\Token\\\\Parser\\:\\:parse\\(\\) expects non\\-empty\\-string, string given\\.$#"
+			message: '#^Parameter \#1 \$id of method Lcobucci\\JWT\\Builder\:\:identifiedBy\(\) expects non\-empty\-string, string given\.$#'
+			identifier: argument.type
 			count: 1
 			path: api/components/Tokens/Component.php
 
 		-
-			message: "#^Parameter \\#1 \\$name of method Lcobucci\\\\JWT\\\\Builder\\:\\:withHeader\\(\\) expects non\\-empty\\-string, \\(int\\|string\\) given\\.$#"
+			message: '#^Parameter \#1 \$jwt of method Lcobucci\\JWT\\Token\\Parser\:\:parse\(\) expects non\-empty\-string, string given\.$#'
+			identifier: argument.type
 			count: 1
 			path: api/components/Tokens/Component.php
 
 		-
-			message: "#^Parameter \\#1 \\$subject of method Lcobucci\\\\JWT\\\\Builder\\:\\:relatedTo\\(\\) expects non\\-empty\\-string, string given\\.$#"
+			message: '#^Parameter \#1 \$name of method Lcobucci\\JWT\\Builder\:\:withHeader\(\) expects non\-empty\-string, \(int\|string\) given\.$#'
+			identifier: argument.type
 			count: 1
 			path: api/components/Tokens/Component.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of method api\\\\components\\\\Tokens\\\\Component\\:\\:prepareValue\\(\\) expects api\\\\components\\\\Tokens\\\\EncryptedValue\\|string, DateTimeImmutable\\|string given\\.$#"
+			message: '#^Parameter \#1 \$subject of method Lcobucci\\JWT\\Builder\:\:relatedTo\(\) expects non\-empty\-string, string given\.$#'
+			identifier: argument.type
 			count: 1
 			path: api/components/Tokens/Component.php
 
 		-
-			message: "#^Property api\\\\components\\\\User\\\\Component\\:\\:\\$loginUrl type has no value type specified in iterable type array\\.$#"
+			message: '#^PHPDoc type string of property api\\components\\User\\Component\:\:\$identityClass is not covariant with PHPDoc type class\-string\<yii\\web\\IdentityInterface\> of overridden property yii\\web\\User\<yii\\web\\IdentityInterface\>\:\:\$identityClass\.$#'
+			identifier: property.phpDocType
 			count: 1
 			path: api/components/User/Component.php
 
 		-
-			message: "#^Method api\\\\components\\\\User\\\\LegacyOAuth2Identity\\:\\:findRecordOnLegacyStorage\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Property api\\components\\User\\Component\:\:\$loginUrl type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: api/components/User/Component.php
+
+		-
+			message: '#^Call to an undefined method Lcobucci\\JWT\\Token\:\:claims\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: api/components/User/JwtIdentity.php
+
+		-
+			message: '#^Parameter \#1 \$token of class api\\components\\Tokens\\TokenReader constructor expects Lcobucci\\JWT\\UnencryptedToken, Lcobucci\\JWT\\Token given\.$#'
+			identifier: argument.type
+			count: 1
+			path: api/components/User/JwtIdentity.php
+
+		-
+			message: '#^Parameter \#1 \$token of class api\\components\\User\\JwtIdentity constructor expects Lcobucci\\JWT\\UnencryptedToken, Lcobucci\\JWT\\Token given\.$#'
+			identifier: argument.type
+			count: 1
+			path: api/components/User/JwtIdentity.php
+
+		-
+			message: '#^Method api\\components\\User\\LegacyOAuth2Identity\:\:findRecordOnLegacyStorage\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/components/User/LegacyOAuth2Identity.php
 
 		-
-			message: "#^Parameter \\#1 \\$string of function base64_encode expects string, string\\|false given\\.$#"
+			message: '#^Method common\\components\\SkinsSystemApi@anonymous/api/config/config\-test\.php\:29\:\:textures\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: api/config/config-test.php
+
+		-
+			message: '#^Parameter \#1 \$string of function base64_encode expects string, string\|false given\.$#'
+			identifier: argument.type
 			count: 2
 			path: api/config/config-test.php
 
 		-
-			message: "#^Method api\\\\controllers\\\\AuthenticationController\\:\\:verbs\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Parameter \#1 \$value of static method Webmozart\\Assert\\Assert\:\:minLength\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: api/config/config.php
+
+		-
+			message: '#^Method api\\controllers\\AuthenticationController\:\:verbs\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/controllers/AuthenticationController.php
 
 		-
-			message: "#^Call to an undefined method yii\\\\console\\\\Application\\|yii\\\\web\\\\Application\\:\\:getUser\\(\\)\\.$#"
+			message: '#^Parameter \#1 \$data of method yii\\base\\Model\:\:load\(\) expects array, array\|object given\.$#'
+			identifier: argument.type
+			count: 4
+			path: api/controllers/AuthenticationController.php
+
+		-
+			message: '#^Cannot unset offset ''formats'' on array\{class\: class\-string, user\?\: yii\\web\\User\<yii\\web\\IdentityInterface\>\}\|class\-string\.$#'
+			identifier: unset.offset
 			count: 1
 			path: api/controllers/Controller.php
 
 		-
-			message: "#^Cannot access offset 'formats' on array\\{__class\\: class\\-string\\<yii\\\\base\\\\Behavior\\>\\}\\|array\\{class\\: class\\-string\\<yii\\\\base\\\\Behavior\\>, user\\?\\: yii\\\\web\\\\User\\}\\|\\(callable\\(\\)\\: yii\\\\base\\\\Behavior\\)\\|class\\-string\\<yii\\\\base\\\\Behavior\\>\\|yii\\\\base\\\\Behavior\\.$#"
-			count: 1
-			path: api/controllers/Controller.php
-
-		-
-			message: "#^Method api\\\\controllers\\\\FeedbackController\\:\\:verbs\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\controllers\\FeedbackController\:\:verbs\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/controllers/FeedbackController.php
 
 		-
-			message: "#^Method api\\\\controllers\\\\OptionsController\\:\\:verbs\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Parameter \#1 \$data of method yii\\base\\Model\:\:load\(\) expects array, array\|object given\.$#'
+			identifier: argument.type
+			count: 1
+			path: api/controllers/FeedbackController.php
+
+		-
+			message: '#^Method api\\controllers\\OptionsController\:\:verbs\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/controllers/OptionsController.php
 
 		-
-			message: "#^Method api\\\\controllers\\\\SignupController\\:\\:verbs\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\controllers\\SignupController\:\:verbs\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/controllers/SignupController.php
 
 		-
-			message: "#^Cannot access offset string on array\\|\\(callable\\(\\)\\: mixed\\)\\.$#"
-			count: 1
-			path: api/filters/NginxCache.php
+			message: '#^Parameter \#1 \$data of method yii\\base\\Model\:\:load\(\) expects array, array\|object given\.$#'
+			identifier: argument.type
+			count: 3
+			path: api/controllers/SignupController.php
 
 		-
-			message: "#^Property api\\\\filters\\\\NginxCache\\:\\:\\$rules type has no value type specified in iterable type array\\.$#"
+			message: '#^Strict comparison using \=\=\= between null and null will always evaluate to true\.$#'
+			identifier: identical.alwaysTrue
 			count: 1
-			path: api/filters/NginxCache.php
+			path: api/eventListeners/MockDataResponse.php
 
 		-
-			message: "#^Method api\\\\models\\\\authentication\\\\AuthenticationResult\\:\\:formatAsOAuth2Response\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Using nullsafe property access "\?\-\>username" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: api/models/FeedbackForm.php
+
+		-
+			message: '#^Method api\\models\\authentication\\AuthenticationResult\:\:formatAsOAuth2Response\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/models/authentication/AuthenticationResult.php
 
 		-
-			message: "#^Property api\\\\models\\\\authentication\\\\ConfirmEmailForm\\:\\:\\$key has no type specified\\.$#"
+			message: '#^Property api\\models\\authentication\\ConfirmEmailForm\:\:\$key has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/models/authentication/ConfirmEmailForm.php
 
 		-
-			message: "#^Property api\\\\models\\\\authentication\\\\RecoverPasswordForm\\:\\:\\$key has no type specified\\.$#"
+			message: '#^Property api\\models\\authentication\\RecoverPasswordForm\:\:\$key has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/models/authentication/RecoverPasswordForm.php
 
 		-
-			message: "#^Property api\\\\models\\\\authentication\\\\RecoverPasswordForm\\:\\:\\$newPassword has no type specified\\.$#"
+			message: '#^Property api\\models\\authentication\\RecoverPasswordForm\:\:\$newPassword has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/models/authentication/RecoverPasswordForm.php
 
 		-
-			message: "#^Property api\\\\models\\\\authentication\\\\RecoverPasswordForm\\:\\:\\$newRePassword has no type specified\\.$#"
+			message: '#^Property api\\models\\authentication\\RecoverPasswordForm\:\:\$newRePassword has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/models/authentication/RecoverPasswordForm.php
 
 		-
-			message: "#^Property api\\\\models\\\\authentication\\\\RefreshTokenForm\\:\\:\\$refresh_token has no type specified\\.$#"
+			message: '#^Property api\\models\\authentication\\RefreshTokenForm\:\:\$refresh_token has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/models/authentication/RefreshTokenForm.php
 
 		-
-			message: "#^Method api\\\\models\\\\authentication\\\\RegistrationForm\\:\\:canContinue\\(\\) has parameter \\$errors with no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\models\\authentication\\RegistrationForm\:\:canContinue\(\) has parameter \$errors with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/models/authentication/RegistrationForm.php
 
 		-
-			message: "#^Method api\\\\models\\\\authentication\\\\RegistrationForm\\:\\:signup\\(\\) has no return type specified\\.$#"
+			message: '#^Method api\\models\\authentication\\RegistrationForm\:\:signup\(\) has no return type specified\.$#'
+			identifier: missingType.return
 			count: 1
 			path: api/models/authentication/RegistrationForm.php
 
 		-
-			message: "#^Method api\\\\models\\\\authentication\\\\RegistrationForm\\:\\:validatePasswordAndRePasswordMatch\\(\\) has parameter \\$attribute with no type specified\\.$#"
+			message: '#^Method api\\models\\authentication\\RegistrationForm\:\:validatePasswordAndRePasswordMatch\(\) has parameter \$attribute with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/models/authentication/RegistrationForm.php
 
 		-
-			message: "#^Property api\\\\models\\\\authentication\\\\RegistrationForm\\:\\:\\$email has no type specified\\.$#"
+			message: '#^Property api\\models\\authentication\\RegistrationForm\:\:\$email has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/models/authentication/RegistrationForm.php
 
 		-
-			message: "#^Property api\\\\models\\\\authentication\\\\RegistrationForm\\:\\:\\$lang has no type specified\\.$#"
+			message: '#^Property api\\models\\authentication\\RegistrationForm\:\:\$lang has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/models/authentication/RegistrationForm.php
 
 		-
-			message: "#^Property api\\\\models\\\\authentication\\\\RegistrationForm\\:\\:\\$password has no type specified\\.$#"
+			message: '#^Property api\\models\\authentication\\RegistrationForm\:\:\$password has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/models/authentication/RegistrationForm.php
 
 		-
-			message: "#^Property api\\\\models\\\\authentication\\\\RegistrationForm\\:\\:\\$rePassword has no type specified\\.$#"
+			message: '#^Property api\\models\\authentication\\RegistrationForm\:\:\$rePassword has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/models/authentication/RegistrationForm.php
 
 		-
-			message: "#^Property api\\\\models\\\\authentication\\\\RegistrationForm\\:\\:\\$rulesAgreement has no type specified\\.$#"
+			message: '#^Property api\\models\\authentication\\RegistrationForm\:\:\$rulesAgreement has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/models/authentication/RegistrationForm.php
 
 		-
-			message: "#^Property api\\\\models\\\\authentication\\\\RegistrationForm\\:\\:\\$username has no type specified\\.$#"
+			message: '#^Property api\\models\\authentication\\RegistrationForm\:\:\$username has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/models/authentication/RegistrationForm.php
 
 		-
-			message: "#^Method api\\\\modules\\\\accounts\\\\actions\\\\BaseAccountAction\\:\\:formatFailedResult\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\modules\\accounts\\actions\\BaseAccountAction\:\:formatFailedResult\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/modules/accounts/actions/BaseAccountAction.php
 
 		-
-			message: "#^Method api\\\\modules\\\\accounts\\\\actions\\\\BaseAccountAction\\:\\:formatSuccessResult\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\modules\\accounts\\actions\\BaseAccountAction\:\:formatSuccessResult\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/modules/accounts/actions/BaseAccountAction.php
 
 		-
-			message: "#^Method api\\\\modules\\\\accounts\\\\actions\\\\BaseAccountAction\\:\\:getFailedResultData\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\modules\\accounts\\actions\\BaseAccountAction\:\:getFailedResultData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/modules/accounts/actions/BaseAccountAction.php
 
 		-
-			message: "#^Method api\\\\modules\\\\accounts\\\\actions\\\\BaseAccountAction\\:\\:getRequestData\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\modules\\accounts\\actions\\BaseAccountAction\:\:getRequestData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/modules/accounts/actions/BaseAccountAction.php
 
 		-
-			message: "#^Method api\\\\modules\\\\accounts\\\\actions\\\\BaseAccountAction\\:\\:getSuccessResultData\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\modules\\accounts\\actions\\BaseAccountAction\:\:getRequestData\(\) should return array but returns array\|object\.$#'
+			identifier: return.type
 			count: 1
 			path: api/modules/accounts/actions/BaseAccountAction.php
 
 		-
-			message: "#^Method api\\\\modules\\\\accounts\\\\actions\\\\ChangeEmailAction\\:\\:getSuccessResultData\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\modules\\accounts\\actions\\BaseAccountAction\:\:getSuccessResultData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: api/modules/accounts/actions/BaseAccountAction.php
+
+		-
+			message: '#^Method api\\modules\\accounts\\actions\\ChangeEmailAction\:\:getSuccessResultData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/modules/accounts/actions/ChangeEmailAction.php
 
 		-
-			message: "#^Method api\\\\modules\\\\accounts\\\\controllers\\\\DefaultController\\:\\:bindActionParams\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\modules\\accounts\\controllers\\DefaultController\:\:createParams\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/modules/accounts/controllers/DefaultController.php
 
 		-
-			message: "#^Method api\\\\modules\\\\accounts\\\\controllers\\\\DefaultController\\:\\:bindActionParams\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/modules/accounts/controllers/DefaultController.php
-
-		-
-			message: "#^Method api\\\\modules\\\\accounts\\\\controllers\\\\DefaultController\\:\\:createParams\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/modules/accounts/controllers/DefaultController.php
-
-		-
-			message: "#^Cannot call method can\\(\\) on string\\|yii\\\\web\\\\User\\.$#"
+			message: '#^Cannot call method can\(\) on string\|yii\\web\\User\.$#'
+			identifier: method.nonObject
 			count: 2
 			path: api/modules/accounts/models/AccountInfo.php
 
 		-
-			message: "#^Method api\\\\modules\\\\accounts\\\\models\\\\AccountInfo\\:\\:info\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\modules\\accounts\\models\\AccountInfo\:\:info\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/modules/accounts/models/AccountInfo.php
 
 		-
-			message: "#^Property api\\\\modules\\\\accounts\\\\models\\\\AccountInfo\\:\\:\\$user \\(string\\|yii\\\\web\\\\User\\) does not accept object\\.$#"
-			count: 1
-			path: api/modules/accounts/models/AccountInfo.php
-
-		-
-			message: "#^Property api\\\\modules\\\\accounts\\\\models\\\\ChangeEmailForm\\:\\:\\$key has no type specified\\.$#"
+			message: '#^Property api\\modules\\accounts\\models\\ChangeEmailForm\:\:\$key has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/modules/accounts/models/ChangeEmailForm.php
 
 		-
-			message: "#^Property api\\\\modules\\\\accounts\\\\models\\\\ChangeLanguageForm\\:\\:\\$lang has no type specified\\.$#"
+			message: '#^Property api\\modules\\accounts\\models\\ChangeLanguageForm\:\:\$lang has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/modules/accounts/models/ChangeLanguageForm.php
 
 		-
-			message: "#^Method api\\\\modules\\\\accounts\\\\models\\\\ChangePasswordForm\\:\\:validatePasswordAndRePasswordMatch\\(\\) has parameter \\$attribute with no type specified\\.$#"
+			message: '#^Method api\\modules\\accounts\\models\\ChangePasswordForm\:\:validatePasswordAndRePasswordMatch\(\) has parameter \$attribute with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/modules/accounts/models/ChangePasswordForm.php
 
 		-
-			message: "#^Property api\\\\modules\\\\accounts\\\\models\\\\ChangePasswordForm\\:\\:\\$logoutAll has no type specified\\.$#"
+			message: '#^Property api\\modules\\accounts\\models\\ChangePasswordForm\:\:\$logoutAll has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/modules/accounts/models/ChangePasswordForm.php
 
 		-
-			message: "#^Property api\\\\modules\\\\accounts\\\\models\\\\ChangePasswordForm\\:\\:\\$newPassword has no type specified\\.$#"
+			message: '#^Property api\\modules\\accounts\\models\\ChangePasswordForm\:\:\$newPassword has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/modules/accounts/models/ChangePasswordForm.php
 
 		-
-			message: "#^Property api\\\\modules\\\\accounts\\\\models\\\\ChangePasswordForm\\:\\:\\$newRePassword has no type specified\\.$#"
+			message: '#^Property api\\modules\\accounts\\models\\ChangePasswordForm\:\:\$newRePassword has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/modules/accounts/models/ChangePasswordForm.php
 
 		-
-			message: "#^Property api\\\\modules\\\\accounts\\\\models\\\\ChangePasswordForm\\:\\:\\$password has no type specified\\.$#"
+			message: '#^Property api\\modules\\accounts\\models\\ChangePasswordForm\:\:\$password has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/modules/accounts/models/ChangePasswordForm.php
 
 		-
-			message: "#^Property api\\\\modules\\\\accounts\\\\models\\\\ChangeUsernameForm\\:\\:\\$password has no type specified\\.$#"
+			message: '#^Property api\\modules\\accounts\\models\\ChangeUsernameForm\:\:\$password has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/modules/accounts/models/ChangeUsernameForm.php
 
 		-
-			message: "#^Property api\\\\modules\\\\accounts\\\\models\\\\ChangeUsernameForm\\:\\:\\$username has no type specified\\.$#"
+			message: '#^Property api\\modules\\accounts\\models\\ChangeUsernameForm\:\:\$username has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/modules/accounts/models/ChangeUsernameForm.php
 
 		-
-			message: "#^Property api\\\\modules\\\\accounts\\\\models\\\\DeleteAccountForm\\:\\:\\$password has no type specified\\.$#"
+			message: '#^Property api\\modules\\accounts\\models\\DeleteAccountForm\:\:\$password has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/modules/accounts/models/DeleteAccountForm.php
 
 		-
-			message: "#^Property api\\\\modules\\\\accounts\\\\models\\\\SendEmailVerificationForm\\:\\:\\$password has no type specified\\.$#"
+			message: '#^Property api\\modules\\accounts\\models\\SendEmailVerificationForm\:\:\$password has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/modules/accounts/models/SendEmailVerificationForm.php
 
 		-
-			message: "#^Property api\\\\modules\\\\accounts\\\\models\\\\SendNewEmailVerificationForm\\:\\:\\$email has no type specified\\.$#"
+			message: '#^Property api\\modules\\accounts\\models\\SendNewEmailVerificationForm\:\:\$email has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/modules/accounts/models/SendNewEmailVerificationForm.php
 
 		-
-			message: "#^Property api\\\\modules\\\\accounts\\\\models\\\\SendNewEmailVerificationForm\\:\\:\\$key has no type specified\\.$#"
+			message: '#^Property api\\modules\\accounts\\models\\SendNewEmailVerificationForm\:\:\$key has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/modules/accounts/models/SendNewEmailVerificationForm.php
 
 		-
-			message: "#^Method api\\\\modules\\\\accounts\\\\models\\\\TwoFactorAuthInfo\\:\\:buildDataImage\\(\\) has no return type specified\\.$#"
+			message: '#^Method api\\modules\\accounts\\models\\TwoFactorAuthInfo\:\:buildDataImage\(\) has no return type specified\.$#'
+			identifier: missingType.return
 			count: 1
 			path: api/modules/accounts/models/TwoFactorAuthInfo.php
 
 		-
-			message: "#^Method api\\\\modules\\\\accounts\\\\models\\\\TwoFactorAuthInfo\\:\\:getCredentials\\(\\) should return array\\{qr\\: string, uri\\: string, secret\\: string\\} but returns array\\{qr\\: mixed, uri\\: non\\-empty\\-string, secret\\: string\\|null\\}\\.$#"
+			message: '#^Parameter \#1 \$label of method OTPHP\\OTP\:\:setLabel\(\) expects non\-empty\-string, string given\.$#'
+			identifier: argument.type
 			count: 1
 			path: api/modules/accounts/models/TwoFactorAuthInfo.php
 
 		-
-			message: "#^Parameter \\#1 \\$label of method OTPHP\\\\OTP\\:\\:setLabel\\(\\) expects non\\-empty\\-string, string given\\.$#"
+			message: '#^Parameter \#1 \$length of function random_bytes expects int\<1, max\>, int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: api/modules/accounts/models/TwoFactorAuthInfo.php
 
 		-
-			message: "#^Parameter \\#1 \\$length of function random_bytes expects int\\<1, max\\>, int given\\.$#"
+			message: '#^Parameter \#1 \$secret of static method OTPHP\\TOTP\:\:create\(\) expects non\-empty\-string\|null, string\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: api/modules/accounts/models/TwoFactorAuthInfo.php
 
 		-
-			message: "#^Parameter \\#1 \\$secret of static method OTPHP\\\\TOTP\\:\\:create\\(\\) expects non\\-empty\\-string\\|null, string\\|null given\\.$#"
-			count: 1
-			path: api/modules/accounts/models/TwoFactorAuthInfo.php
-
-		-
-			message: "#^Method api\\\\modules\\\\authserver\\\\Module\\:\\:error\\(\\) has parameter \\$message with no type specified\\.$#"
+			message: '#^Method api\\modules\\authserver\\Module\:\:error\(\) has parameter \$message with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/modules/authserver/Module.php
 
 		-
-			message: "#^Method api\\\\modules\\\\authserver\\\\Module\\:\\:info\\(\\) has parameter \\$message with no type specified\\.$#"
+			message: '#^Method api\\modules\\authserver\\Module\:\:info\(\) has parameter \$message with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/modules/authserver/Module.php
 
 		-
-			message: "#^Method api\\\\modules\\\\authserver\\\\controllers\\\\AuthenticationController\\:\\:verbs\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\modules\\authserver\\controllers\\AuthenticationController\:\:verbs\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/modules/authserver/controllers/AuthenticationController.php
 
 		-
-			message: "#^Method api\\\\modules\\\\authserver\\\\validators\\\\AccessTokenValidator\\:\\:validateValue\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Parameter \#1 \$data of method yii\\base\\Model\:\:load\(\) expects array, array\|object given\.$#'
+			identifier: argument.type
+			count: 5
+			path: api/modules/authserver/controllers/AuthenticationController.php
+
+		-
+			message: '#^Parameter \#1 \$token of class api\\components\\Tokens\\TokenReader constructor expects Lcobucci\\JWT\\UnencryptedToken, Lcobucci\\JWT\\Token given\.$#'
+			identifier: argument.type
+			count: 1
+			path: api/modules/authserver/models/RefreshTokenForm.php
+
+		-
+			message: '#^Method api\\modules\\authserver\\validators\\AccessTokenValidator\:\:validateValue\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/modules/authserver/validators/AccessTokenValidator.php
 
 		-
-			message: "#^Method api\\\\modules\\\\authserver\\\\validators\\\\ClientTokenValidator\\:\\:validateValue\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Parameter \#1 \$token of class api\\components\\Tokens\\TokenReader constructor expects Lcobucci\\JWT\\UnencryptedToken, Lcobucci\\JWT\\Token given\.$#'
+			identifier: argument.type
+			count: 1
+			path: api/modules/authserver/validators/AccessTokenValidator.php
+
+		-
+			message: '#^Method api\\modules\\authserver\\validators\\ClientTokenValidator\:\:validateValue\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/modules/authserver/validators/ClientTokenValidator.php
 
 		-
-			message: "#^Method api\\\\modules\\\\authserver\\\\validators\\\\RequiredValidator\\:\\:validateValue\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\modules\\authserver\\validators\\RequiredValidator\:\:validateValue\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/modules/authserver/validators/RequiredValidator.php
 
 		-
-			message: "#^Method api\\\\modules\\\\internal\\\\controllers\\\\AccountsController\\:\\:verbs\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\modules\\internal\\controllers\\AccountsController\:\:verbs\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/modules/internal/controllers/AccountsController.php
 
 		-
-			message: "#^Method api\\\\modules\\\\oauth\\\\controllers\\\\AuthorizationController\\:\\:verbs\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\modules\\mojang\\behaviors\\ServiceErrorConverterBehavior\:\:events\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: api/modules/mojang/behaviors/ServiceErrorConverterBehavior.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_unique expects array, array\|object given\.$#'
+			identifier: argument.type
+			count: 1
+			path: api/modules/mojang/controllers/ApiController.php
+
+		-
+			message: '#^Method api\\modules\\oauth\\controllers\\AuthorizationController\:\:verbs\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/modules/oauth/controllers/AuthorizationController.php
 
 		-
-			message: "#^Method api\\\\modules\\\\oauth\\\\models\\\\BaseOauthClientType\\:\\:getValidationErrors\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Call to static method Webmozart\\Assert\\Assert\:\:notNull\(\) with bool and ''This form should…'' will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
+			count: 1
+			path: api/modules/oauth/controllers/ClientsController.php
+
+		-
+			message: '#^Call to an undefined method common\\components\\Sentry\:\:captureMessage\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: api/modules/oauth/controllers/IdentityController.php
+
+		-
+			message: '#^Method api\\modules\\oauth\\models\\BaseOauthClientType\:\:getValidationErrors\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/modules/oauth/models/BaseOauthClientType.php
 
 		-
-			message: "#^Method api\\\\modules\\\\oauth\\\\models\\\\BaseOauthClientType\\:\\:load\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\modules\\oauth\\models\\BaseOauthClientType\:\:load\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/modules/oauth/models/BaseOauthClientType.php
 
 		-
-			message: "#^Method api\\\\modules\\\\oauth\\\\models\\\\IdentityInfo\\:\\:info\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\modules\\oauth\\models\\IdentityInfo\:\:info\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/modules/oauth/models/IdentityInfo.php
 
 		-
-			message: "#^Property api\\\\modules\\\\oauth\\\\models\\\\MinecraftServerType\\:\\:\\$minecraftServerIp has no type specified\\.$#"
+			message: '#^Property api\\modules\\oauth\\models\\MinecraftServerType\:\:\$minecraftServerIp has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/modules/oauth/models/MinecraftServerType.php
 
 		-
-			message: "#^Method api\\\\modules\\\\oauth\\\\models\\\\OauthClientTypeForm\\:\\:getValidationErrors\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Strict comparison using \=\=\= between ''application''\|''desktop\-application''\|''minecraft\-server'' and null will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: api/modules/oauth/models/OauthClientForm.php
+
+		-
+			message: '#^Match arm comparison between ''minecraft\-server'' and ''minecraft\-server'' is always true\.$#'
+			identifier: match.alwaysTrue
+			count: 1
+			path: api/modules/oauth/models/OauthClientFormFactory.php
+
+		-
+			message: '#^Method api\\modules\\oauth\\models\\OauthClientTypeForm\:\:getValidationErrors\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/modules/oauth/models/OauthClientTypeForm.php
 
 		-
-			message: "#^Method api\\\\modules\\\\oauth\\\\models\\\\OauthClientTypeForm\\:\\:load\\(\\) has parameter \\$data with no type specified\\.$#"
+			message: '#^Method api\\modules\\oauth\\models\\OauthClientTypeForm\:\:load\(\) has parameter \$data with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/modules/oauth/models/OauthClientTypeForm.php
 
 		-
-			message: "#^Method api\\\\modules\\\\session\\\\Module\\:\\:error\\(\\) has parameter \\$message with no type specified\\.$#"
+			message: '#^Method api\\modules\\session\\Module\:\:error\(\) has parameter \$message with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/modules/session/Module.php
 
 		-
-			message: "#^Method api\\\\modules\\\\session\\\\Module\\:\\:info\\(\\) has parameter \\$message with no type specified\\.$#"
+			message: '#^Method api\\modules\\session\\Module\:\:info\(\) has parameter \$message with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/modules/session/Module.php
 
 		-
-			message: "#^Parameter \\#2 \\$request of method api\\\\modules\\\\session\\\\filters\\\\RateLimiter\\:\\:checkRateLimit\\(\\) expects yii\\\\web\\\\Request, yii\\\\console\\\\Request\\|yii\\\\web\\\\Request given\\.$#"
+			message: '#^Cannot access offset ''accessToken'' on array\|object\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: api/modules/session/controllers/SessionController.php
+
+		-
+			message: '#^Cannot access offset ''selectedProfile'' on array\|object\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: api/modules/session/controllers/SessionController.php
+
+		-
+			message: '#^Cannot access offset ''serverId'' on array\|object\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: api/modules/session/controllers/SessionController.php
+
+		-
+			message: '#^Property api\\modules\\session\\filters\\RateLimiter\:\:\$authserverDomain has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/modules/session/filters/RateLimiter.php
 
 		-
-			message: "#^Parameter \\#3 \\$response of method api\\\\modules\\\\session\\\\filters\\\\RateLimiter\\:\\:checkRateLimit\\(\\) expects yii\\\\web\\\\Response, yii\\\\console\\\\Response\\|yii\\\\web\\\\Response given\\.$#"
+			message: '#^Property api\\modules\\session\\filters\\RateLimiter\:\:\$limit has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/modules/session/filters/RateLimiter.php
 
 		-
-			message: "#^Property api\\\\modules\\\\session\\\\filters\\\\RateLimiter\\:\\:\\$authserverDomain has no type specified\\.$#"
+			message: '#^Property api\\modules\\session\\filters\\RateLimiter\:\:\$limitTime has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/modules/session/filters/RateLimiter.php
 
 		-
-			message: "#^Property api\\\\modules\\\\session\\\\filters\\\\RateLimiter\\:\\:\\$limit has no type specified\\.$#"
+			message: '#^Property api\\modules\\session\\filters\\RateLimiter\:\:\$server has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/modules/session/filters/RateLimiter.php
 
 		-
-			message: "#^Property api\\\\modules\\\\session\\\\filters\\\\RateLimiter\\:\\:\\$limitTime has no type specified\\.$#"
+			message: '#^Dead catch \- yii\\web\\UnauthorizedHttpException is never thrown in the try block\.$#'
+			identifier: catch.neverThrown
 			count: 1
-			path: api/modules/session/filters/RateLimiter.php
+			path: api/modules/session/models/JoinForm.php
 
 		-
-			message: "#^Property api\\\\modules\\\\session\\\\filters\\\\RateLimiter\\:\\:\\$server has no type specified\\.$#"
-			count: 1
-			path: api/modules/session/filters/RateLimiter.php
-
-		-
-			message: "#^Method api\\\\modules\\\\session\\\\models\\\\protocols\\\\BaseJoin\\:\\:isEmpty\\(\\) has parameter \\$value with no type specified\\.$#"
+			message: '#^Method api\\modules\\session\\models\\protocols\\BaseJoin\:\:isEmpty\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/modules/session/models/protocols/BaseJoin.php
 
 		-
-			message: "#^Property api\\\\modules\\\\session\\\\models\\\\protocols\\\\LegacyJoin\\:\\:\\$accessToken has no type specified\\.$#"
+			message: '#^Property api\\modules\\session\\models\\protocols\\LegacyJoin\:\:\$accessToken has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/modules/session/models/protocols/LegacyJoin.php
 
 		-
-			message: "#^Method api\\\\rbac\\\\Manager\\:\\:getAssignments\\(\\) should return array\\<string, yii\\\\rbac\\\\Assignment\\> but returns array\\<int\\|string, yii\\\\rbac\\\\Assignment\\>\\.$#"
+			message: '#^Method api\\modules\\session\\validators\\RequiredValidator\:\:validateValue\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
-			path: api/rbac/Manager.php
+			path: api/modules/session/validators/RequiredValidator.php
 
 		-
-			message: "#^Method api\\\\rbac\\\\rules\\\\AccountOwner\\:\\:execute\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\rbac\\rules\\AccountOwner\:\:execute\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/rbac/rules/AccountOwner.php
 
 		-
-			message: "#^Method api\\\\rbac\\\\rules\\\\OauthClientOwner\\:\\:execute\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\rbac\\rules\\OauthClientOwner\:\:execute\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/rbac/rules/OauthClientOwner.php
 
 		-
-			message: "#^Method api\\\\request\\\\RequestParser\\:\\:parse\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\request\\RequestParser\:\:parse\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/request/RequestParser.php
 
 		-
-			message: "#^Method api\\\\request\\\\RequestParser\\:\\:parse\\(\\) should return array but returns array\\|stdClass\\.$#"
+			message: '#^Method api\\request\\RequestParser\:\:parse\(\) should return array but returns array\|stdClass\.$#'
+			identifier: return.type
 			count: 1
 			path: api/request/RequestParser.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\AccountsRoute\\:\\:changeEmail\\(\\) has parameter \\$key with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\AccountsRoute\:\:changeEmail\(\) has parameter \$key with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/AccountsRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\AccountsRoute\\:\\:changeEmailInitialize\\(\\) has parameter \\$password with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\AccountsRoute\:\:changeEmailInitialize\(\) has parameter \$password with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/AccountsRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\AccountsRoute\\:\\:changeEmailSubmitNewEmail\\(\\) has parameter \\$email with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\AccountsRoute\:\:changeEmailSubmitNewEmail\(\) has parameter \$email with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/AccountsRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\AccountsRoute\\:\\:changeEmailSubmitNewEmail\\(\\) has parameter \\$key with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\AccountsRoute\:\:changeEmailSubmitNewEmail\(\) has parameter \$key with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/AccountsRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\AccountsRoute\\:\\:changeLanguage\\(\\) has parameter \\$lang with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\AccountsRoute\:\:changeLanguage\(\) has parameter \$lang with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/AccountsRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\AccountsRoute\\:\\:changePassword\\(\\) has parameter \\$currentPassword with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\AccountsRoute\:\:changePassword\(\) has parameter \$currentPassword with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/AccountsRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\AccountsRoute\\:\\:changePassword\\(\\) has parameter \\$newPassword with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\AccountsRoute\:\:changePassword\(\) has parameter \$newPassword with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/AccountsRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\AccountsRoute\\:\\:changePassword\\(\\) has parameter \\$newRePassword with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\AccountsRoute\:\:changePassword\(\) has parameter \$newRePassword with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/AccountsRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\AccountsRoute\\:\\:changeUsername\\(\\) has parameter \\$currentPassword with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\AccountsRoute\:\:changeUsername\(\) has parameter \$currentPassword with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/AccountsRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\AccountsRoute\\:\\:changeUsername\\(\\) has parameter \\$newUsername with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\AccountsRoute\:\:changeUsername\(\) has parameter \$newUsername with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/AccountsRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\AccountsRoute\\:\\:disableTwoFactorAuth\\(\\) has parameter \\$password with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\AccountsRoute\:\:disableTwoFactorAuth\(\) has parameter \$password with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/AccountsRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\AccountsRoute\\:\\:disableTwoFactorAuth\\(\\) has parameter \\$totp with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\AccountsRoute\:\:disableTwoFactorAuth\(\) has parameter \$totp with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/AccountsRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\AccountsRoute\\:\\:enableTwoFactorAuth\\(\\) has parameter \\$password with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\AccountsRoute\:\:enableTwoFactorAuth\(\) has parameter \$password with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/AccountsRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\AccountsRoute\\:\\:enableTwoFactorAuth\\(\\) has parameter \\$totp with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\AccountsRoute\:\:enableTwoFactorAuth\(\) has parameter \$totp with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/AccountsRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\AuthenticationRoute\\:\\:forgotPassword\\(\\) has parameter \\$login with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\AuthenticationRoute\:\:forgotPassword\(\) has parameter \$login with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/AuthenticationRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\AuthenticationRoute\\:\\:forgotPassword\\(\\) has parameter \\$token with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\AuthenticationRoute\:\:forgotPassword\(\) has parameter \$token with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/AuthenticationRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\AuthenticationRoute\\:\\:recoverPassword\\(\\) has parameter \\$key with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\AuthenticationRoute\:\:recoverPassword\(\) has parameter \$key with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/AuthenticationRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\AuthenticationRoute\\:\\:recoverPassword\\(\\) has parameter \\$newPassword with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\AuthenticationRoute\:\:recoverPassword\(\) has parameter \$newPassword with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/AuthenticationRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\AuthenticationRoute\\:\\:recoverPassword\\(\\) has parameter \\$newRePassword with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\AuthenticationRoute\:\:recoverPassword\(\) has parameter \$newRePassword with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/AuthenticationRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\AuthenticationRoute\\:\\:refreshToken\\(\\) has parameter \\$refreshToken with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\AuthenticationRoute\:\:refreshToken\(\) has parameter \$refreshToken with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/AuthenticationRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\MojangApiRoute\\:\\:usernamesByUuid\\(\\) has parameter \\$uuid with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\MojangApiRoute\:\:usernamesByUuid\(\) has parameter \$uuid with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/MojangApiRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\SessionServerRoute\\:\\:hasJoined\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\tests\\_pages\\SessionServerRoute\:\:hasJoined\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/_pages/SessionServerRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\SessionServerRoute\\:\\:hasJoinedLegacy\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\tests\\_pages\\SessionServerRoute\:\:hasJoinedLegacy\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/_pages/SessionServerRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\SessionServerRoute\\:\\:join\\(\\) has parameter \\$params with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\SessionServerRoute\:\:join\(\) has parameter \$params with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/SessionServerRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\SessionServerRoute\\:\\:joinLegacy\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\tests\\_pages\\SessionServerRoute\:\:joinLegacy\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/_pages/SessionServerRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\SignupRoute\\:\\:confirm\\(\\) has parameter \\$key with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\SignupRoute\:\:confirm\(\) has parameter \$key with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/SignupRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\SignupRoute\\:\\:register\\(\\) has parameter \\$registrationData with no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\tests\\_pages\\SignupRoute\:\:register\(\) has parameter \$registrationData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/_pages/SignupRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\_pages\\\\SignupRoute\\:\\:sendRepeatMessage\\(\\) has parameter \\$email with no type specified\\.$#"
+			message: '#^Method api\\tests\\_pages\\SignupRoute\:\:sendRepeatMessage\(\) has parameter \$email with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_pages/SignupRoute.php
 
 		-
-			message: "#^Method api\\\\tests\\\\FunctionalTester\\:\\:canSeeAuthCredentials\\(\\) has parameter \\$expectRefreshToken with no type specified\\.$#"
+			message: '#^Method api\\tests\\FunctionalTester\:\:canSeeAuthCredentials\(\) has parameter \$expectRefreshToken with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/_support/FunctionalTester.php
 
 		-
-			message: "#^Method api\\\\tests\\\\functional\\\\LogoutCest\\:\\:getLogoutCases\\(\\) return type has no value type specified in iterable type iterable\\.$#"
+			message: '#^Method api\\tests\\functional\\LogoutCest\:\:getLogoutCases\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/functional/LogoutCest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\functional\\\\LogoutCest\\:\\:logout\\(\\) has parameter \\$example with no value type specified in iterable type Codeception\\\\Example\\.$#"
+			message: '#^Method api\\tests\\functional\\LogoutCest\:\:logout\(\) has parameter \$example with no value type specified in iterable type Codeception\\Example\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/functional/LogoutCest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\functional\\\\RegisterCest\\:\\:getInvalidInputExamples\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\tests\\functional\\RegisterCest\:\:getInvalidInputExamples\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/functional/RegisterCest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\functional\\\\RegisterCest\\:\\:getSuccessInputExamples\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\tests\\functional\\RegisterCest\:\:getSuccessInputExamples\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/functional/RegisterCest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\functional\\\\RegisterCest\\:\\:testIncorrectRegistration\\(\\) has parameter \\$example with no value type specified in iterable type Codeception\\\\Example\\.$#"
+			message: '#^Method api\\tests\\functional\\RegisterCest\:\:testIncorrectRegistration\(\) has parameter \$example with no value type specified in iterable type Codeception\\Example\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/functional/RegisterCest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\functional\\\\RegisterCest\\:\\:testUserCorrectRegistration\\(\\) has parameter \\$example with no value type specified in iterable type Codeception\\\\Example\\.$#"
+			message: '#^Method api\\tests\\functional\\RegisterCest\:\:testUserCorrectRegistration\(\) has parameter \$example with no value type specified in iterable type Codeception\\Example\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/functional/RegisterCest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\functional\\\\_steps\\\\AuthserverSteps\\:\\:amAuthenticated\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\tests\\functional\\_steps\\AuthserverSteps\:\:amAuthenticated\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/functional/_steps/AuthserverSteps.php
 
 		-
-			message: "#^Offset 1 does not exist on array\\{0\\?\\: string, 1\\?\\: non\\-empty\\-string\\}\\.$#"
+			message: '#^Offset 1 might not exist on array\{\}\|array\{non\-falsy\-string, non\-empty\-string\}\.$#'
+			identifier: offsetAccess.notFound
 			count: 1
 			path: api/tests/functional/_steps/OauthSteps.php
 
 		-
-			message: "#^Method api\\\\tests\\\\functional\\\\_steps\\\\SessionServerSteps\\:\\:amJoined\\(\\) has parameter \\$byLegacy with no type specified\\.$#"
+			message: '#^Method api\\tests\\functional\\_steps\\SessionServerSteps\:\:amJoined\(\) has parameter \$byLegacy with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/functional/_steps/SessionServerSteps.php
 
 		-
-			message: "#^Method api\\\\tests\\\\functional\\\\_steps\\\\SessionServerSteps\\:\\:amJoined\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\tests\\functional\\_steps\\SessionServerSteps\:\:amJoined\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/functional/_steps/SessionServerSteps.php
 
 		-
-			message: "#^Parameter \\#1 \\$input of method OTPHP\\\\TOTP\\:\\:at\\(\\) expects int\\<0, max\\>, int\\<\\-4, max\\> given\\.$#"
+			message: '#^Parameter \#1 \$input of method OTPHP\\TOTP\:\:at\(\) expects int\<0, max\>, int\<\-4, max\> given\.$#'
+			identifier: argument.type
 			count: 1
 			path: api/tests/functional/accounts/EnableTwoFactorAuthCest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\functional\\\\authlibInjector\\\\JoinCest\\:\\:joinByOauth2Token\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
+			message: '#^Method api\\tests\\functional\\authlibInjector\\JoinCest\:\:joinByOauth2Token\(\) has parameter \$case with no value type specified in iterable type Codeception\\Example\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/functional/authlibInjector/JoinCest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\functional\\\\authlibInjector\\\\ProfileCest\\:\\:getProfile\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
+			message: '#^Method api\\tests\\functional\\authlibInjector\\ProfileCest\:\:getProfile\(\) has parameter \$case with no value type specified in iterable type Codeception\\Example\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/functional/authlibInjector/ProfileCest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\functional\\\\authserver\\\\AuthorizationCest\\:\\:authenticate\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
+			message: '#^Method api\\tests\\functional\\authserver\\AuthorizationCest\:\:authenticate\(\) has parameter \$case with no value type specified in iterable type Codeception\\Example\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/functional/authserver/AuthorizationCest.php
 
 		-
-			message: "#^Parameter \\#2 \\$params of method api\\\\tests\\\\FunctionalTester\\:\\:sendPost\\(\\) expects array\\|JsonSerializable\\|string, array\\<string, mixed\\>\\|string\\|false given\\.$#"
+			message: '#^Parameter \#2 \$params of method api\\tests\\FunctionalTester\:\:sendPost\(\) expects array\|JsonSerializable\|string, array\<string, mixed\>\|string\|false given\.$#'
+			identifier: argument.type
 			count: 1
 			path: api/tests/functional/authserver/AuthorizationCest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\functional\\\\authserver\\\\RefreshCest\\:\\:refresh\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
+			message: '#^Method api\\tests\\functional\\authserver\\RefreshCest\:\:refresh\(\) has parameter \$case with no value type specified in iterable type Codeception\\Example\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/functional/authserver/RefreshCest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\functional\\\\sessionserver\\\\ProfileCest\\:\\:getProfile\\(\\) has parameter \\$case with no value type specified in iterable type Codeception\\\\Example\\.$#"
+			message: '#^Method api\\tests\\functional\\sessionserver\\ProfileCest\:\:getProfile\(\) has parameter \$case with no value type specified in iterable type Codeception\\Example\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/functional/sessionserver/ProfileCest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\unit\\\\TestCase\\:\\:defineFunctionMock\\(\\) has parameter \\$name with no type specified\\.$#"
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with array\{''error\.captcha…''\} and array\<string, array\<string\>\> will always evaluate to false\.$#'
+			identifier: method.impossibleType
 			count: 1
-			path: api/tests/unit/TestCase.php
+			path: api/tests/unit/components/Captcha/CaptchaValidatorTest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\unit\\\\TestCase\\:\\:defineFunctionMock\\(\\) has parameter \\$namespace with no type specified\\.$#"
-			count: 1
-			path: api/tests/unit/TestCase.php
-
-		-
-			message: "#^Method api\\\\tests\\\\unit\\\\TestCase\\:\\:getFunctionMock\\(\\) has parameter \\$name with no type specified\\.$#"
-			count: 1
-			path: api/tests/unit/TestCase.php
-
-		-
-			message: "#^Method api\\\\tests\\\\unit\\\\TestCase\\:\\:getFunctionMock\\(\\) has parameter \\$namespace with no type specified\\.$#"
-			count: 1
-			path: api/tests/unit/TestCase.php
-
-		-
-			message: "#^Parameter \\#1 \\$objectOrClass of class ReflectionClass constructor expects class\\-string\\<T of object\\>\\|T of object, string given\\.$#"
-			count: 1
-			path: api/tests/unit/TestCase.php
-
-		-
-			message: "#^Method api\\\\tests\\\\unit\\\\components\\\\Tokens\\\\TokenReaderTest\\:\\:getAccountIdTestCases\\(\\) return type has no value type specified in iterable type iterable\\.$#"
+			message: '#^Method api\\tests\\unit\\components\\Tokens\\TokenReaderTest\:\:getAccountIdTestCases\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/unit/components/Tokens/TokenReaderTest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\unit\\\\components\\\\Tokens\\\\TokenReaderTest\\:\\:getClientIdTestCases\\(\\) return type has no value type specified in iterable type iterable\\.$#"
+			message: '#^Method api\\tests\\unit\\components\\Tokens\\TokenReaderTest\:\:getClientIdTestCases\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/unit/components/Tokens/TokenReaderTest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\unit\\\\components\\\\Tokens\\\\TokenReaderTest\\:\\:getMinecraftClientTokenTestCases\\(\\) return type has no value type specified in iterable type iterable\\.$#"
+			message: '#^Method api\\tests\\unit\\components\\Tokens\\TokenReaderTest\:\:getMinecraftClientTokenTestCases\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/unit/components/Tokens/TokenReaderTest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\unit\\\\components\\\\Tokens\\\\TokenReaderTest\\:\\:getScopesTestCases\\(\\) return type has no value type specified in iterable type iterable\\.$#"
+			message: '#^Method api\\tests\\unit\\components\\Tokens\\TokenReaderTest\:\:getScopesTestCases\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/unit/components/Tokens/TokenReaderTest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\unit\\\\components\\\\Tokens\\\\TokenReaderTest\\:\\:testGetAccountId\\(\\) has parameter \\$claims with no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\tests\\unit\\components\\Tokens\\TokenReaderTest\:\:testGetAccountId\(\) has parameter \$claims with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/unit/components/Tokens/TokenReaderTest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\unit\\\\components\\\\Tokens\\\\TokenReaderTest\\:\\:testGetClientId\\(\\) has parameter \\$claims with no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\tests\\unit\\components\\Tokens\\TokenReaderTest\:\:testGetClientId\(\) has parameter \$claims with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/unit/components/Tokens/TokenReaderTest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\unit\\\\components\\\\Tokens\\\\TokenReaderTest\\:\\:testGetMinecraftClientToken\\(\\) has parameter \\$claims with no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\tests\\unit\\components\\Tokens\\TokenReaderTest\:\:testGetMinecraftClientToken\(\) has parameter \$claims with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/unit/components/Tokens/TokenReaderTest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\unit\\\\components\\\\Tokens\\\\TokenReaderTest\\:\\:testGetScopes\\(\\) has parameter \\$claims with no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\tests\\unit\\components\\Tokens\\TokenReaderTest\:\:testGetScopes\(\) has parameter \$claims with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/unit/components/Tokens/TokenReaderTest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\unit\\\\components\\\\Tokens\\\\TokenReaderTest\\:\\:testGetScopes\\(\\) has parameter \\$expectedResult with no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\tests\\unit\\components\\Tokens\\TokenReaderTest\:\:testGetScopes\(\) has parameter \$expectedResult with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/unit/components/Tokens/TokenReaderTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$name of method Lcobucci\\\\JWT\\\\Builder\\:\\:withClaim\\(\\) expects non\\-empty\\-string, string given\\.$#"
+			message: '#^Parameter \#1 \$name of method Lcobucci\\JWT\\Builder\:\:withClaim\(\) expects non\-empty\-string, string given\.$#'
+			identifier: argument.type
 			count: 1
 			path: api/tests/unit/components/Tokens/TokenReaderTest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\unit\\\\components\\\\User\\\\IdentityFactoryTest\\:\\:_fixtures\\(\\) should return array\\<string, class\\-string\\<yii\\\\test\\\\Fixture\\>\\> but returns array\\<int, string\\>\\.$#"
+			message: '#^Method api\\tests\\unit\\components\\User\\IdentityFactoryTest\:\:_setUp\(\) has no return type specified\.$#'
+			identifier: missingType.return
 			count: 1
 			path: api/tests/unit/components/User/IdentityFactoryTest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\unit\\\\components\\\\User\\\\IdentityFactoryTest\\:\\:_setUp\\(\\) has no return type specified\\.$#"
+			message: '#^Method api\\tests\\unit\\components\\User\\IdentityFactoryTest\:\:_tearDown\(\) has no return type specified\.$#'
+			identifier: missingType.return
 			count: 1
 			path: api/tests/unit/components/User/IdentityFactoryTest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\unit\\\\components\\\\User\\\\IdentityFactoryTest\\:\\:_tearDown\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: api/tests/unit/components/User/IdentityFactoryTest.php
-
-		-
-			message: "#^Method api\\\\tests\\\\unit\\\\components\\\\User\\\\JwtIdentityTest\\:\\:getFindIdentityByAccessTokenInvalidCases\\(\\) return type has no value type specified in iterable type iterable\\.$#"
+			message: '#^Method api\\tests\\unit\\components\\User\\JwtIdentityTest\:\:getFindIdentityByAccessTokenInvalidCases\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/unit/components/User/JwtIdentityTest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\unit\\\\components\\\\User\\\\LegacyOAuth2IdentityTest\\:\\:_fixtures\\(\\) should return array\\<string, class\\-string\\<yii\\\\test\\\\Fixture\\>\\> but returns array\\<int, string\\>\\.$#"
-			count: 1
-			path: api/tests/unit/components/User/LegacyOAuth2IdentityTest.php
-
-		-
-			message: "#^Method api\\\\tests\\\\unit\\\\filters\\\\NginxCacheTest\\:\\:testAfterActionInternal\\(\\) has parameter \\$ruleConfig with no type specified\\.$#"
+			message: '#^Method api\\tests\\unit\\filters\\NginxCacheTest\:\:testAfterActionInternal\(\) has parameter \$ruleConfig with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/unit/filters/NginxCacheTest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\unit\\\\models\\\\authentication\\\\ConfirmEmailFormTest\\:\\:createModel\\(\\) has parameter \\$key with no type specified\\.$#"
+			message: '#^Method api\\tests\\unit\\models\\authentication\\ConfirmEmailFormTest\:\:createModel\(\) has parameter \$key with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/unit/models/authentication/ConfirmEmailFormTest.php
 
 		-
-			message: "#^Property api\\\\tests\\\\_support\\\\models\\\\base\\\\DummyApiForm\\:\\:\\$field has no type specified\\.$#"
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with arguments array\{''error\.account_not…''\}, array\<string, array\<string\>\> and ''expected error if…'' will always evaluate to false\.$#'
+			identifier: method.impossibleType
+			count: 1
+			path: api/tests/unit/models/authentication/ForgotPasswordFormTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with arguments array\{''error\.login_not…''\}, array\<string, array\<string\>\> and ''error\.login_not…'' will always evaluate to false\.$#'
+			identifier: method.impossibleType
+			count: 1
+			path: api/tests/unit/models/authentication/ForgotPasswordFormTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with arguments array\{''error\.recently_sent…''\}, array\<string, array\<string\>\> and ''error\.account_not…'' will always evaluate to false\.$#'
+			identifier: method.impossibleType
+			count: 1
+			path: api/tests/unit/models/authentication/ForgotPasswordFormTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with array\{''error\.refresh_token…''\} and array\<string, array\<string\>\> will always evaluate to false\.$#'
+			identifier: method.impossibleType
+			count: 1
+			path: api/tests/unit/models/authentication/RefreshTokenFormTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with arguments ''common\\\\models\\\\EmailActivation'', common\\models\\EmailActivation and ''email activation…'' will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: api/tests/unit/models/authentication/RegistrationFormTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with array\{''error\.rePassword…''\} and array\<string, array\<string\>\> will always evaluate to false\.$#'
+			identifier: method.impossibleType
+			count: 1
+			path: api/tests/unit/models/authentication/RegistrationFormTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with array\{''error\.account…''\} and array\<string, array\<string\>\> will always evaluate to false\.$#'
+			identifier: method.impossibleType
+			count: 1
+			path: api/tests/unit/models/authentication/RepeatAccountActivationFormTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with array\{''error\.email_not…''\} and array\<string, array\<string\>\> will always evaluate to false\.$#'
+			identifier: method.impossibleType
+			count: 1
+			path: api/tests/unit/models/authentication/RepeatAccountActivationFormTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with array\{''error\.recently_sent…''\} and array\<string, array\<string\>\> will always evaluate to false\.$#'
+			identifier: method.impossibleType
+			count: 1
+			path: api/tests/unit/models/authentication/RepeatAccountActivationFormTest.php
+
+		-
+			message: '#^Property api\\tests\\_support\\models\\base\\DummyApiForm\:\:\$field has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/tests/unit/models/base/ApiFormTest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\unit\\\\modules\\\\accounts\\\\models\\\\ChangeEmailFormTest\\:\\:getAccountId\\(\\) has no return type specified\\.$#"
+			message: '#^Method api\\tests\\unit\\modules\\accounts\\models\\ChangeEmailFormTest\:\:getAccountId\(\) has no return type specified\.$#'
+			identifier: missingType.return
 			count: 1
 			path: api/tests/unit/modules/accounts/models/ChangeEmailFormTest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\unit\\\\modules\\\\accounts\\\\models\\\\ChangeUsernameFormTest\\:\\:getAccountId\\(\\) has no return type specified\\.$#"
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with arguments array\{''error\.rePassword…''\}, array\<string, array\<string\>\> and ''error\.rePassword…'' will always evaluate to false\.$#'
+			identifier: method.impossibleType
+			count: 2
+			path: api/tests/unit/modules/accounts/models/ChangePasswordFormTest.php
+
+		-
+			message: '#^Method api\\tests\\unit\\modules\\accounts\\models\\ChangeUsernameFormTest\:\:getAccountId\(\) has no return type specified\.$#'
+			identifier: missingType.return
 			count: 1
 			path: api/tests/unit/modules/accounts/models/ChangeUsernameFormTest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\unit\\\\modules\\\\authserver\\\\validators\\\\RequiredValidatorTest\\:\\:callProtected\\(\\) has no return type specified\\.$#"
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''common\\\\models\\\\EmailActivation'' and common\\models\\EmailActivation will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: api/tests/unit/modules/accounts/models/SendEmailVerificationFormTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''common\\\\models\\\\confirmations\\\\CurrentEmailConfirmation'' and common\\models\\confirmations\\CurrentEmailConfirmation will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: api/tests/unit/modules/accounts/models/SendEmailVerificationFormTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''common\\\\models\\\\EmailActivation'' and common\\models\\EmailActivation will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: api/tests/unit/modules/accounts/models/SendNewEmailVerificationFormTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''common\\\\models\\\\confirmations\\\\NewEmailConfirmation'' and common\\models\\confirmations\\NewEmailConfirmation will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: api/tests/unit/modules/accounts/models/SendNewEmailVerificationFormTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) with ''qr'' and array\{qr\: string, uri\: string, secret\: string\} will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: api/tests/unit/modules/accounts/models/TwoFactorAuthInfoTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) with ''secret'' and array\{qr\: string, uri\: string, secret\: string\} will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: api/tests/unit/modules/accounts/models/TwoFactorAuthInfoTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) with ''uri'' and array\{qr\: string, uri\: string, secret\: string\} will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: api/tests/unit/modules/accounts/models/TwoFactorAuthInfoTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\{qr\: string, uri\: string, secret\: string\} will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: api/tests/unit/modules/accounts/models/TwoFactorAuthInfoTest.php
+
+		-
+			message: '#^Method api\\tests\\unit\\modules\\authserver\\validators\\RequiredValidatorTest\:\:callProtected\(\) has no return type specified\.$#'
+			identifier: missingType.return
 			count: 1
 			path: api/tests/unit/modules/authserver/validators/RequiredValidatorTest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\unit\\\\modules\\\\authserver\\\\validators\\\\RequiredValidatorTest\\:\\:callProtected\\(\\) has parameter \\$args with no type specified\\.$#"
+			message: '#^Method api\\tests\\unit\\modules\\authserver\\validators\\RequiredValidatorTest\:\:callProtected\(\) has parameter \$args with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/unit/modules/authserver/validators/RequiredValidatorTest.php
 
 		-
-			message: "#^Method class@anonymous/api/tests/unit/modules/oauth/models/OauthClientFormTest\\.php\\:52\\:\\:getValidationErrors\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with array\{''error\.account…''\} and array\<string, array\<string\>\> will always evaluate to false\.$#'
+			identifier: method.impossibleType
+			count: 1
+			path: api/tests/unit/modules/internal/models/BanAccountFormTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with array\{''error\.account_not…''\} and array\<string, array\<string\>\> will always evaluate to false\.$#'
+			identifier: method.impossibleType
+			count: 1
+			path: api/tests/unit/modules/internal/models/PardonFormTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with string will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
 			count: 1
 			path: api/tests/unit/modules/oauth/models/OauthClientFormTest.php
 
 		-
-			message: "#^Method class@anonymous/api/tests/unit/modules/oauth/models/OauthClientFormTest\\.php\\:52\\:\\:load\\(\\) has parameter \\$data with no type specified\\.$#"
+			message: '#^Method api\\modules\\oauth\\models\\OauthClientTypeForm@anonymous/api/tests/unit/modules/oauth/models/OauthClientFormTest\.php\:52\:\:getValidationErrors\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/tests/unit/modules/oauth/models/OauthClientFormTest.php
 
 		-
-			message: "#^Method api\\\\tests\\\\unit\\\\rbac\\\\rules\\\\OauthClientOwnerTest\\:\\:_fixtures\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\modules\\oauth\\models\\OauthClientTypeForm@anonymous/api/tests/unit/modules/oauth/models/OauthClientFormTest\.php\:52\:\:load\(\) has parameter \$data with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
-			path: api/tests/unit/rbac/rules/OauthClientOwnerTest.php
+			path: api/tests/unit/modules/oauth/models/OauthClientFormTest.php
 
 		-
-			message: "#^Method codeception\\\\api\\\\unit\\\\validators\\\\EmailActivationKeyValidatorTest\\:\\:callProtected\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: api/tests/unit/validators/EmailActivationKeyValidatorTest.php
-
-		-
-			message: "#^Method codeception\\\\api\\\\unit\\\\validators\\\\EmailActivationKeyValidatorTest\\:\\:callProtected\\(\\) has parameter \\$args with no type specified\\.$#"
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with array\{''error\.key_expire''\} and array\<string, array\<string\>\> will always evaluate to false\.$#'
+			identifier: method.impossibleType
 			count: 1
 			path: api/tests/unit/validators/EmailActivationKeyValidatorTest.php
 
 		-
-			message: "#^Property class@anonymous/api/tests/unit/validators/EmailActivationKeyValidatorTest\\.php\\:17\\:\\:\\$key has no type specified\\.$#"
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with array\{''error\.key_not_exists''\} and array\<string, array\<string\>\> will always evaluate to false\.$#'
+			identifier: method.impossibleType
 			count: 1
 			path: api/tests/unit/validators/EmailActivationKeyValidatorTest.php
 
 		-
-			message: "#^Method codeception\\\\api\\\\unit\\\\validators\\\\PasswordRequiredValidatorTest\\:\\:callProtected\\(\\) has no return type specified\\.$#"
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with array\{''error\.key_required''\} and array\<string, array\<string\>\> will always evaluate to false\.$#'
+			identifier: method.impossibleType
+			count: 1
+			path: api/tests/unit/validators/EmailActivationKeyValidatorTest.php
+
+		-
+			message: '#^Method codeception\\api\\unit\\validators\\EmailActivationKeyValidatorTest\:\:callProtected\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: api/tests/unit/validators/EmailActivationKeyValidatorTest.php
+
+		-
+			message: '#^Method codeception\\api\\unit\\validators\\EmailActivationKeyValidatorTest\:\:callProtected\(\) has parameter \$args with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: api/tests/unit/validators/EmailActivationKeyValidatorTest.php
+
+		-
+			message: '#^Property yii\\base\\Model@anonymous/api/tests/unit/validators/EmailActivationKeyValidatorTest\.php\:17\:\:\$key has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: api/tests/unit/validators/EmailActivationKeyValidatorTest.php
+
+		-
+			message: '#^Method codeception\\api\\unit\\validators\\PasswordRequiredValidatorTest\:\:callProtected\(\) has no return type specified\.$#'
+			identifier: missingType.return
 			count: 1
 			path: api/tests/unit/validators/PasswordRequiredValidatorTest.php
 
 		-
-			message: "#^Method codeception\\\\api\\\\unit\\\\validators\\\\PasswordRequiredValidatorTest\\:\\:callProtected\\(\\) has parameter \\$args with no type specified\\.$#"
+			message: '#^Method codeception\\api\\unit\\validators\\PasswordRequiredValidatorTest\:\:callProtected\(\) has parameter \$args with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: api/tests/unit/validators/PasswordRequiredValidatorTest.php
 
 		-
-			message: "#^Property api\\\\validators\\\\EmailActivationKeyValidator\\:\\:\\$expired has no type specified\\.$#"
+			message: '#^Property api\\validators\\EmailActivationKeyValidator\:\:\$expired has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/validators/EmailActivationKeyValidator.php
 
 		-
-			message: "#^Property api\\\\validators\\\\EmailActivationKeyValidator\\:\\:\\$keyRequired has no type specified\\.$#"
+			message: '#^Property api\\validators\\EmailActivationKeyValidator\:\:\$keyRequired has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/validators/EmailActivationKeyValidator.php
 
 		-
-			message: "#^Property api\\\\validators\\\\EmailActivationKeyValidator\\:\\:\\$notExist has no type specified\\.$#"
+			message: '#^Property api\\validators\\EmailActivationKeyValidator\:\:\$notExist has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: api/validators/EmailActivationKeyValidator.php
 
 		-
-			message: "#^Cannot call method can\\(\\) on string\\|yii\\\\web\\\\User\\.$#"
+			message: '#^Cannot call method can\(\) on string\|yii\\web\\User\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: api/validators/PasswordRequiredValidator.php
 
 		-
-			message: "#^Property api\\\\validators\\\\PasswordRequiredValidator\\:\\:\\$user \\(string\\|yii\\\\web\\\\User\\) does not accept object\\.$#"
+			message: '#^Method api\\validators\\PasswordRequiredValidator\:\:validateValue\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: api/validators/PasswordRequiredValidator.php
 
 		-
-			message: "#^Method common\\\\components\\\\EmailsRenderer\\\\Request\\\\TemplateRequest\\:\\:__construct\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			message: '#^Method api\\validators\\TotpValidator\:\:validateValue\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: api/validators/TotpValidator.php
+
+		-
+			message: '#^Method common\\behaviors\\PrimaryKeyValueBehavior\:\:events\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: common/behaviors/PrimaryKeyValueBehavior.php
+
+		-
+			message: '#^Access to an undefined property yii\\console\\Request\|yii\\web\\Request\:\:\$userIP\.$#'
+			identifier: property.notFound
+			count: 1
+			path: common/components/Authentication/LoginService.php
+
+		-
+			message: '#^Method common\\components\\EmailsRenderer\\Request\\TemplateRequest\:\:__construct\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/components/EmailsRenderer/Request/TemplateRequest.php
 
 		-
-			message: "#^Method common\\\\components\\\\EmailsRenderer\\\\Request\\\\TemplateRequest\\:\\:getParams\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\components\\EmailsRenderer\\Request\\TemplateRequest\:\:getParams\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/components/EmailsRenderer/Request/TemplateRequest.php
 
 		-
-			message: "#^Binary operation \"\\+\" between int and int\\|string results in an error\\.$#"
+			message: '#^Call to an undefined method yii\\console\\Request\|yii\\web\\Request\:\:getHostInfo\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: common/components/OAuth2/AuthorizationServerFactory.php
+
+		-
+			message: '#^Offset ''host'' might not exist on array\{scheme\: ''http''\|''https'', host\?\: string, port\?\: int\<0, 65535\>, user\?\: string, pass\?\: string, path\?\: string, query\?\: string, fragment\?\: string\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: common/components/OAuth2/Grants/AuthCodeGrant.php
+
+		-
+			message: '#^Offset ''scheme'' might not exist on non\-empty\-array\{scheme\?\: string, host\?\: string, port\?\: int\<0, 65535\>, user\?\: string, pass\?\: string, path\?\: string, query\?\: string, fragment\?\: string\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: common/components/OAuth2/Grants/AuthCodeGrant.php
+
+		-
+			message: '#^Offset ''host'' might not exist on array\{scheme\: ''http''\|''https'', host\?\: string, port\?\: int\<0, 65535\>, user\?\: string, pass\?\: string, path\?\: string, query\?\: string, fragment\?\: string\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: common/components/OAuth2/Grants/RefreshTokenGrant.php
+
+		-
+			message: '#^Offset ''scheme'' might not exist on non\-empty\-array\{scheme\?\: string, host\?\: string, port\?\: int\<0, 65535\>, user\?\: string, pass\?\: string, path\?\: string, query\?\: string, fragment\?\: string\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: common/components/OAuth2/Grants/RefreshTokenGrant.php
+
+		-
+			message: '#^Parameter \#1 \$token of class api\\components\\Tokens\\TokenReader constructor expects Lcobucci\\JWT\\UnencryptedToken, Lcobucci\\JWT\\Token given\.$#'
+			identifier: argument.type
+			count: 1
+			path: common/components/OAuth2/Grants/RefreshTokenGrant.php
+
+		-
+			message: '#^Binary operation "\+" between int and int\|string results in an error\.$#'
+			identifier: binaryOp.invalid
 			count: 1
 			path: common/components/Qr/ElyDecorator.php
 
 		-
-			message: "#^Parameter \\#1 \\$string of function base64_encode expects string, string\\|false given\\.$#"
+			message: '#^Parameter \#1 \$string of function base64_encode expects string, string\|false given\.$#'
+			identifier: argument.type
 			count: 1
 			path: common/components/Qr/ElyDecorator.php
 
 		-
-			message: "#^Method common\\\\components\\\\SkinsSystemApi\\:\\:profile\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: common/components/Sentry.php
+
+		-
+			message: '#^Call to static method Webmozart\\Assert\\Assert\:\:inArray\(\) with ''der''\|''pem'' and array\{''pem'', ''der''\} will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
 			count: 1
 			path: common/components/SkinsSystemApi.php
 
 		-
-			message: "#^Method common\\\\components\\\\SkinsSystemApi\\:\\:textures\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\components\\SkinsSystemApi\:\:profile\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/components/SkinsSystemApi.php
 
 		-
-			message: "#^Method common\\\\components\\\\UserPass\\:\\:make\\(\\) has parameter \\$email with no type specified\\.$#"
+			message: '#^Method common\\components\\SkinsSystemApi\:\:textures\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: common/components/SkinsSystemApi.php
+
+		-
+			message: '#^Method common\\components\\UserPass\:\:make\(\) has parameter \$email with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: common/components/UserPass.php
 
 		-
-			message: "#^Method common\\\\config\\\\ConfigLoader\\:\\:getConfig\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\config\\ConfigLoader\:\:getConfig\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/config/ConfigLoader.php
 
 		-
-			message: "#^Method common\\\\db\\\\mysql\\\\QueryBuilder\\:\\:buildOrderBy\\(\\) has parameter \\$columns with no value type specified in iterable type array\\.$#"
+			message: '#^Anonymous function should return string but returns string\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: common/config/config.php
+
+		-
+			message: '#^Method common\\db\\mysql\\QueryBuilder\:\:buildOrderBy\(\) has parameter \$columns with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/db/mysql/QueryBuilder.php
 
 		-
-			message: "#^Method common\\\\emails\\\\EmailHelper\\:\\:buildTo\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\emails\\EmailHelper\:\:buildTo\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/emails/EmailHelper.php
 
 		-
-			message: "#^Method common\\\\emails\\\\RendererInterface\\:\\:render\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\emails\\RendererInterface\:\:render\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/emails/RendererInterface.php
 
 		-
-			message: "#^Method common\\\\emails\\\\Template\\:\\:createMessage\\(\\) has parameter \\$for with no type specified\\.$#"
+			message: '#^Method common\\emails\\Template\:\:createMessage\(\) has parameter \$for with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: common/emails/Template.php
 
 		-
-			message: "#^Method common\\\\emails\\\\Template\\:\\:getFrom\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\emails\\Template\:\:getFrom\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/emails/Template.php
 
 		-
-			message: "#^Method common\\\\emails\\\\Template\\:\\:send\\(\\) has parameter \\$to with no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\emails\\Template\:\:send\(\) has parameter \$to with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/emails/Template.php
 
 		-
-			message: "#^Method common\\\\emails\\\\TemplateWithRenderer\\:\\:createMessage\\(\\) has parameter \\$for with no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\emails\\TemplateWithRenderer\:\:createMessage\(\) has parameter \$for with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/emails/TemplateWithRenderer.php
 
 		-
-			message: "#^Method common\\\\emails\\\\templates\\\\ChangeEmail\\:\\:getView\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: common/emails/templates/ChangeEmail.php
-
-		-
-			message: "#^Method common\\\\emails\\\\templates\\\\ConfirmNewEmail\\:\\:getView\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: common/emails/templates/ConfirmNewEmail.php
-
-		-
-			message: "#^Method common\\\\models\\\\Account\\:\\:afterSave\\(\\) has parameter \\$changedAttributes with no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\models\\Account\:\:afterSave\(\) has parameter \$changedAttributes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/models/Account.php
 
 		-
-			message: "#^Method common\\\\models\\\\Account\\:\\:getRegistrationIp\\(\\) should return string\\|null but returns string\\|false\\|null\\.$#"
+			message: '#^Method common\\models\\Account\:\:getEmailActivations\(\) should return common\\models\\EmailActivationQuery but returns yii\\db\\ActiveQuery\<common\\models\\EmailActivation\>\.$#'
+			identifier: return.type
 			count: 1
 			path: common/models/Account.php
 
 		-
-			message: "#^Method common\\\\models\\\\Account\\:\\:getUsernameHistory\\(\\) return type with generic class yii\\\\db\\\\ActiveQuery does not specify its types\\: T$#"
+			message: '#^Method common\\models\\Account\:\:getOauthClients\(\) should return common\\models\\OauthClientQuery but returns yii\\db\\ActiveQuery\<common\\models\\OauthClient\>\.$#'
+			identifier: return.type
 			count: 1
 			path: common/models/Account.php
 
 		-
-			message: "#^Method common\\\\models\\\\Account\\:\\:setRegistrationIp\\(\\) has parameter \\$ip with no type specified\\.$#"
+			message: '#^Method common\\models\\Account\:\:getRegistrationIp\(\) should return string\|null but returns string\|false\|null\.$#'
+			identifier: return.type
 			count: 1
 			path: common/models/Account.php
 
 		-
-			message: "#^Property common\\\\models\\\\Account\\:\\:\\$registration_ip \\(string\\|null\\) does not accept string\\|false\\|null\\.$#"
+			message: '#^Method common\\models\\Account\:\:setRegistrationIp\(\) has parameter \$ip with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: common/models/Account.php
 
 		-
-			message: "#^Method common\\\\models\\\\AccountSession\\:\\:getAccount\\(\\) return type with generic class yii\\\\db\\\\ActiveQuery does not specify its types\\: T$#"
+			message: '#^Property common\\models\\Account\:\:\$registration_ip \(string\|null\) does not accept string\|false\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: common/models/Account.php
+
+		-
+			message: '#^Method common\\models\\AccountSession\:\:getReadableIp\(\) should return string but returns string\|false\.$#'
+			identifier: return.type
 			count: 1
 			path: common/models/AccountSession.php
 
 		-
-			message: "#^Method common\\\\models\\\\AccountSession\\:\\:getReadableIp\\(\\) should return string but returns string\\|false\\.$#"
+			message: '#^Method common\\models\\AccountSession\:\:setIp\(\) has parameter \$ip with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: common/models/AccountSession.php
 
 		-
-			message: "#^Method common\\\\models\\\\AccountSession\\:\\:setIp\\(\\) has parameter \\$ip with no type specified\\.$#"
+			message: '#^Property common\\models\\AccountSession\:\:\$last_used_ip \(int\) does not accept int\|false\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: common/models/AccountSession.php
 
 		-
-			message: "#^Property common\\\\models\\\\AccountSession\\:\\:\\$last_used_ip \\(int\\) does not accept int\\|false\\.$#"
-			count: 1
-			path: common/models/AccountSession.php
-
-		-
-			message: "#^Method common\\\\models\\\\EmailActivation\\:\\:instantiate\\(\\) has parameter \\$row with no value type specified in iterable type array\\.$#"
+			message: '#^Class common\\models\\EmailActivation has PHPDoc tag @property for property \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/models/EmailActivation.php
 
 		-
-			message: "#^Class common\\\\models\\\\OauthClientQuery extends generic class yii\\\\db\\\\ActiveQuery but does not specify its types\\: T$#"
+			message: '#^Method common\\models\\EmailActivation\:\:getAccount\(\) should return common\\models\\AccountQuery but returns yii\\db\\ActiveQuery\<common\\models\\Account\>\.$#'
+			identifier: return.type
 			count: 1
-			path: common/models/OauthClientQuery.php
+			path: common/models/EmailActivation.php
 
 		-
-			message: "#^Method common\\\\models\\\\OauthSession\\:\\:getAccount\\(\\) return type with generic class yii\\\\db\\\\ActiveQuery does not specify its types\\: T$#"
+			message: '#^Method common\\models\\EmailActivation\:\:instantiate\(\) has parameter \$row with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: common/models/EmailActivation.php
+
+		-
+			message: '#^Method common\\models\\OauthClient\:\:getAccount\(\) should return common\\models\\AccountQuery but returns yii\\db\\ActiveQuery\<common\\models\\Account\>\.$#'
+			identifier: return.type
+			count: 1
+			path: common/models/OauthClient.php
+
+		-
+			message: '#^Class common\\models\\OauthDeviceCode has PHPDoc tag @property for property \$scopes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: common/models/OauthDeviceCode.php
+
+		-
+			message: '#^Method common\\models\\OauthDeviceCode\:\:getClient\(\) should return common\\models\\OauthClientQuery but returns yii\\db\\ActiveQuery\<common\\models\\OauthClient\>\.$#'
+			identifier: return.type
+			count: 1
+			path: common/models/OauthDeviceCode.php
+
+		-
+			message: '#^Class common\\models\\OauthSession has PHPDoc tag @property for property \$scopes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/models/OauthSession.php
 
 		-
-			message: "#^Method common\\\\models\\\\OauthSession\\:\\:getClient\\(\\) return type with generic class yii\\\\db\\\\ActiveQuery does not specify its types\\: T$#"
+			message: '#^Method common\\models\\OauthSession\:\:getLegacyRefreshTokens\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/models/OauthSession.php
 
 		-
-			message: "#^Method common\\\\models\\\\OauthSession\\:\\:getLegacyRefreshTokens\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\models\\OauthSession\:\:getScopes\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/models/OauthSession.php
 
 		-
-			message: "#^Method common\\\\models\\\\OauthSession\\:\\:getScopes\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: common/models/OauthSession.php
-
-		-
-			message: "#^Method common\\\\models\\\\Textures\\:\\:getMinecraftResponse\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\models\\Textures\:\:getMinecraftResponse\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/models/Textures.php
 
 		-
-			message: "#^Method common\\\\models\\\\Textures\\:\\:getProfile\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\models\\Textures\:\:getProfile\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/models/Textures.php
 
 		-
-			message: "#^Method common\\\\models\\\\UsernameHistory\\:\\:getAccount\\(\\) return type with generic class yii\\\\db\\\\ActiveQuery does not specify its types\\: T$#"
-			count: 1
-			path: common/models/UsernameHistory.php
-
-		-
-			message: "#^Method common\\\\notifications\\\\AccountDeletedNotification\\:\\:getPayloads\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\notifications\\AccountDeletedNotification\:\:getPayloads\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/notifications/AccountDeletedNotification.php
 
 		-
-			message: "#^Method common\\\\notifications\\\\AccountEditNotification\\:\\:__construct\\(\\) has parameter \\$changedAttributes with no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\notifications\\AccountEditNotification\:\:__construct\(\) has parameter \$changedAttributes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/notifications/AccountEditNotification.php
 
 		-
-			message: "#^Method common\\\\notifications\\\\AccountEditNotification\\:\\:getPayloads\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\notifications\\AccountEditNotification\:\:getPayloads\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/notifications/AccountEditNotification.php
 
 		-
-			message: "#^Method common\\\\notifications\\\\NotificationInterface\\:\\:getPayloads\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\notifications\\NotificationInterface\:\:getPayloads\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/notifications/NotificationInterface.php
 
 		-
-			message: "#^Method common\\\\notifications\\\\OAuthSessionRevokedNotification\\:\\:getPayloads\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\notifications\\OAuthSessionRevokedNotification\:\:getPayloads\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/notifications/OAuthSessionRevokedNotification.php
 
 		-
-			message: "#^Property common\\\\tasks\\\\DeliveryWebHook\\:\\:\\$payloads type has no value type specified in iterable type array\\.$#"
+			message: '#^Property common\\tasks\\DeliveryWebHook\:\:\$payloads type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/tasks/DeliveryWebHook.php
 
 		-
-			message: "#^Property common\\\\tasks\\\\PullMojangUsername\\:\\:\\$username has no type specified\\.$#"
+			message: '#^Property common\\tasks\\PullMojangUsername\:\:\$username has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: common/tasks/PullMojangUsername.php
 
 		-
-			message: "#^Property common\\\\tasks\\\\SendNewEmailConfirmation\\:\\:\\$code has no type specified\\.$#"
+			message: '#^Property common\\tasks\\SendNewEmailConfirmation\:\:\$code has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: common/tasks/SendNewEmailConfirmation.php
 
 		-
-			message: "#^Property common\\\\tasks\\\\SendNewEmailConfirmation\\:\\:\\$email has no type specified\\.$#"
+			message: '#^Property common\\tasks\\SendNewEmailConfirmation\:\:\$email has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: common/tasks/SendNewEmailConfirmation.php
 
 		-
-			message: "#^Property common\\\\tasks\\\\SendNewEmailConfirmation\\:\\:\\$username has no type specified\\.$#"
+			message: '#^Property common\\tasks\\SendNewEmailConfirmation\:\:\$username has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: common/tasks/SendNewEmailConfirmation.php
 
 		-
-			message: "#^Property common\\\\tasks\\\\SendPasswordRecoveryEmail\\:\\:\\$code has no type specified\\.$#"
+			message: '#^Call to an undefined method yii\\console\\Request\|yii\\web\\Request\:\:getHostInfo\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: common/tasks/SendPasswordRecoveryEmail.php
 
 		-
-			message: "#^Property common\\\\tasks\\\\SendPasswordRecoveryEmail\\:\\:\\$email has no type specified\\.$#"
+			message: '#^Property common\\tasks\\SendPasswordRecoveryEmail\:\:\$code has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: common/tasks/SendPasswordRecoveryEmail.php
 
 		-
-			message: "#^Property common\\\\tasks\\\\SendPasswordRecoveryEmail\\:\\:\\$link has no type specified\\.$#"
+			message: '#^Property common\\tasks\\SendPasswordRecoveryEmail\:\:\$email has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: common/tasks/SendPasswordRecoveryEmail.php
 
 		-
-			message: "#^Property common\\\\tasks\\\\SendPasswordRecoveryEmail\\:\\:\\$locale has no type specified\\.$#"
+			message: '#^Property common\\tasks\\SendPasswordRecoveryEmail\:\:\$link has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: common/tasks/SendPasswordRecoveryEmail.php
 
 		-
-			message: "#^Property common\\\\tasks\\\\SendPasswordRecoveryEmail\\:\\:\\$username has no type specified\\.$#"
+			message: '#^Property common\\tasks\\SendPasswordRecoveryEmail\:\:\$locale has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: common/tasks/SendPasswordRecoveryEmail.php
 
 		-
-			message: "#^Property common\\\\tasks\\\\SendRegistrationEmail\\:\\:\\$code has no type specified\\.$#"
+			message: '#^Property common\\tasks\\SendPasswordRecoveryEmail\:\:\$username has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: common/tasks/SendPasswordRecoveryEmail.php
+
+		-
+			message: '#^Call to an undefined method yii\\console\\Request\|yii\\web\\Request\:\:getHostInfo\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: common/tasks/SendRegistrationEmail.php
 
 		-
-			message: "#^Property common\\\\tasks\\\\SendRegistrationEmail\\:\\:\\$email has no type specified\\.$#"
+			message: '#^Property common\\tasks\\SendRegistrationEmail\:\:\$code has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: common/tasks/SendRegistrationEmail.php
 
 		-
-			message: "#^Property common\\\\tasks\\\\SendRegistrationEmail\\:\\:\\$link has no type specified\\.$#"
+			message: '#^Property common\\tasks\\SendRegistrationEmail\:\:\$email has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: common/tasks/SendRegistrationEmail.php
 
 		-
-			message: "#^Property common\\\\tasks\\\\SendRegistrationEmail\\:\\:\\$locale has no type specified\\.$#"
+			message: '#^Property common\\tasks\\SendRegistrationEmail\:\:\$link has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: common/tasks/SendRegistrationEmail.php
 
 		-
-			message: "#^Property common\\\\tasks\\\\SendRegistrationEmail\\:\\:\\$username has no type specified\\.$#"
+			message: '#^Property common\\tasks\\SendRegistrationEmail\:\:\$locale has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: common/tasks/SendRegistrationEmail.php
 
 		-
-			message: "#^Property common\\\\tests\\\\_support\\\\ApplicationRedisBridge\\:\\:\\$config type has no value type specified in iterable type array\\.$#"
+			message: '#^Property common\\tasks\\SendRegistrationEmail\:\:\$username has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: common/tasks/SendRegistrationEmail.php
+
+		-
+			message: '#^Property common\\tests\\_support\\ApplicationRedisBridge\:\:\$config type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/tests/_support/ApplicationRedisBridge.php
 
 		-
-			message: "#^Method common\\\\tests\\\\_support\\\\FixtureHelper\\:\\:fixtures\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\tests\\_support\\FixtureHelper\:\:fixtures\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/tests/_support/FixtureHelper.php
 
 		-
-			message: "#^Method common\\\\tests\\\\_support\\\\FixtureHelper\\:\\:globalFixtures\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\tests\\_support\\FixtureHelper\:\:globalFixtures\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/tests/_support/FixtureHelper.php
 
 		-
-			message: "#^Cannot call method flushdb\\(\\) on string\\|yii\\\\redis\\\\Connection\\.$#"
+			message: '#^Cannot call method flushdb\(\) on string\|yii\\redis\\Connection\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: common/tests/_support/Redis/Fixture.php
 
 		-
-			message: "#^Cannot call method sadd\\(\\) on string\\|yii\\\\redis\\\\Connection\\.$#"
+			message: '#^Cannot call method sadd\(\) on string\|yii\\redis\\Connection\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: common/tests/_support/Redis/Fixture.php
 
 		-
-			message: "#^Cannot call method set\\(\\) on string\\|yii\\\\redis\\\\Connection\\.$#"
+			message: '#^Cannot call method set\(\) on string\|yii\\redis\\Connection\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: common/tests/_support/Redis/Fixture.php
 
 		-
-			message: "#^Method common\\\\tests\\\\_support\\\\Redis\\\\Fixture\\:\\:getData\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\tests\\_support\\Redis\\Fixture\:\:getData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/tests/_support/Redis/Fixture.php
 
 		-
-			message: "#^Method common\\\\tests\\\\_support\\\\Redis\\\\Fixture\\:\\:prepareData\\(\\) has no return type specified\\.$#"
+			message: '#^Method common\\tests\\_support\\Redis\\Fixture\:\:prepareData\(\) has no return type specified\.$#'
+			identifier: missingType.return
 			count: 1
 			path: common/tests/_support/Redis/Fixture.php
 
 		-
-			message: "#^Method common\\\\tests\\\\_support\\\\Redis\\\\Fixture\\:\\:prepareData\\(\\) has parameter \\$input with no type specified\\.$#"
+			message: '#^Method common\\tests\\_support\\Redis\\Fixture\:\:prepareData\(\) has parameter \$input with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: common/tests/_support/Redis/Fixture.php
 
 		-
-			message: "#^Parameter \\#1 \\$file of method common\\\\tests\\\\_support\\\\Redis\\\\Fixture\\:\\:loadData\\(\\) expects string, bool\\|string given\\.$#"
+			message: '#^Parameter \#1 \$file of method common\\tests\\_support\\Redis\\Fixture\:\:loadData\(\) expects string, bool\|string\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: common/tests/_support/Redis/Fixture.php
 
 		-
-			message: "#^Property common\\\\tests\\\\_support\\\\Redis\\\\Fixture\\:\\:\\$data has no type specified\\.$#"
+			message: '#^Property common\\tests\\_support\\Redis\\Fixture\:\:\$data has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: common/tests/_support/Redis/Fixture.php
 
 		-
-			message: "#^Property common\\\\tests\\\\_support\\\\Redis\\\\Fixture\\:\\:\\$keysPostfix has no type specified\\.$#"
+			message: '#^Property common\\tests\\_support\\Redis\\Fixture\:\:\$keysPostfix has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: common/tests/_support/Redis/Fixture.php
 
 		-
-			message: "#^Property common\\\\tests\\\\_support\\\\Redis\\\\Fixture\\:\\:\\$keysPrefix has no type specified\\.$#"
+			message: '#^Property common\\tests\\_support\\Redis\\Fixture\:\:\$keysPrefix has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: common/tests/_support/Redis/Fixture.php
 
 		-
-			message: "#^Property common\\\\tests\\\\_support\\\\Redis\\\\Fixture\\:\\:\\$redis \\(string\\|yii\\\\redis\\\\Connection\\) does not accept object\\.$#"
-			count: 1
-			path: common/tests/_support/Redis/Fixture.php
-
-		-
-			message: "#^Method common\\\\tests\\\\_support\\\\queue\\\\CodeceptionQueueHelper\\:\\:grabComponent\\(\\) has no return type specified\\.$#"
+			message: '#^Method common\\tests\\_support\\queue\\CodeceptionQueueHelper\:\:grabComponent\(\) has no return type specified\.$#'
+			identifier: missingType.return
 			count: 1
 			path: common/tests/_support/queue/CodeceptionQueueHelper.php
 
 		-
-			message: "#^Method common\\\\tests\\\\_support\\\\queue\\\\Queue\\:\\:getMessages\\(\\) has no return type specified\\.$#"
+			message: '#^Method common\\tests\\_support\\queue\\Queue\:\:getMessages\(\) has no return type specified\.$#'
+			identifier: missingType.return
 			count: 1
 			path: common/tests/_support/queue/Queue.php
 
 		-
-			message: "#^Property common\\\\tests\\\\_support\\\\queue\\\\Queue\\:\\:\\$messages type has no value type specified in iterable type array\\.$#"
+			message: '#^Property common\\tests\\_support\\queue\\Queue\:\:\$messages type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/tests/_support/queue/Queue.php
 
 		-
-			message: "#^Property common\\\\tests\\\\fixtures\\\\LegacyOauthAccessTokenFixture\\:\\:\\$keysPrefix has no type specified\\.$#"
+			message: '#^Property common\\tests\\fixtures\\AccountSessionFixture\:\:\$depends type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: common/tests/fixtures/AccountSessionFixture.php
+
+		-
+			message: '#^Property common\\tests\\fixtures\\EmailActivationFixture\:\:\$depends type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: common/tests/fixtures/EmailActivationFixture.php
+
+		-
+			message: '#^Property common\\tests\\fixtures\\LegacyOauthAccessTokenFixture\:\:\$keysPrefix has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: common/tests/fixtures/LegacyOauthAccessTokenFixture.php
 
 		-
-			message: "#^Property common\\\\tests\\\\fixtures\\\\LegacyOauthAccessTokenScopeFixture\\:\\:\\$keysPostfix has no type specified\\.$#"
+			message: '#^Property common\\tests\\fixtures\\LegacyOauthAccessTokenScopeFixture\:\:\$keysPostfix has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: common/tests/fixtures/LegacyOauthAccessTokenScopeFixture.php
 
 		-
-			message: "#^Property common\\\\tests\\\\fixtures\\\\LegacyOauthAccessTokenScopeFixture\\:\\:\\$keysPrefix has no type specified\\.$#"
+			message: '#^Property common\\tests\\fixtures\\LegacyOauthAccessTokenScopeFixture\:\:\$keysPrefix has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: common/tests/fixtures/LegacyOauthAccessTokenScopeFixture.php
 
 		-
-			message: "#^Property common\\\\tests\\\\fixtures\\\\LegacyOauthRefreshTokenFixture\\:\\:\\$keysPrefix has no type specified\\.$#"
+			message: '#^Property common\\tests\\fixtures\\LegacyOauthRefreshTokenFixture\:\:\$keysPrefix has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: common/tests/fixtures/LegacyOauthRefreshTokenFixture.php
 
 		-
-			message: "#^Property common\\\\tests\\\\fixtures\\\\LegacyOauthSessionScopeFixtures\\:\\:\\$keysPostfix has no type specified\\.$#"
+			message: '#^Property common\\tests\\fixtures\\LegacyOauthSessionScopeFixtures\:\:\$keysPostfix has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: common/tests/fixtures/LegacyOauthSessionScopeFixtures.php
 
 		-
-			message: "#^Property common\\\\tests\\\\fixtures\\\\LegacyOauthSessionScopeFixtures\\:\\:\\$keysPrefix has no type specified\\.$#"
+			message: '#^Property common\\tests\\fixtures\\LegacyOauthSessionScopeFixtures\:\:\$keysPrefix has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: common/tests/fixtures/LegacyOauthSessionScopeFixtures.php
 
 		-
-			message: "#^Method common\\\\tests\\\\unit\\\\TestCase\\:\\:_fixtures\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Property common\\tests\\fixtures\\OauthClientFixture\:\:\$depends type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
-			path: common/tests/unit/TestCase.php
+			path: common/tests/fixtures/OauthClientFixture.php
 
 		-
-			message: "#^Method common\\\\tests\\\\unit\\\\TestCase\\:\\:defineFunctionMock\\(\\) has parameter \\$name with no type specified\\.$#"
+			message: '#^Property common\\tests\\fixtures\\OauthDeviceCodeFixture\:\:\$depends type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
-			path: common/tests/unit/TestCase.php
+			path: common/tests/fixtures/OauthDeviceCodeFixture.php
 
 		-
-			message: "#^Method common\\\\tests\\\\unit\\\\TestCase\\:\\:defineFunctionMock\\(\\) has parameter \\$namespace with no type specified\\.$#"
+			message: '#^Property common\\tests\\fixtures\\OauthSessionFixture\:\:\$depends type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
-			path: common/tests/unit/TestCase.php
+			path: common/tests/fixtures/OauthSessionFixture.php
 
 		-
-			message: "#^Method common\\\\tests\\\\unit\\\\TestCase\\:\\:getFunctionMock\\(\\) has parameter \\$name with no type specified\\.$#"
-			count: 1
-			path: common/tests/unit/TestCase.php
+			message: '#^Parameter \#2 \$behavior of method yii\\base\\Component\:\:attachBehavior\(\) expects array\|string\|yii\\base\\Behavior\<object\{id\: string\}&yii\\db\\ActiveRecord\>, common\\behaviors\\PrimaryKeyValueBehavior&PHPUnit\\Framework\\MockObject\\MockObject given\.$#'
+			identifier: argument.type
+			count: 2
+			path: common/tests/unit/behaviors/PrimaryKeyValueBehaviorTest.php
 
 		-
-			message: "#^Method common\\\\tests\\\\unit\\\\TestCase\\:\\:getFunctionMock\\(\\) has parameter \\$namespace with no type specified\\.$#"
+			message: '#^Property common\\tests\\unit\\components\\EmailsRenderer\\ApiTest\:\:\$history \(array\<array\{request\: Psr\\Http\\Message\\RequestInterface, response\: Psr\\Http\\Message\\ResponseInterface, error\: string\|null, options\: array\<mixed\>\}\>\) does not accept array\|ArrayAccess\<int, array\>\.$#'
+			identifier: assign.propertyType
 			count: 1
-			path: common/tests/unit/TestCase.php
+			path: common/tests/unit/components/EmailsRenderer/ApiTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$objectOrClass of class ReflectionClass constructor expects class\\-string\\<T of object\\>\\|T of object, string given\\.$#"
-			count: 1
-			path: common/tests/unit/TestCase.php
-
-		-
-			message: "#^Method common\\\\tests\\\\unit\\\\emails\\\\TemplateTest\\:\\:_before\\(\\) has no return type specified\\.$#"
+			message: '#^Method common\\tests\\unit\\emails\\TemplateTest\:\:_before\(\) has no return type specified\.$#'
+			identifier: missingType.return
 			count: 1
 			path: common/tests/unit/emails/TemplateTest.php
 
 		-
-			message: "#^Method common\\\\tests\\\\unit\\\\emails\\\\TemplateWithRendererTest\\:\\:runTestForSend\\(\\) has parameter \\$renderException with no type specified\\.$#"
+			message: '#^Method common\\tests\\unit\\emails\\TemplateWithRendererTest\:\:runTestForSend\(\) has parameter \$renderException with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: common/tests/unit/emails/TemplateWithRendererTest.php
 
 		-
-			message: "#^Method common\\\\tests\\\\unit\\\\emails\\\\templates\\\\ConfirmNewEmailTest\\:\\:getInvalidCallsCases\\(\\) return type has no value type specified in iterable type iterable\\.$#"
+			message: '#^Method common\\tests\\unit\\emails\\templates\\ConfirmNewEmailTest\:\:getInvalidCallsCases\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/tests/unit/emails/templates/ConfirmNewEmailTest.php
 
 		-
-			message: "#^Method common\\\\tests\\\\unit\\\\emails\\\\templates\\\\ForgotPasswordEmailTest\\:\\:_before\\(\\) has no return type specified\\.$#"
+			message: '#^Method common\\tests\\unit\\emails\\templates\\ForgotPasswordEmailTest\:\:_before\(\) has no return type specified\.$#'
+			identifier: missingType.return
 			count: 1
 			path: common/tests/unit/emails/templates/ForgotPasswordEmailTest.php
 
 		-
-			message: "#^Method common\\\\tests\\\\unit\\\\helpers\\\\StringHelperTest\\:\\:trimProvider\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\tests\\unit\\helpers\\StringHelperTest\:\:trimProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/tests/unit/helpers/StringHelperTest.php
 
 		-
-			message: "#^Method common\\\\tests\\\\unit\\\\models\\\\EmailActivationTest\\:\\:_fixtures\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with string and ''method call will…'' will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: common/tests/unit/models/AccountSessionTest.php
+
+		-
+			message: '#^Method common\\tests\\unit\\models\\EmailActivationTest\:\:getInstantiateTestCases\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/tests/unit/models/EmailActivationTest.php
 
 		-
-			message: "#^Method common\\\\tests\\\\unit\\\\models\\\\EmailActivationTest\\:\\:getInstantiateTestCases\\(\\) return type has no value type specified in iterable type iterable\\.$#"
+			message: '#^Parameter \#1 \$expected of method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) expects class\-string\<object\>, string given\.$#'
+			identifier: argument.type
 			count: 1
 			path: common/tests/unit/models/EmailActivationTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$expected of method PHPUnit\\\\Framework\\\\Assert\\:\\:assertInstanceOf\\(\\) expects class\\-string\\<object\\>, string given\\.$#"
-			count: 1
-			path: common/tests/unit/models/EmailActivationTest.php
-
-		-
-			message: "#^Method common\\\\tests\\\\unit\\\\models\\\\OauthClientQueryTest\\:\\:_fixtures\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: common/tests/unit/models/OauthClientQueryTest.php
-
-		-
-			message: "#^Method common\\\\tests\\\\unit\\\\tasks\\\\ClearAccountSessionsTest\\:\\:_fixtures\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: common/tests/unit/tasks/ClearAccountSessionsTest.php
-
-		-
-			message: "#^Method common\\\\tests\\\\unit\\\\tasks\\\\ClearOauthSessionsTest\\:\\:_fixtures\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''common\\\\tasks\\\\ClearOauthSessions'' and common\\tasks\\ClearOauthSessions will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
 			path: common/tests/unit/tasks/ClearOauthSessionsTest.php
 
 		-
-			message: "#^Method class@anonymous/common/tests/unit/tasks/CreateWebHooksDeliveriesTest\\.php\\:26\\:\\:getPayloads\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\notifications\\NotificationInterface@anonymous/common/tests/unit/tasks/CreateWebHooksDeliveriesTest\.php\:26\:\:getPayloads\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/tests/unit/tasks/CreateWebHooksDeliveriesTest.php
 
 		-
-			message: "#^Method common\\\\tests\\\\unit\\\\tasks\\\\CreateWebHooksDeliveriesTest\\:\\:_fixtures\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: common/tests/unit/tasks/CreateWebHooksDeliveriesTest.php
-
-		-
-			message: "#^Method common\\\\tests\\\\unit\\\\tasks\\\\DeleteAccountTest\\:\\:_fixtures\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: common/tests/unit/tasks/DeleteAccountTest.php
-
-		-
-			message: "#^Method class@anonymous/common/tests/unit/tasks/DeliveryWebHookTest\\.php\\:114\\:\\:__construct\\(\\) has parameter \\$historyContainer with no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\tasks\\DeliveryWebHook@anonymous/common/tests/unit/tasks/DeliveryWebHookTest\.php\:114\:\:__construct\(\) has parameter \$historyContainer with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/tests/unit/tasks/DeliveryWebHookTest.php
 
 		-
-			message: "#^Method class@anonymous/common/tests/unit/tasks/DeliveryWebHookTest\\.php\\:114\\:\\:__construct\\(\\) has parameter \\$response with no type specified\\.$#"
+			message: '#^Method common\\tasks\\DeliveryWebHook@anonymous/common/tests/unit/tasks/DeliveryWebHookTest\.php\:114\:\:__construct\(\) has parameter \$response with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: common/tests/unit/tasks/DeliveryWebHookTest.php
 
 		-
-			message: "#^Property class@anonymous/common/tests/unit/tasks/DeliveryWebHookTest\\.php\\:114\\:\\:\\$historyContainer has no type specified\\.$#"
+			message: '#^Property common\\tasks\\DeliveryWebHook@anonymous/common/tests/unit/tasks/DeliveryWebHookTest\.php\:114\:\:\$historyContainer has no type specified\.$#'
+			identifier: missingType.property
 			count: 1
 			path: common/tests/unit/tasks/DeliveryWebHookTest.php
 
 		-
-			message: "#^Property common\\\\tests\\\\unit\\\\tasks\\\\DeliveryWebHookTest\\:\\:\\$historyContainer type has no value type specified in iterable type array\\.$#"
+			message: '#^Property common\\tests\\unit\\tasks\\DeliveryWebHookTest\:\:\$historyContainer type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/tests/unit/tasks/DeliveryWebHookTest.php
 
 		-
-			message: "#^Method common\\\\tests\\\\unit\\\\tasks\\\\PullMojangUsernameTest\\:\\:_fixtures\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: common/tests/unit/tasks/PullMojangUsernameTest.php
-
-		-
-			message: "#^Property common\\\\tests\\\\unit\\\\tasks\\\\PullMojangUsernameTest\\:\\:\\$mockedMethod with generic class PHPUnit\\\\Framework\\\\MockObject\\\\Builder\\\\InvocationMocker does not specify its types\\: TMockedClass$#"
-			count: 1
-			path: common/tests/unit/tasks/PullMojangUsernameTest.php
-
-		-
-			message: "#^Parameter \\#2 \\$haystack of method PHPUnit\\\\Framework\\\\Assert\\:\\:assertStringContainsString\\(\\) expects string, resource\\|string\\|null given\\.$#"
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, resource\|string\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: common/tests/unit/tasks/SendCurrentEmailConfirmationTest.php
 
 		-
-			message: "#^Parameter \\#2 \\$haystack of method PHPUnit\\\\Framework\\\\Assert\\:\\:assertStringContainsString\\(\\) expects string, resource\\|string\\|null given\\.$#"
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, resource\|string\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: common/tests/unit/tasks/SendNewEmailConfirmationTest.php
 
 		-
-			message: "#^Method common\\\\tests\\\\unit\\\\tasks\\\\SendRegistrationEmailTest\\:\\:_before\\(\\) has no return type specified\\.$#"
+			message: '#^Method common\\tests\\unit\\tasks\\SendRegistrationEmailTest\:\:_before\(\) has no return type specified\.$#'
+			identifier: missingType.return
 			count: 1
 			path: common/tests/unit/tasks/SendRegistrationEmailTest.php
 
 		-
-			message: "#^Method common\\\\tests\\\\unit\\\\validators\\\\LanguageValidatorTest\\:\\:getTestCases\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotSame\(\) with array\{''error\.email_invalid''\} and array\<string, array\<string\>\> will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: common/tests/unit/validators/EmailValidatorTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotSame\(\) with array\{''error\.email_is…''\} and array\<string, array\<string\>\> will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: common/tests/unit/validators/EmailValidatorTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotSame\(\) with array\{''error\.email_not…''\} and array\<string, array\<string\>\> will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: common/tests/unit/validators/EmailValidatorTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotSame\(\) with array\{''error\.email_required''\} and array\<string, array\<string\>\> will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: common/tests/unit/validators/EmailValidatorTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotSame\(\) with array\{''error\.email_too_long''\} and array\<string, array\<string\>\> will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: common/tests/unit/validators/EmailValidatorTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with array\{''error\.email_host_is…''\} and array\<string, array\<string\>\> will always evaluate to false\.$#'
+			identifier: method.impossibleType
+			count: 1
+			path: common/tests/unit/validators/EmailValidatorTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with array\{''error\.email_invalid''\} and array\<string, array\<string\>\> will always evaluate to false\.$#'
+			identifier: method.impossibleType
+			count: 3
+			path: common/tests/unit/validators/EmailValidatorTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with array\{''error\.email_is…''\} and array\<string, array\<string\>\> will always evaluate to false\.$#'
+			identifier: method.impossibleType
+			count: 1
+			path: common/tests/unit/validators/EmailValidatorTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with array\{''error\.email_not…''\} and array\<string, array\<string\>\> will always evaluate to false\.$#'
+			identifier: method.impossibleType
+			count: 1
+			path: common/tests/unit/validators/EmailValidatorTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with array\{''error\.email_required''\} and array\<string, array\<string\>\> will always evaluate to false\.$#'
+			identifier: method.impossibleType
+			count: 1
+			path: common/tests/unit/validators/EmailValidatorTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with array\{''error\.email_too_long''\} and array\<string, array\<string\>\> will always evaluate to false\.$#'
+			identifier: method.impossibleType
+			count: 1
+			path: common/tests/unit/validators/EmailValidatorTest.php
+
+		-
+			message: '#^Method common\\tests\\unit\\validators\\LanguageValidatorTest\:\:getTestCases\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/tests/unit/validators/LanguageValidatorTest.php
 
 		-
-			message: "#^Method common\\\\tests\\\\unit\\\\validators\\\\MinecraftServerAddressValidatorTest\\:\\:domainNames\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method common\\tests\\unit\\validators\\MinecraftServerAddressValidatorTest\:\:domainNames\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/tests/unit/validators/MinecraftServerAddressValidatorTest.php
 
 		-
-			message: "#^Property class@anonymous/common/validators/EmailValidator\\.php\\:54\\:\\:\\$hosts has no type specified\\.$#"
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotSame\(\) with array\{''error\.username_not…''\} and array\<string, array\<string\>\> will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: common/tests/unit/validators/UsernameValidatorTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotSame\(\) with array\{''error\.username_too…''\} and array\<string, array\<string\>\> will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: common/tests/unit/validators/UsernameValidatorTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotSame\(\) with array\{''error\.username…''\} and array\<string, array\<string\>\> will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: common/tests/unit/validators/UsernameValidatorTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with array\{''error\.username_not…''\} and array\<string, array\<string\>\> will always evaluate to false\.$#'
+			identifier: method.impossibleType
+			count: 1
+			path: common/tests/unit/validators/UsernameValidatorTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with array\{''error\.username_too…''\} and array\<string, array\<string\>\> will always evaluate to false\.$#'
+			identifier: method.impossibleType
+			count: 2
+			path: common/tests/unit/validators/UsernameValidatorTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with array\{''error\.username…''\} and array\<string, array\<string\>\> will always evaluate to false\.$#'
+			identifier: method.impossibleType
+			count: 3
+			path: common/tests/unit/validators/UsernameValidatorTest.php
+
+		-
+			message: '#^Method yii\\validators\\Validator@anonymous/common/validators/EmailValidator\.php\:40\:\:validateValue\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/validators/EmailValidator.php
 
 		-
-			message: "#^Method common\\\\validators\\\\LanguageValidator\\:\\:validateValue\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method yii\\validators\\Validator@anonymous/common/validators/EmailValidator\.php\:54\:\:validateValue\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: common/validators/EmailValidator.php
+
+		-
+			message: '#^Property yii\\validators\\Validator@anonymous/common/validators/EmailValidator\.php\:54\:\:\$hosts has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: common/validators/EmailValidator.php
+
+		-
+			message: '#^Method common\\validators\\LanguageValidator\:\:validateValue\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/validators/LanguageValidator.php
 
 		-
-			message: "#^Method common\\\\validators\\\\MinecraftServerAddressValidator\\:\\:validateValue\\(\\) should return array\\{string, array\\<string, string\\>\\|null\\}\\|null but returns array\\{string\\|null, array\\{\\}\\}\\.$#"
+			message: '#^Parameter \#2 \$haystack of function in_array expects array, array\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: common/validators/LanguageValidator.php
+
+		-
+			message: '#^Method common\\validators\\MinecraftServerAddressValidator\:\:validateValue\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/validators/MinecraftServerAddressValidator.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function count expects array\\|Countable, array\\<string, int\\|string\\>\\|false given\\.$#"
+			message: '#^Parameter \#1 \$value of function count expects array\|Countable, array\<string, int\|string\>\|false given\.$#'
+			identifier: argument.type
 			count: 1
 			path: common/validators/MinecraftServerAddressValidator.php
 
 		-
-			message: "#^Method common\\\\validators\\\\UsernameValidator\\:\\:executeValidation\\(\\) has no return type specified\\.$#"
+			message: '#^Method common\\validators\\UsernameValidator\:\:validateAttribute\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: common/validators/UsernameValidator.php
 
 		-
-			message: "#^Method common\\\\validators\\\\UsernameValidator\\:\\:validateAttribute\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: common/validators/UsernameValidator.php
-
-		-
-			message: "#^Return type \\(void\\) of method m130524_201442_init\\:\\:down\\(\\) should be compatible with return type \\(bool\\) of method yii\\\\db\\\\MigrationInterface\\:\\:down\\(\\)$#"
+			message: '#^Return type \(void\) of method m130524_201442_init\:\:down\(\) should be compatible with return type \(bool\) of method yii\\db\\MigrationInterface\:\:down\(\)$#'
+			identifier: method.childReturnType
 			count: 1
 			path: console/migrations/m130524_201442_init.php
 
 		-
-			message: "#^Return type \\(void\\) of method m130524_201442_init\\:\\:up\\(\\) should be compatible with return type \\(bool\\) of method yii\\\\db\\\\MigrationInterface\\:\\:up\\(\\)$#"
+			message: '#^Return type \(void\) of method m130524_201442_init\:\:up\(\) should be compatible with return type \(bool\) of method yii\\db\\MigrationInterface\:\:up\(\)$#'
+			identifier: method.childReturnType
 			count: 1
 			path: console/migrations/m130524_201442_init.php
 
 		-
-			message: "#^Method console\\\\models\\\\WebHookForm\\:\\:getEvents\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Parameter \#3 \$type of method yii\\db\\Migration\:\:addColumn\(\) expects string, yii\\db\\ColumnSchemaBuilder given\.$#'
+			identifier: argument.type
+			count: 2
+			path: console/migrations/m190914_181236_rework_oauth_related_tables.php
+
+		-
+			message: '#^Parameter \#3 \$type of method yii\\db\\Migration\:\:alterColumn\(\) expects string, yii\\db\\ColumnSchemaBuilder given\.$#'
+			identifier: argument.type
+			count: 4
+			path: console/migrations/m190914_181236_rework_oauth_related_tables.php
+
+		-
+			message: '#^Method console\\models\\WebHookForm\:\:getEvents\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: console/models/WebHookForm.php
 
 		-
-			message: "#^Method console\\\\tests\\\\unit\\\\TestCase\\:\\:_fixtures\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: console/tests/unit/TestCase.php
-
-		-
-			message: "#^Method console\\\\tests\\\\unit\\\\TestCase\\:\\:defineFunctionMock\\(\\) has parameter \\$name with no type specified\\.$#"
-			count: 1
-			path: console/tests/unit/TestCase.php
-
-		-
-			message: "#^Method console\\\\tests\\\\unit\\\\TestCase\\:\\:defineFunctionMock\\(\\) has parameter \\$namespace with no type specified\\.$#"
-			count: 1
-			path: console/tests/unit/TestCase.php
-
-		-
-			message: "#^Method console\\\\tests\\\\unit\\\\TestCase\\:\\:getFunctionMock\\(\\) has parameter \\$name with no type specified\\.$#"
-			count: 1
-			path: console/tests/unit/TestCase.php
-
-		-
-			message: "#^Method console\\\\tests\\\\unit\\\\TestCase\\:\\:getFunctionMock\\(\\) has parameter \\$namespace with no type specified\\.$#"
-			count: 1
-			path: console/tests/unit/TestCase.php
-
-		-
-			message: "#^Parameter \\#1 \\$objectOrClass of class ReflectionClass constructor expects class\\-string\\<T of object\\>\\|T of object, string given\\.$#"
-			count: 1
-			path: console/tests/unit/TestCase.php
-
-		-
-			message: "#^Binary operation \"\\-\" between int\\|string\\|null and 2 results in an error\\.$#"
-			count: 1
-			path: console/tests/unit/controllers/CleanupControllerTest.php
-
-		-
-			message: "#^Method console\\\\tests\\\\unit\\\\controllers\\\\CleanupControllerTest\\:\\:_fixtures\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Binary operation "\-" between int\|string\|null and 2 results in an error\.$#'
+			identifier: binaryOp.invalid
 			count: 1
 			path: console/tests/unit/controllers/CleanupControllerTest.php

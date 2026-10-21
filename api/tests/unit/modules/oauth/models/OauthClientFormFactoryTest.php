@@ -20,7 +20,6 @@ final class OauthClientFormFactoryTest extends TestCase {
         $client->description = 'Application description.';
         $client->website_url = 'http://example.com';
         $client->redirect_uri = 'http://example.com/oauth/ely';
-        /** @var WebApplicationType $requestForm */
         $requestForm = OauthClientFormFactory::create($client);
         $this->assertInstanceOf(WebApplicationType::class, $requestForm);
         $this->assertSame('Application name', $requestForm->name);
@@ -35,7 +34,6 @@ final class OauthClientFormFactoryTest extends TestCase {
         $client->name = 'Application name';
         $client->description = 'Application description.';
         $client->website_url = 'http://example.com';
-        /** @var \api\modules\oauth\models\DesktopApplicationType $requestForm */
         $requestForm = OauthClientFormFactory::create($client);
         $this->assertInstanceOf(DesktopApplicationType::class, $requestForm);
         $this->assertSame('Application name', $requestForm->name);
@@ -49,7 +47,6 @@ final class OauthClientFormFactoryTest extends TestCase {
         $client->name = 'Server name';
         $client->website_url = 'http://example.com';
         $client->minecraft_server_ip = 'localhost:12345';
-        /** @var MinecraftServerType $requestForm */
         $requestForm = OauthClientFormFactory::create($client);
         $this->assertInstanceOf(MinecraftServerType::class, $requestForm);
         $this->assertSame('Server name', $requestForm->name);

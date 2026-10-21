@@ -116,7 +116,6 @@ class RegistrationFormTest extends TestCase {
             'username history record exists in database',
         );
 
-        /** @var SendRegistrationEmail $job */
         $job = $this->tester->grabLastQueuedJob();
         $this->assertInstanceOf(SendRegistrationEmail::class, $job);
         $this->assertSame($account->username, $job->username);

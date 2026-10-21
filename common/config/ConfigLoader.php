@@ -51,7 +51,6 @@ final readonly class ConfigLoader {
             $toMerge[] = require $path;
         }
 
-        // @phpstan-ignore arguments.count (Should be covered by Yii2 extension)
         return ArrayHelper::merge(...$toMerge);
     }
 
