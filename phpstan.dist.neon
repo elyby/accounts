@@ -1,15 +1,14 @@
-# https://github.com/phpstan/phpstan#configuration
 includes:
   - phpstan-baseline.neon
 
 parameters:
-  scanFiles:
-    - vendor/yiisoft/yii2/Yii.php
-    # - vendor/yiisoft/yii2-dev/framework/Yii.php
+  level: 7
+
   paths:
     - api
     - common
     - console
+
   excludePaths:
     analyse:
       - api/tests/_support/_generated
@@ -17,14 +16,65 @@ parameters:
       - console/tests/_support/_generated
     analyseAndScan:
       - api/tests/_data
-      - common/tests/_data
-      - console/tests/_data
-  level: 7
-  yii2:
-    config_path: ./common/config/config-phpstan.php
+      - common/tests/_data (?)
+      - console/tests/_data (?)
+
+  bootstrapFiles:
+    - vendor/yiisoft/yii2/Yii.php
+
+  mspirkovYii2:
+    enableAllRules: false
+    enableValidationRules: true
+    aliases:
+      '@root': .
+      '@api': api
+      '@common': common
+      '@console': console
+    yiiAppTypes:
+      -
+        paths:
+          - api
+        type: yii\web\Application
+        nullable: false
+      -
+        paths:
+          - common
+        nullable: false
+      -
+        paths:
+          - console
+        type: yii\console\Application
+        nullable: false
+    applicationConfigs:
+      -
+        paths:
+          - api
+        files:
+          - common/config/config.php
+          - api/config/config.php
+      -
+        paths:
+          - common
+        files:
+          - common/config/config.php
+      -
+        paths:
+          - console
+        files:
+          - common/config/config.php
+          - console/config/config.php
+
   ignoreErrors:
     # Controllers shouldn't specify the return type so strictly
     - message: '#Method .+Controller::action.+\(\) return type has no value type specified in iterable type array\.$#'
 
     # Individual actions shouldn't specify the return type so strictly
     - message: '#Method .+Action::run\(\) return type has no value type specified in iterable type array\.$#'
+
+    # TODO: remove after updating Yii2 to 2.0.56.
+    -
+      message: '#^Behavior option "createdAtAttribute" for yii\\behaviors\\TimestampBehavior must be string, false given\.$#'
+      identifier: mspirkovYii2.componentBehaviorsValidation
+    -
+      message: '#^Behavior option "updatedAtAttribute" for yii\\behaviors\\TimestampBehavior must be string, false given\.$#'
+      identifier: mspirkovYii2.componentBehaviorsValidation

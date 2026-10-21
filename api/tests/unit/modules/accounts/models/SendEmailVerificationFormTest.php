@@ -43,7 +43,6 @@ class SendEmailVerificationFormTest extends TestCase {
         ]);
         $this->assertInstanceOf(EmailActivation::class, $activation);
 
-        /** @var SendCurrentEmailConfirmation $job */
         $job = $this->tester->grabLastQueuedJob();
         $this->assertInstanceOf(SendCurrentEmailConfirmation::class, $job);
         $this->assertSame($account->username, $job->username);

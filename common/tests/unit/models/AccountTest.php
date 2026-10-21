@@ -132,10 +132,8 @@ class AccountTest extends TestCase {
         $account = new Account();
         $account->id = 123;
         $account->afterSave(false, $changedAttributes);
-        /** @var CreateWebHooksDeliveries $job */
         $job = $this->tester->grabLastQueuedJob();
         $this->assertInstanceOf(CreateWebHooksDeliveries::class, $job);
-        /** @var AccountEditNotification $notification */
         $notification = ReflectionHelper::readPrivateProperty($job, 'notification');
         $this->assertInstanceOf(AccountEditNotification::class, $notification);
         $this->assertSame(123, $notification->getPayloads()['id']);
@@ -154,10 +152,8 @@ class AccountTest extends TestCase {
 
         $account->status = Account::STATUS_ACTIVE;
         $account->afterDelete();
-        /** @var CreateWebHooksDeliveries $job */
         $job = $this->tester->grabLastQueuedJob();
         $this->assertInstanceOf(CreateWebHooksDeliveries::class, $job);
-        /** @var AccountDeletedNotification $notification */
         $notification = ReflectionHelper::readPrivateProperty($job, 'notification');
         $this->assertInstanceOf(AccountDeletedNotification::class, $notification);
         $this->assertSame(1, $notification->getPayloads()['id']);

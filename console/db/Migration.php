@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace console\db;
 
+use yii\db\Connection;
 use yii\db\Exception;
 use yii\db\Migration as YiiMigration;
 
 /**
  * @property string $tableOptions
+ * @property Connection $db
  * @method \SamIT\Yii2\MariaDb\ColumnSchemaBuilder json()
  */
 class Migration extends YiiMigration {

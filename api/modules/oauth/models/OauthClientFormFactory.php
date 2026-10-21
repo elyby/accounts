@@ -29,7 +29,6 @@ final class OauthClientFormFactory {
                 'websiteUrl' => $client->website_url,
                 'minecraftServerIp' => $client->minecraft_server_ip,
             ]),
-            // @phpstan-ignore match.unreachable (Not quite correct code, but the value comes from the user and might be not expected)
             default => throw new UnsupportedOauthClientType($client->type),
         };
     }
