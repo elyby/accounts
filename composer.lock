@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8afb68fa820f077c08b694c8cf73c4df",
+    "content-hash": "c1075287ae51825ca35eada5e8e46e25",
     "packages": [
         {
             "name": "altcha-org/altcha",
@@ -6178,16 +6178,16 @@
         },
         {
             "name": "mspirkov/yii2-phpstan",
-            "version": "0.15.1",
+            "version": "0.15.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mspirkov/yii2-phpstan.git",
-                "reference": "ee4961b07416dc729b7e1edb9883139c30758041"
+                "reference": "e0b3fdd0809f4aae5ea75929c27197b6b1276594"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mspirkov/yii2-phpstan/zipball/ee4961b07416dc729b7e1edb9883139c30758041",
-                "reference": "ee4961b07416dc729b7e1edb9883139c30758041",
+                "url": "https://api.github.com/repos/mspirkov/yii2-phpstan/zipball/e0b3fdd0809f4aae5ea75929c27197b6b1276594",
+                "reference": "e0b3fdd0809f4aae5ea75929c27197b6b1276594",
                 "shasum": ""
             },
             "require": {
@@ -6249,9 +6249,9 @@
             ],
             "support": {
                 "issues": "https://github.com/mspirkov/yii2-phpstan/issues",
-                "source": "https://github.com/mspirkov/yii2-phpstan/tree/0.15.1"
+                "source": "https://github.com/mspirkov/yii2-phpstan/tree/0.15.2"
             },
-            "time": "2026-10-19T11:09:19+00:00"
+            "time": "2026-10-21T12:01:45+00:00"
         },
         {
             "name": "myclabs/deep-copy",
