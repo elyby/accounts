@@ -61,7 +61,7 @@
         "codeception/module-yii2": "^1.1.0",
         "cweagans/composer-patches": "^1.7",
         "ely/php-code-style": "^1.0.1",
-        "mspirkov/yii2-phpstan": "^0.15",
+        "mspirkov/yii2-phpstan": "^0.16.0",
         "php-mock/php-mock-phpunit": "^2.5",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^2.3",
