@@ -28,6 +28,9 @@ final class CaptchaCest {
         $I->canSeeResponseContainsJson([
             'parameters' => [
                 'algorithm' => 'PBKDF2/SHA-256',
+                'data' => [
+                    'counterMax' => 10,
+                ],
             ],
         ]);
         $I->canSeeResponseJsonMatchesJsonPath('$.signature');

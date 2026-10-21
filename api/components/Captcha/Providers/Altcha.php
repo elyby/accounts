@@ -70,6 +70,9 @@ final readonly class Altcha implements ProviderInterface {
             cost: $this->cost,
             counter: random_int($this->counterMin, $this->counterMax), // @phpstan-ignore argument.type (counterMin <= counterMax is asserted in the constructor)
             expiresAt: Carbon::now()->getTimestamp() + $this->ttl,
+            data: [
+                'counterMax' => $this->counterMax,
+            ],
         ))->toArray();
     }
 

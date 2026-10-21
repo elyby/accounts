@@ -76,6 +76,16 @@ final class AltchaTest extends TestCase {
         $this->assertSame('PBKDF2/SHA-256', $first['parameters']['algorithm']);
         $this->assertArrayHasKey('keySignature', $first['parameters'], 'The fast verification path must be enabled');
         $this->assertEqualsWithDelta(time() + self::TTL, $first['parameters']['expiresAt'], 2);
+        $this->assertSame(['counterMax' => 10], $first['parameters']['data']);
+    }
+
+    public function testVerifyTamperedData(): void {
+        $payload = $this->solve($this->provider->createChallenge());
+        $challenge = $payload->challenge->toArray();
+        $challenge['parameters']['data'] = ['counterMax' => 1];
+        $tampered = new Payload(Challenge::fromArray($challenge), $payload->solution);
+
+        $this->assertFalse($this->provider->verify($tampered->toBase64(), null), 'The data must be signed');
     }
 
     public function testVerifyValidSolution(): void {
