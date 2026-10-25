@@ -39,7 +39,6 @@ class FeedbackFormTest extends TestCase {
                 'created_at' => time() - 86400,
             ]));
         $this->assertTrue($model->sendMessage());
-        /** @var Message $message */
         $message = $this->tester->grabLastSentEmail();
         $this->assertInstanceOf(Message::class, $message);
         $data = $message;

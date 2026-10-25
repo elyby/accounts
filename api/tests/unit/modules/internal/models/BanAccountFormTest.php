@@ -35,7 +35,6 @@ class BanAccountFormTest extends TestCase {
         $model = new BanAccountForm($account);
         $this->assertTrue($model->performAction());
         $this->assertSame(Account::STATUS_BANNED, $account->status);
-        /** @var ClearAccountSessions $job */
         $job = $this->tester->grabLastQueuedJob();
         $this->assertInstanceOf(ClearAccountSessions::class, $job);
         $obj = new ReflectionObject($job);

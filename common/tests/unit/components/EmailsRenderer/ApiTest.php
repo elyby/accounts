@@ -49,9 +49,8 @@ class ApiTest extends TestCase {
         $request = new TemplateRequest('mock-name', 'mock-locale', ['find-me' => 'please']);
         $this->assertSame('mock-response', $this->api->getTemplate($request));
 
-        /** @var \Psr\Http\Message\RequestInterface $request */
-        ['request' => $request] = $this->history[0];
-        $this->assertSame('http://emails-renderer/templates/mock-locale/mock-name?find-me=please', (string)$request->getUri());
+        ['request' => $httpRequest] = $this->history[0];
+        $this->assertSame('http://emails-renderer/templates/mock-locale/mock-name?find-me=please', (string)$httpRequest->getUri());
     }
 
 }

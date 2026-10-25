@@ -19,6 +19,9 @@
             "yiisoft/yii2-composer": true
         }
     },
+    "scripts": {
+        "phpstan": "./vendor/bin/phpstan"
+    },
     "require": {
         "php": "^8.3",
         "ext-imagick": "*",
@@ -34,16 +37,12 @@
         "bacon/bacon-qr-code": "^1.0",
         "ely/mojang-api": "^0.2.0",
         "ely/yii2-tempmail-validator": "dev-master",
-        "erickskrauch/phpstan-yii2": "dev-master",
         "guzzlehttp/guzzle": "^6|^7",
         "lcobucci/jwt": "^5.4",
         "league/oauth2-server": "dev-master#03dcdd7 as 9.2.0",
         "nesbot/carbon": "^3",
         "nohnaimer/yii2-sentry": "^2.0",
         "paragonie/constant_time_encoding": "^3",
-        "phpstan/extension-installer": "^1",
-        "phpstan/phpstan": "^1",
-        "phpstan/phpstan-webmozart-assert": "^1",
         "ramsey/uuid": "^4.0.0",
         "sam-it/yii2-mariadb": "^3",
         "slickdeals/statsd": "^3.2",
@@ -62,8 +61,12 @@
         "codeception/module-yii2": "^1.1.0",
         "cweagans/composer-patches": "^1.7",
         "ely/php-code-style": "^1.0.1",
+        "mspirkov/yii2-phpstan": "^0.16",
         "php-mock/php-mock-phpunit": "^2.5",
-        "phpstan/phpstan-phpunit": "^1",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^2.3",
+        "phpstan/phpstan-phpunit": "^2.1",
+        "phpstan/phpstan-webmozart-assert": "^2.0",
         "roave/security-advisories": "dev-master"
     },
     "repositories": [

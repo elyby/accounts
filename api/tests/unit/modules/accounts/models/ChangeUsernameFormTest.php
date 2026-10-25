@@ -26,7 +26,6 @@ class ChangeUsernameFormTest extends TestCase {
         $this->assertTrue($model->performAction());
         $this->assertSame('my_new_nickname', Account::findOne($this->getAccountId())->username);
         $this->assertInstanceOf(UsernameHistory::class, UsernameHistory::findOne(['username' => 'my_new_nickname']));
-        /** @var PullMojangUsername $job */
         $job = $this->tester->grabLastQueuedJob();
         $this->assertInstanceOf(PullMojangUsername::class, $job);
         $this->assertSame($job->username, 'my_new_nickname');
@@ -62,7 +61,6 @@ class ChangeUsernameFormTest extends TestCase {
             UsernameHistory::findOne(['username' => $newUsername]),
             'username should change, if we change case of some letters',
         );
-        /** @var PullMojangUsername $job */
         $job = $this->tester->grabLastQueuedJob();
         $this->assertInstanceOf(PullMojangUsername::class, $job);
         $this->assertSame($job->username, $newUsername);

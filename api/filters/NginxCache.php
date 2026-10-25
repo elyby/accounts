@@ -9,7 +9,8 @@ use yii\base\ActionFilter;
 class NginxCache extends ActionFilter {
 
     /**
-     * @var array|callable array or callback, contains pairs of route => cache duration.
+     * @var array<string, int|string|callable(\yii\base\Action): (int|string)> pairs of route => cache duration
+     * or a callback that returns it.
      *
      * Duration can be set in 2-ways:
      * - if the value starts with the @ prefix, it sets the absolute time

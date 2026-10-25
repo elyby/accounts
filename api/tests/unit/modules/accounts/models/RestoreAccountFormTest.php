@@ -38,7 +38,6 @@ class RestoreAccountFormTest extends TestCase {
             ->expects($this->once())
             ->method('push')
             ->willReturnCallback(function(CreateWebHooksDeliveries $task) use ($account): bool {
-                /** @var AccountEditNotification $notification */
                 $notification = ReflectionHelper::readPrivateProperty($task, 'notification');
                 $this->assertInstanceOf(AccountEditNotification::class, $notification);
                 $this->assertSame($account->id, $notification->getPayloads()['id']);

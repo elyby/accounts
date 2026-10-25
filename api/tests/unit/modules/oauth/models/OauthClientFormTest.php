@@ -86,7 +86,6 @@ final class OauthClientFormTest extends TestCase {
         $form = new OauthClientForm($client);
         $this->assertTrue($form->delete());
         $this->assertTrue($form->getClient()->is_deleted);
-        /** @var ClearOauthSessions $job */
         $job = $this->tester->grabLastQueuedJob();
         $this->assertInstanceOf(ClearOauthSessions::class, $job);
         $this->assertSame('mocked-id', $job->clientId);
@@ -103,7 +102,6 @@ final class OauthClientFormTest extends TestCase {
         $form = new OauthClientForm($client);
         $this->assertTrue($form->reset());
         $this->assertSame('initial_secret', $form->getClient()->secret);
-        /** @var ClearOauthSessions $job */
         $job = $this->tester->grabLastQueuedJob();
         $this->assertInstanceOf(ClearOauthSessions::class, $job);
         $this->assertSame('mocked-id', $job->clientId);
@@ -120,7 +118,6 @@ final class OauthClientFormTest extends TestCase {
         $form = new OauthClientForm($client);
         $this->assertTrue($form->reset(true));
         $this->assertNotSame('initial_secret', $form->getClient()->secret);
-        /** @var ClearOauthSessions $job */
         $job = $this->tester->grabLastQueuedJob();
         $this->assertInstanceOf(ClearOauthSessions::class, $job);
         $this->assertSame('mocked-id', $job->clientId);

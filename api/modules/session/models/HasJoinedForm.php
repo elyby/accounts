@@ -45,7 +45,6 @@ class HasJoinedForm extends Model {
         }
 
         $joinModel->delete();
-        /** @var Account $account */
         $account = $joinModel->getAccount();
         Assert::notNull($account);
 

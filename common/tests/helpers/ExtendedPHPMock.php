@@ -19,11 +19,19 @@ trait ExtendedPHPMock {
      */
     private array $deactivatables = [];
 
+    /**
+     * @param class-string $namespace
+     * @param string $name
+     */
     public function getFunctionMock($namespace, $name): MockObjectProxy {
         // @phpstan-ignore return.type
         return $this->getOriginalFunctionMock(self::getClassNamespace($namespace), $name);
     }
 
+    /**
+     * @param class-string $namespace
+     * @param string $name
+     */
     public static function defineFunctionMock($namespace, $name): void {
         self::defineOriginalFunctionMock(self::getClassNamespace($namespace), $name);
     }
@@ -45,6 +53,9 @@ trait ExtendedPHPMock {
         $this->deactivatables = [];
     }
 
+    /**
+     * @param class-string $className
+     */
     private static function getClassNamespace(string $className): string {
         return (new ReflectionClass($className))->getNamespaceName();
     }
