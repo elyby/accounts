@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace api\tests\unit\models\authentication;
 
+use api\components\User\Component;
 use api\models\authentication\RecoverPasswordForm;
 use api\tests\unit\TestCase;
 use common\models\Account;
 use common\models\EmailActivation;
 use common\tests\fixtures\EmailActivationFixture;
+use Yii;
 
 class RecoverPasswordFormTest extends TestCase {
 
@@ -19,6 +21,12 @@ class RecoverPasswordFormTest extends TestCase {
 
     public function testRecoverPassword(): void {
         $fixture = $this->tester->grabFixture('emailActivations', 'freshPasswordRecovery');
+        $component = $this->createPartialMock(Component::class, ['terminateSessions']);
+        $component->expects($this->once())
+            ->method('terminateSessions')
+            ->with($this->callback(fn(Account $account): bool => $account->id === $fixture['account_id']), 0);
+        Yii::$app->set('user', $component);
+
         $model = new RecoverPasswordForm([
             'key' => $fixture['key'],
             'newPassword' => '12345678',

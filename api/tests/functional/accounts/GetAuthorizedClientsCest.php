@@ -22,7 +22,10 @@ class GetAuthorizedClientsCest {
                 'lastUsedAt' => 1479944472,
             ],
         ]);
-        $I->cantSeeResponseJsonMatchesJsonPath('$.[?(@.id="tlauncher")]');
+        // The tokens of this session are revoked, but the client's approval is kept
+        $I->canSeeResponseJsonMatchesJsonPath('$.[?(@.id="tlauncher")]');
+        // Only the web applications are listed
+        $I->cantSeeResponseJsonMatchesJsonPath('$.[?(@.id="unauthorized_minecraft_game_launcher")]');
     }
 
     public function testGetForNotOwnIdentity(FunctionalTester $I): void {

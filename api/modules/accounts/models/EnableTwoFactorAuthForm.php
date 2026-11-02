@@ -36,7 +36,7 @@ class EnableTwoFactorAuthForm extends AccountActionForm {
         $account->is_otp_enabled = true;
         Assert::true($account->save(), 'Cannot enable otp for account');
 
-        Yii::$app->user->terminateSessions($account, Component::KEEP_CURRENT_SESSION);
+        Yii::$app->user->terminateSessions($account, Component::KEEP_CURRENT_SESSION | Component::KEEP_OAUTH_SESSIONS);
 
         $transaction->commit();
 

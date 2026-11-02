@@ -16,7 +16,6 @@ use common\tasks\CreateWebHooksDeliveries;
 use Webmozart\Assert\Assert;
 use Yii;
 use yii\db\ActiveQuery;
-use yii\db\Expression;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
@@ -165,11 +164,6 @@ class ClientsController extends Controller {
             ->innerJoinWith(['client c' => function(ActiveQuery $query): void {
                 $query->andOnCondition(['c.type' => OauthClient::TYPE_WEB_APPLICATION]);
             }])
-            ->andWhere([
-                'OR',
-                ['revoked_at' => null],
-                ['>', 'last_used_at', new Expression('`revoked_at`')],
-            ])
             ->all();
         foreach ($oauthSessions as $oauthSession) {
             $client = $oauthSession->client;
@@ -196,10 +190,10 @@ class ClientsController extends Controller {
 
         /** @var \common\models\OauthSession|null $session */
         $session = $account->getOauthSessions()->andWhere(['client_id' => $client->id])->one();
-        if ($session !== null && !$session->isRevoked()) {
-            $session->revoked_at = time();
-            Assert::true($session->save());
+        if ($session !== null) {
+            Assert::notFalse($session->delete());
 
+            $session->revoked_at = time();
             Yii::$app->queue->push(new CreateWebHooksDeliveries(new OAuthSessionRevokedNotification($session)));
         }
 

@@ -6,6 +6,7 @@ namespace api\components\User;
 use common\models\Account;
 use common\models\AccountSession;
 use common\models\OauthClient;
+use common\models\OauthSession;
 use Webmozart\Assert\Assert;
 use yii\web\User as YiiUserComponent;
 
@@ -21,6 +22,7 @@ class Component extends YiiUserComponent {
     public const int KEEP_MINECRAFT_SESSIONS = 1;
     public const int KEEP_SITE_SESSIONS = 2;
     public const int KEEP_CURRENT_SESSION = 4;
+    public const int KEEP_OAUTH_SESSIONS = 8;
 
     public $enableSession = false;
 
@@ -66,6 +68,9 @@ class Component extends YiiUserComponent {
         return AccountSession::findOne(['id' => (int)$sessionId]);
     }
 
+    /**
+     * @param int-mask-of<self::KEEP_*> $mode
+     */
     public function terminateSessions(Account $account, int $mode = 0): void {
         $currentSession = null;
         if ($mode & self::KEEP_CURRENT_SESSION) {
@@ -89,6 +94,15 @@ class Component extends YiiUserComponent {
                 $minecraftSession->revoked_at = time();
                 Assert::true($minecraftSession->save());
             }
+        }
+
+        if (!($mode & self::KEEP_OAUTH_SESSIONS)) {
+            // The sessions themselves are kept, so the approved clients and their scopes are kept too
+            OauthSession::updateAll(['revoked_at' => time()], [
+                'AND',
+                ['account_id' => $account->id],
+                ['NOT', ['client_id' => OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER]],
+            ]);
         }
     }
 

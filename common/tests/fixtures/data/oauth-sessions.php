@@ -4,7 +4,8 @@ return [
         'account_id' => 1,
         'client_id' => 'test1',
         'legacy_id' => 1,
-        'scopes' => null,
+        // Previously the RBAC permissions names were stored
+        'scopes' => ['minecraft_server_session', 'obtain_own_account_info'],
         'created_at' => 1479944472,
         'revoked_at' => null,
         'last_used_at' => 1479944472,

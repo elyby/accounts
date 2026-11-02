@@ -18,7 +18,7 @@ final class EnableTwoFactorAuthFormTest extends TestCase {
         $account->otp_secret = 'mock secret';
 
         $component = $this->createPartialMock(Component::class, ['terminateSessions']);
-        $component->method('terminateSessions')->with($account, Component::KEEP_CURRENT_SESSION);
+        $component->method('terminateSessions')->with($account, Component::KEEP_CURRENT_SESSION | Component::KEEP_OAUTH_SESSIONS);
         Yii::$app->set('user', $component);
 
         $model = $this->createPartialMock(EnableTwoFactorAuthForm::class, ['getAccount', 'validate']);

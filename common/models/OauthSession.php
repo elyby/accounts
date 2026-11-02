@@ -3,10 +3,8 @@ declare(strict_types=1);
 
 namespace common\models;
 
-use Carbon\Carbon;
 use common\components\OAuth2\ScopesMapper;
 use DateTimeInterface;
-use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -43,12 +41,20 @@ class OauthSession extends ActiveRecord {
         ];
     }
 
-    public function isRevoked(): bool {
-        return $this->isRevokedForTokenIssuedAt(Carbon::createFromTimestamp($this->last_used_at));
-    }
-
+    /**
+     * There are 2 ways to revoke tokens:
+     * 1. By setting revoked_at time.
+     * 2. By completely removing the session record.
+     *
+     * For the second case we need to ensure, that the validated token is not before the latest existing session.
+     */
     public function isRevokedForTokenIssuedAt(DateTimeInterface $issuedAt): bool {
-        return $this->revoked_at !== null && $this->revoked_at > $issuedAt->getTimestamp();
+        $issuedAt = $issuedAt->getTimestamp();
+        if ($issuedAt < $this->created_at) {
+            return true;
+        }
+
+        return $this->revoked_at !== null && $this->revoked_at > $issuedAt;
     }
 
     public function getClient(): ActiveQuery {
@@ -67,49 +73,7 @@ class OauthSession extends ActiveRecord {
      * @return list<string>
      */
     public function getScopes(): array {
-        if (empty($this->scopes) && $this->legacy_id !== null) {
-            $scopes = Yii::$app->redis->smembers($this->getLegacyRedisScopesKey());
-        } else {
-            $scopes = (array)$this->scopes;
-        }
-
-        return ScopesMapper::normalizeScopes($scopes);
-    }
-
-    /**
-     * In the early period of the project existence, the refresh tokens related to the current session
-     * were stored in Redis. This method allows to get a list of these tokens.
-     *
-     * @return array of refresh tokens (ids)
-     */
-    public function getLegacyRefreshTokens(): array {
-        // TODO: it seems that this method isn't used anywhere
-        if ($this->legacy_id === null) {
-            return [];
-        }
-
-        return Yii::$app->redis->smembers($this->getLegacyRedisRefreshTokensKey());
-    }
-
-    public function beforeDelete(): bool {
-        if (!parent::beforeDelete()) {
-            return false;
-        }
-
-        if ($this->legacy_id !== null) {
-            Yii::$app->redis->del($this->getLegacyRedisScopesKey());
-            Yii::$app->redis->del($this->getLegacyRedisRefreshTokensKey());
-        }
-
-        return true;
-    }
-
-    private function getLegacyRedisScopesKey(): string {
-        return "oauth:sessions:{$this->legacy_id}:scopes";
-    }
-
-    private function getLegacyRedisRefreshTokensKey(): string {
-        return "oauth:sessions:{$this->legacy_id}:refresh:tokens";
+        return ScopesMapper::normalizeScopes((array)$this->scopes);
     }
 
 }

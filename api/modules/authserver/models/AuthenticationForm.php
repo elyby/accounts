@@ -88,9 +88,6 @@ final class AuthenticationForm extends ApiForm {
             throw new ForbiddenOperationException('Invalid credentials. Invalid username or password.');
         }
 
-        $clientToken = $this->clientToken ?: Uuid::uuid4()->toString();
-        $token = $this->tokensFactory->createForMinecraftAccount($account, $clientToken);
-        $dataModel = new AuthenticateData($account, $token->toString(), $clientToken, (bool)$this->requestUser);
         /** @var OauthSession|null $minecraftOauthSession */
         $minecraftOauthSession = $account->getOauthSessions()
             ->andWhere(['client_id' => OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER])
@@ -104,6 +101,10 @@ final class AuthenticationForm extends ApiForm {
 
         $minecraftOauthSession->last_used_at = time();
         Assert::true($minecraftOauthSession->save());
+
+        $clientToken = $this->clientToken ?: Uuid::uuid4()->toString();
+        $token = $this->tokensFactory->createForMinecraftAccount($account, $clientToken);
+        $dataModel = new AuthenticateData($account, $token->toString(), $clientToken, (bool)$this->requestUser);
 
         Authserver::info("User with id = {$account->id}, username = '{$account->username}' and email = '{$account->email}' successfully logged in.");
 

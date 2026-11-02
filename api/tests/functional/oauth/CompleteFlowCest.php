@@ -36,20 +36,44 @@ final class CompleteFlowCest {
         $I->cantSeeResponseJsonMatchesJsonPath('$.redirectUri');
     }
 
-    #[Before('successfullyCompleteAuthCodeFlow')]
     public function successfullyCompleteAuthCodeFlowWithLessScopes(FunctionalTester $I): void {
         $I->amAuthenticated();
+        $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
+            'client_id' => 'ely',
+            'redirect_uri' => 'http://ely.by',
+            'response_type' => 'code',
+            'scope' => 'minecraft_server_session account_info',
+        ]), ['accept' => true]);
+        $I->canSeeResponseCodeIs(200);
+
         $I->wantTo('get auth code with less scopes as passed in the previous request without accept param');
         $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
             'client_id' => 'ely',
             'redirect_uri' => 'http://ely.by',
             'response_type' => 'code',
+            'scope' => 'account_info',
         ]));
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseContainsJson([
             'success' => true,
         ]);
         $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
+    }
+
+    #[Before('successfullyCompleteAuthCodeFlow')]
+    public function acceptRequiredWithoutScopesEvenWithExistingSession(FunctionalTester $I): void {
+        $I->amAuthenticated();
+        $I->wantTo('get accept_required if no scopes are requested, even when the client was approved previously');
+        $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
+            'client_id' => 'ely',
+            'redirect_uri' => 'http://ely.by',
+            'response_type' => 'code',
+        ]));
+        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+            'error' => 'accept_required',
+        ]);
     }
 
     #[Before('successfullyCompleteAuthCodeFlow')]

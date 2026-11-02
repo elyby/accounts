@@ -52,7 +52,6 @@ class FixtureHelper extends Module {
             'oauthClients' => fixtures\OauthClientFixture::class,
             'oauthSessions' => fixtures\OauthSessionFixture::class,
             'oauthDeviceCodes' => fixtures\OauthDeviceCodeFixture::class,
-            'legacyOauthSessionsScopes' => fixtures\LegacyOauthSessionScopeFixtures::class,
             'legacyOauthAccessTokens' => fixtures\LegacyOauthAccessTokenFixture::class,
             'legacyOauthAccessTokensScopes' => fixtures\LegacyOauthAccessTokenScopeFixture::class,
             'legacyOauthRefreshTokens' => fixtures\LegacyOauthRefreshTokenFixture::class,

@@ -51,6 +51,9 @@ class RecoverPasswordForm extends ApiForm {
 
         Assert::true($account->save(), 'Unable activate user account.');
 
+        // The account might have been compromised, so all the sessions and issued tokens must be revoked
+        Yii::$app->user->terminateSessions($account);
+
         $token = Yii::$app->tokensFactory->createForWebAccount($account);
 
         $transaction->commit();

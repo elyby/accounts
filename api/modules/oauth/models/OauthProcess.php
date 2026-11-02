@@ -228,16 +228,19 @@ final readonly class OauthProcess {
             return true;
         }
 
+        // There is no sense in the authorization without any scope, so always ask the user explicitly for it
+        $requestedScopes = $this->getScopesList($request);
+        if (empty($requestedScopes)) {
+            return false;
+        }
+
+        // The session's revoked_at field is related only to the issued tokens and doesn't affect the approval
         $session = $this->findOauthSession($account, $client);
         if ($session === null) {
             return false;
         }
 
-        if ($session->isRevoked()) {
-            return false;
-        }
-
-        return empty(array_diff($this->getScopesList($request), $session->getScopes()));
+        return empty(array_diff($requestedScopes, $session->getScopes()));
     }
 
     private function storeOauthSession(Account $account, OauthClient $client, AuthorizationRequestInterface $request): void {

@@ -58,8 +58,6 @@ class RefreshTokenForm extends ApiForm {
             throw new ForbiddenOperationException('Invalid token.');
         }
 
-        $token = Yii::$app->tokensFactory->createForMinecraftAccount($account, $this->clientToken);
-
         // TODO: This behavior duplicates with the AuthenticationForm. Need to find a way to avoid duplication.
         /** @var OauthSession|null $minecraftOauthSession */
         $minecraftOauthSession = $account->getOauthSessions()
@@ -74,6 +72,8 @@ class RefreshTokenForm extends ApiForm {
 
         $minecraftOauthSession->last_used_at = time();
         Assert::true($minecraftOauthSession->save());
+
+        $token = Yii::$app->tokensFactory->createForMinecraftAccount($account, $this->clientToken);
 
         return new AuthenticateData($account, $token->toString(), $this->clientToken, (bool)$this->requestUser);
     }

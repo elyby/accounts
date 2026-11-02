@@ -10,6 +10,7 @@ use api\tests\unit\TestCase;
 use common\models\Account;
 use common\models\AccountSession;
 use common\models\OauthClient;
+use common\models\OauthSession;
 use common\tests\fixtures\AccountFixture;
 use common\tests\fixtures\AccountSessionFixture;
 use common\tests\fixtures\OauthClientFixture;
@@ -99,9 +100,28 @@ class ComponentTest extends TestCase {
         /** @var Account $account */
         $account = $this->tester->grabFixture('accounts', 'admin');
 
+        $oauthSessionsQuery = $account->getOauthSessions()->andWhere(['NOT', ['client_id' => OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER]]);
+        $oauthSessionsCount = (int)$oauthSessionsQuery->count();
+        $this->assertGreaterThan(0, $oauthSessionsCount);
+        $minecraftSessionQuery = $account->getOauthSessions()->andWhere(['client_id' => OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER]);
+        $minecraftSessionRevokedAt = $minecraftSessionQuery->one()->revoked_at;
+
         // Dry run: no sessions should be removed
-        $component->terminateSessions($account, Component::KEEP_MINECRAFT_SESSIONS | Component::KEEP_SITE_SESSIONS);
+        $component->terminateSessions($account, Component::KEEP_MINECRAFT_SESSIONS | Component::KEEP_SITE_SESSIONS | Component::KEEP_OAUTH_SESSIONS);
         $this->assertNotEmpty($account->getSessions()->all());
+        $this->assertFalse((clone $oauthSessionsQuery)->andWhere(['>=', 'revoked_at', time() - 5])->exists());
+
+        // OAuth tokens should be revoked, but the sessions (approved clients and scopes) are kept.
+        // Minecraft session should be kept
+        $component->terminateSessions($account, Component::KEEP_MINECRAFT_SESSIONS | Component::KEEP_SITE_SESSIONS);
+        /** @var OauthSession[] $oauthSessions */
+        $oauthSessions = (clone $oauthSessionsQuery)->all();
+        $this->assertCount($oauthSessionsCount, $oauthSessions);
+        foreach ($oauthSessions as $oauthSession) {
+            $this->assertEqualsWithDelta(time(), $oauthSession->revoked_at, 5);
+        }
+
+        $this->assertSame($minecraftSessionRevokedAt, $minecraftSessionQuery->one()->revoked_at);
 
         // All Minecraft sessions should be removed. Web sessions should be kept
         $component->terminateSessions($account, Component::KEEP_SITE_SESSIONS);

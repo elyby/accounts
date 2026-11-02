@@ -1051,11 +1051,6 @@ parameters:
 			path: common/models/OauthSession.php
 
 		-
-			message: "#^Method common\\\\models\\\\OauthSession\\:\\:getLegacyRefreshTokens\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: common/models/OauthSession.php
-
-		-
 			message: "#^Method common\\\\models\\\\Textures\\:\\:getMinecraftResponse\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: common/models/Textures.php
@@ -1274,16 +1269,6 @@ parameters:
 			message: "#^Property common\\\\tests\\\\fixtures\\\\LegacyOauthRefreshTokenFixture\\:\\:\\$keysPrefix has no type specified\\.$#"
 			count: 1
 			path: common/tests/fixtures/LegacyOauthRefreshTokenFixture.php
-
-		-
-			message: "#^Property common\\\\tests\\\\fixtures\\\\LegacyOauthSessionScopeFixtures\\:\\:\\$keysPostfix has no type specified\\.$#"
-			count: 1
-			path: common/tests/fixtures/LegacyOauthSessionScopeFixtures.php
-
-		-
-			message: "#^Property common\\\\tests\\\\fixtures\\\\LegacyOauthSessionScopeFixtures\\:\\:\\$keysPrefix has no type specified\\.$#"
-			count: 1
-			path: common/tests/fixtures/LegacyOauthSessionScopeFixtures.php
 
 		-
 			message: "#^Method common\\\\tests\\\\unit\\\\TestCase\\:\\:_fixtures\\(\\) return type has no value type specified in iterable type array\\.$#"
