@@ -17,7 +17,7 @@ class GetAuthorizedClientsCest {
                 'id' => 'test1',
                 'name' => 'Test1',
                 'description' => 'Some description',
-                'scopes' => ['minecraft_server_session', 'obtain_own_account_info'],
+                'scopes' => ['minecraft_server_session', 'account_info'],
                 'authorizedAt' => 1479944472,
                 'lastUsedAt' => 1479944472,
             ],

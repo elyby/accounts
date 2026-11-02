@@ -9,11 +9,11 @@ use api\modules\authserver\exceptions\ForbiddenOperationException;
 use api\modules\authserver\Module as Authserver;
 use api\modules\authserver\validators\ClientTokenValidator;
 use api\modules\authserver\validators\RequiredValidator;
-use api\rbac\Permissions as P;
 use common\components\Authentication\Entities\Credentials;
 use common\components\Authentication\Exceptions;
 use common\components\Authentication\Exceptions\AuthenticationException;
 use common\components\Authentication\LoginServiceInterface;
+use common\components\OAuth2\Repositories\PublicScopeRepository;
 use common\models\Account;
 use common\models\OauthClient;
 use common\models\OauthSession;
@@ -99,7 +99,7 @@ final class AuthenticationForm extends ApiForm {
             $minecraftOauthSession = new OauthSession();
             $minecraftOauthSession->account_id = $account->id;
             $minecraftOauthSession->client_id = OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER;
-            $minecraftOauthSession->scopes = [P::MINECRAFT_SERVER_SESSION];
+            $minecraftOauthSession->scopes = [PublicScopeRepository::MINECRAFT_SERVER_SESSION];
         }
 
         $minecraftOauthSession->last_used_at = time();

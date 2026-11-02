@@ -6,6 +6,7 @@ namespace api\tests\functional\dev\applications;
 use api\tests\_pages\IdentityInfoRoute;
 use api\tests\functional\_steps\OauthSteps;
 use api\tests\FunctionalTester;
+use Yii;
 
 class IdentityInfoCest {
 
@@ -38,6 +39,22 @@ class IdentityInfoCest {
             'name' => 'Forbidden',
             'status' => 403,
             'message' => 'You are not allowed to perform this action.',
+        ]);
+    }
+
+    public function testGetInfoWithTokenContainingPermissionsNames(OauthSteps $I): void {
+        $I->wantToTest('that previously issued tokens with the RBAC permissions names are still working');
+        $accessToken = Yii::$app->tokens->create([
+            'sub' => 'ely|1',
+            'client_id' => 'test1',
+            'scope' => 'obtain_own_account_info obtain_account_email',
+        ])->toString();
+        $I->amBearerAuthenticated($accessToken);
+        $this->route->info();
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseContainsJson([
+            'id' => 1,
+            'email' => 'admin@ely.by',
         ]);
     }
 

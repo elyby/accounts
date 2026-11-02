@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace common\models;
 
 use Carbon\Carbon;
+use common\components\OAuth2\ScopesMapper;
 use DateTimeInterface;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -58,12 +59,21 @@ class OauthSession extends ActiveRecord {
         return $this->hasOne(Account::class, ['id' => 'account_id']);
     }
 
+    /**
+     * Previously the RBAC permissions names were stored instead of the public scopes names.
+     * Since there are too many rows to migrate them, the scopes are normalized on read
+     * and will be stored in the normalized form on the next session update.
+     *
+     * @return list<string>
+     */
     public function getScopes(): array {
         if (empty($this->scopes) && $this->legacy_id !== null) {
-            return Yii::$app->redis->smembers($this->getLegacyRedisScopesKey());
+            $scopes = Yii::$app->redis->smembers($this->getLegacyRedisScopesKey());
+        } else {
+            $scopes = (array)$this->scopes;
         }
 
-        return (array)$this->scopes;
+        return ScopesMapper::normalizeScopes($scopes);
     }
 
     /**

@@ -6,6 +6,7 @@ namespace api\tests\functional\oauth;
 use api\tests\functional\_steps\OauthSteps;
 use api\tests\FunctionalTester;
 use common\models\OauthSession;
+use Yii;
 
 class RefreshTokenCest {
 
@@ -31,6 +32,9 @@ class RefreshTokenCest {
             'scope' => 'minecraft_server_session',
         ]);
         $this->canSeeRefreshTokenSuccess($I);
+        $I->canSeeResponseContainsJson([
+            'scope' => 'minecraft_server_session',
+        ]);
     }
 
     public function refreshTokenTwice(OauthSteps $I): void {
@@ -53,6 +57,26 @@ class RefreshTokenCest {
             'scope' => 'minecraft_server_session',
         ]);
         $this->canSeeRefreshTokenSuccess($I);
+    }
+
+    public function refreshTokenContainingPermissionsNames(FunctionalTester $I): void {
+        $I->wantToTest('that previously issued tokens with the RBAC permissions names can be refreshed');
+        $refreshToken = Yii::$app->tokens->create([
+            'sub' => 'ely|1',
+            'client_id' => 'test1',
+            'scope' => 'offline_access obtain_own_account_info',
+        ])->toString();
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'refresh_token',
+            'refresh_token' => $refreshToken,
+            'client_id' => 'test1',
+            'client_secret' => 'eEvrKHF47sqiaX94HsX-xXzdGiz3mcsq',
+            'scope' => 'account_info',
+        ]);
+        $this->canSeeRefreshTokenSuccess($I);
+        $I->canSeeResponseContainsJson([
+            'scope' => 'account_info',
+        ]);
     }
 
     public function refreshTokenUsingLegacyToken(FunctionalTester $I): void {

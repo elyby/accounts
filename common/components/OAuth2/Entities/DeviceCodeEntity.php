@@ -21,7 +21,7 @@ final class DeviceCodeEntity implements DeviceCodeEntityInterface {
         $entity->setUserCode($model->user_code);
         $entity->setClient(ClientEntity::fromModel($model->client));
         $entity->setExpiryDateTime(CarbonImmutable::createFromTimestampUTC($model->expires_at));
-        foreach ($model->scopes as $scope) {
+        foreach ($model->getScopes() as $scope) {
             $entity->addScope(new ScopeEntity($scope));
         }
 

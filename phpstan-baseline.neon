@@ -451,11 +451,6 @@ parameters:
 			path: api/modules/session/models/protocols/LegacyJoin.php
 
 		-
-			message: "#^Method api\\\\rbac\\\\Manager\\:\\:getAssignments\\(\\) should return array\\<string, yii\\\\rbac\\\\Assignment\\> but returns array\\<int\\|string, yii\\\\rbac\\\\Assignment\\>\\.$#"
-			count: 1
-			path: api/rbac/Manager.php
-
-		-
 			message: "#^Method api\\\\rbac\\\\rules\\\\AccountOwner\\:\\:execute\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: api/rbac/rules/AccountOwner.php
@@ -1057,11 +1052,6 @@ parameters:
 
 		-
 			message: "#^Method common\\\\models\\\\OauthSession\\:\\:getLegacyRefreshTokens\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: common/models/OauthSession.php
-
-		-
-			message: "#^Method common\\\\models\\\\OauthSession\\:\\:getScopes\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: common/models/OauthSession.php
 

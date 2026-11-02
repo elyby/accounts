@@ -100,6 +100,9 @@ final class DeviceCodeCest {
                 'token_type' => 'Bearer',
             ]);
             $I->canSeeResponseJsonMatchesJsonPath('$.access_token');
+            $I->canSeeResponseContainsJson([
+                'scope' => 'account_info minecraft_server_session',
+            ]);
             $I->cantSeeResponseJsonMatchesJsonPath('$.expires_in');
             $I->cantSeeResponseJsonMatchesJsonPath('$.refresh_token');
         } else {

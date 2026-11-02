@@ -6,6 +6,7 @@ namespace common\components\OAuth2\Repositories;
 use api\rbac\Permissions as P;
 use common\components\OAuth2\Entities\ClientEntity;
 use common\components\OAuth2\Entities\ScopeEntity;
+use common\components\OAuth2\ScopesMapper;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
@@ -13,20 +14,19 @@ use League\OAuth2\Server\Repositories\ScopeRepositoryInterface;
 
 final class InternalScopeRepository implements ScopeRepositoryInterface {
 
+    public const string INTERNAL_ACCOUNT_INFO = 'internal_account_info';
+
     private const array ALLOWED_SCOPES = [
         P::CHANGE_ACCOUNT_USERNAME,
         P::CHANGE_ACCOUNT_PASSWORD,
         P::BLOCK_ACCOUNT,
-        P::OBTAIN_EXTENDED_ACCOUNT_INFO,
+        self::INTERNAL_ACCOUNT_INFO,
         P::ESCAPE_IDENTITY_VERIFICATION,
     ];
 
-    private const array PUBLIC_SCOPES_TO_INTERNAL_PERMISSIONS = [
-        'internal_account_info' => P::OBTAIN_EXTENDED_ACCOUNT_INFO,
-    ];
-
     public function getScopeEntityByIdentifier($identifier): ?ScopeEntityInterface {
-        $identifier = $this->convertToInternalPermission($identifier);
+        // The RBAC permissions names were accepted previously, so normalize them to keep the compatibility
+        $identifier = ScopesMapper::toScope($identifier);
         if (!in_array($identifier, self::ALLOWED_SCOPES, true)) {
             return null;
         }
@@ -55,10 +55,6 @@ final class InternalScopeRepository implements ScopeRepositoryInterface {
         }
 
         return $scopes;
-    }
-
-    private function convertToInternalPermission(string $publicScope): string {
-        return self::PUBLIC_SCOPES_TO_INTERNAL_PERMISSIONS[$publicScope] ?? $publicScope;
     }
 
 }

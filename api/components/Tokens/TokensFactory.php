@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace api\components\Tokens;
 
-use api\rbac\Permissions as P;
 use api\rbac\Roles as R;
 use Carbon\Carbon;
+use common\components\OAuth2\Repositories\PublicScopeRepository;
 use common\models\Account;
 use common\models\AccountSession;
 use DateTime;
@@ -54,7 +54,7 @@ class TokensFactory extends Component {
 
     public function createForMinecraftAccount(Account $account, string $clientToken): UnencryptedToken {
         return Yii::$app->tokens->create([
-            'scope' => $this->prepareScopes([P::OBTAIN_OWN_ACCOUNT_INFO, P::MINECRAFT_SERVER_SESSION]),
+            'scope' => $this->prepareScopes([PublicScopeRepository::ACCOUNT_INFO, PublicScopeRepository::MINECRAFT_SERVER_SESSION]),
             'ely-client-token' => new EncryptedValue($clientToken),
             'sub' => $this->buildSub($account->id),
             'exp' => Carbon::now()->addDays(2)->toDateTimeImmutable(),

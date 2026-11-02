@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace api\modules\oauth\models;
 
-use api\rbac\Permissions as P;
 use common\components\OAuth2\Entities\UserEntity;
 use common\components\OAuth2\Events\RequestedRefreshToken;
 use common\models\Account;
@@ -20,11 +19,6 @@ use Webmozart\Assert\Assert;
 use Yii;
 
 final readonly class OauthProcess {
-
-    private const array INTERNAL_PERMISSIONS_TO_PUBLIC_SCOPES = [
-        P::OBTAIN_OWN_ACCOUNT_INFO => 'account_info',
-        P::OBTAIN_ACCOUNT_EMAIL => 'account_email',
-    ];
 
     public function __construct(
         private AuthorizationServer $server,
@@ -253,7 +247,7 @@ final readonly class OauthProcess {
             $session->client_id = $client->id;
         }
 
-        $session->scopes = array_unique(array_merge($session->getScopes(), $this->getScopesList($request)));
+        $session->scopes = array_values(array_unique(array_merge($session->getScopes(), $this->getScopesList($request))));
         $session->last_used_at = time();
 
         Assert::true($session->save());
@@ -294,7 +288,7 @@ final readonly class OauthProcess {
     private function buildScopesArray(array $scopes): array {
         $result = [];
         foreach ($scopes as $scope) {
-            $result[] = self::INTERNAL_PERMISSIONS_TO_PUBLIC_SCOPES[$scope->getIdentifier()] ?? $scope->getIdentifier();
+            $result[] = $scope->getIdentifier();
         }
 
         return $result;

@@ -5,6 +5,7 @@ namespace api\tests\functional\oauth;
 
 use api\tests\FunctionalTester;
 use Codeception\Attribute\Before;
+use common\models\OauthSession;
 
 final class CompleteFlowCest {
 
@@ -66,6 +67,26 @@ final class CompleteFlowCest {
             'success' => true,
         ]);
         $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
+    }
+
+    public function successfullyCompleteAuthCodeFlowWithSessionContainingPermissionsNames(FunctionalTester $I): void {
+        $I->wantToTest('that previously stored sessions with the RBAC permissions names allow the auto approve');
+        $I->amAuthenticated();
+        $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
+            'client_id' => 'test1',
+            'redirect_uri' => 'http://test1.net',
+            'response_type' => 'code',
+            'scope' => 'account_info minecraft_server_session',
+        ]));
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseContainsJson([
+            'success' => true,
+        ]);
+        $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
+
+        /** @var OauthSession $session */
+        $session = OauthSession::findOne(['account_id' => 1, 'client_id' => 'test1']);
+        $I->assertSame(['minecraft_server_session', 'account_info'], $session->getScopes());
     }
 
     public function acceptRequiredOnFirstAuthRequest1(FunctionalTester $I): void {

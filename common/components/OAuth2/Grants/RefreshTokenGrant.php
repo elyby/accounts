@@ -7,6 +7,7 @@ use api\components\Tokens\TokenReader;
 use Carbon\FactoryImmutable;
 use common\components\OAuth2\CryptTrait;
 use common\components\OAuth2\Repositories\PublicScopeRepository;
+use common\components\OAuth2\ScopesMapper;
 use common\models\OauthSession;
 use DateTimeImmutable;
 use InvalidArgumentException;
@@ -149,7 +150,8 @@ final class RefreshTokenGrant extends BaseRefreshTokenGrant {
             'client_id' => $tokenClientId,
             'refresh_token_id' => '', // This value used only to invalidate old token
             'access_token_id' => '', // This value used only to invalidate old token
-            'scopes' => $reader->getScopes(),
+            // Previously issued tokens may contain the RBAC permissions names
+            'scopes' => ScopesMapper::normalizeScopes($reader->getScopes() ?? []),
             'user_id' => $accountId,
             'expire_time' => null,
         ];

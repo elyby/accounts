@@ -45,6 +45,23 @@ class ClientCredentialsCest {
             'scope' => 'block_account',
         ]);
         $this->assertSuccessResponse($I);
+        $I->canSeeResponseContainsJson([
+            'scope' => 'block_account',
+        ]);
+    }
+
+    public function issueTokenWithMappedInternalScope(FunctionalTester $I): void {
+        $I->wantTo('see the public name of the granted internal scope in the response');
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'client_credentials',
+            'client_id' => 'trusted-client',
+            'client_secret' => 'tXBbyvMcyaOgHMOAXBpN2EC7uFoJAaL9',
+            'scope' => 'internal_account_info',
+        ]);
+        $this->assertSuccessResponse($I);
+        $I->canSeeResponseContainsJson([
+            'scope' => 'internal_account_info',
+        ]);
     }
 
     public function issueTokenByPassingInvalidClientId(FunctionalTester $I): void {

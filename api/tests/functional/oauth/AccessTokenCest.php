@@ -24,6 +24,21 @@ final class AccessTokenCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.access_token');
         $I->cantSeeResponseJsonMatchesJsonPath('$.expires_in');
         $I->cantSeeResponseJsonMatchesJsonPath('$.refresh_token');
+        $I->cantSeeResponseJsonMatchesJsonPath('$.scope');
+    }
+
+    public function successfullyIssueTokenWithScopes(OauthSteps $I): void {
+        $I->wantTo('see the granted scopes with their public names in the response');
+        $authCode = $I->obtainAuthCode(['account_info', 'account_email', 'minecraft_server_session']);
+        $I->issueToken($authCode);
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseContainsJson([
+            'scope' => 'account_info account_email minecraft_server_session',
+        ]);
+
+        [$accessToken] = $I->grabDataFromResponseByJsonPath('$.access_token');
+        $payload = json_decode(base64_decode(strtr(explode('.', $accessToken)[1], '-_', '+/')), true);
+        $I->assertSame('account_info account_email minecraft_server_session', $payload['scope']);
     }
 
     public function successfullyIssueOfflineTokenWithJsonEncodedBody(OauthSteps $I): void {
@@ -45,6 +60,9 @@ final class AccessTokenCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.access_token');
         $I->canSeeResponseJsonMatchesJsonPath('$.expires_in');
         $I->canSeeResponseJsonMatchesJsonPath('$.refresh_token');
+        $I->canSeeResponseContainsJson([
+            'scope' => 'offline_access',
+        ]);
     }
 
     public function callEndpointWithByEmptyRequest(OauthSteps $I): void {
