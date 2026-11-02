@@ -141,7 +141,43 @@ final class CompleteFlowCest {
             'error' => 'access_denied',
             'parameter' => null,
             'statusCode' => 401,
-            'redirectUri' => 'http://ely.by?error=access_denied&error_description=The+resource+owner+or+authorization+server+denied+the+request.&hint=The+user+denied+the+request',
+            'redirectUri' => 'http://ely.by?error=access_denied&error_description=The%20resource%20owner%20or%20authorization%20server%20denied%20the%20request.&hint=The%20user%20denied%20the%20request',
+        ]);
+    }
+
+    public function completeAuthCodeFlowWithDeclineAndState(FunctionalTester $I): void {
+        $I->wantToTest('that the state param is returned back along with the error params');
+        $I->amAuthenticated();
+        $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
+            'client_id' => 'ely',
+            'redirect_uri' => 'http://ely.by',
+            'response_type' => 'code',
+            'scope' => 'minecraft_server_session',
+            'state' => 'test-state',
+        ]), ['accept' => false]);
+        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+            'error' => 'access_denied',
+            'redirectUri' => 'http://ely.by?state=test-state&error=access_denied&error_description=The%20resource%20owner%20or%20authorization%20server%20denied%20the%20request.&hint=The%20user%20denied%20the%20request',
+        ]);
+    }
+
+    public function completeAuthCodeFlowWithDeclineAndQueryInRedirectUri(FunctionalTester $I): void {
+        $I->wantToTest('that the error params are correctly appended to the redirect uri with its own query');
+        $I->amAuthenticated();
+        $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
+            'client_id' => 'ely',
+            'redirect_uri' => 'http://ely.by/callback?param=value',
+            'response_type' => 'code',
+            'scope' => 'minecraft_server_session',
+            'state' => 'test-state',
+        ]), ['accept' => false]);
+        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+            'error' => 'access_denied',
+            'redirectUri' => 'http://ely.by/callback?param=value&state=test-state&error=access_denied&error_description=The%20resource%20owner%20or%20authorization%20server%20denied%20the%20request.&hint=The%20user%20denied%20the%20request',
         ]);
     }
 

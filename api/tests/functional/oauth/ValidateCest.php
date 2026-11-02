@@ -177,6 +177,24 @@ final class ValidateCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
     }
 
+    public function invalidScopesAuthFlowWithState(FunctionalTester $I): void {
+        $I->wantToTest('that the state param is returned back along with the error params');
+        $I->sendGET('/api/oauth2/v1/validate', [
+            'client_id' => 'ely',
+            'redirect_uri' => 'http://ely.by',
+            'response_type' => 'code',
+            'scope' => 'minecraft_server_session some_wrong_scope',
+            'state' => 'test-state',
+        ]);
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+            'error' => 'invalid_scope',
+        ]);
+        [$redirectUri] = $I->grabDataFromResponseByJsonPath('$.redirectUri');
+        $I->assertStringStartsWith('http://ely.by?state=test-state&error=invalid_scope&', $redirectUri);
+    }
+
     public function requestInternalScopeAuthFlow(FunctionalTester $I): void {
         $I->wantTo('check behavior on request internal scope');
         $I->sendGET('/api/oauth2/v1/validate', [

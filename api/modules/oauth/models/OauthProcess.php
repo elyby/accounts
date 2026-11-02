@@ -10,6 +10,7 @@ use common\models\Account;
 use common\models\OauthClient;
 use common\models\OauthSession;
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\Uri;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
@@ -326,7 +327,9 @@ final readonly class OauthProcess {
         ];
 
         if ($e->hasRedirect()) {
-            $response['redirectUri'] = $e->getRedirectUri() . http_build_query($e->getPayload());
+            // The library builds the redirect uri with the state param already appended ("http://ely.by?state=abc")
+            // or with a trailing query delimiter ("http://ely.by?"), so the payload can't be just concatenated to it
+            $response['redirectUri'] = (string)Uri::withQueryValues(new Uri((string)$e->getRedirectUri()), $e->getPayload());
         }
 
         if ($e->getHttpStatusCode() !== 200) {
