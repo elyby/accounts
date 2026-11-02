@@ -28,6 +28,7 @@ final class DeviceCodeCest {
         $I->sendPOST('/api/oauth2/v1/token', [
             'grant_type' => 'urn:ietf:params:oauth:grant-type:device_code',
             'client_id' => 'ely',
+            'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
             'device_code' => 'nKuYFfwckZywqU8iUKv3ek4VtiMiMCkiC0YTZFPbWycSxdRpHiYP2wnv3S0KHBgYky8fRDqfhhCqzke7',
         ]);
         $I->canSeeResponseCodeIs(400);
@@ -36,10 +37,24 @@ final class DeviceCodeCest {
         ]);
     }
 
+    public function pollDeviceCodeWithoutClientSecret(FunctionalTester $I): void {
+        $I->wantToTest('that the confidential client must be authenticated by its secret during polling');
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'urn:ietf:params:oauth:grant-type:device_code',
+            'client_id' => 'ely',
+            'device_code' => 'nKuYFfwckZywqU8iUKv3ek4VtiMiMCkiC0YTZFPbWycSxdRpHiYP2wnv3S0KHBgYky8fRDqfhhCqzke7',
+        ]);
+        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseContainsJson([
+            'error' => 'invalid_client',
+        ]);
+    }
+
     public function pollExpiredDeviceCode(FunctionalTester $I): void {
         $I->sendPOST('/api/oauth2/v1/token', [
             'grant_type' => 'urn:ietf:params:oauth:grant-type:device_code',
             'client_id' => 'ely',
+            'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
             'device_code' => 'ZFPbWycSxdRpHiYP2wnv3S0KHBgYky8fRDqfhhCqzke7nKuYFfwckZywqU8iUKv3ek4VtiMiMCkiC0YT',
         ]);
         $I->canSeeResponseCodeIs(400);
@@ -75,6 +90,7 @@ final class DeviceCodeCest {
         $I->sendPOST('/api/oauth2/v1/token', [
             'grant_type' => 'urn:ietf:params:oauth:grant-type:device_code',
             'client_id' => 'ely',
+            'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
             'device_code' => $deviceCode,
         ]);
         if ($case[0]) {

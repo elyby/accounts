@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace api\tests\functional\oauth;
 
 use api\tests\FunctionalTester;
+use Codeception\Attribute\Examples;
+use Codeception\Example;
 
 class ClientCredentialsCest {
 
@@ -71,6 +73,31 @@ class ClientCredentialsCest {
         $I->canSeeResponseContainsJson([
             'error' => 'invalid_client',
         ]);
+    }
+
+    /**
+     * @param Example<array{string|null}> $case
+     */
+    #[Examples(null)]
+    #[Examples('')]
+    public function issueTokenWithoutClientSecret(FunctionalTester $I, Example $case): void {
+        $I->wantToTest('that the client must be authenticated by its secret');
+        $params = [
+            'grant_type' => 'client_credentials',
+            'client_id' => 'trusted-client',
+            // no client_secret
+            'scope' => 'block_account',
+        ];
+        if ($case[0] !== null) {
+            $params['client_secret'] = $case[0];
+        }
+
+        $I->sendPOST('/api/oauth2/v1/token', $params);
+        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseContainsJson([
+            'error' => 'invalid_client',
+        ]);
+        $I->cantSeeResponseJsonMatchesJsonPath('$.access_token');
     }
 
     private function assertSuccessResponse(FunctionalTester $I): void {

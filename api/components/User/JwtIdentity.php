@@ -10,6 +10,7 @@ use common\models\Account;
 use common\models\OauthClient;
 use common\models\OauthSession;
 use DateTimeImmutable;
+use DateTimeInterface;
 use Exception;
 use Lcobucci\JWT\UnencryptedToken;
 use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
@@ -101,9 +102,13 @@ class JwtIdentity implements IdentityInterface {
         throw new NotSupportedException('This method used for cookie auth, except we using Bearer auth');
     }
 
-    private static function isRevoked(int $accountId, string $clientId, DateTimeImmutable $iat): bool {
+    private static function isRevoked(int $accountId, string $clientId, DateTimeInterface $iat): bool {
         $session = OauthSession::findOne(['account_id' => $accountId, 'client_id' => $clientId]);
-        return $session !== null && $session->revoked_at !== null && $session->revoked_at > $iat->getTimestamp();
+        if ($session === null) {
+            return true;
+        }
+
+        return $session->isRevokedForTokenIssuedAt($iat);
     }
 
     /** @codeCoverageIgnoreEnd */

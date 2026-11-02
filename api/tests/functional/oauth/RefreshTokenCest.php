@@ -5,6 +5,7 @@ namespace api\tests\functional\oauth;
 
 use api\tests\functional\_steps\OauthSteps;
 use api\tests\FunctionalTester;
+use common\models\OauthSession;
 
 class RefreshTokenCest {
 
@@ -96,6 +97,89 @@ class RefreshTokenCest {
         $I->canSeeResponseContainsJson([
             'error' => 'invalid_scope',
         ]);
+    }
+
+    public function refreshTokenWithoutClientSecret(OauthSteps $I): void {
+        $I->wantToTest('that the confidential client must be authenticated by its secret');
+        $refreshToken = $I->getRefreshToken();
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'refresh_token',
+            'refresh_token' => $refreshToken,
+            'client_id' => 'ely',
+            // no client_secret
+        ]);
+        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseContainsJson([
+            'error' => 'invalid_client',
+        ]);
+    }
+
+    public function refreshTokenByAnotherClient(OauthSteps $I): void {
+        $I->wantToTest('that the refresh token can be used only by the client it was issued to');
+        $refreshToken = $I->getRefreshToken();
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'refresh_token',
+            'refresh_token' => $refreshToken,
+            'client_id' => 'tlauncher',
+            'client_secret' => 'HsX-xXzdGiz3mcsqeEvrKHF47sqiaX94',
+        ]);
+        $this->canSeeInvalidRefreshToken($I);
+    }
+
+    public function refreshAccessTokenWithoutOfflineAccess(OauthSteps $I): void {
+        $I->wantToTest('that the access token, issued without offline_access scope, can\'t be used as a refresh token');
+        $accessToken = $I->getAccessToken(['account_info']);
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'refresh_token',
+            'refresh_token' => $accessToken,
+            'client_id' => 'ely',
+            'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
+        ]);
+        $this->canSeeInvalidRefreshToken($I);
+    }
+
+    public function refreshTokenAfterSessionRevocation(OauthSteps $I): void {
+        $I->wantToTest('that the refresh token stops working after the user revoked the access');
+        $refreshToken = $I->getRefreshToken(['account_info']);
+        /** @var OauthSession $session */
+        $session = OauthSession::findOne(['account_id' => 1, 'client_id' => 'ely']);
+        $session->revoked_at = time() + 1;
+        $session->save();
+
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'refresh_token',
+            'refresh_token' => $refreshToken,
+            'client_id' => 'ely',
+            'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
+        ]);
+        $this->canSeeInvalidRefreshToken($I);
+    }
+
+    public function refreshMinecraftAuthserverToken(FunctionalTester $I): void {
+        $I->wantToTest('that the authserver token can\'t be exchanged for the OAuth2 token');
+        $I->sendPOST('/api/authserver/authentication/authenticate', [
+            'username' => 'admin',
+            'password' => 'password_0',
+            'clientToken' => 'ebc0a2a9-7f0b-4ff1-9b3b-7a0d1b6a9c0e',
+        ]);
+        $I->canSeeResponseCodeIs(200);
+        [$accessToken] = $I->grabDataFromResponseByJsonPath('$.accessToken');
+
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'refresh_token',
+            'refresh_token' => $accessToken,
+            'client_id' => 'ely',
+            'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
+        ]);
+        $this->canSeeInvalidRefreshToken($I);
+    }
+
+    private function canSeeInvalidRefreshToken(FunctionalTester $I): void {
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContainsJson([
+            'error' => 'invalid_grant',
+        ]);
+        $I->cantSeeResponseJsonMatchesJsonPath('$.access_token');
     }
 
     private function canSeeRefreshTokenSuccess(FunctionalTester $I): void {

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace common\models;
 
+use Carbon\Carbon;
+use DateTimeInterface;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
@@ -41,7 +43,11 @@ class OauthSession extends ActiveRecord {
     }
 
     public function isRevoked(): bool {
-        return $this->revoked_at > $this->last_used_at;
+        return $this->isRevokedForTokenIssuedAt(Carbon::createFromTimestamp($this->last_used_at));
+    }
+
+    public function isRevokedForTokenIssuedAt(DateTimeInterface $issuedAt): bool {
+        return $this->revoked_at !== null && $this->revoked_at > $issuedAt->getTimestamp();
     }
 
     public function getClient(): ActiveQuery {

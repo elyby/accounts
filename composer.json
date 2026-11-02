@@ -38,6 +38,7 @@
         "guzzlehttp/guzzle": "^6|^7",
         "lcobucci/jwt": "^5.4",
         "league/oauth2-server": "dev-master#03dcdd7 as 9.2.0",
+        "league/uri-polyfill": "^7.9",
         "nesbot/carbon": "^3",
         "nohnaimer/yii2-sentry": "^2.0",
         "paragonie/constant_time_encoding": "^3",

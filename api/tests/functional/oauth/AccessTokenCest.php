@@ -92,4 +92,34 @@ final class AccessTokenCest {
         ]);
     }
 
+    public function issueTokenWithoutClientSecret(OauthSteps $I): void {
+        $authCode = $I->obtainAuthCode();
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'authorization_code',
+            'code' => $authCode,
+            'client_id' => 'ely',
+            // no client_secret
+            'redirect_uri' => 'http://ely.by',
+        ]);
+        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseContainsJson([
+            'error' => 'invalid_client',
+        ]);
+        $I->cantSeeResponseJsonMatchesJsonPath('$.access_token');
+    }
+
+    public function issueTokenByPassingTheSameAuthCodeTwice(OauthSteps $I): void {
+        $authCode = $I->obtainAuthCode();
+        $I->issueToken($authCode);
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseJsonMatchesJsonPath('$.access_token');
+
+        $I->issueToken($authCode);
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContainsJson([
+            'error' => 'invalid_grant',
+        ]);
+        $I->cantSeeResponseJsonMatchesJsonPath('$.access_token');
+    }
+
 }

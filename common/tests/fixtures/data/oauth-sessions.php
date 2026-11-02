@@ -54,4 +54,13 @@ return [
         'revoked_at' => null,
         'last_used_at' => 1519511568,
     ],
+    'deleted-account-ely' => [
+        'account_id' => 15,
+        'client_id' => 'ely',
+        'legacy_id' => null,
+        'scopes' => null,
+        'created_at' => 1518334743,
+        'revoked_at' => null,
+        'last_used_at' => 1518334743,
+    ],
 ];

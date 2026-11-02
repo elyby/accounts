@@ -29,8 +29,15 @@ final class ClientRepository implements ClientRepositoryInterface {
             return false;
         }
 
-        if ($client->type === OauthClient::TYPE_WEB_APPLICATION && !empty($clientSecret) && $clientSecret !== $client->secret) {
-            return false;
+        if ($client->type !== OauthClient::TYPE_DESKTOP_APPLICATION) {
+            // The library passes an empty string when the secret wasn't provided at all
+            if (empty($clientSecret) || empty($client->secret)) {
+                return false;
+            }
+
+            if (!hash_equals($client->secret, $clientSecret)) {
+                return false;
+            }
         }
 
         return true;

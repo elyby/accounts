@@ -49,7 +49,37 @@ class TokenReaderTest extends TestCase {
     public function getScopesTestCases(): iterable {
         yield [['scope' => 'scope1 scope2'], ['scope1', 'scope2']];
         yield [['ely-scopes' => 'scope1,scope2'], ['scope1', 'scope2']];
+        yield [['scope' => ' scope1  scope2 '], ['scope1', 'scope2']];
+        yield [['ely-scopes' => ',scope1,,scope2,'], ['scope1', 'scope2']];
+        yield [['scope' => ' '], []];
         yield [[], null];
+    }
+
+    /**
+     * @dataProvider hasScopeTestCases
+     *
+     * @param array<string, non-empty-string> $claims
+     * @param non-empty-string $scope
+     */
+    public function testHasScope(array $claims, string $scope, bool $expectedResult): void {
+        $this->assertSame($expectedResult, $this->createReader($claims)->hasScope($scope));
+    }
+
+    /**
+     * @return iterable<string, array{array<string, non-empty-string>, non-empty-string, bool}>
+     */
+    public function hasScopeTestCases(): iterable {
+        yield 'first scope' => [['scope' => 'scope1 scope2'], 'scope1', true];
+        yield 'last scope' => [['scope' => 'scope1 scope2'], 'scope2', true];
+        yield 'single scope' => [['scope' => 'scope1'], 'scope1', true];
+        yield 'missing scope' => [['scope' => 'scope1 scope2'], 'scope3', false];
+        yield 'partial match' => [['scope' => 'scope1 scope2'], 'scope', false];
+        yield 'case sensitive' => [['scope' => 'scope1 scope2'], 'SCOPE1', false];
+        yield 'legacy claim' => [['ely-scopes' => 'scope1,scope2'], 'scope2', true];
+        yield 'legacy claim, missing scope' => [['ely-scopes' => 'scope1,scope2'], 'scope3', false];
+        yield 'legacy claim is not delimited by space' => [['ely-scopes' => 'scope1 scope2'], 'scope2', false];
+        yield 'scope claim takes precedence' => [['scope' => 'scope1', 'ely-scopes' => 'scope2'], 'scope2', false];
+        yield 'no scopes claims' => [[], 'scope1', false];
     }
 
     /**

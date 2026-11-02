@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3e64cde444aa504866e55aca9c75365a",
+    "content-hash": "935b738a331c0e10ef2086de3f2787b6",
     "packages": [
         {
             "name": "altcha-org/altcha",
@@ -176,16 +176,16 @@
         },
         {
             "name": "brick/math",
-            "version": "0.12.1",
+            "version": "0.12.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/brick/math.git",
-                "reference": "f510c0a40911935b77b86859eb5223d58d660df1"
+                "reference": "866551da34e9a618e64a819ee1e01c20d8a588ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/brick/math/zipball/f510c0a40911935b77b86859eb5223d58d660df1",
-                "reference": "f510c0a40911935b77b86859eb5223d58d660df1",
+                "url": "https://api.github.com/repos/brick/math/zipball/866551da34e9a618e64a819ee1e01c20d8a588ba",
+                "reference": "866551da34e9a618e64a819ee1e01c20d8a588ba",
                 "shasum": ""
             },
             "require": {
@@ -194,7 +194,7 @@
             "require-dev": {
                 "php-coveralls/php-coveralls": "^2.2",
                 "phpunit/phpunit": "^10.1",
-                "vimeo/psalm": "5.16.0"
+                "vimeo/psalm": "6.8.8"
             },
             "type": "library",
             "autoload": {
@@ -224,7 +224,7 @@
             ],
             "support": {
                 "issues": "https://github.com/brick/math/issues",
-                "source": "https://github.com/brick/math/tree/0.12.1"
+                "source": "https://github.com/brick/math/tree/0.12.3"
             },
             "funding": [
                 {
@@ -232,7 +232,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-11-29T23:19:16+00:00"
+            "time": "2025-02-28T13:11:00+00:00"
         },
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -1629,22 +1629,21 @@
         },
         {
             "name": "league/uri-interfaces",
-            "version": "7.4.1",
+            "version": "7.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/uri-interfaces.git",
-                "reference": "8d43ef5c841032c87e2de015972c06f3865ef718"
+                "reference": "994300a79e17f179112dc259f8df0c4de982f736"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/uri-interfaces/zipball/8d43ef5c841032c87e2de015972c06f3865ef718",
-                "reference": "8d43ef5c841032c87e2de015972c06f3865ef718",
+                "url": "https://api.github.com/repos/thephpleague/uri-interfaces/zipball/994300a79e17f179112dc259f8df0c4de982f736",
+                "reference": "994300a79e17f179112dc259f8df0c4de982f736",
                 "shasum": ""
             },
             "require": {
                 "ext-filter": "*",
                 "php": "^8.1",
-                "psr/http-factory": "^1",
                 "psr/http-message": "^1.1 || ^2.0"
             },
             "suggest": {
@@ -1652,6 +1651,7 @@
                 "ext-gmp": "to improve IPV4 host parsing",
                 "ext-intl": "to handle IDN host with the best performance",
                 "php-64bit": "to improve IPV4 host parsing",
+                "rowbot/url": "to handle URLs using the WHATWG URL Living Standard specification",
                 "symfony/polyfill-intl-idn": "to handle IDN host via the Symfony polyfill if ext-intl is not present"
             },
             "type": "library",
@@ -1676,7 +1676,7 @@
                     "homepage": "https://nyamsprod.com"
                 }
             ],
-            "description": "Common interfaces and classes for URI representation and interaction",
+            "description": "Common tools for parsing and resolving RFC3987/RFC3986 URI",
             "homepage": "https://uri.thephpleague.com",
             "keywords": [
                 "data-uri",
@@ -1701,7 +1701,7 @@
                 "docs": "https://uri.thephpleague.com",
                 "forum": "https://thephpleague.slack.com",
                 "issues": "https://github.com/thephpleague/uri-src/issues",
-                "source": "https://github.com/thephpleague/uri-interfaces/tree/7.4.1"
+                "source": "https://github.com/thephpleague/uri-interfaces/tree/7.9.1"
             },
             "funding": [
                 {
@@ -1709,7 +1709,91 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-03-23T07:42:40+00:00"
+            "time": "2026-10-27T07:14:23+00:00"
+        },
+        {
+            "name": "league/uri-polyfill",
+            "version": "7.9.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/uri-polyfill.git",
+                "reference": "18c5b081ea19a358648c7b9acefe8856ee539012"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/uri-polyfill/zipball/18c5b081ea19a358648c7b9acefe8856ee539012",
+                "reference": "18c5b081ea19a358648c7b9acefe8856ee539012",
+                "shasum": ""
+            },
+            "require": {
+                "league/uri-interfaces": ">=7.9.1",
+                "php": ">=8.1",
+                "rowbot/url": "^4.1.0"
+            },
+            "provide": {
+                "ext-uri": "*"
+            },
+            "suggest": {
+                "ext-intl": "to handle IDN host with the best performance",
+                "jeremykendall/php-domain-parser": "to further parse the URI host and resolve its Public Suffix and Top Level Domain",
+                "league/uri-components": "to provide additional tools to manipulate URI objects components",
+                "php-64bit": "to improve IPV4 host parsing",
+                "symfony/polyfill-intl-idn": "to handle IDN host via the Symfony polyfill if ext-intl is not present",
+                "symfony/polyfill-php82": "to use the SensitiveParameter polyfill in PHP8.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "7.x-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "lib/Rfc3986/functions.php",
+                    "lib/WhatWg/functions.php"
+                ],
+                "psr-4": {
+                    "League\\Uri\\": ""
+                },
+                "classmap": [
+                    "lib"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ignace Nyamagana Butera",
+                    "email": "nyamsprod@gmail.com",
+                    "homepage": "https://github.com/nyamsprod/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Polyfill backporting PHP 8.5+ native RFC3986/WHATWG URI features to lower PHP versions",
+            "keywords": [
+                "WHATWG",
+                "compatibiliy",
+                "equivalence",
+                "parser",
+                "polyfill",
+                "portable",
+                "resolver",
+                "rfc3986",
+                "uri",
+                "url"
+            ],
+            "support": {
+                "source": "https://github.com/thephpleague/uri-polyfill/tree/7.9.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/nyamsprod",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-10-27T07:14:23+00:00"
         },
         {
             "name": "nesbot/carbon",
@@ -2903,6 +2987,185 @@
             "time": "2024-04-27T21:32:50+00:00"
         },
         {
+            "name": "rowbot/idna",
+            "version": "0.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/TRowbotham/idna.git",
+                "reference": "504900acc8e465a17668a61ae30391d1aebbb4f2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/TRowbotham/idna/zipball/504900acc8e465a17668a61ae30391d1aebbb4f2",
+                "reference": "504900acc8e465a17668a61ae30391d1aebbb4f2",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": ">=8.1",
+                "rowbot/punycode": "^1.0",
+                "symfony/polyfill-intl-normalizer": "^1.18"
+            },
+            "require-dev": {
+                "guzzlehttp/guzzle": "^6.5 || ^7.0",
+                "phpstan/phpstan": "^2.1",
+                "phpstan/phpstan-deprecation-rules": "^2.0",
+                "phpstan/phpstan-strict-rules": "^2.0",
+                "phpunit/phpunit": "^10.0 || ^11.0 || ^12.0",
+                "squizlabs/php_codesniffer": "^3.7.1",
+                "symfony/cache": "^5.0 || ^6.0 || ^7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Rowbot\\Idna\\": "src/",
+                    "Rowbot\\Idna\\Resource\\": "resources/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Trevor Rowbotham"
+                }
+            ],
+            "description": "An implementation of UTS#46 Unicode IDNA Compatibility Processing.",
+            "keywords": [
+                "idn",
+                "idna",
+                "international domain names",
+                "iri",
+                "tr46",
+                "unicode",
+                "uts46"
+            ],
+            "support": {
+                "issues": "https://github.com/TRowbotham/idna/issues",
+                "source": "https://github.com/TRowbotham/idna/tree/0.3.0"
+            },
+            "time": "2025-09-19T00:30:13+00:00"
+        },
+        {
+            "name": "rowbot/punycode",
+            "version": "1.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/TRowbotham/punycode.git",
+                "reference": "ec116e99cb089a25d45147813d61bfa2deb29328"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/TRowbotham/punycode/zipball/ec116e99cb089a25d45147813d61bfa2deb29328",
+                "reference": "ec116e99cb089a25d45147813d61bfa2deb29328",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "ext-mbstring": "*",
+                "phpstan/phpstan": "^1.2",
+                "phpstan/phpstan-deprecation-rules": "^1.0",
+                "phpstan/phpstan-strict-rules": "^1.0",
+                "phpunit/phpunit": "^7.0 || ^8.0 || ^9.0",
+                "squizlabs/php_codesniffer": "^3.5.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Rowbot\\Punycode\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Trevor Rowbotham",
+                    "homepage": "https://trowbotham.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A Bootstring encoding of Unicode for Internationalized Domain Names in Applications (IDNA).",
+            "keywords": [
+                "punycode",
+                "rfc-3492",
+                "rfc3492"
+            ],
+            "support": {
+                "issues": "https://github.com/TRowbotham/punycode/issues",
+                "source": "https://github.com/TRowbotham/punycode/tree/1.0.4"
+            },
+            "time": "2024-05-03T00:56:10+00:00"
+        },
+        {
+            "name": "rowbot/url",
+            "version": "4.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/TRowbotham/URL-Parser.git",
+                "reference": "9b1bd1ac757672cb0682f697b53dc5aa03c76297"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/TRowbotham/URL-Parser/zipball/9b1bd1ac757672cb0682f697b53dc5aa03c76297",
+                "reference": "9b1bd1ac757672cb0682f697b53dc5aa03c76297",
+                "shasum": ""
+            },
+            "require": {
+                "brick/math": "^0.12 || ^0.13 || ^0.14 || ^0.15 || ^0.16 || ^0.17 || ^0.18 || ^0.19 || ^0.20 || ^1.0",
+                "ext-mbstring": "*",
+                "php": ">=8.1",
+                "psr/log": "^2.0 || ^3.0",
+                "rowbot/idna": "^0.3.0"
+            },
+            "require-dev": {
+                "guzzlehttp/guzzle": "^7.0",
+                "phpstan/phpstan": "^2.1",
+                "phpstan/phpstan-deprecation-rules": "^2.0",
+                "phpstan/phpstan-strict-rules": "^2.0",
+                "phpunit/phpunit": "^10.0 || ^11.0 || ^12.0",
+                "slevomat/coding-standard": "^8.0",
+                "squizlabs/php_codesniffer": "^3.7.1",
+                "symfony/cache": "^5.0 || ^6.0 || ^7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Rowbot\\URL\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Trevor Rowbotham",
+                    "homepage": "https://trowbotham.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A WHATWG URL spec compliant URL parser for working with URLs and their query strings.",
+            "keywords": [
+                "WHATWG",
+                "query-string",
+                "querystring",
+                "uri",
+                "url",
+                "url-parser",
+                "url-parsing"
+            ],
+            "support": {
+                "issues": "https://github.com/TRowbotham/URL-Parser/issues",
+                "source": "https://github.com/TRowbotham/URL-Parser/tree/4.2.1"
+            },
+            "time": "2026-10-03T01:15:39+00:00"
+        },
+        {
             "name": "sam-it/yii2-mariadb",
             "version": "v3.0.0",
             "source": {
@@ -3855,16 +4118,16 @@
         },
         {
             "name": "symfony/polyfill-intl-normalizer",
-            "version": "v1.31.0",
+            "version": "v1.43.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-intl-normalizer.git",
-                "reference": "3833d7255cc303546435cb650316bff708a1c75c"
+                "reference": "ebd57ccc7edb93d632e184efbe7693d2517bab3b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-intl-normalizer/zipball/3833d7255cc303546435cb650316bff708a1c75c",
-                "reference": "3833d7255cc303546435cb650316bff708a1c75c",
+                "url": "https://api.github.com/repos/symfony/polyfill-intl-normalizer/zipball/ebd57ccc7edb93d632e184efbe7693d2517bab3b",
+                "reference": "ebd57ccc7edb93d632e184efbe7693d2517bab3b",
                 "shasum": ""
             },
             "require": {
@@ -3876,8 +4139,8 @@
             "type": "library",
             "extra": {
                 "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
                 }
             },
             "autoload": {
@@ -3916,7 +4179,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-intl-normalizer/tree/v1.31.0"
+                "source": "https://github.com/symfony/polyfill-intl-normalizer/tree/v1.43.0"
             },
             "funding": [
                 {
@@ -3928,11 +4191,15 @@
                     "type": "github"
                 },
                 {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
                     "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-09-09T11:45:10+00:00"
+            "time": "2026-09-23T22:02:09+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",

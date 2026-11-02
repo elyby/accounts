@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace api\tests\functional\oauth;
 
 use api\tests\FunctionalTester;
+use Codeception\Attribute\Examples;
+use Codeception\Example;
 
 final class ValidateCest {
 
@@ -86,6 +88,28 @@ final class ValidateCest {
             'client_id' => 'non-exists-client',
             'redirect_uri' => 'http://some-resource.by',
             'response_type' => 'code',
+        ]);
+        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+            'error' => 'invalid_client',
+            'statusCode' => 401,
+        ]);
+    }
+
+    /**
+     * @param Example<array{string}> $case
+     */
+    #[Examples('http://ely.by.evil.com/callback')]
+    #[Examples('http://ely.by@evil.com/callback')]
+    #[Examples('http://ely.by:8080/callback')]
+    #[Examples('https://ely.by/callback')]
+    public function passRedirectUriThatOnlyStartsWithTheRegisteredOne(FunctionalTester $I, Example $case): void {
+        $I->sendGET('/api/oauth2/v1/validate', [
+            'client_id' => 'ely',
+            'redirect_uri' => $case[0],
+            'response_type' => 'code',
+            'scope' => 'account_info',
         ]);
         $I->canSeeResponseCodeIs(401);
         $I->canSeeResponseContainsJson([

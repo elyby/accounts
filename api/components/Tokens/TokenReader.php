@@ -31,12 +31,12 @@ final readonly class TokenReader {
     }
 
     /**
-     * @return list<string>|null
+     * @return list<non-empty-string>|null
      */
     public function getScopes(): ?array {
         $scopes = $this->token->claims()->get('scope', false);
         if ($scopes !== false) {
-            return explode(' ', (string)$scopes);
+            return self::splitScopes((string)$scopes, ' ');
         }
 
         // Handle legacy tokens, which used "ely-scopes" claim and was delimited with comma
@@ -45,7 +45,14 @@ final readonly class TokenReader {
             return null;
         }
 
-        return explode(',', (string)$scopes);
+        return self::splitScopes((string)$scopes, ',');
+    }
+
+    /**
+     * @param non-empty-string $scope
+     */
+    public function hasScope(string $scope): bool {
+        return in_array($scope, $this->getScopes() ?? [], true);
     }
 
     public function getMinecraftClientToken(): ?string {
@@ -59,6 +66,14 @@ final readonly class TokenReader {
          * @noinspection PhpUnhandledExceptionInspection
          */
         return Yii::$app->tokens->decryptValue($encodedClientToken);
+    }
+
+    /**
+     * @param non-empty-string $delimiter
+     * @return list<non-empty-string>
+     */
+    private static function splitScopes(string $scopes, string $delimiter): array {
+        return array_values(array_filter(explode($delimiter, $scopes), fn(string $scope): bool => !empty($scope)));
     }
 
 }
