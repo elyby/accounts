@@ -18,7 +18,7 @@ final class PublicScopeRepository implements ScopeRepositoryInterface {
     public const string ACCOUNT_EMAIL = 'account_email';
     public const string MINECRAFT_SERVER_SESSION = 'minecraft_server_session';
 
-    private const array ALLOWED_SCOPES = [
+    public const array ALLOWED_SCOPES = [
         self::ACCOUNT_INFO,
         self::ACCOUNT_EMAIL,
         self::MINECRAFT_SERVER_SESSION,

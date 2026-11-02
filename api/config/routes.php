@@ -1,6 +1,7 @@
 <?php
 return [
     // Oauth module routes
+    'GET,OPTIONS /.well-known/oauth-authorization-server' => 'oauth/discovery/authorization-server',
     '/oauth2/v1/<action>' => 'oauth/authorization/<action>',
     'POST /v1/oauth2/<type>' => 'oauth/clients/create',
     'GET /v1/oauth2/<clientId>' => 'oauth/clients/get',
