@@ -226,6 +226,19 @@ final class CompleteFlowCest {
         ]);
     }
 
+    #[Before('successfullyCompleteAuthCodeFlowWithLessScopes')]
+    public function acceptRequiredForDeviceCodeFlowEvenWithExistingSession(FunctionalTester $I): void {
+        $I->wantTo('get accept_required for the device code flow, even when the client was approved with the same scopes');
+        $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
+            'user_code' => 'AAAABBBB',
+        ]));
+        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+            'error' => 'accept_required',
+        ]);
+    }
+
     public function completeDeviceCodeFlowWithDecline(FunctionalTester $I): void {
         $I->amAuthenticated();
         $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([

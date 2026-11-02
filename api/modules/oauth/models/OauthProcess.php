@@ -224,6 +224,12 @@ final readonly class OauthProcess {
      * without requesting access to the necessary list of scopes
      */
     private function canBeAutoApproved(Account $account, OauthClient $client, AuthorizationRequestInterface $request): bool {
+        // The device code flow is initiated by anyone who knows the client_id, and the user code can be passed
+        // to the user via a link. So the user must always confirm the authorization explicitly (RFC 8628 section 5.4)
+        if ($request->getGrantTypeId() === 'urn:ietf:params:oauth:grant-type:device_code') {
+            return false;
+        }
+
         if ($client->is_trusted) {
             return true;
         }
