@@ -3,13 +3,17 @@ declare(strict_types=1);
 
 namespace api\modules\oauth\models;
 
+use api\components\Tokens\TokenReader;
 use common\components\OAuth2\Entities\UserEntity;
 use common\components\OAuth2\Events\RequestedRefreshToken;
+use common\components\OAuth2\Repositories\ClientRepository;
 use common\models\Account;
 use common\models\OauthClient;
 use common\models\OauthSession;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
+use InvalidArgumentException;
+use Lcobucci\JWT\UnencryptedToken;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
@@ -211,6 +215,118 @@ final readonly class OauthProcess {
         }
 
         return $result;
+    }
+
+    /**
+     * Token revocation endpoint (RFC 7009).
+     *
+     * The tokens can be revoked only for the account and client pair (see OauthSession::isRevokedForTokenIssuedAt()),
+     * so the revocation of a single token revokes all the tokens issued to the client for the token's account.
+     * The client's approval itself is kept.
+     *
+     * Input data is a standard list of POST parameters:
+     * $_POST = [
+     *     token,
+     *     token_type_hint, // isn't used, since the access_token and the refresh_token are the same value
+     *     client_id,
+     *     client_secret, // can be passed via the Basic auth as well
+     * ]
+     *
+     * @return array<string, string>
+     */
+    public function revokeToken(ServerRequestInterface $request): array {
+        Yii::$app->statsd->inc('oauth.revokeToken.attempt');
+
+        [$clientId, $clientSecret] = $this->getClientCredentials($request);
+        if ($clientId === null || !(new ClientRepository())->validateClient($clientId, $clientSecret, null)) {
+            Yii::$app->statsd->inc('oauth.revokeToken.fail');
+            Yii::$app->response->statusCode = 401;
+
+            return [
+                'error' => 'invalid_client',
+                'error_description' => 'Client authentication failed',
+            ];
+        }
+
+        $token = ((array)$request->getParsedBody())['token'] ?? null;
+        if (!is_string($token) || $token === '') {
+            Yii::$app->statsd->inc('oauth.revokeToken.fail');
+            Yii::$app->response->statusCode = 400;
+
+            return [
+                'error' => 'invalid_request',
+                'error_description' => 'The request is missing a required parameter. Check the `token` parameter.',
+            ];
+        }
+
+        $this->revokeTokensByToken($token, $clientId);
+        Yii::$app->statsd->inc('oauth.revokeToken.success');
+
+        return [];
+    }
+
+    /**
+     * The invalid tokens, the tokens issued to another client and the already revoked tokens
+     * are silently ignored, since they don't cause an error response (RFC 7009 section 2.2).
+     */
+    private function revokeTokensByToken(string $jwt, string $clientId): void {
+        try {
+            $token = Yii::$app->tokens->parse($jwt);
+        } catch (InvalidArgumentException) {
+            return;
+        }
+
+        if (!$token instanceof UnencryptedToken || !Yii::$app->tokens->verify($token)) {
+            return;
+        }
+
+        $reader = new TokenReader($token);
+        $accountId = $reader->getAccountId();
+        // The client_credentials tokens aren't related to any account, so there is nothing to revoke
+        if ($accountId === null || $reader->getClientId() !== $clientId) {
+            return;
+        }
+
+        /** @var \DateTimeImmutable $iat */
+        $iat = $token->claims()->get('iat');
+        /** @var OauthSession|null $session */
+        $session = OauthSession::findOne(['account_id' => $accountId, 'client_id' => $clientId]);
+        // The already revoked token mustn't revoke the tokens issued after its revocation
+        if ($session === null || $session->isRevokedForTokenIssuedAt($iat)) {
+            return;
+        }
+
+        // The revocation is checked with the seconds precision, so the token issued in the same second
+        // as the revocation won't be considered as revoked. Ensure that at least the passed token is revoked
+        $session->revoked_at = max(time(), $iat->getTimestamp() + 1);
+        Assert::true($session->save());
+    }
+
+    /**
+     * The client credentials can be passed either via the request body (client_secret_post)
+     * or via the Basic auth (client_secret_basic, RFC 6749 section 2.3.1).
+     *
+     * @return array{string|null, string|null}
+     */
+    private function getClientCredentials(ServerRequestInterface $request): array {
+        $authorization = $request->getHeaderLine('Authorization');
+        if (str_starts_with(strtolower($authorization), 'basic ')) {
+            $credentials = base64_decode(substr($authorization, 6), true);
+            if ($credentials !== false && str_contains($credentials, ':')) {
+                [$clientId, $clientSecret] = explode(':', $credentials, 2);
+
+                return [urldecode($clientId), urldecode($clientSecret)];
+            }
+        }
+
+        $body = (array)$request->getParsedBody();
+        $clientId = $body['client_id'] ?? null;
+        $clientSecret = $body['client_secret'] ?? null;
+
+        return [
+            is_string($clientId) && $clientId !== '' ? $clientId : null,
+            is_string($clientSecret) ? $clientSecret : null,
+        ];
     }
 
     private function findClient(string $clientId): ?OauthClient {

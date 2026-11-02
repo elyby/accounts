@@ -52,6 +52,7 @@ final class AuthorizationController extends Controller {
             'complete' => ['POST'],
             'devicecode' => ['POST'],
             'token' => ['POST'],
+            'revoke' => ['POST'],
         ];
     }
 
@@ -69,6 +70,10 @@ final class AuthorizationController extends Controller {
 
     public function actionToken(): array {
         return $this->oauthProcess->getToken($this->getServerRequest());
+    }
+
+    public function actionRevoke(): array {
+        return $this->oauthProcess->revokeToken($this->getServerRequest());
     }
 
     private function getServerRequest(): ServerRequestInterface {
