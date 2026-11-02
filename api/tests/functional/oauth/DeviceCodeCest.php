@@ -22,6 +22,10 @@ final class DeviceCodeCest {
         ]);
         $I->canSeeResponseJsonMatchesJsonPath('$.device_code');
         $I->canSeeResponseJsonMatchesJsonPath('$.user_code');
+        [$userCode] = $I->grabDataFromResponseByJsonPath('$.user_code');
+        $I->canSeeResponseContainsJson([
+            'verification_uri_complete' => 'http://localhost/code?user_code=' . $userCode,
+        ]);
     }
 
     public function pollPendingDeviceCode(FunctionalTester $I): void {

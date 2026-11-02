@@ -45,6 +45,7 @@ final class AuthorizationServerFactory {
         $verificationUri = Yii::$app->request->getHostInfo() . '/code';
         $deviceCodeGrant = new Grants\DeviceCodeGrant($deviceCodesRepo, $refreshTokensRepo, new DateInterval('PT10M'), $verificationUri);
         $deviceCodeGrant->setIntervalVisibility(true);
+        $deviceCodeGrant->setIncludeVerificationUriComplete(true);
         $authServer->enableGrantType($deviceCodeGrant, $accessTokenTTL);
         $deviceCodeGrant->setScopeRepository($publicScopesRepo); // Change repository after enabling
 

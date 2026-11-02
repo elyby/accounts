@@ -127,6 +127,7 @@ final readonly class OauthProcess {
      *     device_code: string,
      *     user_code: string,
      *     verification_uri: string,
+     *     verification_uri_complete: string,
      *     interval: int,
      *     expires_in: int,
      * }|array{
