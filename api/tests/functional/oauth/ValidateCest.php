@@ -66,22 +66,6 @@ final class ValidateCest {
         ]);
     }
 
-    public function successfullyValidateRequestWithOverriddenDescriptionForAuthFlow(FunctionalTester $I): void {
-        $I->wantTo('validate and get information with description replacement');
-        $I->sendGET('/api/oauth2/v1/validate', [
-            'client_id' => 'ely',
-            'redirect_uri' => 'http://ely.by',
-            'response_type' => 'code',
-            'description' => 'all familiar eliby',
-        ]);
-        $I->canSeeResponseCodeIs(200);
-        $I->canSeeResponseContainsJson([
-            'client' => [
-                'description' => 'all familiar eliby',
-            ],
-        ]);
-    }
-
     public function unknownClientIdAuthFlow(FunctionalTester $I): void {
         $I->wantTo('check behavior on invalid client id');
         $I->sendGET('/api/oauth2/v1/validate', [

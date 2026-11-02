@@ -38,8 +38,6 @@ final readonly class OauthProcess {
      *     state,
      * ];
      *
-     * In addition, you can pass the description value to override the application's description.
-     *
      * @return array<mixed>
      */
     public function validate(ServerRequestInterface $request): array {
@@ -283,7 +281,7 @@ final readonly class OauthProcess {
             'client' => [
                 'id' => $client->id,
                 'name' => $client->name,
-                'description' => $request->getQueryParams()['description'] ?? $client->description,
+                'description' => $client->description,
             ],
             'session' => [
                 'scopes' => $this->buildScopesArray($scopes),
