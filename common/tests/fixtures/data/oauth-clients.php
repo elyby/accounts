@@ -153,4 +153,18 @@ return [
         'is_deleted' => 1,
         'created_at' => 1519507190,
     ],
+    'desktopApplication' => [
+        'id' => 'desktop-app',
+        'secret' => 'there_is_no_secret_to_the_desktop_app_though_it_is_still_generated',
+        'type' => 'desktop-application',
+        'name' => 'Desktop application',
+        'description' => '',
+        'redirect_uri' => null,
+        'website_url' => '',
+        'minecraft_server_ip' => null,
+        'account_id' => null,
+        'is_trusted' => 0,
+        'is_deleted' => 0,
+        'created_at' => 1762041600,
+    ],
 ];
