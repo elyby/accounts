@@ -24,6 +24,7 @@ class ComponentTest extends TestCase {
         // Run without any arguments
         $token = $this->component->create();
         $this->assertSame('ES256', $token->headers()->get('alg'));
+        $this->assertSame('3XawksbcGUZ-dZsrvmNbIdJB515WCxWbVNH1Xcpe7MQ', $token->headers()->get('kid'));
         $this->assertEmpty(array_diff(array_keys($token->claims()->all()), ['iat', 'exp']));
         $this->assertEqualsWithDelta(time(), $token->claims()->get('iat')->getTimestamp(), 1);
 
@@ -41,6 +42,23 @@ class ComponentTest extends TestCase {
         $token = $this->component->create([], ['find' => 'me']);
         $this->assertArrayHasKey('find', $token->headers()->all());
         $this->assertSame('me', $token->headers()->get('find'));
+    }
+
+    public function testGetJwks(): void {
+        // The expected values are calculated from the test key independently via the openssl CLI
+        $this->assertSame([
+            'keys' => [
+                [
+                    'kty' => 'EC',
+                    'crv' => 'P-256',
+                    'x' => 'S2Pyq9r0CyyviLaWwq0ki5uy8hr_ZbNO--3j4XP43uI',
+                    'y' => 'w_fxmJKyhiEZfh7uR0_i8Gb6xXBGlYT5OQr7VeM5WCY',
+                    'use' => 'sig',
+                    'alg' => 'ES256',
+                    'kid' => '3XawksbcGUZ-dZsrvmNbIdJB515WCxWbVNH1Xcpe7MQ',
+                ],
+            ],
+        ], $this->component->getJwks());
     }
 
     public function testParse(): void {

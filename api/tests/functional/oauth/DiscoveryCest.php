@@ -18,6 +18,7 @@ final class DiscoveryCest {
             'token_endpoint' => 'http://localhost/api/oauth2/v1/token',
             'device_authorization_endpoint' => 'http://localhost/api/oauth2/v1/devicecode',
             'revocation_endpoint' => 'http://localhost/api/oauth2/v1/revoke',
+            'jwks_uri' => 'http://localhost/.well-known/jwks.json',
             'response_types_supported' => ['code'],
             'grant_types_supported' => [
                 'authorization_code',
@@ -39,6 +40,36 @@ final class DiscoveryCest {
         $I->cantSeeResponseContainsJson([
             'scopes_supported' => ['block_account'],
         ]);
+    }
+
+    public function jwks(FunctionalTester $I): void {
+        $I->sendGET('/api/.well-known/jwks.json');
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeHttpHeader('Access-Control-Allow-Origin', '*');
+        $I->canSeeHttpHeader('X-Accel-Expires', '3600');
+        $I->canSeeResponseContainsJson([
+            'keys' => [
+                [
+                    'kty' => 'EC',
+                    'crv' => 'P-256',
+                    'x' => 'S2Pyq9r0CyyviLaWwq0ki5uy8hr_ZbNO--3j4XP43uI',
+                    'y' => 'w_fxmJKyhiEZfh7uR0_i8Gb6xXBGlYT5OQr7VeM5WCY',
+                    'use' => 'sig',
+                    'alg' => 'ES256',
+                    'kid' => '3XawksbcGUZ-dZsrvmNbIdJB515WCxWbVNH1Xcpe7MQ',
+                ],
+            ],
+        ]);
+        $I->cantSeeResponseJsonMatchesJsonPath('$.keys[0].d');
+    }
+
+    public function jwksPreflight(FunctionalTester $I): void {
+        $I->haveHttpHeader('Origin', 'https://example.com');
+        $I->haveHttpHeader('Access-Control-Request-Method', 'GET');
+        $I->sendOPTIONS('/api/.well-known/jwks.json');
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeHttpHeader('Access-Control-Allow-Origin', '*');
+        $I->cantSeeResponseJsonMatchesJsonPath('$.keys');
     }
 
     public function authorizationServerMetadataWithOrigin(FunctionalTester $I): void {

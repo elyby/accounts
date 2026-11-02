@@ -30,6 +30,7 @@ final class DiscoveryController extends Controller {
                 'class' => NginxCache::class,
                 'rules' => [
                     'authorization-server' => 3600, // 1h
+                    'jwks' => 3600, // 1h
                 ],
             ],
         ]);
@@ -57,6 +58,7 @@ final class DiscoveryController extends Controller {
             'token_endpoint' => "{$issuer}/api/oauth2/v1/token",
             'device_authorization_endpoint' => "{$issuer}/api/oauth2/v1/devicecode",
             'revocation_endpoint' => "{$issuer}/api/oauth2/v1/revoke",
+            'jwks_uri' => "{$issuer}/.well-known/jwks.json",
             'response_types_supported' => ['code'],
             'response_modes_supported' => ['query'],
             'grant_types_supported' => [
@@ -72,6 +74,18 @@ final class DiscoveryController extends Controller {
             'scopes_supported' => PublicScopeRepository::ALLOWED_SCOPES,
             'service_documentation' => 'https://docs.ely.by/en/oauth.html',
         ];
+    }
+
+    /**
+     * JSON Web Key Set (RFC 7517) with the public keys to verify the issued tokens signature.
+     */
+    public function actionJwks(): array {
+        $response = Yii::$app->response;
+        $response->headers->set('Cache-Control', 'public, max-age=3600');
+        // See the comment in the actionAuthorizationServer()
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+
+        return Yii::$app->tokens->getJwks();
     }
 
 }

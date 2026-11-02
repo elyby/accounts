@@ -14,6 +14,7 @@ final class PublicKeysCest {
             'keys' => [
                 [
                     'alg' => 'ES256',
+                    'kid' => '3XawksbcGUZ-dZsrvmNbIdJB515WCxWbVNH1Xcpe7MQ',
                     'pem' => "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAES2Pyq9r0CyyviLaWwq0ki5uy8hr/\nZbNO++3j4XP43uLD9/GYkrKGIRl+Hu5HT+LwZvrFcEaVhPk5CvtV4zlYJg==\n-----END PUBLIC KEY-----\n",
                 ],
             ],

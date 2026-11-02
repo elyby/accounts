@@ -89,12 +89,16 @@ class Component extends BaseComponent {
             }
         }
 
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $algorithm = $this->getAlgorithmManager()->get(self::PREFERRED_ALGORITHM);
+        // Allows the token's consumers to find the key to verify the signature (see getJwks())
+        if ($algorithm instanceof Algorithms\ES256) {
+            $builder = $builder->withHeader('kid', $algorithm->getKeyId());
+        }
+
         foreach ($headers as $claim => $value) {
             $builder = $builder->withHeader($claim, $this->prepareValue($value));
         }
-
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $algorithm = $this->getAlgorithmManager()->get(self::PREFERRED_ALGORITHM);
 
         return $builder->getToken($algorithm->getSigner(), $algorithm->getPrivateKey());
     }
@@ -147,8 +151,26 @@ class Component extends BaseComponent {
         return $rawValue;
     }
 
-    public function getPublicKey(): string {
-        return $this->getAlgorithmManager()->get(self::PREFERRED_ALGORITHM)->getPublicKey()->contents();
+    /**
+     * The public keys to verify the tokens signature in the JWK Set format (RFC 7517 section 5).
+     *
+     * @return array{
+     *     keys: list<array<string, string>>,
+     * }
+     */
+    public function getJwks(): array {
+        $algorithm = $this->getAlgorithmManager()->get(self::PREFERRED_ALGORITHM);
+        Assert::isInstanceOf($algorithm, Algorithms\ES256::class);
+
+        return [
+            'keys' => [
+                array_merge($algorithm->getPublicJwk(), [
+                    'use' => 'sig',
+                    'alg' => self::PREFERRED_ALGORITHM,
+                    'kid' => $algorithm->getKeyId(),
+                ]),
+            ],
+        ];
     }
 
     private function getAlgorithmManager(): AlgorithmsManager {

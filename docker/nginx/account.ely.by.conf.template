@@ -35,7 +35,7 @@ server {
     }
 
     # OAuth 2.0 Authorization Server Metadata must be served from the root of the issuer (RFC 8414)
-    location = /.well-known/oauth-authorization-server {
+    location ~ ^/\.well-known/(oauth-authorization-server|jwks\.json)$ {
         set $request_url '/api${request_uri}';
         rewrite ^ /api/index.php last;
     }
