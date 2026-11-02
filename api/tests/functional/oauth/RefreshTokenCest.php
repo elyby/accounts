@@ -78,6 +78,7 @@ class RefreshTokenCest {
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
             'error' => 'invalid_grant',
+            'error_description' => 'The refresh token is invalid.',
             'message' => 'The refresh token is invalid.',
         ]);
     }

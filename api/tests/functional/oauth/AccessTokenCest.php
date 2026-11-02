@@ -53,6 +53,7 @@ final class AccessTokenCest {
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
             'error' => 'unsupported_grant_type',
+            'error_description' => 'The authorization grant type is not supported by the authorization server.',
             'message' => 'The authorization grant type is not supported by the authorization server.',
         ]);
     }
@@ -69,6 +70,9 @@ final class AccessTokenCest {
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
             'error' => 'invalid_grant',
+            'error_description' => 'The provided authorization grant (e.g., authorization code, resource owner credentials) or refresh token '
+                . 'is invalid, expired, revoked, does not match the redirection URI used in the authorization request, '
+                . 'or was issued to another client.',
             'message' => 'The provided authorization grant (e.g., authorization code, resource owner credentials) or refresh token '
                 . 'is invalid, expired, revoked, does not match the redirection URI used in the authorization request, '
                 . 'or was issued to another client.',
@@ -88,8 +92,27 @@ final class AccessTokenCest {
         $I->canSeeResponseCodeIs(401);
         $I->canSeeResponseContainsJson([
             'error' => 'invalid_client',
+            'error_description' => 'Client authentication failed',
             'message' => 'Client authentication failed',
         ]);
+    }
+
+    public function issueTokenByPassingAnotherRegisteredRedirectUri(OauthSteps $I): void {
+        $I->wantTo('check behavior on passing redirect_uri, which is allowed for the client, but differs from the authorization request');
+        $authCode = $I->obtainAuthCode();
+        $I->sendPOST('/api/oauth2/v1/token', [
+            'grant_type' => 'authorization_code',
+            'code' => $authCode,
+            'client_id' => 'ely',
+            'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
+            'redirect_uri' => 'http://ely.by/another/callback',
+        ]);
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContainsJson([
+            'error' => 'invalid_request',
+        ]);
+        $I->canSeeResponseJsonMatchesJsonPath('$.error_description');
+        $I->cantSeeResponseJsonMatchesJsonPath('$.access_token');
     }
 
     public function issueTokenWithoutClientSecret(OauthSteps $I): void {

@@ -60,6 +60,7 @@ final class DeviceCodeCest {
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
             'error' => 'expired_token',
+            'error_description' => 'The `device_code` has expired and the device authorization session has concluded.',
             'message' => 'The `device_code` has expired and the device authorization session has concluded.',
         ]);
     }
@@ -105,6 +106,7 @@ final class DeviceCodeCest {
             $I->canSeeResponseCodeIs(401);
             $I->canSeeResponseContainsJson([
                 'error' => 'access_denied',
+                'error_description' => 'The resource owner or authorization server denied the request.',
                 'message' => 'The resource owner or authorization server denied the request.',
             ]);
         }

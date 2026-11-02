@@ -137,6 +137,7 @@ final readonly class OauthProcess {
      *     expires_in: int,
      * }|array{
      *     error: string,
+     *     error_description: string,
      *     message: string,
      * }
      */
@@ -346,8 +347,12 @@ final readonly class OauthProcess {
      *
      * Part of the existing texts are the legacy from the previous implementation.
      *
+     * The standard field for the description is "error_description" (RFC 6749 section 5.2),
+     * but the "message" field is kept for the backward compatibility.
+     *
      * @return array{
      *     error: string,
+     *     error_description: string,
      *     message: string,
      * }
      */
@@ -356,17 +361,15 @@ final readonly class OauthProcess {
         $message = $e->getMessage();
         $hint = $e->getHint();
         switch ($hint) {
-            case 'Invalid redirect URI':
-                $errorType = 'invalid_client';
-                $message = 'Client authentication failed.';
-                break;
             case 'Cannot decrypt the authorization code':
-                $message .= ' Check the "code" parameter.';
+                // RFC 6749 doesn't allow double quotes in the error_description
+                $message .= ' Check the `code` parameter.';
                 break;
         }
 
         return [
             'error' => $errorType,
+            'error_description' => $message,
             'message' => $message,
         ];
     }
