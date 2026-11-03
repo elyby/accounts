@@ -7,6 +7,7 @@ use api\components\Tokens\TokenReader;
 use common\components\OAuth2\Entities\UserEntity;
 use common\components\OAuth2\Events\RequestedRefreshToken;
 use common\components\OAuth2\Repositories\ClientRepository;
+use common\components\OAuth2\ScopesMapper;
 use common\models\Account;
 use common\models\OauthClient;
 use common\models\OauthSession;
@@ -371,7 +372,7 @@ final readonly class OauthProcess {
             $session->client_id = $client->id;
         }
 
-        $session->scopes = array_values(array_unique(array_merge($session->getScopes(), $this->getScopesList($request))));
+        $session->scopes = ScopesMapper::normalizeScopes(array_merge($session->getScopes(), $this->getScopesList($request)));
         $session->last_used_at = time();
 
         Assert::true($session->save());
@@ -497,10 +498,10 @@ final readonly class OauthProcess {
     }
 
     /**
-     * @return list<string>
+     * @return list<non-empty-string>
      */
     private function getScopesList(AuthorizationRequestInterface $request): array {
-        return array_values(array_map(fn(ScopeEntityInterface $scope): string => $scope->getIdentifier(), $request->getScopes()));
+        return array_values(array_map(fn(ScopeEntityInterface $scope) => $scope->getIdentifier(), $request->getScopes()));
     }
 
     /** @noinspection PhpIncompatibleReturnTypeInspection */

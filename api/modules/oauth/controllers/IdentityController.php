@@ -26,13 +26,14 @@ class IdentityController extends Controller {
                             $identity = Yii::$app->user->getIdentity();
                             $account = $identity->getAccount();
                             if ($account === null) {
-                                Yii::$app->sentry->captureMessage('Unexpected lack of account', [
+                                // TODO: find out do I need it at all
+                                // The warnings are sent to Sentry by the log target. The token itself isn't logged,
+                                // since it's the credential
+                                Yii::warning([
+                                    'message' => 'Unexpected lack of account',
                                     'identityType' => $identity::class,
-                                    'userId' => $identity->getId(),
                                     'assignedPermissions' => $identity->getAssignedPermissions(),
-                                ], [
-                                    'level' => 'warning',
-                                ]);
+                                ], __METHOD__);
 
                                 return ['accountId' => 0];
                             }

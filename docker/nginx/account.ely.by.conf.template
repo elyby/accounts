@@ -34,8 +34,8 @@ server {
         rewrite ^/api/(user|profiles) /api/mojang$uri last;
     }
 
-    # OAuth 2.0 Authorization Server Metadata must be served from the root of the issuer (RFC 8414)
-    location ~ ^/\.well-known/(oauth-authorization-server|jwks\.json)$ {
+    # The discovery documents must be served from the root of the issuer (RFC 8414, OpenID Connect Discovery 1.0)
+    location ~ ^/\.well-known/(oauth-authorization-server|openid-configuration|jwks\.json)$ {
         set $request_url '/api${request_uri}';
         rewrite ^ /api/index.php last;
     }

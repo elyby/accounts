@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace api\modules\oauth\controllers;
 
 use api\filters\NginxCache;
+use common\components\OAuth2\OpenIdClaims;
 use common\components\OAuth2\Repositories\PublicScopeRepository;
 use Yii;
 use yii\filters\Cors;
@@ -30,6 +31,7 @@ final class DiscoveryController extends Controller {
                 'class' => NginxCache::class,
                 'rules' => [
                     'authorization-server' => 3600, // 1h
+                    'openid-configuration' => 3600, // 1h
                     'jwks' => 3600, // 1h
                 ],
             ],
@@ -38,11 +40,42 @@ final class DiscoveryController extends Controller {
 
     /**
      * OAuth 2.0 Authorization Server Metadata (RFC 8414).
-     *
-     * The URLs are built from the current host, since the issuer must match the URL
-     * that was used to retrieve the document (RFC 8414 section 3.3).
      */
     public function actionAuthorizationServer(): array {
+        return $this->buildMetadata();
+    }
+
+    /**
+     * OpenID Connect Discovery (OpenID Connect Discovery 1.0 section 3).
+     */
+    public function actionOpenidConfiguration(): array {
+        $metadata = $this->buildMetadata();
+        $issuer = $metadata['issuer'];
+
+        return array_merge($metadata, [
+            'userinfo_endpoint' => "{$issuer}/api/oauth2/v1/userinfo",
+            'subject_types_supported' => ['public'],
+            'id_token_signing_alg_values_supported' => ['ES256'],
+            'claims_supported' => array_merge(OpenIdClaims::SUPPORTED_CLAIMS, ['iss', 'aud', 'exp', 'iat', 'nonce']),
+        ]);
+    }
+
+    /**
+     * JSON Web Key Set (RFC 7517) with the public keys to verify the issued tokens signature.
+     */
+    public function actionJwks(): array {
+        $response = Yii::$app->response;
+        $response->headers->set('Cache-Control', 'public, max-age=3600');
+        // See the comment in the buildMetadata()
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+
+        return Yii::$app->tokens->getJwks();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function buildMetadata(): array {
         $response = Yii::$app->response;
         $response->headers->set('Cache-Control', 'public, max-age=3600');
         // The Cors filter adds this header only when the Origin header is passed, but the response is cached by nginx
@@ -74,18 +107,6 @@ final class DiscoveryController extends Controller {
             'scopes_supported' => PublicScopeRepository::ALLOWED_SCOPES,
             'service_documentation' => 'https://docs.ely.by/en/oauth.html',
         ];
-    }
-
-    /**
-     * JSON Web Key Set (RFC 7517) with the public keys to verify the issued tokens signature.
-     */
-    public function actionJwks(): array {
-        $response = Yii::$app->response;
-        $response->headers->set('Cache-Control', 'public, max-age=3600');
-        // See the comment in the actionAuthorizationServer()
-        $response->headers->set('Access-Control-Allow-Origin', '*');
-
-        return Yii::$app->tokens->getJwks();
     }
 
 }

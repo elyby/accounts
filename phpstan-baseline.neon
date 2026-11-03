@@ -21,11 +21,6 @@ parameters:
 			path: api/components/Tokens/Algorithms/ES256.php
 
 		-
-			message: "#^Method api\\\\components\\\\Tokens\\\\Component\\:\\:create\\(\\) has parameter \\$headers with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: api/components/Tokens/Component.php
-
-		-
 			message: "#^Parameter \\#1 \\$id of method Lcobucci\\\\JWT\\\\Builder\\:\\:identifiedBy\\(\\) expects non\\-empty\\-string, string given\\.$#"
 			count: 1
 			path: api/components/Tokens/Component.php
@@ -36,17 +31,12 @@ parameters:
 			path: api/components/Tokens/Component.php
 
 		-
-			message: "#^Parameter \\#1 \\$name of method Lcobucci\\\\JWT\\\\Builder\\:\\:withHeader\\(\\) expects non\\-empty\\-string, \\(int\\|string\\) given\\.$#"
-			count: 1
-			path: api/components/Tokens/Component.php
-
-		-
 			message: "#^Parameter \\#1 \\$subject of method Lcobucci\\\\JWT\\\\Builder\\:\\:relatedTo\\(\\) expects non\\-empty\\-string, string given\\.$#"
 			count: 1
 			path: api/components/Tokens/Component.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of method api\\\\components\\\\Tokens\\\\Component\\:\\:prepareValue\\(\\) expects api\\\\components\\\\Tokens\\\\EncryptedValue\\|string, DateTimeImmutable\\|string given\\.$#"
+			message: "#^Parameter \\#1 \\$value of method api\\\\components\\\\Tokens\\\\Component\\:\\:prepareValue\\(\\) expects api\\\\components\\\\Tokens\\\\EncryptedValue\\|bool\\|string, DateTimeImmutable\\|string given\\.$#"
 			count: 1
 			path: api/components/Tokens/Component.php
 

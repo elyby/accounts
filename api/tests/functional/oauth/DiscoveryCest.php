@@ -42,6 +42,25 @@ final class DiscoveryCest {
         ]);
     }
 
+    public function openIdConfiguration(FunctionalTester $I): void {
+        $I->sendGET('/api/.well-known/openid-configuration');
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeHttpHeader('Access-Control-Allow-Origin', '*');
+        $I->canSeeHttpHeader('X-Accel-Expires', '3600');
+        $I->canSeeResponseContainsJson([
+            'issuer' => 'http://localhost',
+            'authorization_endpoint' => 'http://localhost/oauth2/v1',
+            'token_endpoint' => 'http://localhost/api/oauth2/v1/token',
+            'userinfo_endpoint' => 'http://localhost/api/oauth2/v1/userinfo',
+            'jwks_uri' => 'http://localhost/.well-known/jwks.json',
+            'response_types_supported' => ['code'],
+            'subject_types_supported' => ['public'],
+            'id_token_signing_alg_values_supported' => ['ES256'],
+            'scopes_supported' => ['openid', 'profile', 'email'],
+            'claims_supported' => ['sub', 'preferred_username', 'email', 'email_verified', 'nonce'],
+        ]);
+    }
+
     public function jwks(FunctionalTester $I): void {
         $I->sendGET('/api/.well-known/jwks.json');
         $I->canSeeResponseCodeIs(200);

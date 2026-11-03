@@ -5,6 +5,7 @@ namespace api\components\Tokens;
 
 use api\rbac\Roles as R;
 use Carbon\Carbon;
+use common\components\OAuth2\OpenIdClaims;
 use common\components\OAuth2\Repositories\PublicScopeRepository;
 use common\models\Account;
 use common\models\AccountSession;
@@ -12,6 +13,7 @@ use DateTime;
 use Lcobucci\JWT\UnencryptedToken;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
+use Webmozart\Assert\Assert;
 use Yii;
 use yii\base\Component;
 
@@ -47,6 +49,32 @@ class TokensFactory extends Component {
 
         if ($accessToken->getUserIdentifier() !== null) {
             $payloads['sub'] = $this->buildSub((int)$accessToken->getUserIdentifier());
+        }
+
+        return Yii::$app->tokens->create($payloads);
+    }
+
+    /**
+     * OpenID Connect ID Token (OpenID Connect Core 1.0 section 2).
+     *
+     * The token doesn't contain the client_id and the scope claims and its sub claim has a different format,
+     * so it can't be used as the access token.
+     *
+     * @param non-empty-string $clientId
+     * @param non-empty-string[] $scopes
+     * @param non-empty-string|null $nonce
+     */
+    public function createIdToken(Account $account, string $clientId, array $scopes, ?string $nonce): UnencryptedToken {
+        $issuer = Yii::$app->request->getHostInfo();
+        Assert::stringNotEmpty($issuer);
+
+        $payloads = array_merge(OpenIdClaims::build($account, $scopes), [
+            'iss' => $issuer,
+            'aud' => $clientId,
+            'exp' => Carbon::now()->addHour()->toDateTimeImmutable(),
+        ]);
+        if ($nonce !== null) {
+            $payloads['nonce'] = $nonce;
         }
 
         return Yii::$app->tokens->create($payloads);

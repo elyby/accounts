@@ -24,10 +24,19 @@ final class ScopesMapper {
     ];
 
     /**
+     * The OpenID Connect scopes, which grant the same permissions as our own scopes.
+     * They're kept separately, since the permissions must be converted back only to our own scopes names.
+     */
+    private const array ALIASES_TO_PERMISSIONS = [
+        PublicScopeRepository::PROFILE => P::OBTAIN_OWN_ACCOUNT_INFO,
+        PublicScopeRepository::EMAIL => P::OBTAIN_ACCOUNT_EMAIL,
+    ];
+
+    /**
      * Converts the public scope name to the RBAC permission name. Unknown values are returned as is.
      */
     public static function toPermission(string $scope): string {
-        return self::PUBLIC_SCOPES_TO_PERMISSIONS[$scope] ?? $scope;
+        return self::PUBLIC_SCOPES_TO_PERMISSIONS[$scope] ?? self::ALIASES_TO_PERMISSIONS[$scope] ?? $scope;
     }
 
     /**
@@ -40,6 +49,10 @@ final class ScopesMapper {
     }
 
     /**
+     * Converts the RBAC permissions names to the public scopes names and removes the duplicates.
+     * When both the OpenID Connect scope and our own scope with the same permission are present
+     * (e.g. "profile" and "account_info"), only the OpenID Connect one is kept.
+     *
      * @param iterable<non-empty-string> $scopes
      * @return list<non-empty-string>
      */
@@ -49,7 +62,14 @@ final class ScopesMapper {
             $result[] = self::toScope($scope);
         }
 
-        return array_values(array_unique($result));
+        $result = array_unique($result);
+        foreach (self::ALIASES_TO_PERMISSIONS as $alias => $permission) {
+            if (in_array($alias, $result, true)) {
+                $result = array_diff($result, [self::toScope($permission)]);
+            }
+        }
+
+        return array_values($result);
     }
 
 }

@@ -50,19 +50,29 @@ class Component extends BaseComponent {
 
     /**
      * @param array{
+     *     iss?: non-empty-string,
+     *     aud?: non-empty-string,
      *     sub?: string,
      *     jti?: string,
      *     iat?: \DateTimeImmutable,
      *     nbf?: \DateTimeImmutable,
      *     exp?: \DateTimeImmutable,
      * } $payloads
-     * @param array $headers
+     * @param array<non-empty-string, non-empty-string> $headers
      *
      * @throws \api\components\Tokens\AlgorithmIsNotDefinedException
      */
     public function create(array $payloads = [], array $headers = []): UnencryptedToken {
         $now = Carbon::now();
         $builder = (new Builder(new JoseEncoder(), ChainedFormatter::withUnixTimestampDates()))->issuedAt($now->toDateTimeImmutable());
+        if (isset($payloads['iss'])) {
+            $builder = $builder->issuedBy($payloads['iss']);
+        }
+
+        if (isset($payloads['aud'])) {
+            $builder = $builder->permittedFor($payloads['aud']);
+        }
+
         if (isset($payloads['sub'])) {
             $builder = $builder->relatedTo($payloads['sub']);
         }
@@ -183,7 +193,7 @@ class Component extends BaseComponent {
         return $this->algorithmManager;
     }
 
-    private function prepareValue(EncryptedValue|string $value): string {
+    private function prepareValue(EncryptedValue|string|bool $value): string|bool {
         if ($value instanceof EncryptedValue) {
             return $this->encryptValue($value->value);
         }

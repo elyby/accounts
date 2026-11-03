@@ -70,7 +70,7 @@ class OauthSession extends ActiveRecord {
      * Since there are too many rows to migrate them, the scopes are normalized on read
      * and will be stored in the normalized form on the next session update.
      *
-     * @return list<string>
+     * @return list<non-empty-string>
      */
     public function getScopes(): array {
         return ScopesMapper::normalizeScopes((array)$this->scopes);

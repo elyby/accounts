@@ -21,6 +21,7 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 final class DeviceCodeGrant extends BaseDeviceCodeGrant {
     use CheckOfflineAccessScopeTrait;
+    use OpenIdAccessTokenTtlTrait;
 
     public function __construct(
         ExtendedDeviceCodeRepositoryInterface $deviceCodeRepository,
@@ -96,7 +97,7 @@ final class DeviceCodeGrant extends BaseDeviceCodeGrant {
     ): AccessTokenEntityInterface {
         $this->checkOfflineAccessScope($scopes);
 
-        return parent::issueAccessToken($accessTokenTTL, $client, $userIdentifier, $scopes);
+        return parent::issueAccessToken($this->resolveAccessTokenTtl($accessTokenTTL, $scopes), $client, $userIdentifier, $scopes);
     }
 
 }

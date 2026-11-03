@@ -18,7 +18,17 @@ final class PublicScopeRepository implements ScopeRepositoryInterface {
     public const string ACCOUNT_EMAIL = 'account_email';
     public const string MINECRAFT_SERVER_SESSION = 'minecraft_server_session';
 
+    /**
+     * @see https://openid.net/specs/openid-connect-core-1_0.html#ScopeClaims
+     */
+    public const string OPENID = 'openid';
+    public const string PROFILE = 'profile';
+    public const string EMAIL = 'email';
+
     public const array ALLOWED_SCOPES = [
+        self::OPENID,
+        self::PROFILE,
+        self::EMAIL,
         self::ACCOUNT_INFO,
         self::ACCOUNT_EMAIL,
         self::MINECRAFT_SERVER_SESSION,
@@ -43,7 +53,10 @@ final class PublicScopeRepository implements ScopeRepositoryInterface {
         ?string $userIdentifier = null,
         ?string $authCodeId = null,
     ): array {
-        return $scopes;
+        // Collapses the duplicating scopes, e.g. "profile" and "account_info" (see ScopesMapper::normalizeScopes())
+        $identifiers = ScopesMapper::normalizeScopes(array_map(fn(ScopeEntityInterface $scope): string => $scope->getIdentifier(), $scopes));
+
+        return array_values(array_filter($scopes, fn(ScopeEntityInterface $scope): bool => in_array($scope->getIdentifier(), $identifiers, true)));
     }
 
 }
