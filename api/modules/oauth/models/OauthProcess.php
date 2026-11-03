@@ -431,7 +431,8 @@ final readonly class OauthProcess {
     private function buildCompleteErrorResponse(OAuthServerException $e): array {
         $hint = $e->getPayload()['hint'] ?? '';
         $parameter = null;
-        if (preg_match('/the `(\w+)` scope/', $hint, $matches)) {
+        // The library's invalidRequest() builds the hint in the "Check the `X` parameter" form
+        if (preg_match('/the `(\w+)` scope/', $hint, $matches) || preg_match('/^Check the `(\w+)` parameter/', $hint, $matches)) {
             $parameter = $matches[1];
         }
 

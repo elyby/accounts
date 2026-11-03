@@ -95,12 +95,14 @@ final class ValidateCest {
             'response_type' => 'code',
             'scope' => 'account_info',
         ]);
-        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
             'success' => false,
-            'error' => 'invalid_client',
-            'statusCode' => 401,
+            'error' => 'invalid_request',
+            'parameter' => 'redirect_uri',
+            'statusCode' => 400,
         ]);
+        $I->cantSeeResponseJsonMatchesJsonPath('$.redirectUri');
     }
 
     public function invalidCodeForDeviceCode(FunctionalTester $I): void {

@@ -39,6 +39,11 @@ final class ValidateRedirectUriTraitTest extends TestCase {
         yield ['http://ely.by', ' http://ely.by/callback ', true];
         yield ['https://example.com/oauth/ely', 'https://example.com/oauth/ely/sub/../callback', true];
         yield ['https://example.com/oauth/ely', 'https://example.com/oauth/ely/%2e/callback', true];
+        // Any port is allowed for the loopback redirect uris (RFC 8252 section 7.3)
+        yield ['http://127.0.0.1', 'http://127.0.0.1:56228/', true];
+        yield ['http://127.0.0.1:8080', 'http://127.0.0.1:56228/callback', true];
+        yield ['http://localhost', 'http://localhost:56228/', true];
+        yield ['http://[::1]', 'http://[::1]:56228/', true];
 
         // Denied
         yield ['http://ely.by', 'http://ely.by.evil.com', false];
@@ -59,6 +64,11 @@ final class ValidateRedirectUriTraitTest extends TestCase {
         yield ['https://example.com/oauth/ely', 'https://example.com/oauth/ely%2Fevil', false];
         yield ['https://example.com/cb?a=1', 'https://example.com/cb?a=10', false];
         yield ['https://example.com/cb?a=1', 'https://example.com/cb/other?a=1', false];
+        // The loopback exception relaxes only the port
+        yield ['http://127.0.0.1', 'http://localhost:56228/', false];
+        yield ['http://127.0.0.1', 'https://127.0.0.1:56228/', false];
+        yield ['http://127.0.0.1/cb', 'http://127.0.0.1:56228/other', false];
+        yield ['http://127.0.0.1', 'http://127.0.0.1.evil.com:56228/', false];
     }
 
     /**
@@ -125,7 +135,8 @@ final class ValidateRedirectUriTraitTest extends TestCase {
             $validator->validateRedirectUri($redirectUri, $client, new ServerRequest('GET', 'http://localhost'));
             $isValid = true;
         } catch (OAuthServerException $e) {
-            $this->assertSame('invalid_client', $e->getErrorType());
+            $this->assertSame('invalid_request', $e->getErrorType());
+            $this->assertFalse($e->hasRedirect(), 'The error must not be redirected to the invalid redirect uri');
             $isValid = false;
         }
 

@@ -107,12 +107,11 @@ final class AccessTokenCest {
             'client_secret' => 'ZuM1vGchJz-9_UZ5HC3H3Z9Hg5PzdbkM',
             'redirect_uri' => 'http://some-other.domain',
         ]);
-        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
-            'error' => 'invalid_client',
-            'error_description' => 'Client authentication failed',
-            'message' => 'Client authentication failed',
+            'error' => 'invalid_request',
         ]);
+        $I->cantSeeResponseJsonMatchesJsonPath('$.access_token');
     }
 
     public function issueTokenByPassingAnotherRegisteredRedirectUri(OauthSteps $I): void {
