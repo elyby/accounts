@@ -109,7 +109,7 @@ final readonly class OauthProcess {
                 'success' => true,
             ];
             if ($response->hasHeader('Location')) {
-                $result['redirectUri'] = $response->getHeaderLine('Location');
+                $result['redirectUri'] = (string)Uri::withQueryValue(new Uri($response->getHeaderLine('Location')), 'iss', $this->getIssuer());
             }
 
             Yii::$app->statsd->inc('oauth.complete.success');
@@ -449,7 +449,12 @@ final readonly class OauthProcess {
         if ($e->hasRedirect()) {
             // The library builds the redirect uri with the state param already appended ("http://ely.by?state=abc")
             // or with a trailing query delimiter ("http://ely.by?"), so the payload can't be just concatenated to it
-            $response['redirectUri'] = (string)Uri::withQueryValues(new Uri((string)$e->getRedirectUri()), $e->getPayload());
+            $response['redirectUri'] = (string)Uri::withQueryValues(
+                new Uri((string)$e->getRedirectUri()),
+                array_merge($e->getPayload(), [
+                    'iss' => $this->getIssuer(),
+                ]),
+            );
         }
 
         if ($e->getHttpStatusCode() !== 200) {
@@ -502,6 +507,16 @@ final readonly class OauthProcess {
      */
     private function getScopesList(AuthorizationRequestInterface $request): array {
         return array_values(array_map(fn(ScopeEntityInterface $scope) => $scope->getIdentifier(), $request->getScopes()));
+    }
+
+    /**
+     * @return non-empty-string
+     */
+    private function getIssuer(): string {
+        $issuer = Yii::$app->request->getHostInfo();
+        Assert::stringNotEmpty($issuer);
+
+        return $issuer;
     }
 
     /** @noinspection PhpIncompatibleReturnTypeInspection */

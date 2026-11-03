@@ -27,6 +27,7 @@ final class DiscoveryCest {
                 'urn:ietf:params:oauth:grant-type:device_code',
             ],
             'code_challenge_methods_supported' => ['S256'],
+            'authorization_response_iss_parameter_supported' => true,
             'token_endpoint_auth_methods_supported' => ['client_secret_post', 'client_secret_basic', 'none'],
             'scopes_supported' => [
                 'account_info',

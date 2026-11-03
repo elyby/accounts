@@ -105,6 +105,8 @@ final class DiscoveryController extends Controller {
                 'urn:ietf:params:oauth:grant-type:device_code',
             ],
             'code_challenge_methods_supported' => ['S256'],
+            // The issuer is added to the authorization responses (RFC 9207)
+            'authorization_response_iss_parameter_supported' => true,
             'token_endpoint_auth_methods_supported' => $clientAuthMethods,
             'revocation_endpoint_auth_methods_supported' => $clientAuthMethods,
             // The scopes for the client_credentials grant are internal, so they aren't published

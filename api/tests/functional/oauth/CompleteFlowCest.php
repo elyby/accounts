@@ -16,12 +16,14 @@ final class CompleteFlowCest {
             'redirect_uri' => 'http://ely.by',
             'response_type' => 'code',
             'scope' => 'minecraft_server_session',
+            'state' => 'test-state',
         ]), ['accept' => true]);
         $I->canSeeResponseCodeIs(200);
         $I->canSeeResponseContainsJson([
             'success' => true,
         ]);
-        $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
+        [$redirectUri] = $I->grabDataFromResponseByJsonPath('$.redirectUri');
+        $I->assertMatchesRegularExpression('#^http://ely\.by\?code=[^&]+&state=test-state&iss=http://localhost$#', $redirectUri);
     }
 
     public function successfullyCompleteDeviceCodeFlow(FunctionalTester $I): void {
@@ -186,7 +188,7 @@ final class CompleteFlowCest {
             'error' => 'access_denied',
             'parameter' => null,
             'statusCode' => 401,
-            'redirectUri' => 'http://ely.by?error=access_denied&error_description=The%20resource%20owner%20or%20authorization%20server%20denied%20the%20request.&hint=The%20user%20denied%20the%20request',
+            'redirectUri' => 'http://ely.by?error=access_denied&error_description=The%20resource%20owner%20or%20authorization%20server%20denied%20the%20request.&hint=The%20user%20denied%20the%20request&iss=http://localhost',
         ]);
     }
 
@@ -204,7 +206,7 @@ final class CompleteFlowCest {
         $I->canSeeResponseContainsJson([
             'success' => false,
             'error' => 'access_denied',
-            'redirectUri' => 'http://ely.by?state=test-state&error=access_denied&error_description=The%20resource%20owner%20or%20authorization%20server%20denied%20the%20request.&hint=The%20user%20denied%20the%20request',
+            'redirectUri' => 'http://ely.by?state=test-state&error=access_denied&error_description=The%20resource%20owner%20or%20authorization%20server%20denied%20the%20request.&hint=The%20user%20denied%20the%20request&iss=http://localhost',
         ]);
     }
 
@@ -222,7 +224,7 @@ final class CompleteFlowCest {
         $I->canSeeResponseContainsJson([
             'success' => false,
             'error' => 'access_denied',
-            'redirectUri' => 'http://ely.by/callback?param=value&state=test-state&error=access_denied&error_description=The%20resource%20owner%20or%20authorization%20server%20denied%20the%20request.&hint=The%20user%20denied%20the%20request',
+            'redirectUri' => 'http://ely.by/callback?param=value&state=test-state&error=access_denied&error_description=The%20resource%20owner%20or%20authorization%20server%20denied%20the%20request.&hint=The%20user%20denied%20the%20request&iss=http://localhost',
         ]);
     }
 

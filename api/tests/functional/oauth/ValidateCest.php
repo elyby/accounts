@@ -177,6 +177,7 @@ final class ValidateCest {
         ]);
         [$redirectUri] = $I->grabDataFromResponseByJsonPath('$.redirectUri');
         $I->assertStringStartsWith('http://ely.by?state=test-state&error=invalid_scope&', $redirectUri);
+        $I->assertStringEndsWith('&iss=http://localhost', $redirectUri);
     }
 
     public function requestInternalScopeAuthFlow(FunctionalTester $I): void {
