@@ -42,6 +42,24 @@ final class ValidateCest {
         ]);
     }
 
+    public function validateRequestWithDuplicatingScopes(FunctionalTester $I): void {
+        $I->wantToTest('that the OpenID Connect scopes collapse our own scopes granting the same permissions');
+        $I->sendGET('/api/oauth2/v1/validate', [
+            'client_id' => 'ely',
+            'redirect_uri' => 'http://ely.by',
+            'response_type' => 'code',
+            'scope' => 'profile account_info email account_email openid',
+        ]);
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseContainsJson([
+            'success' => true,
+        ]);
+        $I->assertEqualsCanonicalizing(
+            ['openid', 'profile', 'email'],
+            $I->grabDataFromResponseByJsonPath('$.session.scopes')[0],
+        );
+    }
+
     public function successfullyValidateRequestForDeviceCode(FunctionalTester $I): void {
         $I->sendGET('/api/oauth2/v1/validate', [
             'user_code' => 'AAAABBBB',

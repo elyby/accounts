@@ -5,6 +5,8 @@ namespace api\tests\functional\oauth;
 
 use api\tests\FunctionalTester;
 use Codeception\Attribute\Before;
+use Codeception\Attribute\Examples;
+use Codeception\Example;
 use common\models\OauthSession;
 
 final class CompleteFlowCest {
@@ -113,6 +115,38 @@ final class CompleteFlowCest {
         /** @var OauthSession $session */
         $session = OauthSession::findOne(['account_id' => 1, 'client_id' => 'test1']);
         $I->assertSame(['minecraft_server_session', 'account_info'], $session->getScopes());
+    }
+
+    /**
+     * @param Example<array{string, string}> $case
+     */
+    #[Examples('profile', 'account_info')]
+    #[Examples('account_info', 'profile')]
+    #[Examples('email', 'account_email')]
+    #[Examples('account_email', 'email')]
+    public function successfullyCompleteAuthCodeFlowWithScopeAlias(FunctionalTester $I, Example $case): void {
+        [$approvedScope, $requestedScope] = $case;
+        $I->wantToTest('that the approved scope allows the auto approve of its OpenID Connect alias and vice versa');
+        $I->amAuthenticated();
+        $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
+            'client_id' => 'ely',
+            'redirect_uri' => 'http://ely.by',
+            'response_type' => 'code',
+            'scope' => $approvedScope,
+        ]), ['accept' => true]);
+        $I->canSeeResponseCodeIs(200);
+
+        $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
+            'client_id' => 'ely',
+            'redirect_uri' => 'http://ely.by',
+            'response_type' => 'code',
+            'scope' => $requestedScope,
+        ]));
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseContainsJson([
+            'success' => true,
+        ]);
+        $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
     }
 
     public function acceptRequiredOnFirstAuthRequest1(FunctionalTester $I): void {

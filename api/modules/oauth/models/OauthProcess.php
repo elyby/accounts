@@ -51,7 +51,7 @@ final readonly class OauthProcess {
             $client = $authRequest->getClient();
             /** @var OauthClient $clientModel */
             $clientModel = $this->findClient($client->getIdentifier());
-            $response = $this->buildSuccessResponse($request, $clientModel, $authRequest->getScopes());
+            $response = $this->buildSuccessResponse($request, $clientModel, $authRequest);
         } catch (OAuthServerException $e) {
             $response = $this->buildCompleteErrorResponse($e);
         }
@@ -361,7 +361,11 @@ final readonly class OauthProcess {
             return false;
         }
 
-        return empty(array_diff($requestedScopes, $session->getScopes()));
+        // The OpenID Connect scopes grant the same permissions as our own scopes (e.g. "profile" and "account_info"),
+        // but only one of them is kept in the session, so the scopes are compared by the permissions they grant
+        $toPermissions = fn(array $scopes): array => array_map(ScopesMapper::toPermission(...), $scopes);
+
+        return empty(array_diff($toPermissions($requestedScopes), $toPermissions($session->getScopes())));
     }
 
     private function storeOauthSession(Account $account, OauthClient $client, AuthorizationRequestInterface $request): void {
@@ -379,11 +383,9 @@ final readonly class OauthProcess {
     }
 
     /**
-     * @param ScopeEntityInterface[] $scopes
-     *
      * @return array<mixed>
      */
-    private function buildSuccessResponse(ServerRequestInterface $request, OauthClient $client, array $scopes): array {
+    private function buildSuccessResponse(ServerRequestInterface $request, OauthClient $client, AuthorizationRequestInterface $authRequest): array {
         return [
             'success' => true,
             // We return only those keys which are related to the OAuth2 standard parameters
@@ -401,22 +403,9 @@ final readonly class OauthProcess {
                 'description' => $client->description,
             ],
             'session' => [
-                'scopes' => $this->buildScopesArray($scopes),
+                'scopes' => ScopesMapper::normalizeScopes($this->getScopesList($authRequest)),
             ],
         ];
-    }
-
-    /**
-     * @param ScopeEntityInterface[] $scopes
-     * @return string[]
-     */
-    private function buildScopesArray(array $scopes): array {
-        $result = [];
-        foreach ($scopes as $scope) {
-            $result[] = $scope->getIdentifier();
-        }
-
-        return $result;
     }
 
     /**
