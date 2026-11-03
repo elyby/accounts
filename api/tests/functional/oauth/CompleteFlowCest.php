@@ -311,6 +311,25 @@ final class CompleteFlowCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
     }
 
+    public function requestObjectIsNotSupported(FunctionalTester $I): void {
+        $I->amAuthenticated();
+        $I->sendPOST('/api/oauth2/v1/complete?' . http_build_query([
+            'client_id' => 'ely',
+            'redirect_uri' => 'http://ely.by',
+            'response_type' => 'code',
+            'scope' => 'openid',
+            'request_uri' => 'https://client.example.org/request.jwt',
+        ]), ['accept' => true]);
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+            'error' => 'request_uri_not_supported',
+            'statusCode' => 400,
+        ]);
+        [$redirectUri] = $I->grabDataFromResponseByJsonPath('$.redirectUri');
+        $I->assertStringStartsWith('http://ely.by?error=request_uri_not_supported&', $redirectUri);
+    }
+
     public function requestInternalScope(FunctionalTester $I): void {
         $I->amAuthenticated();
         $I->wantTo('check behavior on request internal scope');

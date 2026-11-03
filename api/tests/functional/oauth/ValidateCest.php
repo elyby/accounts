@@ -198,4 +198,30 @@ final class ValidateCest {
         $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
     }
 
+    /**
+     * @param Example<array{string, string, string}> $case
+     */
+    #[Examples('request', 'eyJhbGciOiJub25lIn0.eyJub25jZSI6ImFiYyJ9.', 'request_not_supported')]
+    #[Examples('request', '', 'request_not_supported')]
+    #[Examples('request_uri', 'https://client.example.org/request.jwt', 'request_uri_not_supported')]
+    public function requestObjectIsNotSupported(FunctionalTester $I, Example $case): void {
+        [$param, $value, $error] = $case;
+        $I->sendGET('/api/oauth2/v1/validate', [
+            'client_id' => 'ely',
+            'redirect_uri' => 'http://ely.by',
+            'response_type' => 'code',
+            'scope' => 'openid',
+            'state' => 'test-state',
+            $param => $value,
+        ]);
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+            'error' => $error,
+            'statusCode' => 400,
+        ]);
+        [$redirectUri] = $I->grabDataFromResponseByJsonPath('$.redirectUri');
+        $I->assertStringStartsWith("http://ely.by?state=test-state&error={$error}&", $redirectUri);
+    }
+
 }

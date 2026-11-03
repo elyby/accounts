@@ -57,6 +57,10 @@ final class DiscoveryController extends Controller {
             'subject_types_supported' => ['public'],
             'id_token_signing_alg_values_supported' => ['ES256'],
             'claims_supported' => array_merge(OpenIdClaims::SUPPORTED_CLAIMS, ['iss', 'aud', 'exp', 'iat', 'nonce']),
+            // The request objects aren't supported, but the request_uri_parameter_supported is true by default,
+            // so both values are need to be set explicitly
+            'request_parameter_supported' => false,
+            'request_uri_parameter_supported' => false,
         ]);
     }
 

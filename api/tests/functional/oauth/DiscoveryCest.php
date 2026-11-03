@@ -58,6 +58,8 @@ final class DiscoveryCest {
             'id_token_signing_alg_values_supported' => ['ES256'],
             'scopes_supported' => ['openid', 'profile', 'email'],
             'claims_supported' => ['sub', 'preferred_username', 'email', 'email_verified', 'nonce'],
+            'request_parameter_supported' => false,
+            'request_uri_parameter_supported' => false,
         ]);
     }
 

@@ -45,20 +45,17 @@ final class AuthCodeGrant extends BaseAuthCodeGrant {
         parent::__construct($authCodeRepository, $refreshTokenRepository, $authCodeTtl);
     }
 
-    /**
-     * The library supports the "plain" PKCE method and uses it by default when the method isn't provided.
-     * But with the "plain" method the code_challenge is the code_verifier itself and it's passed through
-     * the browser, so it doesn't protect from the authorization code interception.
-     * That's why only the "S256" method is allowed (RFC 9700 section 2.1.1).
-     *
-     * @inheritDoc
-     */
     public function validateAuthorizationRequest(ServerRequestInterface $request): AuthorizationRequestInterface {
         $authorizationRequest = parent::validateAuthorizationRequest($request);
         $codeChallengeMethod = $authorizationRequest->getCodeChallengeMethod();
+        // The library supports the "plain" PKCE method and uses it by default when the method isn't provided.
+        // But with the "plain" is insecure and we don't want to allow it.
+        // That's why only the "S256" method is allowed (RFC 9700 section 2.1.1).
         if ($codeChallengeMethod !== null && $codeChallengeMethod !== 'S256') {
             throw OAuthServerException::invalidRequest('code_challenge_method', 'Code challenge method must be `S256`.');
         }
+
+        $this->assertRequestObjectIsNotPassed($request, $authorizationRequest);
 
         // The nonce is the OpenID Connect parameter, so it's ignored for the plain OAuth 2.0 requests
         if ($authorizationRequest instanceof AuthorizationRequest && self::hasOpenIdScope($authorizationRequest->getScopes())) {
@@ -162,6 +159,39 @@ final class AuthCodeGrant extends BaseAuthCodeGrant {
         $this->checkOfflineAccessScope($scopes);
 
         return parent::issueAccessToken($this->resolveAccessTokenTtl($accessTokenTTL, $scopes), $client, $userIdentifier, $scopes);
+    }
+
+    /**
+     * The request objects (OpenID Connect Core 1.0 section 6, RFC 9101) aren't supported. The client may pass
+     * some parameters only within the request object, so the request must be rejected instead of ignoring them.
+     * The redirect uri is already validated at this point, so the error is returned to the client
+     * (OpenID Connect Core 1.0 section 3.1.2.6).
+     *
+     * @throws OAuthServerException
+     */
+    private function assertRequestObjectIsNotPassed(
+        ServerRequestInterface $request,
+        AuthorizationRequestInterface $authorizationRequest,
+    ): void {
+        $queryParams = $request->getQueryParams();
+        foreach (['request', 'request_uri'] as $param) {
+            if (!array_key_exists($param, $queryParams)) {
+                continue;
+            }
+
+            $state = $authorizationRequest->getState();
+            throw new OAuthServerException(
+                message: sprintf('The `%s` parameter is not supported.', $param),
+                code: 3, // Just because the same code used within "invalidRequest" static method
+                errorType: "{$param}_not_supported",
+                httpStatusCode: 400,
+                hint: sprintf('Pass the authorization request parameters directly instead of the `%s` parameter', $param),
+                redirectUri: $this->makeRedirectUri(
+                    $authorizationRequest->getRedirectUri() ?? $this->getClientRedirectUri($authorizationRequest->getClient()),
+                    $state !== null ? ['state' => $state] : [],
+                ),
+            );
+        }
     }
 
     /**
