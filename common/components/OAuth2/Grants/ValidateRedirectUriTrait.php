@@ -35,7 +35,14 @@ trait ValidateRedirectUriTrait {
                     return;
                 }
             } else {
-                foreach ((array)$client->getRedirectUri() as $allowedRedirectUri) {
+                $registeredRedirectUris = array_filter((array)$client->getRedirectUri(), static fn($uri) => (string)$uri !== '');
+                // Such clients can't be created through the UI, but some old launchers are registered as web
+                // applications without the redirect uri, so for them any redirect uri, except dangerous ones, is allowed
+                if ($registeredRedirectUris === [] && !self::isDangerousScheme($url->getScheme())) {
+                    return;
+                }
+
+                foreach ($registeredRedirectUris as $allowedRedirectUri) {
                     if (self::isMatchingRegisteredRedirectUri($url, (string)$allowedRedirectUri)) {
                         return;
                     }
@@ -85,8 +92,14 @@ trait ValidateRedirectUriTrait {
             return in_array($url->getAsciiHost(), self::LOOPBACK_HOSTS, true);
         }
 
-        // Schemes that are able to execute code or to read local data in the browser
-        return !in_array($scheme, ['javascript', 'data', 'vbscript', 'file', 'blob', 'about', 'filesystem'], true);
+        return !self::isDangerousScheme($scheme);
+    }
+
+    /**
+     * Schemes that are able to execute code or to read local data in the browser
+     */
+    private static function isDangerousScheme(string $scheme): bool {
+        return in_array($scheme, ['javascript', 'data', 'vbscript', 'file', 'blob', 'about', 'filesystem'], true);
     }
 
     /**

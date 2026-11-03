@@ -83,6 +83,34 @@ final class ValidateRedirectUriTraitTest extends TestCase {
     /**
      * @return iterable<array{string, bool}>
      */
+    public static function webApplicationWithoutRegisteredRedirectUris(): iterable {
+        // Allowed
+        yield ['https://example.com/callback', true];
+        yield ['http://127.0.0.1:56228/', true];
+        yield ['elyprismlauncher://oauth/microsoft', true];
+
+        // Denied
+        yield ['javascript:alert(1)', false];
+        yield ['data:text/html,test', false];
+        yield ['file:///etc/passwd', false];
+        yield ['https://example.com/callback#fragment', false];
+        yield ['https://user@example.com/callback', false];
+        yield ['/callback', false];
+        yield ['', false];
+    }
+
+    /**
+     * @dataProvider webApplicationWithoutRegisteredRedirectUris
+     */
+    public function testWebApplicationWithoutRegisteredRedirectUri(string $redirectUri, bool $expected): void {
+        $client = new OauthClient();
+        $client->type = OauthClient::TYPE_WEB_APPLICATION;
+        $this->assertValidation(new ClientEntity('ely', 'Ely.by', '', model: $client), $redirectUri, $expected);
+    }
+
+    /**
+     * @return iterable<array{string, bool}>
+     */
     public static function desktopApplicationRedirectUris(): iterable {
         // Allowed
         yield ['http://localhost', true];
