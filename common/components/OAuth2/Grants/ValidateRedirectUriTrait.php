@@ -4,10 +4,10 @@ declare(strict_types=1);
 namespace common\components\OAuth2\Grants;
 
 use common\components\OAuth2\Entities\ClientEntity;
+use common\components\OAuth2\Exceptions\AuthorizationRequestException;
 use common\models\OauthClient;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\EventEmitting\EventEmitter;
-use League\OAuth2\Server\Exception\OAuthServerException;
 use League\OAuth2\Server\RequestEvent;
 use Psr\Http\Message\ServerRequestInterface;
 use Uri\WhatWg\Url;
@@ -55,11 +55,10 @@ trait ValidateRedirectUriTrait {
         // The library returns invalid_client here, which is indistinguishable from the unknown client_id.
         // The invalid redirect uri is the invalid parameter value, so invalid_request is returned instead.
         // The error must not be redirected to the invalid redirect uri (RFC 6749 section 4.1.2.1)
-        // and the registered redirect uris aren't disclosed. The hint keeps the "Check the `X` parameter" form,
-        // so the parameter can be extracted from it (see OauthProcess::buildCompleteErrorResponse()).
-        throw OAuthServerException::invalidRequest(
+        // and the registered redirect uris aren't disclosed.
+        throw AuthorizationRequestException::invalidParameter(
             'redirect_uri',
-            'Check the `redirect_uri` parameter: it doesn\'t match the redirect uri registered for the client.',
+            'The `redirect_uri` parameter doesn\'t match the redirect uri registered for the client.',
         );
     }
 

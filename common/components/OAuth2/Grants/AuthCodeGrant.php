@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace common\components\OAuth2\Grants;
 
 use common\components\OAuth2\CryptTrait;
+use common\components\OAuth2\Exceptions\AuthorizationRequestException;
 use common\components\OAuth2\Repositories\PublicScopeRepository;
 use common\components\OAuth2\RequestTypes\AuthorizationRequest;
 use common\components\OAuth2\ResponseTypes\BearerTokenResponse;
@@ -46,23 +47,36 @@ final class AuthCodeGrant extends BaseAuthCodeGrant {
     }
 
     public function validateAuthorizationRequest(ServerRequestInterface $request): AuthorizationRequestInterface {
-        $authorizationRequest = parent::validateAuthorizationRequest($request);
-        $codeChallengeMethod = $authorizationRequest->getCodeChallengeMethod();
+        try {
+            $authorizationRequest = parent::validateAuthorizationRequest($request);
+        } catch (AuthorizationRequestException $e) {
+            throw $e;
+        } catch (OAuthServerException $e) {
+            throw $this->convertLibraryException($e, $request);
+        }
+
+        $redirectUri = $this->makeErrorRedirectUri($authorizationRequest);
+
         // The library supports the "plain" PKCE method and uses it by default when the method isn't provided.
         // But with the "plain" is insecure and we don't want to allow it.
         // That's why only the "S256" method is allowed (RFC 9700 section 2.1.1).
+        $codeChallengeMethod = $authorizationRequest->getCodeChallengeMethod();
         if ($codeChallengeMethod !== null && $codeChallengeMethod !== 'S256') {
-            throw OAuthServerException::invalidRequest('code_challenge_method', 'Code challenge method must be `S256`.');
+            throw AuthorizationRequestException::invalidParameter('code_challenge_method', 'Code challenge method must be `S256`.', $redirectUri);
         }
 
-        $this->assertRequestObjectIsNotPassed($request, $authorizationRequest);
+        $this->assertRequestObjectIsNotPassed($request, $redirectUri);
 
         // The nonce is the OpenID Connect parameter, so it's ignored for the plain OAuth 2.0 requests
         if ($authorizationRequest instanceof AuthorizationRequest && self::hasOpenIdScope($authorizationRequest->getScopes())) {
             // The raw value is used, since the id_token must contain exactly the same value (OpenID Connect Core 3.1.3.7)
             $nonce = $request->getQueryParams()['nonce'] ?? null;
             if ($nonce !== null && (!is_string($nonce) || strlen($nonce) > self::MAX_NONCE_LENGTH || preg_match('//u', $nonce) !== 1)) {
-                throw OAuthServerException::invalidRequest('nonce', sprintf('The nonce must be a valid UTF-8 string not longer than %d bytes.', self::MAX_NONCE_LENGTH));
+                throw AuthorizationRequestException::invalidParameter(
+                    'nonce',
+                    sprintf('The nonce must be a valid UTF-8 string not longer than %d bytes.', self::MAX_NONCE_LENGTH),
+                    $redirectUri,
+                );
             }
 
             // Don't use empty(), it will skip '0' nonce
@@ -86,11 +100,11 @@ final class AuthCodeGrant extends BaseAuthCodeGrant {
         $finalRedirectUri = $authorizationRequest->getRedirectUri() ?? $this->getClientRedirectUri($authorizationRequest->getClient());
 
         if ($authorizationRequest->isAuthorizationApproved() !== true) {
-            throw OAuthServerException::accessDenied(
-                'The user denied the request',
-                $this->makeRedirectUri($finalRedirectUri, [
-                    'state' => $authorizationRequest->getState(),
-                ]),
+            throw AuthorizationRequestException::create(
+                'access_denied',
+                'The user denied the request.',
+                httpStatusCode: 401,
+                redirectUri: $this->makeErrorRedirectUri($authorizationRequest),
             );
         }
 
@@ -164,34 +178,104 @@ final class AuthCodeGrant extends BaseAuthCodeGrant {
     /**
      * The request objects (OpenID Connect Core 1.0 section 6, RFC 9101) aren't supported. The client may pass
      * some parameters only within the request object, so the request must be rejected instead of ignoring them.
-     * The redirect uri is already validated at this point, so the error is returned to the client
-     * (OpenID Connect Core 1.0 section 3.1.2.6).
      *
-     * @throws OAuthServerException
+     * @throws AuthorizationRequestException
      */
-    private function assertRequestObjectIsNotPassed(
-        ServerRequestInterface $request,
-        AuthorizationRequestInterface $authorizationRequest,
-    ): void {
+    private function assertRequestObjectIsNotPassed(ServerRequestInterface $request, string $redirectUri): void {
         $queryParams = $request->getQueryParams();
         foreach (['request', 'request_uri'] as $param) {
-            if (!array_key_exists($param, $queryParams)) {
-                continue;
+            if (array_key_exists($param, $queryParams)) {
+                throw AuthorizationRequestException::create(
+                    errorType: "{$param}_not_supported",
+                    description: sprintf('The `%s` parameter is not supported. Pass the authorization request parameters directly.', $param),
+                    parameter: $param,
+                    redirectUri: $redirectUri,
+                );
             }
-
-            $state = $authorizationRequest->getState();
-            throw new OAuthServerException(
-                message: sprintf('The `%s` parameter is not supported.', $param),
-                code: 3, // Just because the same code used within "invalidRequest" static method
-                errorType: "{$param}_not_supported",
-                httpStatusCode: 400,
-                hint: sprintf('Pass the authorization request parameters directly instead of the `%s` parameter', $param),
-                redirectUri: $this->makeRedirectUri(
-                    $authorizationRequest->getRedirectUri() ?? $this->getClientRedirectUri($authorizationRequest->getClient()),
-                    $state !== null ? ['state' => $state] : [],
-                ),
-            );
         }
+    }
+
+    /**
+     * Converts the library's exception to provide the parameter, that has caused the error.
+     *
+     * The library validates the client and the redirect uri first, so the errors related to any other parameter
+     * are thrown when the redirect uri is already validated. Such errors are returned to the client
+     * (RFC 6749 section 4.1.2.1, OpenID Connect Core 1.0 section 3.1.2.6). The library returns only
+     * the invalid_scope error this way, so the redirect uri is built here for the rest of them.
+     */
+    private function convertLibraryException(OAuthServerException $e, ServerRequestInterface $request): OAuthServerException {
+        $clientId = $this->getQueryStringParameter('client_id', $request);
+        $client = $clientId !== null ? $this->clientRepository->getClientEntity($clientId) : null;
+        $redirectUri = $this->getQueryStringParameter('redirect_uri', $request);
+
+        switch ($e->getErrorType()) {
+            case 'invalid_client':
+                // The library returns invalid_client when the redirect_uri isn't passed and the client
+                // has no single registered redirect uri to use instead
+                if ($client !== null && $redirectUri === null) {
+                    return AuthorizationRequestException::invalidParameter(
+                        'redirect_uri',
+                        'The `redirect_uri` parameter is required, since the client has no single registered redirect uri.',
+                        previous: $e,
+                    );
+                }
+
+                return $e;
+            case 'invalid_scope':
+                return AuthorizationRequestException::fromLibraryException($e, 'scope');
+            case 'invalid_request':
+                $parameter = self::getLibraryInvalidRequestParameter((string)$e->getHint());
+                if ($parameter === null || $parameter === 'client_id' || $client === null) {
+                    return AuthorizationRequestException::fromLibraryException($e, $parameter);
+                }
+
+                $state = $this->getQueryStringParameter('state', $request);
+
+                return AuthorizationRequestException::fromLibraryException($e, $parameter, $this->makeRedirectUri(
+                    $redirectUri ?? $this->getClientRedirectUri($client),
+                    $state !== null ? ['state' => $state] : [],
+                ));
+            default:
+                return AuthorizationRequestException::fromLibraryException($e);
+        }
+    }
+
+    /**
+     * The library doesn't keep the parameter passed to the OAuthServerException::invalidRequest(),
+     * so it can be restored only from the hint: either from the default one ("Check the `X` parameter")
+     * or from the custom hints of the PKCE parameters validation.
+     */
+    private static function getLibraryInvalidRequestParameter(string $hint): ?string {
+        if (preg_match('/^Check the `(\w+)` parameter/', $hint, $matches)) {
+            return $matches[1];
+        }
+
+        if (str_starts_with($hint, 'Code challenge method ')) {
+            return 'code_challenge_method';
+        }
+
+        if (str_starts_with($hint, 'Code challenge ')) {
+            return 'code_challenge';
+        }
+
+        return null;
+    }
+
+    /**
+     * Builds the redirect uri for the error, that should be returned to the client.
+     * The error params are appended by the OauthProcess.
+     */
+    private function makeErrorRedirectUri(AuthorizationRequestInterface $authorizationRequest): string {
+        $state = $authorizationRequest->getState();
+        $params = [];
+        if ($state !== null) {
+            $params['state'] = $state;
+        }
+
+        return $this->makeRedirectUri(
+            $authorizationRequest->getRedirectUri() ?? $this->getClientRedirectUri($authorizationRequest->getClient()),
+            $params,
+        );
     }
 
     /**

@@ -6,6 +6,7 @@ namespace api\modules\oauth\models;
 use api\components\Tokens\TokenReader;
 use common\components\OAuth2\Entities\UserEntity;
 use common\components\OAuth2\Events\RequestedRefreshToken;
+use common\components\OAuth2\Exceptions\AuthorizationRequestException;
 use common\components\OAuth2\Repositories\ClientRepository;
 use common\components\OAuth2\ScopesMapper;
 use common\models\Account;
@@ -409,47 +410,43 @@ final readonly class OauthProcess {
     }
 
     /**
+     * The error response for our frontend. The error_description is meant for the client's developers,
+     * so it isn't localized. When the redirect uri is present, the error must be returned to the client,
+     * so the frontend redirects the user to it as is.
+     *
      * @return array{
-     *     success: false,
      *     error: string,
-     *     parameter: string|null,
-     *     statusCode: int,
+     *     error_description: string,
+     *     parameter?: string,
      *     redirectUri?: string,
      * }
      */
     private function buildCompleteErrorResponse(OAuthServerException $e): array {
-        $hint = $e->getPayload()['hint'] ?? '';
-        $parameter = null;
-        // The library's invalidRequest() builds the hint in the "Check the `X` parameter" form
-        if (preg_match('/the `(\w+)` scope/', $hint, $matches) || preg_match('/^Check the `(\w+)` parameter/', $hint, $matches)) {
-            $parameter = $matches[1];
-        }
-
-        if ($parameter === null && $hint === 'user_code') {
-            $parameter = $hint;
-        }
-
+        // None of the grants can handle the authorization request. It can't be returned to the client,
+        // since the client and the redirect uri aren't validated in this case, so it's only shown to the user
+        $description = $e->getErrorType() === 'unsupported_grant_type'
+            ? 'The request must contain the `client_id` parameter and the `code` response type.'
+            : AuthorizationRequestException::describe($e);
         $response = [
-            'success' => false,
             'error' => $e->getErrorType(),
-            'parameter' => $parameter,
-            'statusCode' => $e->getHttpStatusCode(),
+            'error_description' => $description,
         ];
+
+        if ($e instanceof AuthorizationRequestException && $e->getParameter() !== null) {
+            $response['parameter'] = $e->getParameter();
+        }
 
         if ($e->hasRedirect()) {
             // The library builds the redirect uri with the state param already appended ("http://ely.by?state=abc")
-            // or with a trailing query delimiter ("http://ely.by?"), so the payload can't be just concatenated to it
-            $response['redirectUri'] = (string)Uri::withQueryValues(
-                new Uri((string)$e->getRedirectUri()),
-                array_merge($e->getPayload(), [
-                    'iss' => $this->getIssuer(),
-                ]),
-            );
+            // or with a trailing query delimiter ("http://ely.by?"), so the params can't be just concatenated to it
+            $response['redirectUri'] = (string)Uri::withQueryValues(new Uri((string)$e->getRedirectUri()), [
+                'error' => $e->getErrorType(),
+                'error_description' => $description,
+                'iss' => $this->getIssuer(),
+            ]);
         }
 
-        if ($e->getHttpStatusCode() !== 200) {
-            Yii::$app->response->setStatusCode($e->getHttpStatusCode());
-        }
+        Yii::$app->response->setStatusCode($e->getHttpStatusCode());
 
         return $response;
     }
@@ -473,12 +470,12 @@ final readonly class OauthProcess {
     private function buildIssueErrorResponse(OAuthServerException $e): array {
         $errorType = $e->getErrorType();
         $message = $e->getMessage();
-        $hint = $e->getHint();
-        switch ($hint) {
-            case 'Cannot decrypt the authorization code':
-                // RFC 6749 doesn't allow double quotes in the error_description
-                $message .= ' Check the `code` parameter.';
-                break;
+        $hint = (string)$e->getHint();
+        if ($hint === 'Cannot decrypt the authorization code') {
+            $message .= ' Check the `code` parameter.';
+        } elseif ($errorType === 'invalid_request' && $hint !== '' && !$e instanceof AuthorizationRequestException) {
+            // The library's message is the same for any invalid request, so the hint is required to understand it
+            $message = AuthorizationRequestException::describe($e);
         }
 
         return [
@@ -489,7 +486,7 @@ final readonly class OauthProcess {
     }
 
     private function createAcceptRequiredException(): OAuthServerException {
-        return new OAuthServerException('Client must accept authentication request.', 0, 'accept_required', 401);
+        return AuthorizationRequestException::create('accept_required', 'Client must accept authentication request.', httpStatusCode: 401);
     }
 
     /**

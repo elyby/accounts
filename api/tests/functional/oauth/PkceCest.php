@@ -39,12 +39,48 @@ final class PkceCest {
             'client_id' => 'desktop-app',
             'redirect_uri' => self::REDIRECT_URI,
             'response_type' => 'code',
+            'state' => 'test-state',
         ]);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
-            'success' => false,
             'error' => 'invalid_request',
+            'error_description' => 'Code challenge must be provided for public clients',
+            'parameter' => 'code_challenge',
+            'redirectUri' => self::REDIRECT_URI . '?state=test-state&error=invalid_request&error_description=Code%20challenge%20must%20be%20provided%20for%20public%20clients&iss=http://localhost',
         ]);
+    }
+
+    public function invalidRedirectUriTakesPrecedenceOverPkceError(FunctionalTester $I): void {
+        $I->wantToTest('that the error is never redirected to the redirect uri, that is not validated');
+        $I->sendGET('/api/oauth2/v1/validate', [
+            'client_id' => 'desktop-app',
+            'redirect_uri' => 'https://evil.example/callback',
+            'response_type' => 'code',
+        ]);
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContainsJson([
+            'error' => 'invalid_request',
+            'parameter' => 'redirect_uri',
+        ]);
+        $I->cantSeeResponseJsonMatchesJsonPath('$.redirectUri');
+    }
+
+    public function invalidCodeChallenge(FunctionalTester $I): void {
+        $I->sendGET('/api/oauth2/v1/validate', [
+            'client_id' => 'desktop-app',
+            'redirect_uri' => self::REDIRECT_URI,
+            'response_type' => 'code',
+            'code_challenge' => 'too-short',
+            'code_challenge_method' => 'S256',
+        ]);
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContainsJson([
+            'error' => 'invalid_request',
+            'error_description' => 'Code challenge must follow the specifications of RFC-7636.',
+            'parameter' => 'code_challenge',
+        ]);
+        [$redirectUri] = $I->grabDataFromResponseByJsonPath('$.redirectUri');
+        $I->assertStringStartsWith(self::REDIRECT_URI . '?error=invalid_request&', $redirectUri);
     }
 
     /**
@@ -63,9 +99,12 @@ final class PkceCest {
         ], fn(?string $value): bool => $value !== null));
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
-            'success' => false,
             'error' => 'invalid_request',
+            'parameter' => 'code_challenge_method',
         ]);
+        $I->canSeeResponseJsonMatchesJsonPath('$.error_description');
+        [$redirectUri] = $I->grabDataFromResponseByJsonPath('$.redirectUri');
+        $I->assertStringStartsWith(self::REDIRECT_URI . '?error=invalid_request&', $redirectUri);
     }
 
     public function exchangeCodeWithInvalidCodeVerifier(FunctionalTester $I): void {

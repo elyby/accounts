@@ -93,9 +93,7 @@ final class ValidateCest {
         ]);
         $I->canSeeResponseCodeIs(401);
         $I->canSeeResponseContainsJson([
-            'success' => false,
             'error' => 'invalid_client',
-            'statusCode' => 401,
         ]);
     }
 
@@ -115,12 +113,57 @@ final class ValidateCest {
         ]);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
-            'success' => false,
             'error' => 'invalid_request',
+            'error_description' => 'The `redirect_uri` parameter doesn\'t match the redirect uri registered for the client.',
             'parameter' => 'redirect_uri',
-            'statusCode' => 400,
         ]);
         $I->cantSeeResponseJsonMatchesJsonPath('$.redirectUri');
+    }
+
+    public function missingRedirectUriForClientWithoutRegisteredOne(FunctionalTester $I): void {
+        $I->sendGET('/api/oauth2/v1/validate', [
+            'client_id' => 'desktop-app',
+            'response_type' => 'code',
+        ]);
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContainsJson([
+            'error' => 'invalid_request',
+            'error_description' => 'The `redirect_uri` parameter is required, since the client has no single registered redirect uri.',
+            'parameter' => 'redirect_uri',
+        ]);
+        $I->cantSeeResponseJsonMatchesJsonPath('$.redirectUri');
+    }
+
+    /**
+     * @param Example<array{array<string, mixed>}> $case
+     */
+    #[Examples(['client_id' => 'ely', 'redirect_uri' => 'http://ely.by', 'response_type' => 'token'])]
+    #[Examples(['client_id' => 'ely', 'redirect_uri' => 'http://ely.by', 'response_type' => ['code']])]
+    #[Examples(['client_id' => 'ely', 'redirect_uri' => 'http://ely.by'])]
+    #[Examples(['redirect_uri' => 'http://ely.by', 'response_type' => 'code'])]
+    #[Examples(['client_id' => 'non-exists-client', 'response_type' => 'token'])]
+    public function requestThatCanNotBeHandledByAnyGrant(FunctionalTester $I, Example $case): void {
+        $I->sendGET('/api/oauth2/v1/validate', $case[0]);
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContainsJson([
+            'error' => 'unsupported_grant_type',
+            'error_description' => 'The request must contain the `client_id` parameter and the `code` response type.',
+        ]);
+        $I->cantSeeResponseJsonMatchesJsonPath('$.parameter');
+        $I->cantSeeResponseJsonMatchesJsonPath('$.redirectUri');
+    }
+
+    public function authCodeRequestWithUserCodeIsHandledByAuthCodeGrant(FunctionalTester $I): void {
+        $I->sendGET('/api/oauth2/v1/validate', [
+            'client_id' => 'ely',
+            'redirect_uri' => 'http://ely.by',
+            'response_type' => 'code',
+            'user_code' => 'XXXXXXXX',
+        ]);
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseContainsJson([
+            'success' => true,
+        ]);
     }
 
     public function invalidCodeForDeviceCode(FunctionalTester $I): void {
@@ -129,10 +172,8 @@ final class ValidateCest {
         ]);
         $I->canSeeResponseCodeIs(401);
         $I->canSeeResponseContainsJson([
-            'success' => false,
             'error' => 'invalid_user_code',
             'parameter' => 'user_code',
-            'statusCode' => 401,
         ]);
     }
 
@@ -142,10 +183,8 @@ final class ValidateCest {
         ]);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
-            'success' => false,
             'error' => 'expired_token',
             'parameter' => 'user_code',
-            'statusCode' => 400,
         ]);
     }
 
@@ -155,10 +194,8 @@ final class ValidateCest {
         ]);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
-            'success' => false,
             'error' => 'used_user_code',
             'parameter' => 'user_code',
-            'statusCode' => 400,
         ]);
     }
 
@@ -173,10 +210,8 @@ final class ValidateCest {
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
-            'success' => false,
             'error' => 'invalid_scope',
-            'parameter' => 'some_wrong_scope',
-            'statusCode' => 400,
+            'parameter' => 'scope',
         ]);
         $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
     }
@@ -192,12 +227,13 @@ final class ValidateCest {
         ]);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
-            'success' => false,
             'error' => 'invalid_scope',
         ]);
         [$redirectUri] = $I->grabDataFromResponseByJsonPath('$.redirectUri');
-        $I->assertStringStartsWith('http://ely.by?state=test-state&error=invalid_scope&', $redirectUri);
-        $I->assertStringEndsWith('&iss=http://localhost', $redirectUri);
+        $I->assertSame(
+            'http://ely.by?state=test-state&error=invalid_scope&error_description=The%20requested%20scope%20is%20invalid,%20unknown,%20or%20malformed.%20Check%20the%20%60some_wrong_scope%60%20scope&iss=http://localhost',
+            $redirectUri,
+        );
     }
 
     public function requestInternalScopeAuthFlow(FunctionalTester $I): void {
@@ -211,10 +247,8 @@ final class ValidateCest {
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseIsJson();
         $I->canSeeResponseContainsJson([
-            'success' => false,
             'error' => 'invalid_scope',
-            'parameter' => 'block_account',
-            'statusCode' => 400,
+            'parameter' => 'scope',
         ]);
         $I->canSeeResponseJsonMatchesJsonPath('$.redirectUri');
     }
@@ -237,9 +271,7 @@ final class ValidateCest {
         ]);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
-            'success' => false,
             'error' => $error,
-            'statusCode' => 400,
         ]);
         [$redirectUri] = $I->grabDataFromResponseByJsonPath('$.redirectUri');
         $I->assertStringStartsWith("http://ely.by?state=test-state&error={$error}&", $redirectUri);

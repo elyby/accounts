@@ -175,7 +175,11 @@ final class OpenIdConnectCest {
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
             'error' => 'invalid_request',
+            'error_description' => 'The nonce must be a valid UTF-8 string not longer than 255 bytes.',
+            'parameter' => 'nonce',
         ]);
+        [$redirectUri] = $I->grabDataFromResponseByJsonPath('$.redirectUri');
+        $I->assertStringStartsWith('http://ely.by?error=invalid_request&', $redirectUri);
     }
 
     public function idTokenOnRefreshWithoutNonce(OauthSteps $I): void {

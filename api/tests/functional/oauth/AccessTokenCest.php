@@ -127,8 +127,10 @@ final class AccessTokenCest {
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContainsJson([
             'error' => 'invalid_request',
+            // The library's message is the same for any invalid request, so the hint must be passed
+            'error_description' => 'Invalid redirect URI',
+            'message' => 'Invalid redirect URI',
         ]);
-        $I->canSeeResponseJsonMatchesJsonPath('$.error_description');
         $I->cantSeeResponseJsonMatchesJsonPath('$.access_token');
     }
 

@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace common\components\OAuth2\Grants;
 
+use common\components\OAuth2\Exceptions\AuthorizationRequestException;
 use common\components\OAuth2\Repositories\ExtendedDeviceCodeRepositoryInterface;
 use common\components\OAuth2\ResponseTypes\EmptyResponse;
 use DateInterval;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
-use League\OAuth2\Server\Exception\OAuthServerException;
 use League\OAuth2\Server\Grant\DeviceCodeGrant as BaseDeviceCodeGrant;
 use League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface;
 use League\OAuth2\Server\RequestTypes\AuthorizationRequest;
@@ -49,20 +49,20 @@ final class DeviceCodeGrant extends BaseDeviceCodeGrant {
     public function validateAuthorizationRequest(ServerRequestInterface $request): AuthorizationRequestInterface {
         $userCode = $this->getQueryStringParameter('user_code', $request);
         if ($userCode === null) {
-            throw OAuthServerException::invalidRequest('user_code');
+            throw AuthorizationRequestException::invalidParameter('user_code', 'The `user_code` parameter is required.');
         }
 
         $deviceCode = $this->deviceCodeRepository->getDeviceCodeEntityByUserCode($userCode);
         if ($deviceCode === null) {
-            throw new OAuthServerException('Unknown user code', 4, 'invalid_user_code', 401, 'user_code');
+            throw AuthorizationRequestException::create('invalid_user_code', 'Unknown user code.', 'user_code', 401);
         }
 
         if ($deviceCode->getExpiryDateTime()->getTimestamp() < time()) {
-            throw OAuthServerException::expiredToken('user_code');
+            throw AuthorizationRequestException::create('expired_token', 'The user code has expired.', 'user_code');
         }
 
         if ($deviceCode->getUserIdentifier() !== null) {
-            throw new OAuthServerException('The user code has already been used', 6, 'used_user_code', 400, 'user_code');
+            throw AuthorizationRequestException::create('used_user_code', 'The user code has already been used.', 'user_code');
         }
 
         $authorizationRequest = new AuthorizationRequest();
