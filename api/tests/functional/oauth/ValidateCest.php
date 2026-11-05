@@ -22,7 +22,7 @@ final class ValidateCest {
             'success' => true,
             'oAuth' => [
                 'client_id' => 'ely',
-                'redirect_uri' => 'http://ely.by',
+                'redirect_uri' => 'http://ely.by?iss=http://localhost&state=test-state',
                 'response_type' => 'code',
                 'scope' => 'minecraft_server_session account_info account_email',
                 'state' => 'test-state',

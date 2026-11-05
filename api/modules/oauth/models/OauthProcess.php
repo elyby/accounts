@@ -387,7 +387,7 @@ final readonly class OauthProcess {
      * @return array<mixed>
      */
     private function buildSuccessResponse(ServerRequestInterface $request, OauthClient $client, AuthorizationRequestInterface $authRequest): array {
-        return [
+        $response = [
             'success' => true,
             // We return only those keys which are related to the OAuth2 standard parameters
             'oAuth' => array_intersect_key($request->getQueryParams(), array_flip([
@@ -407,6 +407,22 @@ final readonly class OauthProcess {
                 'scopes' => ScopesMapper::normalizeScopes($this->getScopesList($authRequest)),
             ],
         ];
+
+        // The device flow has no address to return the user to
+        if ($authRequest->getGrantTypeId() === 'authorization_code') {
+            $uriParams = ['iss' => $this->getIssuer()];
+            $state = $authRequest->getState();
+            if ($state !== null) {
+                $uriParams['state'] = $state;
+            }
+
+            $response['oAuth']['redirect_uri'] = (string)Uri::withQueryValues(
+                new Uri($authRequest->getRedirectUri() ?? ((array)$authRequest->getClient()->getRedirectUri())[0]),
+                $uriParams,
+            );
+        }
+
+        return $response;
     }
 
     /**
