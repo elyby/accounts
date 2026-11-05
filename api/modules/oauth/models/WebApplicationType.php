@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace api\modules\oauth\models;
 
+use common\components\OAuth2\RedirectUriRules;
 use common\helpers\Error as E;
 use common\models\OauthClient;
 use yii\helpers\ArrayHelper;
@@ -28,7 +29,8 @@ final class WebApplicationType extends BaseOauthClientType {
     }
 
     private function validateUrl(string $attribute): void {
-        if (!filter_var($this->$attribute, FILTER_VALIDATE_URL)) {
+        $value = $this->$attribute;
+        if (!is_string($value) || !RedirectUriRules::canBeRegisteredAsWebApplication($value)) {
             $this->addError($attribute, E::REDIRECT_URI_INVALID);
         }
     }

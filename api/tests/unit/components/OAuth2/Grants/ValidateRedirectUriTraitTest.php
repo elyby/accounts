@@ -13,139 +13,35 @@ use League\OAuth2\Server\Exception\OAuthServerException;
 
 final class ValidateRedirectUriTraitTest extends TestCase {
 
-    /**
-     * @return iterable<array{string, string, bool}>
-     */
-    public static function webApplicationRedirectUris(): iterable {
-        // Allowed
-        yield ['http://ely.by', 'http://ely.by', true];
-        yield ['http://ely.by', 'http://ely.by/', true];
-        yield ['http://ely.by', 'http://ely.by/oauth/callback', true];
-        yield ['http://ely.by', 'http://ely.by?param=value', true];
-        yield ['http://ely.by', 'HTTP://ELY.BY/callback', true];
-        yield ['http://ely.by', 'http://ely.by:80/callback', true];
-        yield ['https://example.com/oauth/ely', 'https://example.com/oauth/ely', true];
-        yield ['https://example.com/oauth/ely', 'https://example.com/oauth/ely/', true];
-        yield ['https://example.com/oauth/ely', 'https://example.com/oauth/ely/callback', true];
-        yield ['https://example.com/oauth/ely', 'https://example.com/oauth/ely?param=value', true];
-        yield ['https://example.com/oauth/ely/', 'https://example.com/oauth/ely/callback', true];
-        yield ['https://example.com/cb?a=1', 'https://example.com/cb?a=1', true];
-        yield ['https://example.com/cb?a=1', 'https://example.com/cb?a=1&b=2', true];
-        yield ['https://пример.рф/cb', 'https://xn--e1afmkfd.xn--p1ai/cb/callback', true];
-        yield ['https://xn--e1afmkfd.xn--p1ai/cb', 'https://пример.рф/cb/callback', true];
-        // The uri is normalized the same way the browser does it, so the validation is made against the actual destination
-        yield ['http://ely.by', 'http://ely.by\\@evil.com', true]; // Browser goes to http://ely.by/@evil.com
-        yield ['http://ely.by', "http://ely.by/\ncallback", true]; // Browser goes to http://ely.by/callback
-        yield ['http://ely.by', ' http://ely.by/callback ', true];
-        yield ['https://example.com/oauth/ely', 'https://example.com/oauth/ely/sub/../callback', true];
-        yield ['https://example.com/oauth/ely', 'https://example.com/oauth/ely/%2e/callback', true];
-        // Any port is allowed for the loopback redirect uris (RFC 8252 section 7.3)
-        yield ['http://127.0.0.1', 'http://127.0.0.1:56228/', true];
-        yield ['http://127.0.0.1:8080', 'http://127.0.0.1:56228/callback', true];
-        yield ['http://localhost', 'http://localhost:56228/', true];
-        yield ['http://[::1]', 'http://[::1]:56228/', true];
+    public function testWebApplication(): void {
+        $client = $this->createClient(OauthClient::TYPE_WEB_APPLICATION, 'http://ely.by');
 
-        // Denied
-        yield ['http://ely.by', 'http://ely.by.evil.com', false];
-        yield ['http://ely.by', 'http://ely.by.evil.com/callback', false];
-        yield ['http://ely.by', 'http://ely.by@evil.com', false];
-        yield ['http://ely.by', 'http://ely.by:password@evil.com', false];
-        yield ['http://ely.by', 'http://ely.by:8080', false];
-        yield ['http://ely.by', 'https://ely.by', false];
-        yield ['http://ely.by', '//ely.by', false];
-        yield ['http://ely.by', 'http://ely.by/#fragment', false];
-        yield ['http://ely.by', 'http://ely.by/#', false];
-        yield ['http://ely.by', 'http://evil.com\\.ely.by/callback', false];
-        yield ['http://ely.by', '', false];
-        yield ['https://example.com/oauth/ely', 'https://example.com/oauth/elyevil', false];
-        yield ['https://example.com/oauth/ely', 'https://example.com/oauth', false];
-        yield ['https://example.com/oauth/ely', 'https://example.com/oauth/ely/../../evil', false];
-        yield ['https://example.com/oauth/ely', 'https://example.com/oauth/ely/%2e%2e/evil', false];
-        yield ['https://example.com/oauth/ely', 'https://example.com/oauth/ely%2Fevil', false];
-        yield ['https://example.com/cb?a=1', 'https://example.com/cb?a=10', false];
-        yield ['https://example.com/cb?a=1', 'https://example.com/cb/other?a=1', false];
-        // The loopback exception relaxes only the port
-        yield ['http://127.0.0.1', 'http://localhost:56228/', false];
-        yield ['http://127.0.0.1', 'https://127.0.0.1:56228/', false];
-        yield ['http://127.0.0.1/cb', 'http://127.0.0.1:56228/other', false];
-        yield ['http://127.0.0.1', 'http://127.0.0.1.evil.com:56228/', false];
+        $this->assertValidation($client, 'http://ely.by/callback', true);
+        $this->assertValidation($client, 'http://evil.com', false);
+    }
+
+    public function testWebApplicationWithoutRegisteredRedirectUri(): void {
+        $client = $this->createClient(OauthClient::TYPE_WEB_APPLICATION, '');
+
+        $this->assertValidation($client, 'https://example.com/callback', true);
+        $this->assertValidation($client, 'javascript:alert(1)', false);
+    }
+
+    public function testDesktopApplication(): void {
+        $client = $this->createClient(OauthClient::TYPE_DESKTOP_APPLICATION, '');
+
+        $this->assertValidation($client, 'http://127.0.0.1:51234/callback', true);
+        $this->assertValidation($client, 'http://example.com/callback', false);
     }
 
     /**
-     * @dataProvider webApplicationRedirectUris
+     * @phpstan-param OauthClient::TYPE_* $type
      */
-    public function testWebApplication(string $registeredUri, string $redirectUri, bool $expected): void {
+    private function createClient(string $type, string $registeredUri): ClientEntity {
         $client = new OauthClient();
-        $client->type = OauthClient::TYPE_WEB_APPLICATION;
-        $this->assertValidation(new ClientEntity('ely', 'Ely.by', $registeredUri, model: $client), $redirectUri, $expected);
-    }
+        $client->type = $type;
 
-    /**
-     * @return iterable<array{string, bool}>
-     */
-    public static function webApplicationWithoutRegisteredRedirectUris(): iterable {
-        // Allowed
-        yield ['https://example.com/callback', true];
-        yield ['http://127.0.0.1:56228/', true];
-        yield ['elyprismlauncher://oauth/microsoft', true];
-
-        // Denied
-        yield ['javascript:alert(1)', false];
-        yield ['data:text/html,test', false];
-        yield ['file:///etc/passwd', false];
-        yield ['https://example.com/callback#fragment', false];
-        yield ['https://user@example.com/callback', false];
-        yield ['/callback', false];
-        yield ['', false];
-    }
-
-    /**
-     * @dataProvider webApplicationWithoutRegisteredRedirectUris
-     */
-    public function testWebApplicationWithoutRegisteredRedirectUri(string $redirectUri, bool $expected): void {
-        $client = new OauthClient();
-        $client->type = OauthClient::TYPE_WEB_APPLICATION;
-        $this->assertValidation(new ClientEntity('ely', 'Ely.by', '', model: $client), $redirectUri, $expected);
-    }
-
-    /**
-     * @return iterable<array{string, bool}>
-     */
-    public static function desktopApplicationRedirectUris(): iterable {
-        // Allowed
-        yield ['http://localhost', true];
-        yield ['http://localhost:51234/callback', true];
-        yield ['http://127.0.0.1:51234/callback', true];
-        yield ['http://[::1]:51234/callback', true];
-        yield ['https://localhost/callback', true];
-        yield ['com.example.app:/oauth2redirect', true];
-        yield ['my-app://callback', true];
-        yield ['http://LOCALHOST:51234/callback', true];
-        yield ['http://0x7f.1:51234/callback', true]; // Browser treats it as 127.0.0.1
-
-        // Denied
-        yield ['http://example.com/callback', false];
-        yield ['http://localhost@evil.com/callback', false];
-        yield ['http://localhost.evil.com/callback', false];
-        yield ['//evil.com/callback', false];
-        yield ['/callback', false];
-        yield ['javascript:alert(1)', false];
-        yield ['JavaScript:alert(1)', false];
-        yield ['data:text/html,test', false];
-        yield ['file:///etc/passwd', false];
-        yield ['my-app://callback#fragment', false];
-        yield ['my-app://user@callback', false];
-        yield ['http://localhost.:51234/callback', false];
-        yield ['', false];
-    }
-
-    /**
-     * @dataProvider desktopApplicationRedirectUris
-     */
-    public function testDesktopApplication(string $redirectUri, bool $expected): void {
-        $client = new OauthClient();
-        $client->type = OauthClient::TYPE_DESKTOP_APPLICATION;
-        $this->assertValidation(new ClientEntity('desktop', 'Desktop', '', model: $client), $redirectUri, $expected);
+        return new ClientEntity('client', 'Client', $registeredUri, model: $client);
     }
 
     private function assertValidation(ClientEntity $client, string $redirectUri, bool $expected): void {

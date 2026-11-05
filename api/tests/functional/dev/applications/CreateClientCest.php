@@ -110,4 +110,19 @@ final class CreateClientCest {
         ]);
     }
 
+    public function testCreateApplicationWithInvalidRedirectUri(FunctionalTester $I): void {
+        $I->amAuthenticated('admin');
+        $I->sendPOST('/api/v1/oauth2/application', [
+            'name' => 'Application name',
+            'redirectUri' => 'https://example.com/callback#fragment',
+        ]);
+        $I->canSeeResponseCodeIs(200);
+        $I->canSeeResponseContainsJson([
+            'success' => false,
+            'errors' => [
+                'redirectUri' => 'error.redirectUri_invalid',
+            ],
+        ]);
+    }
+
 }

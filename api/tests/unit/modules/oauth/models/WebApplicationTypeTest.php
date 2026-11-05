@@ -26,4 +26,23 @@ final class WebApplicationTypeTest extends TestCase {
         $this->assertSame('http://example.com', $client->website_url);
     }
 
+    /**
+     * @return iterable<array{mixed, bool}>
+     */
+    public static function redirectUris(): iterable {
+        yield ['https://example.com/oauth/ely', true];
+        yield ['http://localhost/callback', false];
+        yield [['https://example.com'], false];
+    }
+
+    /**
+     * @dataProvider redirectUris
+     */
+    public function testValidateRedirectUri(mixed $redirectUri, bool $expected): void {
+        $model = new WebApplicationType();
+        $model->redirectUri = $redirectUri;
+
+        $this->assertSame($expected, $model->validate(['redirectUri']));
+    }
+
 }
