@@ -69,14 +69,10 @@ services:
     image: ghcr.io/elyby/emails-renderer:latest
 
   db:
-    image: elyby/accounts/mariadb:local
-    build:
-      context: .
-      target: db
-      args:
-        build_env: dev
+    image: bitnamilegacy/mariadb:10.6-debian-11
     volumes:
       - ./data/mariadb:/bitnami/mariadb
+      - ./docker/mariadb/config.cnf:/opt/bitnami/mariadb/conf/my_custom.cnf:ro
     environment:
       ALLOW_EMPTY_PASSWORD: "yes"
       MARIADB_ROOT_PASSWORD: ""
@@ -121,14 +117,10 @@ services:
   # 2) Uncomment the next 2 services (testdb and testredis):
   #
   # testdb:
-  #   image: elyby/accounts/mariadb:local
-  #   build:
-  #     context: .
-  #     target: db
-  #     args:
-  #       build_env: dev
+  #   image: bitnamilegacy/mariadb:10.6-debian-11
   #   volumes:
   #     - ./data/mariadb-test:/bitnami/mariadb
+  #     - ./docker/mariadb/config.cnf:/opt/bitnami/mariadb/conf/my_custom.cnf:ro
   #   environment:
   #     ALLOW_EMPTY_PASSWORD: "yes"
   #     MARIADB_ROOT_PASSWORD: ""

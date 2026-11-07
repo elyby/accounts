@@ -9,7 +9,6 @@ stages:
 variables:
   APP_IMAGE_NAME: "$CI_REGISTRY_IMAGE/app"
   WEB_IMAGE_NAME: "$CI_REGISTRY_IMAGE/web"
-  DB_IMAGE_NAME: "$CI_REGISTRY_IMAGE/db"
   PHP_EXTENSION_INTL: 1
   PHP_EXTENSION_IMAGICK: 1
 
@@ -27,9 +26,6 @@ variables:
 
   export WEB_VERSIONED_IMAGE_NAME="$WEB_IMAGE_NAME:$VERSION"
   export WEB_LATEST_IMAGE_NAME="$WEB_IMAGE_NAME:latest"
-
-  export DB_VERSIONED_IMAGE_NAME="$DB_IMAGE_NAME:$VERSION"
-  export DB_LATEST_IMAGE_NAME="$DB_IMAGE_NAME:latest"
 
 .dockerLogin: &dockerLogin |-
   docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
@@ -156,7 +152,6 @@ Docker:
     # Download previous images to use them as a cache
     - docker pull "$APP_LATEST_IMAGE_NAME" || true
     - docker pull "$WEB_LATEST_IMAGE_NAME" || true
-    - docker pull "$DB_LATEST_IMAGE_NAME" || true
     # Build images
     - >
       docker build .
@@ -175,23 +170,11 @@ Docker:
       --cache-from "$WEB_LATEST_IMAGE_NAME"
       -t "$WEB_VERSIONED_IMAGE_NAME"
       -t "$WEB_LATEST_IMAGE_NAME"
-    - >
-      docker build .
-      --pull
-      --target db
-      --build-arg "build_env=prod"
-      --cache-from "$APP_VERSIONED_IMAGE_NAME"
-      --cache-from "$WEB_VERSIONED_IMAGE_NAME"
-      --cache-from "$DB_LATEST_IMAGE_NAME"
-      -t "$DB_VERSIONED_IMAGE_NAME"
-      -t "$DB_LATEST_IMAGE_NAME"
     # Push images to the registry
     - docker push $APP_VERSIONED_IMAGE_NAME
     - docker push $APP_LATEST_IMAGE_NAME
     - docker push $WEB_VERSIONED_IMAGE_NAME
     - docker push $WEB_LATEST_IMAGE_NAME
-    - docker push $DB_VERSIONED_IMAGE_NAME
-    - docker push $DB_LATEST_IMAGE_NAME
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never
