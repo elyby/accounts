@@ -123,10 +123,8 @@ class JoinForm extends Model {
             throw new ForbiddenOperationException('Invalid access_token.');
         }
 
-        Yii::$app->statsd->inc('sessionserver.authentication.oauth2');
         if (!Yii::$app->user->can(P::MINECRAFT_SERVER_SESSION)) {
             Session::error("User with access_token = '{$accessToken}' doesn't have enough scopes to make join.");
-            Yii::$app->statsd->inc('sessionserver.authentication.oauth2_not_enough_scopes');
 
             throw new ForbiddenOperationException('The token does not have required scope.');
         }
