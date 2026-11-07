@@ -85,57 +85,6 @@ services:
     volumes:
       - ./data/redis:/data
 
-  # If you want to use separate databases for the tests follow the next steps:
-  # 1) Create a file common/config/config-local.php with the next containment:
-  #
-  # <?php
-  # if (YII_ENV !== 'test') {
-  #     return [];
-  # }
-  #
-  # return [
-  #     'components' => [
-  #         'db' => [
-  #             'dsn' => 'mysql:host=testdb;dbname=test',
-  #             'username' => 'test',
-  #             'password' => 'test',
-  #         ],
-  #         'unbufferedDb' => [
-  #             'dsn' => 'mysql:host=testdb;dbname=test',
-  #             'username' => 'test',
-  #             'password' => 'test',
-  #         ],
-  #         'redis' => [
-  #             'hostname' => 'testredis',
-  #             'password' => null,
-  #             'port' => 6379,
-  #             'database' => 0,
-  #         ],
-  #     ],
-  # ];
-  #
-  # 2) Uncomment the next 2 services (testdb and testredis):
-  #
-  # testdb:
-  #   image: bitnamilegacy/mariadb:10.6-debian-11
-  #   volumes:
-  #     - ./data/mariadb-test:/bitnami/mariadb
-  #     - ./docker/mariadb/config.cnf:/opt/bitnami/mariadb/conf/my_custom.cnf:ro
-  #   environment:
-  #     ALLOW_EMPTY_PASSWORD: "yes"
-  #     MARIADB_ROOT_PASSWORD: ""
-  #     MARIADB_DATABASE: test
-  #     MARIADB_USER: test
-  #     MARIADB_PASSWORD: test
-  #
-  # testredis:
-  #   image: redis:5.0-alpine
-  #   volumes:
-  #     - ./data/redis-test:/data
-  #
-  # 4) To run migrations on tests' database you must execute slightly adjusted
-  #    migrate command: "env YII_ENV=test yii migrate"
-
   phpmyadmin:
     build: ./docker/phpmyadmin
     environment:

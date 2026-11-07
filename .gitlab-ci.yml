@@ -92,7 +92,9 @@ Codeception:
   variables:
     # App config
     DB_HOST: "db"
-    DB_DATABASE: "ely_accounts_test"
+    DB_DATABASE: "ely_accounts"
+    # The service creates the database itself, so the tests don't rely on the "test_*" databases grants
+    DB_TEST_DATABASE: "ely_accounts_test"
     DB_USER: "ely_accounts_tester"
     DB_PASSWORD: "ely_accounts_tester_password"
     REDIS_HOST: "redis"
@@ -111,8 +113,8 @@ Codeception:
     - sudo apt install -y libmagickcore-6.q16-6-extra
   script:
     - php yii rbac/generate
-    - wait-for-it "${DB_HOST}:3306" -s -t 0 -- php yii migrate/up --interactive=0
-    - vendor/bin/codecept run
+    # The tests' bootstrap applies the migrations itself
+    - wait-for-it "${DB_HOST}:3306" -s -t 0 -- vendor/bin/codecept run
 
 PHPStan:
   stage: testing
