@@ -24,3 +24,6 @@ coverage:
       - codeception.yml
       - index.php
   c3url: 'http://localhost/api/web/index.php'
+extensions:
+  enabled:
+    - common\tests\_support\TestDatabase

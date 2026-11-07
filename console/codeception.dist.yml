@@ -22,3 +22,6 @@ coverage:
       - views/*
       - codeception.dist.yml
       - codeception.yml
+extensions:
+  enabled:
+    - common\tests\_support\TestDatabase

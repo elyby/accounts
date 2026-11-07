@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace common\tests\_support;
 
+use Codeception\Events;
+use Codeception\Extension;
 use common\config\ConfigLoader;
 use PDO;
 use PDOException;
@@ -14,9 +16,25 @@ use RuntimeException;
  *
  * This class if fully AI generated
  */
-final class TestDatabase {
+final class TestDatabase extends Extension {
 
-    public static function prepare(): void {
+    /**
+     * @var array<string, string>
+     */
+    public static array $events = [
+        Events::SUITE_BEFORE => 'prepare',
+    ];
+
+    /**
+     * The event is fired for each suite, while the preparation is needed only once per process
+     */
+    private static bool $isPrepared = false;
+
+    public function prepare(): void {
+        if (self::$isPrepared) {
+            return;
+        }
+
         /** @var array{dsn: string, username: string, password: string} $db */
         $db = ConfigLoader::load('console')['components']['db'];
         if (!preg_match('/^(?<server>.+);dbname=(?<name>[^;]+)$/', $db['dsn'], $matches)) {
@@ -30,6 +48,8 @@ final class TestDatabase {
 
         self::createDatabase($matches['server'], $name, $db['username'], $db['password']);
         self::applyMigrations();
+
+        self::$isPrepared = true;
     }
 
     private static function createDatabase(string $serverDsn, string $name, string $username, string $password): void {
