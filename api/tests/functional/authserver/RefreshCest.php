@@ -46,6 +46,21 @@ class RefreshCest {
         $this->assertSuccessResponse($I, false);
     }
 
+    public function refreshRevokedToken(AuthserverSteps $I): void {
+        $I->wantTo('get error on refreshing the revoked accessToken');
+        [$accessToken, $clientToken] = $I->amAuthenticated();
+        $I->haveMinecraftSessionsRevoked();
+        $I->sendPOST('/api/authserver/authentication/refresh', [
+            'accessToken' => $accessToken,
+            'clientToken' => $clientToken,
+        ]);
+        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseContainsJson([
+            'error' => 'ForbiddenOperationException',
+            'errorMessage' => 'Invalid token.',
+        ]);
+    }
+
     public function wrongArguments(AuthserverSteps $I): void {
         $I->wantTo('get error on wrong amount of arguments');
         $I->sendPOST('/api/authserver/authentication/refresh', [

@@ -3,16 +3,14 @@ declare(strict_types=1);
 
 namespace common\components\OAuth2\Grants;
 
+use api\components\Tokens\InvalidTokenException;
+use api\components\Tokens\TokenExpiredException;
 use api\components\Tokens\TokenReader;
-use Carbon\FactoryImmutable;
+use api\components\Tokens\TokenRevokedException;
 use common\components\OAuth2\CryptTrait;
 use common\components\OAuth2\Repositories\PublicScopeRepository;
 use common\components\OAuth2\ScopesMapper;
 use common\models\OauthSession;
-use DateTimeImmutable;
-use InvalidArgumentException;
-use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
-use Lcobucci\JWT\Validation\Validator;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
@@ -107,17 +105,13 @@ final class RefreshTokenGrant extends BaseRefreshTokenGrant {
      */
     private function validateAccessToken(string $jwt, string $clientId): array {
         try {
-            $token = Yii::$app->tokens->parse($jwt);
-        } catch (InvalidArgumentException $e) {
+            $token = Yii::$app->tokens->verifyAccessToken($jwt);
+        } catch (TokenExpiredException $e) {
+            throw OAuthServerException::invalidRefreshToken('Token has expired', $e);
+        } catch (TokenRevokedException $e) {
+            throw OAuthServerException::invalidRefreshToken('Token has been revoked', $e);
+        } catch (InvalidTokenException $e) {
             throw OAuthServerException::invalidRefreshToken('Cannot decrypt the refresh token', $e);
-        }
-
-        if (!Yii::$app->tokens->verify($token)) {
-            throw OAuthServerException::invalidRefreshToken('Cannot decrypt the refresh token');
-        }
-
-        if (!(new Validator())->validate($token, new LooseValidAt(FactoryImmutable::getDefaultInstance()))) {
-            throw OAuthServerException::invalidRefreshToken('Token has expired');
         }
 
         $reader = new TokenReader($token);
@@ -135,15 +129,6 @@ final class RefreshTokenGrant extends BaseRefreshTokenGrant {
         // only when the offline_access scope was requested
         if (!$reader->hasScope(PublicScopeRepository::OFFLINE_ACCESS)) {
             throw OAuthServerException::invalidRefreshToken('Token is not a refresh token');
-        }
-
-        /** @var DateTimeImmutable $iat */
-        $iat = $token->claims()->get('iat');
-        /** @var OauthSession|null $session */
-        $session = OauthSession::findOne(['account_id' => $accountId, 'client_id' => $clientId]);
-        // Session is always created when the user grants access, so its absence means that it was revoked
-        if ($session === null || $session->isRevokedForTokenIssuedAt($iat)) {
-            throw OAuthServerException::invalidRefreshToken('Token has been revoked');
         }
 
         return [

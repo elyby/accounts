@@ -8,7 +8,6 @@ use api\models\base\ApiForm;
 use api\modules\authserver\exceptions\ForbiddenOperationException;
 use api\modules\authserver\validators\AccessTokenValidator;
 use api\modules\authserver\validators\RequiredValidator;
-use common\components\OAuth2\Repositories\PublicScopeRepository;
 use common\models\Account;
 use common\models\OauthClient;
 use common\models\OauthSession;
@@ -47,7 +46,8 @@ class RefreshTokenForm extends ApiForm {
      */
     public function refresh(): AuthenticateData {
         $this->validate();
-        $token = Yii::$app->tokens->parse($this->accessToken);
+        // The token has already been verified by the validation above, so this is just to read its claims
+        $token = Yii::$app->tokens->verifyAccessToken($this->accessToken, verifyExpiration: false);
         $tokenReader = new TokenReader($token);
         if ($tokenReader->getMinecraftClientToken() !== $this->clientToken) {
             throw new ForbiddenOperationException('Invalid token.');
@@ -58,18 +58,12 @@ class RefreshTokenForm extends ApiForm {
             throw new ForbiddenOperationException('Invalid token.');
         }
 
-        // TODO: This behavior duplicates with the AuthenticationForm. Need to find a way to avoid duplication.
         /** @var OauthSession|null $minecraftOauthSession */
         $minecraftOauthSession = $account->getOauthSessions()
             ->andWhere(['client_id' => OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER])
             ->one();
-        if ($minecraftOauthSession === null) {
-            $minecraftOauthSession = new OauthSession();
-            $minecraftOauthSession->account_id = $account->id;
-            $minecraftOauthSession->client_id = OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER;
-            $minecraftOauthSession->scopes = [PublicScopeRepository::MINECRAFT_SERVER_SESSION];
-        }
-
+        // The token's verification has already ensured that the session exists and isn't revoked
+        Assert::notNull($minecraftOauthSession);
         $minecraftOauthSession->last_used_at = time();
         Assert::true($minecraftOauthSession->save());
 

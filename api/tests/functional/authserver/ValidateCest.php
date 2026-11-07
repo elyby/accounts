@@ -57,6 +57,20 @@ class ValidateCest {
         ]);
     }
 
+    public function revokedAccessToken(AuthserverSteps $I): void {
+        $I->wantTo('get error on revoked accessToken');
+        [$accessToken] = $I->amAuthenticated();
+        $I->haveMinecraftSessionsRevoked();
+        $I->sendPOST('/api/authserver/authentication/validate', [
+            'accessToken' => $accessToken,
+        ]);
+        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseContainsJson([
+            'error' => 'ForbiddenOperationException',
+            'errorMessage' => 'Invalid token.',
+        ]);
+    }
+
     public function credentialsFromBannedAccount(AuthserverSteps $I): void {
         $I->wantTo('get error on expired legacy accessToken');
         $I->sendPOST('/api/authserver/authentication/validate', [

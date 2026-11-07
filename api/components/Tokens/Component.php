@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace api\components\Tokens;
 
 use Carbon\Carbon;
+use common\models\OauthClient;
+use common\models\OauthSession;
+use DateTimeImmutable;
 use Exception;
 use InvalidArgumentException;
 use Lcobucci\JWT\Encoding\ChainedFormatter;
@@ -18,6 +21,7 @@ use Lcobucci\JWT\Validation\Validator;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use RangeException;
 use SodiumException;
+use Throwable;
 use Webmozart\Assert\Assert;
 use yii\base\Component as BaseComponent;
 
@@ -114,22 +118,40 @@ class Component extends BaseComponent {
     }
 
     /**
-     * @param string $jwt
+     * The single place where the access tokens are verified: the signature, the lifetime and the revocation.
+     * The account's state (deleted, banned, etc.) is intentionally not checked here: some endpoints must accept
+     * the tokens of banned/deleted accounts, so it's the caller's (or RBAC's) responsibility.
      *
-     * @return Token
-     * @throws InvalidArgumentException
+     * @throws TokenExpiredException
+     * @throws TokenRevokedException
+     * @throws InvalidTokenException
      */
-    public function parse(string $jwt): Token {
-        return (new Parser(new JoseEncoder()))->parse($jwt);
-    }
-
-    public function verify(Token $token): bool {
+    public function verifyAccessToken(string $jwt, bool $verifyExpiration = true): UnencryptedToken {
         try {
-            $algorithm = $this->getAlgorithmManager()->get($token->headers()->get('alg'));
-            return (new Validator())->validate($token, new SignedWith($algorithm->getSigner(), $algorithm->getPublicKey()));
-        } catch (Exception) {
-            return false;
+            $token = $this->parse($jwt);
+        } catch (Throwable $e) {
+            throw new InvalidTokenException('Cannot parse the token', previous: $e);
         }
+
+        if (!$token instanceof UnencryptedToken || !$this->verify($token)) {
+            throw new InvalidTokenException('Invalid signature');
+        }
+
+        $now = Carbon::now();
+        if ($verifyExpiration && $token->isExpired($now)) {
+            throw new TokenExpiredException();
+        }
+
+        // Unlike the expiration, these are checked always: the revocation relies on the iat claim
+        if (!$token->hasBeenIssuedBefore($now) || !$token->isMinimumTimeBefore($now)) {
+            throw new InvalidTokenException('The token cannot be used yet');
+        }
+
+        if ($this->isRevoked($token)) {
+            throw new TokenRevokedException();
+        }
+
+        return $token;
     }
 
     public function encryptValue(string $rawValue): string {
@@ -183,6 +205,25 @@ class Component extends BaseComponent {
         ];
     }
 
+    /**
+     * @param string $jwt
+     *
+     * @return Token
+     * @throws InvalidArgumentException
+     */
+    private function parse(string $jwt): Token {
+        return (new Parser(new JoseEncoder()))->parse($jwt);
+    }
+
+    private function verify(Token $token): bool {
+        try {
+            $algorithm = $this->getAlgorithmManager()->get($token->headers()->get('alg'));
+            return (new Validator())->validate($token, new SignedWith($algorithm->getSigner(), $algorithm->getPublicKey()));
+        } catch (Exception) {
+            return false;
+        }
+    }
+
     private function getAlgorithmManager(): AlgorithmsManager {
         if ($this->algorithmManager === null) {
             $this->algorithmManager = new AlgorithmsManager([
@@ -191,6 +232,40 @@ class Component extends BaseComponent {
         }
 
         return $this->algorithmManager;
+    }
+
+    private function isRevoked(UnencryptedToken $token): bool {
+        $reader = new TokenReader($token);
+        $accountId = $reader->getAccountId();
+        // The client_credentials tokens aren't related to any account, so there is no session to check
+        if ($accountId === null) {
+            return false;
+        }
+
+        $clientIds = [];
+        if ($reader->getMinecraftClientToken() !== null) {
+            $clientIds[] = OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER;
+        }
+
+        if ($reader->getClientId() !== null) {
+            $clientIds[] = $reader->getClientId();
+        }
+
+        /** @var DateTimeImmutable $iat */
+        $iat = $token->claims()->get(RegisteredClaims::ISSUED_AT);
+        foreach ($clientIds as $clientId) {
+            $session = OauthSession::findOne(['account_id' => $accountId, 'client_id' => $clientId]);
+            // The session is always created when the token is issued, so its absence means that it was revoked
+            if ($session === null) {
+                return true;
+            }
+
+            if ($session->isRevokedForTokenIssuedAt($iat)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function prepareValue(EncryptedValue|string|bool $value): string|bool {

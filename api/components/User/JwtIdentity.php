@@ -3,18 +3,12 @@ declare(strict_types=1);
 
 namespace api\components\User;
 
+use api\components\Tokens\InvalidTokenException;
+use api\components\Tokens\TokenExpiredException;
 use api\components\Tokens\TokenReader;
-use Carbon\Carbon;
-use Carbon\FactoryImmutable;
+use api\components\Tokens\TokenRevokedException;
 use common\models\Account;
-use common\models\OauthClient;
-use common\models\OauthSession;
-use DateTimeImmutable;
-use DateTimeInterface;
-use Exception;
 use Lcobucci\JWT\UnencryptedToken;
-use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
-use Lcobucci\JWT\Validation\Validator;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\web\UnauthorizedHttpException;
@@ -30,41 +24,13 @@ class JwtIdentity implements IdentityInterface {
 
     public static function findIdentityByAccessToken($token, $type = null): IdentityInterface {
         try {
-            $parsedToken = Yii::$app->tokens->parse($token);
-        } catch (Exception $e) {
-            Yii::error($e);
-            throw new UnauthorizedHttpException('Incorrect token');
-        }
-
-        if (!Yii::$app->tokens->verify($parsedToken)) {
-            throw new UnauthorizedHttpException('Incorrect token');
-        }
-
-        $now = Carbon::now();
-        if ($parsedToken->isExpired($now)) {
-            throw new UnauthorizedHttpException('Token expired');
-        }
-
-        if (!(new Validator())->validate($parsedToken, new LooseValidAt(FactoryImmutable::getDefaultInstance()))) {
-            throw new UnauthorizedHttpException('Incorrect token');
-        }
-
-        $tokenReader = new TokenReader($parsedToken);
-        $accountId = $tokenReader->getAccountId();
-        if ($accountId !== null) {
-            /** @var DateTimeImmutable $iat */
-            $iat = $parsedToken->claims()->get('iat');
-            if ($tokenReader->getMinecraftClientToken() !== null
-             && self::isRevoked($accountId, OauthClient::UNAUTHORIZED_MINECRAFT_GAME_LAUNCHER, $iat)
-            ) {
-                throw new UnauthorizedHttpException('Token has been revoked');
-            }
-
-            if ($tokenReader->getClientId() !== null
-             && self::isRevoked($accountId, $tokenReader->getClientId(), $iat)
-            ) {
-                throw new UnauthorizedHttpException('Token has been revoked');
-            }
+            $parsedToken = Yii::$app->tokens->verifyAccessToken($token);
+        } catch (TokenExpiredException $e) {
+            throw new UnauthorizedHttpException('Token expired', previous: $e);
+        } catch (TokenRevokedException $e) {
+            throw new UnauthorizedHttpException('Token has been revoked', previous: $e);
+        } catch (InvalidTokenException $e) {
+            throw new UnauthorizedHttpException('Incorrect token', previous: $e);
         }
 
         return new self($parsedToken);
@@ -100,15 +66,6 @@ class JwtIdentity implements IdentityInterface {
      */
     public static function findIdentity($id) {
         throw new NotSupportedException('This method used for cookie auth, except we using Bearer auth');
-    }
-
-    private static function isRevoked(int $accountId, string $clientId, DateTimeInterface $iat): bool {
-        $session = OauthSession::findOne(['account_id' => $accountId, 'client_id' => $clientId]);
-        if ($session === null) {
-            return true;
-        }
-
-        return $session->isRevokedForTokenIssuedAt($iat);
     }
 
     /** @codeCoverageIgnoreEnd */

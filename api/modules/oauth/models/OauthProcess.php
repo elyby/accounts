@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace api\modules\oauth\models;
 
+use api\components\Tokens\InvalidTokenException;
 use api\components\Tokens\TokenReader;
 use common\components\OAuth2\Entities\UserEntity;
 use common\components\OAuth2\Events\RequestedRefreshToken;
@@ -14,8 +15,6 @@ use common\models\OauthClient;
 use common\models\OauthSession;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
-use InvalidArgumentException;
-use Lcobucci\JWT\UnencryptedToken;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
@@ -276,12 +275,10 @@ final readonly class OauthProcess {
      */
     private function revokeTokensByToken(string $jwt, string $clientId): void {
         try {
-            $token = Yii::$app->tokens->parse($jwt);
-        } catch (InvalidArgumentException) {
-            return;
-        }
-
-        if (!$token instanceof UnencryptedToken || !Yii::$app->tokens->verify($token)) {
+            // The expired tokens still can be revoked. The already revoked token mustn't revoke
+            // the tokens issued after its revocation, so it's ignored too
+            $token = Yii::$app->tokens->verifyAccessToken($jwt, verifyExpiration: false);
+        } catch (InvalidTokenException) {
             return;
         }
 
@@ -294,12 +291,9 @@ final readonly class OauthProcess {
 
         /** @var \DateTimeImmutable $iat */
         $iat = $token->claims()->get('iat');
-        /** @var OauthSession|null $session */
         $session = OauthSession::findOne(['account_id' => $accountId, 'client_id' => $clientId]);
-        // The already revoked token mustn't revoke the tokens issued after its revocation
-        if ($session === null || $session->isRevokedForTokenIssuedAt($iat)) {
-            return;
-        }
+        // The token's verification has already ensured that the session exists and isn't revoked
+        Assert::notNull($session);
 
         // The revocation is checked with the seconds precision, so the token issued in the same second
         // as the revocation won't be considered as revoked. Ensure that at least the passed token is revoked

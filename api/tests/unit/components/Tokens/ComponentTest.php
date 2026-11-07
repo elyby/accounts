@@ -4,13 +4,15 @@ declare(strict_types=1);
 namespace api\tests\unit\components\Tokens;
 
 use api\components\Tokens\Component;
+use api\components\Tokens\InvalidTokenException;
+use api\components\Tokens\TokenExpiredException;
+use api\components\Tokens\TokenRevokedException;
 use api\tests\unit\TestCase;
+use Carbon\Carbon;
+use common\tests\fixtures\AccountFixture;
+use common\tests\fixtures\OauthClientFixture;
+use common\tests\fixtures\OauthSessionFixture;
 use DateTimeImmutable;
-use Generator;
-use Lcobucci\JWT\Encoding\JoseEncoder;
-use Lcobucci\JWT\Token;
-use Lcobucci\JWT\Token\Parser;
-use Lcobucci\JWT\UnencryptedToken;
 use Yii;
 
 class ComponentTest extends TestCase {
@@ -19,6 +21,14 @@ class ComponentTest extends TestCase {
      * @var Component
      */
     private Component $component;
+
+    public function _fixtures(): array {
+        return [
+            'accounts' => AccountFixture::class,
+            'oauthClients' => OauthClientFixture::class,
+            'oauthSessions' => OauthSessionFixture::class,
+        ];
+    }
 
     public function testCreate(): void {
         // Run without any arguments
@@ -61,42 +71,55 @@ class ComponentTest extends TestCase {
         ], $this->component->getJwks());
     }
 
-    public function testParse(): void {
-        /*TODO fix
-        // Valid token signed with ES256
-        $token = $this->component->parse('eyJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ1Mjc0NzYsImV4cCI6MTU2NDUzMTA3Niwic3ViIjoiZWx5fDEiLCJqdGkiOjMwNjk1OTJ9.M8Kam9bv0BXui3k7Posq_vc0I95Kb_Tw7L2vPdEPlwsHqh1VJHoWtlQc32_SlsotttL7j6RYbffBkRFX2wDGFQ');
-        $this->assertValidParsedToken($token, 'ES256');
+    /**
+     * @param class-string<InvalidTokenException>|null $expectedException
+     * @dataProvider getVerifyAccessTokenCases
+     */
+    public function testVerifyAccessToken(string $jwt, bool $verifyExpiration, ?string $expectedException): void {
+        Carbon::setTestNow(Carbon::create(2019, 8, 1, 1, 2, 22, 'Europe/Minsk'));
+        $exception = null;
+        try {
+            $token = $this->component->verifyAccessToken($jwt, verifyExpiration: $verifyExpiration);
+            $this->assertSame($jwt, $token->toString());
+        } catch (InvalidTokenException $e) {
+            $exception = $e;
+        }
 
-        // Valid token signed with ES256, but the signature is invalid
-        $token = $this->component->parse('eyJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ1Mjc0NzYsImV4cCI6MTU2NDUzMTA3Niwic3ViIjoiZWx5fDEiLCJqdGkiOjMwNjk1OTJ9.xxx');
-        $this->assertValidParsedToken($token, 'ES256');
-
-        // Completely invalid token
-        $this->expectException(CannotDecodeContent::class);
-        $this->component->parse('How do you tame a horse in Minecraft?');*/
+        $this->assertSame($expectedException, $exception === null ? null : $exception::class);
     }
 
     /**
-     * @dataProvider getVerifyCases
+     * @return iterable<string, array{string, bool, class-string<InvalidTokenException>|null}>
      */
-    public function testVerify(Token $token, bool $shouldBeValid): void {
-        $this->assertSame($shouldBeValid, $this->component->verify($token));
-    }
+    public static function getVerifyAccessTokenCases(): iterable {
+        $valid = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ2MTA1NDIsImV4cCI6MTU2NDYxNDE0Miwic3ViIjoiZWx5fDEifQ.4Oidvuo4spvUf9hkpHR72eeqZUh2Zbxh_L8Od3vcgTj--0iOrcOEp6zwmEW6vF7BTHtjz2b3mXce61bqsCjXjQ';
+        $expired = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ2MDMzNDIsImV4cCI6MTU2NDYwNjk0Miwic3ViIjoiZWx5fDEifQ.36cDWyiXRArv-lgK_S5dyC5m_Ddytwkb78tMrxcPcbWEpoeg2VtwPC7zr6NI0cd0CuLw6InC2hZ9Ey95SSOsHw';
+        $iatFromFuture = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ2MTc3NDIsImV4cCI6MTU2NDYxNDE0Miwic3ViIjoiZWx5fDEifQ._6hj6XUSmSLibgT9ZE1Pokf4oI9r-d6tEc1z2J-fBlr1710Qiso5yNcXqb3Z_xy7Qtemyq8jOlOZA8DvmkVBrg';
+        $revokedByOauthClient = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudF9pbmZvLG1pbmVjcmFmdF9zZXJ2ZXJfc2Vzc2lvbiIsImlhdCI6MTU2NDYxMDUwMCwic3ViIjoiZWx5fDEiLCJjbGllbnRfaWQiOiJ0bGF1bmNoZXIifQ.qmiPOjI8jGAQdP5LoAVHO8L75Ly7fRcrTB_iYsUgQ4azgsPnLEhvG7dUnQ9utEd3RK5swDpaZ0bXf90vRbvnmg';
+        $revokedMinecraft = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoibWluZWNyYWZ0X3NlcnZlcl9zZXNzaW9uIiwiZWx5LWNsaWVudC10b2tlbiI6IllBTVhneTBBcEI5Z2dUX1VYNjNJaTdKcGtNd2ZwTmxaaE8yVVVEeEZ3YTFmZ2g4dksyN0RtV25vN2xqbk1pWWJwQ1VuS09YVnR2V1YtVVg1dWRQVVFsLU4xY3BBZlJBX2EtZW1BZyIsImlhdCI6MTU2NDYxMDUwMCwic3ViIjoiZWx5fDEifQ.LtE9cQJ4z5dGVkDZl50M2HZH6kOYHgGz2RIycS_lzU9YLhosQ3ux7i2KI7qGI7BNuxO5zJ1OkxF2r9Qc240EpA';
+        $invalidSignature = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ2MTA1NDIsImV4cCI6MTU2NDYxNDE0Miwic3ViIjoiZWx5fDEifQ.yth31f2PyhUkYSfBlizzUXWIgOvxxk8gNP-js0z8g1OT5rig40FPTIkgsZRctAwAAlj6QoIWW7-hxLTcSb2vmw';
 
-    public static function getVerifyCases(): Generator {
-        $parser = new Parser(new JoseEncoder());
-        yield 'ES256' => [
-            $parser->parse('eyJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ1Mjc0NzYsImV4cCI6MTU2NDUzMTA3Niwic3ViIjoiZWx5fDEiLCJqdGkiOjMwNjk1OTJ9.M8Kam9bv0BXui3k7Posq_vc0I95Kb_Tw7L2vPdEPlwsHqh1VJHoWtlQc32_SlsotttL7j6RYbffBkRFX2wDGFQ'),
-            true,
-        ];
-        /* TODO fix yield 'ES256 with an invalid signature' => [
-            $parser->parse('eyJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ1Mjc0NzYsImV4cCI6MTU2NDUzMTA3Niwic3ViIjoiZWx5fDEiLCJqdGkiOjMwNjk1OTJ9.xxx'),
+        yield 'valid' => [$valid, true, null];
+        yield 'expired' => [$expired, true, TokenExpiredException::class];
+        yield 'expired without expiration verification' => [$expired, false, null];
+        yield 'iat from future' => [$iatFromFuture, true, InvalidTokenException::class];
+        yield 'iat from future without expiration verification' => [$iatFromFuture, false, InvalidTokenException::class];
+        yield 'revoked by oauth client' => [$revokedByOauthClient, true, TokenRevokedException::class];
+        yield 'revoked by unauthorized minecraft launcher' => [$revokedMinecraft, true, TokenRevokedException::class];
+        yield 'revoked by unauthorized minecraft launcher without expiration verification' => [$revokedMinecraft, false, TokenRevokedException::class];
+        yield 'invalid signature' => [$invalidSignature, true, InvalidTokenException::class];
+        yield 'empty token' => ['', true, InvalidTokenException::class];
+        yield 'not a jwt' => ['How do you tame a horse in Minecraft?', true, InvalidTokenException::class];
+        yield 'malformed signature' => [
+            'eyJhbGciOiJFUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ1Mjc0NzYsImV4cCI6MTU2NDUzMTA3Niwic3ViIjoiZWx5fDEiLCJqdGkiOjMwNjk1OTJ9.xxx',
             false,
+            InvalidTokenException::class,
         ];
-        yield 'RS256 (unsupported)' => [
-            $parser->parse('eyJhbGciOiJSUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ1Mjc0NzYsImV4cCI6MTU2NDUzMTA3Niwic3ViIjoiZWx5fDEiLCJqdGkiOjMwNjk1OTJ9.t3c68OMaoWWXxNFuz6SW-RfNmCOwAagyPSedbzJ1K3gR3bY5C8PRP6IEyE-OQvAcSFQcake0brsa4caXAmVlU0c3jQxpjk0bl4fBMd-InpGCoo42G89lgAY-dqWeJqokRORCpUL5Mzptbm5fNDlCrnNhI_6EmQygL3WXh1uorCbcxxO-Lb2Nr7Sge7GV0t24-I61I7ErrFL2ZC9ybSi6V8pdhFZlfO6MSUM0ASyRN994sVmcQEZHDiQFP7zj79zoAFamfYe8JBFAGtC-p4LeVYjrw052VahNXyRuGLxW7y1gX-znpyx0T-7lgKSWVxhJ6k3qt5qT33utdC76w1vihEdYinpEE3VbTMN01bxAFpyDbK11R49FCwCKStPjw_wdoLZChx_zob95yVU6IUCJwPYVc4SBtrAPV0uVe3mL3Gzgtr6MkhJAF3diFevTLGfnOOCAWwhdjVs10VWqcajBwvfFlm_Yw5MYZnetEECqumqFEr_u6CdRxtx0gCiPReDG8XwYHt0EqEw-LoRqxGWp5zqfud7f0DWv6cXlLbnKsB8XQh8EqnKblvNCFilXJIgfknCZ34PAob1pUkXO1geMLw4b8NUnKta1D3ad3AxGW5CEmOjWzEhzMOxIgnouU2ZVtWFDrPVs12Q4494BxTvGKXrG2cT6TK18-XY26DllglY'),
+        yield 'unsupported algorithm' => [
+            'eyJhbGciOiJSUzI1NiJ9.eyJlbHktc2NvcGVzIjoiYWNjb3VudHNfd2ViX3VzZXIiLCJpYXQiOjE1NjQ1Mjc0NzYsImV4cCI6MTU2NDUzMTA3Niwic3ViIjoiZWx5fDEiLCJqdGkiOjMwNjk1OTJ9.t3c68OMaoWWXxNFuz6SW-RfNmCOwAagyPSedbzJ1K3gR3bY5C8PRP6IEyE-OQvAcSFQcake0brsa4caXAmVlU0c3jQxpjk0bl4fBMd-InpGCoo42G89lgAY-dqWeJqokRORCpUL5Mzptbm5fNDlCrnNhI_6EmQygL3WXh1uorCbcxxO-Lb2Nr7Sge7GV0t24-I61I7ErrFL2ZC9ybSi6V8pdhFZlfO6MSUM0ASyRN994sVmcQEZHDiQFP7zj79zoAFamfYe8JBFAGtC-p4LeVYjrw052VahNXyRuGLxW7y1gX-znpyx0T-7lgKSWVxhJ6k3qt5qT33utdC76w1vihEdYinpEE3VbTMN01bxAFpyDbK11R49FCwCKStPjw_wdoLZChx_zob95yVU6IUCJwPYVc4SBtrAPV0uVe3mL3Gzgtr6MkhJAF3diFevTLGfnOOCAWwhdjVs10VWqcajBwvfFlm_Yw5MYZnetEECqumqFEr_u6CdRxtx0gCiPReDG8XwYHt0EqEw-LoRqxGWp5zqfud7f0DWv6cXlLbnKsB8XQh8EqnKblvNCFilXJIgfknCZ34PAob1pUkXO1geMLw4b8NUnKta1D3ad3AxGW5CEmOjWzEhzMOxIgnouU2ZVtWFDrPVs12Q4494BxTvGKXrG2cT6TK18-XY26DllglY',
             false,
-        ];*/
+            InvalidTokenException::class,
+        ];
     }
 
     protected function _setUp(): void {
@@ -104,16 +127,9 @@ class ComponentTest extends TestCase {
         $this->component = Yii::$app->tokens;
     }
 
-    /**
-     * @phpstan-ignore method.unused (will become used once tests be fixed)
-     */
-    private function assertValidParsedToken(UnencryptedToken $token, string $expectedAlg): void {
-        $this->assertSame($expectedAlg, $token->headers()->get('alg'));
-        $this->assertSame(1564527476, $token->claims()->get('iat')->getTimestamp());
-        $this->assertSame(1564531076, $token->claims()->get('exp')->getTimestamp());
-        $this->assertSame('ely|1', $token->claims()->get('sub'));
-        $this->assertSame(3069592, (int)$token->claims()->get('jti'));
-        $this->assertSame('accounts_web_user', $token->claims()->get('ely-scopes'));
+    protected function _tearDown(): void {
+        Carbon::setTestNow();
+        parent::_tearDown();
     }
 
 }
