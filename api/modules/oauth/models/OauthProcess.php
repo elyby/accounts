@@ -178,8 +178,11 @@ final readonly class OauthProcess {
         $params = (array)$request->getParsedBody();
         $clientId = $params['client_id'] ?? '';
         $grantType = $params['grant_type'] ?? 'null';
+        // The ":" is the name/value separator in the StatsD protocol, so the URN grant types
+        // (e.g. "urn:ietf:params:oauth:grant-type:device_code") are reduced to their last segment
+        $metricGrantType = preg_replace('/^.*:/', '', (string)$grantType);
         try {
-            Yii::$app->statsd->inc("oauth.issueToken_{$grantType}.attempt");
+            Yii::$app->statsd->inc("oauth.issueToken_{$metricGrantType}.attempt");
 
             $shouldIssueRefreshToken = false;
             $this->server->getEmitter()->subscribeOnceTo(RequestedRefreshToken::class, function() use (&$shouldIssueRefreshToken): void {
@@ -208,9 +211,9 @@ final readonly class OauthProcess {
             }
 
             Yii::$app->statsd->inc("oauth.issueToken_client.{$clientId}");
-            Yii::$app->statsd->inc("oauth.issueToken_{$grantType}.success");
+            Yii::$app->statsd->inc("oauth.issueToken_{$metricGrantType}.success");
         } catch (OAuthServerException $e) {
-            Yii::$app->statsd->inc("oauth.issueToken_{$grantType}.fail");
+            Yii::$app->statsd->inc("oauth.issueToken_{$metricGrantType}.fail");
             Yii::$app->response->statusCode = $e->getHttpStatusCode();
 
             $result = $this->buildIssueErrorResponse($e);
