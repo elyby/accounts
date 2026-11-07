@@ -5,7 +5,7 @@ return [
         'uuid' => 'df936908-b2e1-544d-96f8-2977ec213022',
         'username' => 'Admin',
         'email' => 'admin@ely.by',
-        'password_hash' => '$2y$13$CXT0Rkle1EMJ/c1l5bylL.EylfmQ39O5JlHJVFpNn618OUS1HwaIi', # password_0
+        'password_hash' => '$2y$04$UofhIozaA3aEvGKBNl/EHuoojdSXqgR4kTphhOPo4fvU1Cni5TZzG', # password_0
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
         'lang' => 'en',
         'status' => \common\models\Account::STATUS_ACTIVE,
@@ -35,7 +35,7 @@ return [
         'uuid' => '86c6fedb-bffc-37a5-8c0f-62e8fa9a2af7',
         'username' => 'howe.garnett',
         'email' => 'achristiansen@gmail.com',
-        'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
+        'password_hash' => '$2y$04$UofhIozaA3aEvGKBNl/EHuoojdSXqgR4kTphhOPo4fvU1Cni5TZzG', # password_0
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
         'lang' => 'en',
         'status' => \common\models\Account::STATUS_REGISTERED,
@@ -50,7 +50,7 @@ return [
         'uuid' => '58a7bfdc-ad0f-44c3-9197-759cb9220895',
         'username' => 'Jon',
         'email' => 'jon@ely.by',
-        'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
+        'password_hash' => '$2y$04$UofhIozaA3aEvGKBNl/EHuoojdSXqgR4kTphhOPo4fvU1Cni5TZzG', # password_0
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
         'lang' => 'en',
         'status' => \common\models\Account::STATUS_REGISTERED,
@@ -65,7 +65,7 @@ return [
         'uuid' => '4aaf4f00-3b5b-4d36-9252-9e8ee0c86679',
         'username' => 'Notch',
         'email' => 'notch@mojang.com',
-        'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
+        'password_hash' => '$2y$04$UofhIozaA3aEvGKBNl/EHuoojdSXqgR4kTphhOPo4fvU1Cni5TZzG', # password_0
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
         'lang' => 'en',
         'status' => \common\models\Account::STATUS_ACTIVE,
@@ -80,7 +80,7 @@ return [
         'uuid' => '26187ae7-bc96-421f-9766-6517f8ee52b7',
         'username' => '23derevo',
         'email' => '23derevo@gmail.com',
-        'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
+        'password_hash' => '$2y$04$UofhIozaA3aEvGKBNl/EHuoojdSXqgR4kTphhOPo4fvU1Cni5TZzG', # password_0
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
         'lang' => 'en',
         'status' => \common\models\Account::STATUS_ACTIVE,
@@ -95,7 +95,7 @@ return [
         'uuid' => '7d728533-847a-4661-9bc7-3df01b2282ef',
         'username' => 'ILLIMUNATI',
         'email' => 'illuminati@gmail.com',
-        'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
+        'password_hash' => '$2y$04$UofhIozaA3aEvGKBNl/EHuoojdSXqgR4kTphhOPo4fvU1Cni5TZzG', # password_0
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
         'lang' => 'en',
         'status' => \common\models\Account::STATUS_ACTIVE,
@@ -110,7 +110,7 @@ return [
         'uuid' => '4c34f2cc-4bd9-454b-9583-bb52f020ec16',
         'username' => 'CrafterGameplays',
         'email' => 'crafter@gmail.com',
-        'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
+        'password_hash' => '$2y$04$UofhIozaA3aEvGKBNl/EHuoojdSXqgR4kTphhOPo4fvU1Cni5TZzG', # password_0
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
         'lang' => 'en',
         'status' => \common\models\Account::STATUS_ACTIVE,
@@ -125,7 +125,7 @@ return [
         'uuid' => '410462d3-8e71-47cc-bac6-64f77f88cf80',
         'username' => 'Veleyaba',
         'email' => 'veleyaba@gmail.com',
-        'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
+        'password_hash' => '$2y$04$UofhIozaA3aEvGKBNl/EHuoojdSXqgR4kTphhOPo4fvU1Cni5TZzG', # password_0
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
         'lang' => 'en',
         'status' => \common\models\Account::STATUS_ACTIVE,
@@ -140,7 +140,7 @@ return [
         'uuid' => 'd2e7360e-50cf-4b9b-baa0-c4440a150795',
         'username' => 'Banned',
         'email' => 'banned@ely.by',
-        'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
+        'password_hash' => '$2y$04$UofhIozaA3aEvGKBNl/EHuoojdSXqgR4kTphhOPo4fvU1Cni5TZzG', # password_0
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
         'lang' => 'en',
         'status' => \common\models\Account::STATUS_BANNED,
@@ -155,7 +155,7 @@ return [
         'uuid' => 'd6b3e935-6466-4cb8-86db-b5df91ae6541',
         'username' => 'klik202',
         'email' => 'klik202@mail.ru',
-        'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
+        'password_hash' => '$2y$04$UofhIozaA3aEvGKBNl/EHuoojdSXqgR4kTphhOPo4fvU1Cni5TZzG', # password_0
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
         'lang' => 'ru',
         'status' => \common\models\Account::STATUS_ACTIVE,
@@ -170,7 +170,7 @@ return [
         'uuid' => '9e9dcd11-2322-46dc-a992-e822a422726e',
         'username' => 'AccountWithOtpSecret',
         'email' => 'sava-galkin@mail.ru',
-        'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
+        'password_hash' => '$2y$04$UofhIozaA3aEvGKBNl/EHuoojdSXqgR4kTphhOPo4fvU1Cni5TZzG', # password_0
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
         'lang' => 'ru',
         'status' => \common\models\Account::STATUS_ACTIVE,
@@ -187,7 +187,7 @@ return [
         'uuid' => '15d0afa7-a2bb-44d3-9f31-964cbccc6043',
         'username' => 'AccountWithEnabledOtp',
         'email' => 'otp@gmail.com',
-        'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
+        'password_hash' => '$2y$04$UofhIozaA3aEvGKBNl/EHuoojdSXqgR4kTphhOPo4fvU1Cni5TZzG', # password_0
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
         'lang' => 'ru',
         'status' => \common\models\Account::STATUS_ACTIVE,
@@ -204,7 +204,7 @@ return [
         'uuid' => '1b946267-b1a9-4409-ae83-94f84a329883',
         'username' => 'TwoOauthClients',
         'email' => 'oauth2-two@gmail.com',
-        'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
+        'password_hash' => '$2y$04$UofhIozaA3aEvGKBNl/EHuoojdSXqgR4kTphhOPo4fvU1Cni5TZzG', # password_0
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
         'lang' => 'ru',
         'status' => \common\models\Account::STATUS_ACTIVE,
@@ -221,7 +221,7 @@ return [
         'uuid' => '6383de63-8f85-4ed5-92b7-5401a1fa68cd',
         'username' => 'DeletedAccount',
         'email' => 'deleted-account@ely.by',
-        'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
+        'password_hash' => '$2y$04$UofhIozaA3aEvGKBNl/EHuoojdSXqgR4kTphhOPo4fvU1Cni5TZzG', # password_0
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
         'lang' => 'ru',
         'status' => \common\models\Account::STATUS_DELETED,
@@ -238,7 +238,7 @@ return [
         'uuid' => '7ff4a9dc-d177-4ea0-ab56-7f31218004f9',
         'username' => 'NotSynchronized',
         'email' => 'not-synchronized@ely.by',
-        'password_hash' => '$2y$13$2rYkap5T6jG8z/mMK8a3Ou6aZxJcmAaTha6FEuujvHEmybSHRzW5e', # password_0
+        'password_hash' => '$2y$04$UofhIozaA3aEvGKBNl/EHuoojdSXqgR4kTphhOPo4fvU1Cni5TZzG', # password_0
         'password_hash_strategy' => \common\models\Account::PASS_HASH_STRATEGY_YII2,
         'lang' => 'ru',
         'status' => \common\models\Account::STATUS_ACTIVE,
