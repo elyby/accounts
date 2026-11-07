@@ -101,8 +101,8 @@ final class DiscoveryController extends Controller {
             'grant_types_supported' => [
                 'authorization_code',
                 'refresh_token',
-                'client_credentials',
                 'urn:ietf:params:oauth:grant-type:device_code',
+                // The client_credentials grant is supported too, but it's used only by the internal clients
             ],
             'code_challenge_methods_supported' => ['S256'],
             // The issuer is added to the authorization responses (RFC 9207)

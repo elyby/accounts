@@ -23,7 +23,6 @@ final class DiscoveryCest {
             'grant_types_supported' => [
                 'authorization_code',
                 'refresh_token',
-                'client_credentials',
                 'urn:ietf:params:oauth:grant-type:device_code',
             ],
             'code_challenge_methods_supported' => ['S256'],
