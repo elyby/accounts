@@ -101,6 +101,9 @@ final class MockDataResponse implements BootstrapInterface {
                 if ($userCode === 'E2E-APPROVED' || $userCode === 'E2E-UNAPPROVED') {
                     return [
                         'success' => true,
+                        'oAuth' => [
+                            'user_code' => $userCode,
+                        ],
                         'client' => [
                             'id' => 'test',
                             'name' => 'Ely.by Test',
@@ -115,20 +118,18 @@ final class MockDataResponse implements BootstrapInterface {
                 if ($userCode === 'E2E-EXPIRED') {
                     $response->setStatusCode(400);
                     return [
-                        'success' => false,
                         'error' => 'expired_token',
+                        'error_description' => 'The user code has expired.',
                         'parameter' => 'user_code',
-                        'statusCode' => 400,
                     ];
                 }
 
                 if ($userCode === 'E2E-COMPLETED') {
                     $response->setStatusCode(400);
                     return [
-                        'success' => false,
                         'error' => 'used_user_code',
+                        'error_description' => 'The user code has already been used.',
                         'parameter' => 'user_code',
-                        'statusCode' => 400,
                     ];
                 }
             }
@@ -143,10 +144,8 @@ final class MockDataResponse implements BootstrapInterface {
                 if ($userCode === 'E2E-UNAPPROVED' && $accept === null) {
                     $response->setStatusCode(401);
                     return [
-                        'success' => false,
                         'error' => 'accept_required',
-                        'parameter' => null,
-                        'statusCode' => 401,
+                        'error_description' => 'Client must accept authentication request.',
                     ];
                 }
             }

@@ -1436,11 +1436,6 @@ parameters:
 			path: common/validators/MinecraftServerAddressValidator.php
 
 		-
-			message: "#^Method common\\\\validators\\\\UsernameValidator\\:\\:executeValidation\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: common/validators/UsernameValidator.php
-
-		-
 			message: "#^Method common\\\\validators\\\\UsernameValidator\\:\\:validateAttribute\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: common/validators/UsernameValidator.php
