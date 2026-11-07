@@ -40,14 +40,14 @@ done
 # Fix permissions for cron tasks
 chmod 644 /etc/cron.d/*
 
-JWT_PRIVATE_PEM_LOCATION="${JWT_PRIVATE_PEM_LOCATION:-/var/www/html/data/certs/private.pem}"
-JWT_PUBLIC_PEM_LOCATION="${JWT_PUBLIC_PEM_LOCATION:-/var/www/html/data/certs/public.pem}"
+# Must match the default in api/config/config.php
+JWT_PRIVATE_KEY_PATH="${JWT_PRIVATE_KEY_PATH:-/var/www/html/data/certs/private.pem}"
 
-if [ ! -f "$JWT_PRIVATE_PEM_LOCATION" ] ; then
+if [ ! -f "$JWT_PRIVATE_KEY_PATH" ] ; then
     echo "There is no private key. Generating the new one."
-    openssl ecparam -name prime256v1 -genkey -noout -out "$JWT_PRIVATE_PEM_LOCATION"
-    openssl ec -in "$JWT_PRIVATE_PEM_LOCATION" -pubout -out "$JWT_PUBLIC_PEM_LOCATION"
-    chown www-data:www-data "$JWT_PRIVATE_PEM_LOCATION" "$JWT_PUBLIC_PEM_LOCATION"
+    mkdir -p "$(dirname "$JWT_PRIVATE_KEY_PATH")"
+    openssl ecparam -name prime256v1 -genkey -noout -out "$JWT_PRIVATE_KEY_PATH"
+    chown www-data:www-data "$JWT_PRIVATE_KEY_PATH"
 fi
 
 if [ "$1" = "crond" ] ; then
