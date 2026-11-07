@@ -6,7 +6,6 @@ namespace api\modules\authserver\models;
 use api\components\Tokens\TokensFactory;
 use api\models\base\ApiForm;
 use api\modules\authserver\exceptions\ForbiddenOperationException;
-use api\modules\authserver\Module as Authserver;
 use api\modules\authserver\validators\ClientTokenValidator;
 use api\modules\authserver\validators\RequiredValidator;
 use common\components\Authentication\Entities\Credentials;
@@ -18,7 +17,9 @@ use common\models\Account;
 use common\models\OauthClient;
 use common\models\OauthSession;
 use Ramsey\Uuid\Uuid;
+use Throwable;
 use Webmozart\Assert\Assert;
+use Yii;
 
 final class AuthenticationForm extends ApiForm {
 
@@ -50,10 +51,15 @@ final class AuthenticationForm extends ApiForm {
      * @throws ForbiddenOperationException
      */
     public function authenticate(): AuthenticateData {
-        // This validating method will throw an exception in case when validation will not pass successfully
-        $this->validate();
+        Yii::$app->statsd->inc('authserver.authenticate.attempt');
 
-        Authserver::info("Trying to authenticate user by login = '{$this->username}'.");
+        try {
+            // It throws due to custom validators implementation (see rules())
+            $this->validate();
+        } catch (Throwable $e) {
+            Yii::$app->statsd->inc('authserver.authenticate.fail');
+            throw $e;
+        }
 
         $password = (string)$this->password;
         $totp = null;
@@ -78,13 +84,16 @@ final class AuthenticationForm extends ApiForm {
                 goto login;
             }
 
+            Yii::$app->statsd->inc('authserver.authenticate.fail');
             $this->convertAuthenticationException($e);
         } catch (AuthenticationException $e) {
+            Yii::$app->statsd->inc('authserver.authenticate.fail');
             $this->convertAuthenticationException($e);
         }
 
         $account = $result->account;
         if ($account->status === Account::STATUS_DELETED) {
+            Yii::$app->statsd->inc('authserver.authenticate.fail');
             throw new ForbiddenOperationException('Invalid credentials. Invalid username or password.');
         }
 
@@ -106,7 +115,7 @@ final class AuthenticationForm extends ApiForm {
         $token = $this->tokensFactory->createForMinecraftAccount($account, $clientToken);
         $dataModel = new AuthenticateData($account, $token->toString(), $clientToken, (bool)$this->requestUser);
 
-        Authserver::info("User with id = {$account->id}, username = '{$account->username}' and email = '{$account->email}' successfully logged in.");
+        Yii::$app->statsd->inc('authserver.authenticate.success');
 
         return $dataModel;
     }
